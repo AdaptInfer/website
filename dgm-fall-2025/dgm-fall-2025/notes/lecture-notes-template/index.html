@@ -1,21 +1,29 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
     <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="content-language" content="en">
-  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  <meta name="viewport" content="width=device-width initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta charset="UTF-8" />
+  <meta http-equiv="content-language" content="en" />
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-  <title>STAT 453 | Lecture Notes Template</title>
+  <title>
+    STAT 453 | Lecture Notes Template
+  </title>
   <meta name="description" content="STAT 453 - University of Wisconsin-Madison - Fall 2025
-">
+" />
 
-  <link rel="shortcut icon" href="/dgm-fall-2025/assets/img/favicon.ico">
+  <link
+    rel="shortcut icon"
+    href="/dgm-fall-2025/assets/img/favicon.ico"
+  />
 
-  <link rel="stylesheet" href="/dgm-fall-2025/assets/css/main.css">
-  <link rel="canonical" href="/dgm-fall-2025/notes/lecture-notes-template/">
+  <link rel="stylesheet" href="/dgm-fall-2025/assets/css/main.css" />
+  <link
+    rel="canonical"
+    href="/dgm-fall-2025/notes/lecture-notes-template/"
+  />
 
   
   <!-- Load Latex JS -->
@@ -29,97 +37,111 @@
   </head>
 
   <d-front-matter>
-    <script type="text/json">{
-      "title": "Lecture Notes Template",
-      "description": "An example of a distill-style lecture notes that showcases the main elements.",
-      "published": "January 9, 2019",
-      "lecturers": [
-        
-        {
-          "lecturer": "Ben Lengerich",
-          "lecturerURL": "https://lengerichlab.github.io/"
-        }
-        
-      ],
-      "authors": [
-        
-        {
-          "author": "Author 1"
-        },
-        
-        {
-          "author": "Author 2"
-        },
-        
-        {
-          "author": "Author 3"
-        }
-        
-      ],
-      "editors": [
-        
-        {
-          "editor": "Editor 1"
-        }
-        
-      ],
-      "katex": {
-        "delimiters": [
-          {
-            "left": "$",
-            "right": "$",
-            "display": false
-          },
-          {
-            "left": "$$",
-            "right": "$$",
-            "display": true
+    <script type="text/json">
+      {
+            "title": "Lecture Notes Template",
+            "description": "An example of a distill-style lecture notes that showcases the main elements.",
+            "published": "January 9, 2019",
+            "lecturers": [
+              
+              {
+                "lecturer": "Ben Lengerich",
+                "lecturerURL": "https://lengerichlab.github.io/"
+              }
+              
+            ],
+            "authors": [
+              
+              {
+                "author": "Author 1"
+              },
+              
+              {
+                "author": "Author 2"
+              },
+              
+              {
+                "author": "Author 3"
+              }
+              
+            ],
+            "editors": [
+              
+              {
+                "editor": "Editor 1"
+              }
+              
+            ],
+            "katex": {
+              "delimiters": [
+                {
+                  "left": "$",
+                  "right": "$",
+                  "display": false
+                },
+                {
+                  "left": "$$",
+                  "right": "$$",
+                  "display": true
+                }
+              ]
+            }
           }
-        ]
-      }
-    }</script>
+    </script>
   </d-front-matter>
 
   <body>
-
     <header class="site-header">
-
   <div class="wrapper">
-
     <span class="site-title">
-      <a class="page-link" href="https://adaptinfer.org/dgm-fall-2025/">STAT 453</a>
+      <a class="page-link" href="https://adaptinfer.org/dgm-fall-2025/"
+        >STAT 453</a
+      >
     </span>
 
     <nav class="site-nav">
       <input type="checkbox" id="nav-trigger" class="nav-trigger" />
-        <label for="nav-trigger">
-          <span class="menu-icon">
-            <svg viewBox="0 0 18 15" width="18px" height="15px">
-              <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
-              <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
-              <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
-            </svg>
-          </span>
-        </label>
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path
+              fill="#424242"
+              d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
+            />
+            <path
+              fill="#424242"
+              d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
+            />
+            <path
+              fill="#424242"
+              d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
+            />
+          </svg>
+        </span>
+      </label>
 
       <div class="trigger">
-        <a class="page-link" href="/dgm-fall-2025/logistics/">logistics</a>
-        <a class="page-link" href="/dgm-fall-2025/lectures/">lectures</a>
+        <a class="page-link" href="/dgm-fall-2025/logistics/"
+          >logistics</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/lectures/"
+          >lectures</a
+        >
         <a class="page-link" href="/dgm-fall-2025/notes/">notes</a>
-        <a class="page-link" href="/dgm-fall-2025/calendar/">calendar</a>
-        <a class="page-link" href="/dgm-fall-2025/homework/">homework</a>
+        <a class="page-link" href="/dgm-fall-2025/calendar/"
+          >calendar</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/homework/"
+          >homework</a
+        >
         <a class="page-link" href="/dgm-fall-2025/project/">project</a>
       </div>
     </nav>
-
   </div>
-
 </header>
 
 
-
     <div class="page-content">
-
       <d-title>
         <h1>Lecture Notes Template</h1>
         <p>An example of a distill-style lecture notes that showcases the main elements.</p>
@@ -127,8 +149,7 @@
 
       <d-byline></d-byline>
 
-      <d-article>
-        <h2 id="equations">Equations</h2>
+      <d-article> <h2 id="equations">Equations</h2>
 
 <p>This theme supports rendering beautiful math in inline and display modes using <a href="https://khan.github.io/KaTeX/">KaTeX</a> engine.
 You just need to surround your math expression with <code class="language-plaintext highlighter-rouge">$</code>, like <code class="language-plaintext highlighter-rouge">$ E = mc^2 $</code>.
@@ -185,6 +206,7 @@ For more on this, see layouts section below.
 Also, the size of the images themselves is controlled by <code class="language-plaintext highlighter-rouge">class="one"</code>, <code class="language-plaintext highlighter-rouge">class="two"</code>, or <code class="language-plaintext highlighter-rouge">class="three"</code> which corresponds to 1/3, 2/3, 3/3 of the full horizontal space, respectively.</p>
 
 <p>Here is the same example, but each image is captioned separately:</p>
+
 <figure id="example-figure" class="l-body-outset">
   <div class="row">
     <div class="col one">
@@ -323,9 +345,9 @@ It is possible to input any UTF-8 character either directly or by character code
 using one of the following:
 
 \begin{itemize}
-    \item \texttt{\textbackslash symbol\{"00A9\}}: \symbol{"00A9}
-    \item \verb|\char"A9|: \char"A9
-    \item \verb|^^A9 or ^^^^00A9|: ^^A9 or ^^^^00A9
+\item \texttt{\textbackslash symbol\{"00A9\}}: \symbol{"00A9}
+\item \verb|\char"A9|: \char"A9
+\item \verb|^^A9 or ^^^^00A9|: ^^A9 or ^^^^00A9
 \end{itemize}
 
 \bigskip
@@ -333,7 +355,7 @@ using one of the following:
 \noindent
 Special characters, like those:
 \begin{center}
-\$ \&amp; \% \# \_ \{ \} \~{} \^{} \textbackslash % \&lt; \&gt;  \"   % TODO cannot be typeset
+\$ \&amp; \% \# \_ \{ \} \~{} \^{} \textbackslash % \&lt; \&gt; \" % TODO cannot be typeset
 \end{center}
 %
 have to be escaped.
@@ -353,30 +375,30 @@ The \texttt{itemize} environment is suitable for simple lists, the \texttt{enume
 enumerated lists, and the \texttt{description} environment for descriptions.
 
 \begin{enumerate}
-    \item You can nest the list environments to your taste:
-        \begin{itemize}
-            \item But it might start to look silly.
-            \item[-] With a dash.
-        \end{itemize}
-    \item Therefore remember: \label{remember}
-        \begin{description}
-            \item[Stupid] things will not become smart because they are in a list.
-            \item[Smart] things, though, can be presented beautifully in a list.
-        \end{description}
-    \item Technical note: Viewing this in Chrome, however, will show too much vertical space
-        at the end of a nested environment (see above). On top of that, margin collapsing for inline-block
-        boxes is not allowed. Maybe using \texttt{dl} elements is too complicated for this and a simple nested
-        \texttt{div} should be used instead.
+\item You can nest the list environments to your taste:
+\begin{itemize}
+\item But it might start to look silly.
+\item[-] With a dash.
+\end{itemize}
+\item Therefore remember: \label{remember}
+\begin{description}
+\item[Stupid] things will not become smart because they are in a list.
+\item[Smart] things, though, can be presented beautifully in a list.
+\end{description}
+\item Technical note: Viewing this in Chrome, however, will show too much vertical space
+at the end of a nested environment (see above). On top of that, margin collapsing for inline-block
+boxes is not allowed. Maybe using \texttt{dl} elements is too complicated for this and a simple nested
+\texttt{div} should be used instead.
 \end{enumerate}
 %
 Lists can be deeply nested:
 %
 \begin{itemize}
-  \item list text, level one
-    \begin{itemize}
-      \item list text, level two
-        \begin{itemize}
-          \item list text, level three
+\item list text, level one
+\begin{itemize}
+\item list text, level two
+\begin{itemize}
+\item list text, level three
 
             And a new paragraph can be started, too.
             \begin{itemize}
@@ -392,8 +414,9 @@ Lists can be deeply nested:
         \end{itemize}
       \item list text, level two
     \end{itemize}
-  \item list text, level one
-  \item list text, level one
+
+\item list text, level one
+\item list text, level one
 \end{itemize}
 
 \section{Mathematical Formulae}
@@ -403,6 +426,7 @@ $
 f(x) = \int_{-\infty}^\infty \hat f(\xi)\,e^{2 \pi i \xi x} \, d\xi
 $
 as well as display math is supported:
+
 $$
 f(n) = \begin{cases} \frac{n}{2}, &amp; \text{if } n\text{ is even} \\ 3n+1, &amp; \text{if } n\text{ is odd} \end{cases}
 $$
@@ -418,45 +442,54 @@ $$
 <h2 id="print">Print</h2>
 
 <p>Finally, you can easily get a PDF or printed version of the notes by simply hitting <code class="language-plaintext highlighter-rouge">ctrl+P</code> (or <code class="language-plaintext highlighter-rouge">⌘+P</code> on macOS).</p>
-
-      </d-article>
+ </d-article>
 
       <d-appendix>
         <d-footnote-list></d-footnote-list>
         <d-citation-list></d-citation-list>
       </d-appendix>
-
     </div>
 
     <footer class="site-footer">
-
   <div class="wrapper">
-
     <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
 
     <div class="footer-col-wrapper">
       <div class="footer-col footer-col-1">
         <ul class="contact-list">
-          <li class="p-name">Ben Lengerich</li><li><a class="u-email" href="mailto:TBD@wisc.edu">TBD@wisc.edu</a></li></ul>
+          <li class="p-name">Ben Lengerich</li><li>
+            <a class="u-email" href="mailto:TBD@wisc.edu"
+              >TBD@wisc.edu</a
+            >
+          </li></ul>
       </div>
 
-      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/AdaptInfer" target="_blank"><i class="fab fa-github"></i> <span class="username">AdaptInfer</span></a></li></ul>
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li>
+    <a
+      href="https://github.com/AdaptInfer"
+      target="_blank"
+      ><i class="fab fa-github"></i>
+      <span class="username">AdaptInfer</span></a
+    >
+  </li></ul>
 </div>
 
       <div class="footer-col footer-col-3">
-        <p>&copy; Copyright 2025 University of Wisconsin. <br />
+        <p>
+          &copy; Copyright 2025 University of Wisconsin.
+          <br />
+          
         </p>
       </div>
     </div>
-
   </div>
-
 </footer>
-
 
   </body>
 
-  <d-bibliography src="/dgm-fall-2025/assets/bibliography/2019-01-09-lecture-notes-template.bib">
+  <d-bibliography
+    src="/dgm-fall-2025/assets/bibliography/2019-01-09-lecture-notes-template.bib"
+  >
   </d-bibliography>
 
   <!-- Load jQuery -->
@@ -467,39 +500,58 @@ $$
 
 
 <!-- Load KaTeX -->
-<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css">
+<link
+  rel="stylesheet"
+  href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css"
+/>
 <script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
 <script src="/dgm-fall-2025/assets/js/katex.js"></script>
-
-
-
+ 
 <!-- Load Anchor JS -->
 <script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
 <script>
-  anchors.options.visible = 'hover';
-  anchors.add('article h2, article h3, article h4, article h5, article h6');
+  anchors.options.visible = "hover";
+  anchors.add("article h2, article h3, article h4, article h5, article h6");
 </script>
-
-
-
+ 
 <!-- Adjust LaTeX JS -->
 <script src="/dgm-fall-2025/assets/js/latex.js"></script>
 
 
 <!-- Include custom icon fonts -->
-<link rel="stylesheet" href="/dgm-fall-2025/assets/css/fontawesome-all.min.css">
-<link rel="stylesheet" href="/dgm-fall-2025/assets/css/academicons.min.css">
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2025/assets/css/fontawesome-all.min.css"
+/>
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2025/assets/css/academicons.min.css"
+/>
 
 <!-- Google Analytics -->
 <script>
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  (function (i, s, o, g, r, a, m) {
+    i["GoogleAnalyticsObject"] = r;
+    (i[r] =
+      i[r] ||
+      function () {
+        (i[r].q = i[r].q || []).push(arguments);
+      }),
+      (i[r].l = 1 * new Date());
+    (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+    a.async = 1;
+    a.src = g;
+    m.parentNode.insertBefore(a, m);
+  })(
+    window,
+    document,
+    "script",
+    "//www.google-analytics.com/analytics.js",
+    "ga",
+  );
 
-ga('create', '', 'auto');
-ga('send', 'pageview');
+  ga("create", "", "auto");
+  ga("send", "pageview");
 </script>
-
 
 </html>
