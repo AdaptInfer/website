@@ -1,0 +1,1 @@
+$(document).ready(function(){document.querySelectorAll("latex-js").forEach(o=>{var e=o.shadowRoot;Array.from(e.childNodes)[3].style.cssText="display: block"})});
