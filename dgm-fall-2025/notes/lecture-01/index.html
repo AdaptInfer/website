@@ -1,0 +1,578 @@
+<!doctype html>
+<html>
+  <head>
+    <head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="content-language" content="en" />
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <title>
+    STAT 453 | Lecture 01 - Course Introduction, Introduction to DL
+  </title>
+  <meta name="description" content="STAT 453 - University of Wisconsin-Madison - Fall 2025
+" />
+
+  <link
+    rel="shortcut icon"
+    href="/dgm-fall-2025/assets/img/favicon.ico"
+  />
+
+  <link rel="stylesheet" href="/dgm-fall-2025/assets/css/main.css" />
+  <link
+    rel="canonical"
+    href="/dgm-fall-2025/notes/lecture-01/"
+  />
+
+  
+  <!-- Load Latex JS -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+  
+</head>
+
+    <script src="/dgm-fall-2025/assets/js/distillpub/template.v2.js"></script>
+    <script src="/dgm-fall-2025/assets/js/distillpub/transforms.v2.js"></script>
+  </head>
+
+  <d-front-matter>
+    <script type="text/json">
+      {
+            "title": "Lecture 01 - Course Introduction, Introduction to DL",
+            "description": "Lecture",
+            "published": "September 5, 2025",
+            "lecturers": [
+              
+              {
+                "lecturer": "Ben Lengerich",
+                "lecturerURL": "https://adaptinfer.org/"
+              }
+              
+            ],
+            "authors": [
+              
+              {
+                "author": "Parv Singhal",
+                "authorURL": "https://github.com/IamParvSinghal"
+              },
+              
+              {
+                "author": "Bishop Devkota"
+              },
+              
+              {
+                "author": "Vikram Varikooty"
+              }
+              
+            ],
+            "editors": [
+              
+              {
+                "editor": "Editor 1"
+              }
+              
+            ],
+            "katex": {
+              "delimiters": [
+                {
+                  "left": "$",
+                  "right": "$",
+                  "display": false
+                },
+                {
+                  "left": "$$",
+                  "right": "$$",
+                  "display": true
+                }
+              ]
+            }
+          }
+    </script>
+  </d-front-matter>
+
+  <body>
+    <header class="site-header">
+  <div class="wrapper">
+    <span class="site-title">
+      <a class="page-link" href="https://adaptinfer.org/dgm-fall-2025/"
+        >STAT 453</a
+      >
+    </span>
+
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path
+              fill="#424242"
+              d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
+            />
+            <path
+              fill="#424242"
+              d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
+            />
+            <path
+              fill="#424242"
+              d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
+            />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger">
+        <a class="page-link" href="/dgm-fall-2025/logistics/"
+          >logistics</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/lectures/"
+          >lectures</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/notes/">notes</a>
+        <a class="page-link" href="/dgm-fall-2025/calendar/"
+          >calendar</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/homework/"
+          >homework</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/project/">project</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+      <d-title>
+        <h1>Lecture 01 - Course Introduction, Introduction to DL</h1>
+        <p>Lecture</p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article> <h2 id="1-stat-453-overview">1. STAT 453 Overview</h2>
+<p>This course introduces the foundations of <strong>machine learning (ML)</strong> and <strong>deep learning (DL)</strong>, with a focus on <strong>generative models</strong>.</p>
+
+<h3 id="objectives-of-the-course">Objectives of the Course</h3>
+<ul>
+  <li>Provide a <strong>solid understanding</strong> of how machine learning works at both theoretical and practical levels.</li>
+  <li>Cover <strong>classical ML</strong> methods (e.g., regression, decision trees) and <strong>modern deep learning</strong> methods (CNNs, RNNs, transformers).</li>
+  <li>Introduce <strong>generative modeling</strong>, which is about teaching machines not only to recognize patterns but also to <strong>create new data</strong> (e.g., generating images, music, or text).</li>
+  <li>Prepare students for <strong>real-world applications</strong>: from healthcare and finance to natural language processing and creative AI.</li>
+  <li>Develop practical skills with <strong>Python libraries</strong> (NumPy, Pandas, PyTorch, Hugging Face).</li>
+</ul>
+
+<h3 id="learning-outcomes">Learning Outcomes</h3>
+<p>By the end of this course, you should be able to:</p>
+<ul>
+  <li>Understand how to frame problems as <strong>ML tasks</strong> (supervised, unsupervised, reinforcement).</li>
+  <li>Implement <strong>deep learning models</strong> for vision, audio, and text.</li>
+  <li>Build systems capable of <strong>image generation, style transfer, and text analysis</strong>.</li>
+  <li>Apply ML in <strong>research and projects</strong>, from predictive modeling to generative AI.</li>
+</ul>
+
+<hr />
+
+<h2 id="2-inspiration-example-projects-from-prior-years">2. Inspiration: Example Projects from Prior Years</h2>
+<p>Past student projects demonstrate the <strong>breadth and creativity</strong> of ML applications:</p>
+<ul>
+  <li><strong>Healthcare</strong>: Breast cancer detection using ultrasound, Chest X-ray diagnosis.</li>
+  <li><strong>Finance</strong>: Stock price prediction using LSTMs.</li>
+  <li><strong>Art and Music</strong>: Surrealist artwork with GANs, LSTM music generation, song generation.</li>
+  <li><strong>AI Tools</strong>: Sentiment analysis with BERT, Gradio apps with self-supervised learning.</li>
+</ul>
+
+<p>These examples show how ML can be <strong>applied across domains</strong>: predicting outcomes, generating creative content, analyzing language, or discovering insights in data.</p>
+
+<hr />
+
+<h2 id="3-about-the-instructor">3. About the Instructor</h2>
+<p><strong>Ben Lengerich</strong> focuses on <strong>contextualized models, interpretability, and biomedical AI</strong>.</p>
+<ul>
+  <li><strong>Key Research Themes</strong>:
+    <ul>
+      <li><em>Contextualized Models</em>: Adapting foundation models (like LLMs) for specific domains such as medicine.</li>
+      <li><em>Interpretability and Modularity</em>: Developing neural architectures that remain <strong>transparent</strong> (e.g., Neural Additive Models).</li>
+      <li><em>Biomedical Applications</em>: Discovering treatment effectiveness, modeling cancer biology, drug discovery.</li>
+    </ul>
+  </li>
+  <li><strong>Representative Papers</strong>:
+    <ul>
+      <li>Neural Additive Models (NeurIPS 2021).</li>
+      <li>RAG-IM for interpretable zero-shot clinical predictions (NeurIPS 2024 Workshop).</li>
+      <li>Automated discovery of heterogeneous treatment effectiveness (JBI 2022).</li>
+    </ul>
+  </li>
+</ul>
+
+<hr />
+
+<h2 id="4-the-ai-revolution">4. The AI Revolution</h2>
+<ul>
+  <li>AI is currently experiencing a <strong>transformative moment</strong>, particularly since <strong>2023–2024</strong> with the rise of <strong>Generative AI</strong> (ChatGPT, Stable Diffusion, Midjourney).</li>
+  <li>Key trends:
+    <ul>
+      <li><strong>Foundation Models</strong>: Pretrained on huge datasets, adaptable to many tasks.</li>
+      <li><strong>Diffusion Models</strong>: Generating hyper-realistic images.</li>
+      <li><strong>Large Language Models (LLMs)</strong>: Powering conversational agents, coding assistants, and multimodal systems.</li>
+    </ul>
+  </li>
+  <li>The course contextualizes learning within this <strong>rapidly evolving landscape</strong>, preparing you to use these tools and also understand the <strong>theory behind them</strong>.</li>
+</ul>
+
+<hr />
+
+<h2 id="5-course-logistics">5. Course Logistics</h2>
+<ul>
+  <li><strong>Textbook</strong>: <em>Machine Learning with PyTorch and Scikit-Learn</em> (Raschka et al., 2022).
+    <ul>
+      <li>Serves as a <strong>reference guide</strong>, not exam material.</li>
+    </ul>
+  </li>
+  <li><strong>Grading Breakdown</strong>:
+    <ul>
+      <li>Homework: <strong>20%</strong> (weekly, practical).</li>
+      <li>Midterm: <strong>20%</strong> (in-class, open-notes).</li>
+      <li>Final Exam: <strong>30%</strong> (comprehensive, open-notes).</li>
+      <li>Final Project: <strong>30%</strong> (team-based, creative).</li>
+      <li>Extra credit: up to <strong>+5%</strong> via lecture notes.</li>
+    </ul>
+  </li>
+  <li><strong>Late Policy</strong>: –10% per day late, up to 3 days –&gt; then <strong>not accepted</strong>.</li>
+  <li><strong>Academic Integrity</strong>:
+    <ul>
+      <li>AI tools allowed for assignments, but <strong>must reflect your own understanding</strong>.</li>
+      <li>Plagiarism and misconduct lead to penalties.</li>
+    </ul>
+  </li>
+</ul>
+
+<figure id="example-figure" class="l-body-outset">
+  <div class="col one">
+    <img src="assets\img\notes\lecture-01\diagram1.png" />
+  </div>
+</figure>
+
+<hr />
+
+<h2 id="6-what-is-machine-learning">6. What is Machine Learning?</h2>
+<h3 id="definition-tom-mitchell-1997">Definition (Tom Mitchell, 1997)</h3>
+<p>A program is said to <strong>learn</strong> from experience <strong>E</strong>, with respect to a task <strong>T</strong>, and a performance measure <strong>P</strong>, if performance on <strong>T</strong> (as measured by <strong>P</strong>) improves with <strong>E</strong>.</p>
+
+<p><strong>Example</strong>:</p>
+<ul>
+  <li><strong>T</strong>: Spam detection.</li>
+  <li><strong>E</strong>: Emails labeled as “spam” or “not spam.”</li>
+  <li><strong>P</strong>: Accuracy of predictions.
+If accuracy improves as the system sees more labeled emails, it is <strong>learning</strong>.</li>
+</ul>
+
+<hr />
+
+<h2 id="7-three-fundamental-questions-in-ml">7. Three Fundamental Questions in ML</h2>
+<ol>
+  <li><strong>Representation</strong> – How do we describe the world?
+    <ul>
+      <li>E.g., using features, probability distributions, or graphs.</li>
+      <li>Can be deterministic or probabilistic.</li>
+    </ul>
+  </li>
+  <li><strong>Inference</strong> – How do we answer questions using the model?
+    <ul>
+      <li>E.g., computing probabilities using Bayes’ rule.</li>
+      <li>Example: given symptoms, infer the probability of a disease.</li>
+    </ul>
+  </li>
+  <li><strong>Learning</strong> – How do we find the “best” model?
+    <ul>
+      <li>Optimize parameters to maximize performance.</li>
+      <li>Example: choosing the hypothesis that best fits training data.</li>
+    </ul>
+  </li>
+</ol>
+
+<p><strong>Probabilistic View</strong>:</p>
+<ul>
+  <li>Representation = joint distribution of all variables.</li>
+  <li>Inference = computing conditional probabilities.</li>
+  <li>Learning = constraining the hypothesis space for efficient optimization.</li>
+</ul>
+
+<figure id="example-figure" class="l-body-outset">
+  <div class="col one">
+    <img src="assets/img/notes/lecture-01/bioexample.png" />
+  </div>
+</figure>
+
+<hr />
+
+<h2 id="8-broad-categories-of-ml">8. Broad Categories of ML</h2>
+<h3 id="a-supervised-learning">(a) Supervised Learning</h3>
+<ul>
+  <li>Uses <strong>labeled data</strong> (X, Y).</li>
+  <li>Goal: learn function <strong>h: X –&gt; Y</strong>.</li>
+  <li>Examples:
+    <ul>
+      <li><strong>Regression</strong>: Predict house prices.</li>
+      <li><strong>Classification</strong>: Spam filtering, medical diagnosis.</li>
+    </ul>
+  </li>
+  <li><strong>Performance</strong>: Measured by error rate, accuracy, MSE, etc.</li>
+</ul>
+
+<figure id="example-figure" class="l-body-outset">
+  <div class="col one">
+    <img src="assets\img\notes\lecture-01\supervised.png" />
+  </div>
+</figure>
+
+<h3 id="b-unsupervised-learning">(b) Unsupervised Learning</h3>
+<ul>
+  <li>Uses <strong>unlabeled data</strong> (X only).</li>
+  <li>Goal: discover <strong>hidden structure</strong>.</li>
+  <li>Examples:
+    <ul>
+      <li><strong>Dimensionality Reduction</strong>: PCA, autoencoders.</li>
+      <li><strong>Clustering</strong>: Group customers by shopping habits.</li>
+    </ul>
+  </li>
+  <li>Useful for <strong>exploration, compression, feature learning</strong>.</li>
+</ul>
+
+<figure id="example-figure" class="l-body-outset">
+  <div class="col one">
+    <img src="assets\img\notes\lecture-01\reinforcement.png" />
+  </div>
+</figure>
+
+<h3 id="c-reinforcement-learning">(c) Reinforcement Learning</h3>
+<ul>
+  <li>Agent interacts with <strong>environment</strong>.</li>
+  <li>Learns a <strong>policy π: S –&gt; A</strong> to maximize reward.</li>
+  <li>Examples:
+    <ul>
+      <li>Game-playing agents (AlphaGo).</li>
+      <li>Robotics control.</li>
+      <li>Drug discovery.</li>
+    </ul>
+
+    <figure id="example-figure" class="l-body-outset">
+<div class="col one">
+  <img src="assets\img\notes\lecture-01\unsupervised.png" />
+</div>
+</figure>
+  </li>
+</ul>
+<p>&lt;/figure&gt;</p>
+
+<h3 id="d-semi-supervised-learning">(d) Semi-Supervised Learning</h3>
+<ul>
+  <li>Mix of labeled + unlabeled data.</li>
+  <li>Example: Training with a few labeled medical images, plus many unlabeled ones.</li>
+</ul>
+
+<h3 id="e-self-supervised-learning">(e) Self-Supervised Learning</h3>
+<ul>
+  <li>Labels are generated <strong>from the data itself</strong>.</li>
+  <li>Example: Predicting missing words in a sentence (basis of modern LLM training).</li>
+</ul>
+
+<hr />
+
+<h2 id="9-the-supervised-learning-workflow">9. The Supervised Learning Workflow</h2>
+<ol>
+  <li><strong>Collect Data</strong> – Gather examples (features + labels).</li>
+  <li><strong>Preprocess and Feature Extraction</strong> – Convert raw data into meaningful features.</li>
+  <li><strong>Split Data</strong> – Into <strong>training</strong>, <strong>validation</strong>, and <strong>test</strong> sets.</li>
+  <li><strong>Train Model</strong> – Learn parameters from training data.</li>
+  <li><strong>Evaluate Model</strong> – Use test set to measure generalization.</li>
+  <li><strong>Deploy and Infer</strong> – Apply model to unseen data.</li>
+</ol>
+
+<p><strong>Golden Rule</strong>: Never train and test on the same data –&gt; leads to overfitting.</p>
+
+<hr />
+
+<h2 id="10-machine-learning-vs-deep-learning">10. Machine Learning vs Deep Learning</h2>
+<ul>
+  <li><strong>Traditional ML</strong>:
+    <ul>
+      <li>Works best on <strong>structured/tabular data</strong> (databases, spreadsheets).</li>
+      <li>Requires <strong>manual feature engineering</strong>.</li>
+      <li>Examples: Logistic regression, Random Forests.</li>
+    </ul>
+  </li>
+  <li><strong>Deep Learning</strong>:
+    <ul>
+      <li>Excels on <strong>unstructured data</strong> (images, text, audio).</li>
+      <li>Learns <strong>representations automatically</strong> through layers of abstraction.</li>
+      <li>Examples: CNNs, RNNs, Transformers.</li>
+    </ul>
+  </li>
+</ul>
+
+<hr />
+
+<h2 id="11-structured-vs-unstructured-data">11. Structured vs Unstructured Data</h2>
+<ul>
+  <li><strong>Structured Data</strong>:
+    <ul>
+      <li>Well-organized, rows and columns.</li>
+      <li>Example: Customer transactions, census data.</li>
+    </ul>
+  </li>
+  <li><strong>Unstructured Data</strong>:
+    <ul>
+      <li>Raw and complex formats.</li>
+      <li>Example: Images (pixel arrays), audio (waveforms), text (sequences).</li>
+    </ul>
+  </li>
+  <li><strong>Why DL matters</strong>: Deep learning is designed to handle the complexity of unstructured data.</li>
+</ul>
+
+<hr />
+
+<h2 id="12-core-ml-jargon">12. Core ML Jargon</h2>
+<ul>
+  <li><strong>Training a Model</strong>: Fitting parameters using data.</li>
+  <li><strong>Training Example</strong>: One input-output pair (x, y).</li>
+  <li><strong>Feature</strong>: Input variable (predictor, attribute, covariate).</li>
+  <li><strong>Target</strong>: The label/output to predict (ground truth).</li>
+  <li><strong>Prediction</strong>: Model’s output for a given input.</li>
+</ul>
+
+<hr />
+
+<h2 id="13-scientific-python-ecosystem">13. Scientific Python Ecosystem</h2>
+<ul>
+  <li><strong>Numpy</strong>: Numerical computations.</li>
+  <li><strong>Pandas</strong>: Data manipulation and tabular handling.</li>
+  <li><strong>Scikit-Learn</strong>: Classical ML algorithms.</li>
+  <li><strong>PyTorch</strong>: Deep learning framework.</li>
+  <li><strong>Matplotlib/Seaborn</strong>: Visualization.</li>
+  <li><strong>Hugging Face Transformers</strong>: Pre-trained models for NLP and beyond.</li>
+</ul>
+
+<hr />
+
+<h2 id="14-further-resources">14. Further Resources</h2>
+<ul>
+  <li>Blog: <a href="https://sebastianraschka.com/blog/2020/intro-to-dl-ch01.html">Intro to Deep Learning</a> – by Sebastian Raschka.</li>
+  <li>STAT451 lecture notes: <a href="https://github.com/rasbt/stat451-machine-learning-fs20/blob/master/L01/01-ml-overview__notes.pdf">GitHub Repo</a>.</li>
+  <li>Book: <em>Python Machine Learning</em> (Raschka, 2019, 3rd Ed.).</li>
+</ul>
+
+<hr />
+ </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+    </div>
+
+    <footer class="site-footer">
+  <div class="wrapper">
+    <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Ben Lengerich</li><li>
+            <a class="u-email" href="mailto:TBD@wisc.edu"
+              >TBD@wisc.edu</a
+            >
+          </li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li>
+    <a
+      href="https://github.com/AdaptInfer"
+      target="_blank"
+      ><i class="fab fa-github"></i>
+      <span class="username">AdaptInfer</span></a
+    >
+  </li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>
+          &copy; Copyright 2025 University of Wisconsin.
+          <br />
+          
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  </body>
+
+  <d-bibliography
+    src="/dgm-fall-2025/assets/bibliography/2025-09-05-lecture-01.bib"
+  >
+  </d-bibliography>
+
+  <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/dgm-fall-2025/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link
+  rel="stylesheet"
+  href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css"
+/>
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+<script src="/dgm-fall-2025/assets/js/katex.js"></script>
+ 
+<!-- Load Anchor JS -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+<script>
+  anchors.options.visible = "hover";
+  anchors.add("article h2, article h3, article h4, article h5, article h6");
+</script>
+ 
+<!-- Adjust LaTeX JS -->
+<script src="/dgm-fall-2025/assets/js/latex.js"></script>
+
+
+<!-- Include custom icon fonts -->
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2025/assets/css/fontawesome-all.min.css"
+/>
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2025/assets/css/academicons.min.css"
+/>
+
+<!-- Google Analytics -->
+<script>
+  (function (i, s, o, g, r, a, m) {
+    i["GoogleAnalyticsObject"] = r;
+    (i[r] =
+      i[r] ||
+      function () {
+        (i[r].q = i[r].q || []).push(arguments);
+      }),
+      (i[r].l = 1 * new Date());
+    (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+    a.async = 1;
+    a.src = g;
+    m.parentNode.insertBefore(a, m);
+  })(
+    window,
+    document,
+    "script",
+    "//www.google-analytics.com/analytics.js",
+    "ga",
+  );
+
+  ga("create", "", "auto");
+  ga("send", "pageview");
+</script>
+
+</html>
