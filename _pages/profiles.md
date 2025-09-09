@@ -14,7 +14,7 @@ profiles:
     content: people/lengerich.md
     image_circular: false # crops the image to make it circular
     more_info: >
-      <p>7278 Medical Sciences Center</p>
+      <p>5588 Morgridge Hall</p>
       <p><a href=https://benlengerich.com>Personal website</a></p>
 
   - align: left
