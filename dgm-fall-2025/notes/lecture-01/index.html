@@ -151,9 +151,11 @@
       <d-byline></d-byline>
 
       <d-article> <h2 id="1-stat-453-overview">1. STAT 453 Overview</h2>
+
 <p>This course introduces the foundations of <strong>machine learning (ML)</strong> and <strong>deep learning (DL)</strong>, with a focus on <strong>generative models</strong>.</p>
 
 <h3 id="objectives-of-the-course">Objectives of the Course</h3>
+
 <ul>
   <li>Provide a <strong>solid understanding</strong> of how machine learning works at both theoretical and practical levels.</li>
   <li>Cover <strong>classical ML</strong> methods (e.g., regression, decision trees) and <strong>modern deep learning</strong> methods (CNNs, RNNs, transformers).</li>
@@ -163,7 +165,9 @@
 </ul>
 
 <h3 id="learning-outcomes">Learning Outcomes</h3>
+
 <p>By the end of this course, you should be able to:</p>
+
 <ul>
   <li>Understand how to frame problems as <strong>ML tasks</strong> (supervised, unsupervised, reinforcement).</li>
   <li>Implement <strong>deep learning models</strong> for vision, audio, and text.</li>
@@ -174,7 +178,9 @@
 <hr />
 
 <h2 id="2-inspiration-example-projects-from-prior-years">2. Inspiration: Example Projects from Prior Years</h2>
+
 <p>Past student projects demonstrate the <strong>breadth and creativity</strong> of ML applications:</p>
+
 <ul>
   <li><strong>Healthcare</strong>: Breast cancer detection using ultrasound, Chest X-ray diagnosis.</li>
   <li><strong>Finance</strong>: Stock price prediction using LSTMs.</li>
@@ -187,7 +193,9 @@
 <hr />
 
 <h2 id="3-about-the-instructor">3. About the Instructor</h2>
+
 <p><strong>Ben Lengerich</strong> focuses on <strong>contextualized models, interpretability, and biomedical AI</strong>.</p>
+
 <ul>
   <li><strong>Key Research Themes</strong>:
     <ul>
@@ -208,6 +216,7 @@
 <hr />
 
 <h2 id="4-the-ai-revolution">4. The AI Revolution</h2>
+
 <ul>
   <li>AI is currently experiencing a <strong>transformative moment</strong>, particularly since <strong>2023–2024</strong> with the rise of <strong>Generative AI</strong> (ChatGPT, Stable Diffusion, Midjourney).</li>
   <li>Key trends:
@@ -223,6 +232,7 @@
 <hr />
 
 <h2 id="5-course-logistics">5. Course Logistics</h2>
+
 <ul>
   <li><strong>Textbook</strong>: <em>Machine Learning with PyTorch and Scikit-Learn</em> (Raschka et al., 2022).
     <ul>
@@ -256,10 +266,13 @@
 <hr />
 
 <h2 id="6-what-is-machine-learning">6. What is Machine Learning?</h2>
+
 <h3 id="definition-tom-mitchell-1997">Definition (Tom Mitchell, 1997)</h3>
+
 <p>A program is said to <strong>learn</strong> from experience <strong>E</strong>, with respect to a task <strong>T</strong>, and a performance measure <strong>P</strong>, if performance on <strong>T</strong> (as measured by <strong>P</strong>) improves with <strong>E</strong>.</p>
 
 <p><strong>Example</strong>:</p>
+
 <ul>
   <li><strong>T</strong>: Spam detection.</li>
   <li><strong>E</strong>: Emails labeled as “spam” or “not spam.”</li>
@@ -270,20 +283,26 @@ If accuracy improves as the system sees more labeled emails, it is <strong>learn
 <hr />
 
 <h2 id="7-three-fundamental-questions-in-ml">7. Three Fundamental Questions in ML</h2>
+
 <ol>
-  <li><strong>Representation</strong> – How do we describe the world?
+  <li>
+    <p><strong>Representation</strong> – How do we describe the world?</p>
+
     <ul>
       <li>E.g., using features, probability distributions, or graphs.</li>
       <li>Can be deterministic or probabilistic.</li>
     </ul>
   </li>
-  <li><strong>Inference</strong> – How do we answer questions using the model?
+  <li>
+    <p><strong>Inference</strong> – How do we answer questions using the model?</p>
+
     <ul>
       <li>E.g., computing probabilities using Bayes’ rule.</li>
       <li>Example: given symptoms, infer the probability of a disease.</li>
     </ul>
   </li>
-  <li><strong>Learning</strong> – How do we find the “best” model?
+  <li>
+    <p><strong>Learning</strong> – How do we find the “best” model?</p>
     <ul>
       <li>Optimize parameters to maximize performance.</li>
       <li>Example: choosing the hypothesis that best fits training data.</li>
@@ -292,6 +311,7 @@ If accuracy improves as the system sees more labeled emails, it is <strong>learn
 </ol>
 
 <p><strong>Probabilistic View</strong>:</p>
+
 <ul>
   <li>Representation = joint distribution of all variables.</li>
   <li>Inference = computing conditional probabilities.</li>
@@ -307,7 +327,9 @@ If accuracy improves as the system sees more labeled emails, it is <strong>learn
 <hr />
 
 <h2 id="8-broad-categories-of-ml">8. Broad Categories of ML</h2>
+
 <h3 id="a-supervised-learning">(a) Supervised Learning</h3>
+
 <ul>
   <li>Uses <strong>labeled data</strong> (X, Y).</li>
   <li>Goal: learn function <strong>h: X –&gt; Y</strong>.</li>
@@ -327,6 +349,7 @@ If accuracy improves as the system sees more labeled emails, it is <strong>learn
 </figure>
 
 <h3 id="b-unsupervised-learning">(b) Unsupervised Learning</h3>
+
 <ul>
   <li>Uses <strong>unlabeled data</strong> (X only).</li>
   <li>Goal: discover <strong>hidden structure</strong>.</li>
@@ -346,32 +369,39 @@ If accuracy improves as the system sees more labeled emails, it is <strong>learn
 </figure>
 
 <h3 id="c-reinforcement-learning">(c) Reinforcement Learning</h3>
+
 <ul>
   <li>Agent interacts with <strong>environment</strong>.</li>
   <li>Learns a <strong>policy π: S –&gt; A</strong> to maximize reward.</li>
-  <li>Examples:
+  <li>
+    <p>Examples:</p>
+
     <ul>
       <li>Game-playing agents (AlphaGo).</li>
       <li>Robotics control.</li>
-      <li>Drug discovery.</li>
-    </ul>
+      <li>
+        <p>Drug discovery.</p>
 
-    <figure id="example-figure" class="l-body-outset">
+        <figure id="example-figure" class="l-body-outset">
 <div class="col one">
   <img src="../../assets/img/notes/lecture-01/unsupervised.png" />
 </div>
 </figure>
+      </li>
+    </ul>
+    <p>&lt;/figure&gt;</p>
   </li>
 </ul>
-<p>&lt;/figure&gt;</p>
 
 <h3 id="d-semi-supervised-learning">(d) Semi-Supervised Learning</h3>
+
 <ul>
   <li>Mix of labeled + unlabeled data.</li>
   <li>Example: Training with a few labeled medical images, plus many unlabeled ones.</li>
 </ul>
 
 <h3 id="e-self-supervised-learning">(e) Self-Supervised Learning</h3>
+
 <ul>
   <li>Labels are generated <strong>from the data itself</strong>.</li>
   <li>Example: Predicting missing words in a sentence (basis of modern LLM training).</li>
@@ -380,6 +410,7 @@ If accuracy improves as the system sees more labeled emails, it is <strong>learn
 <hr />
 
 <h2 id="9-the-supervised-learning-workflow">9. The Supervised Learning Workflow</h2>
+
 <ol>
   <li><strong>Collect Data</strong> – Gather examples (features + labels).</li>
   <li><strong>Preprocess and Feature Extraction</strong> – Convert raw data into meaningful features.</li>
@@ -394,15 +425,19 @@ If accuracy improves as the system sees more labeled emails, it is <strong>learn
 <hr />
 
 <h2 id="10-machine-learning-vs-deep-learning">10. Machine Learning vs Deep Learning</h2>
+
 <ul>
-  <li><strong>Traditional ML</strong>:
+  <li>
+    <p><strong>Traditional ML</strong>:</p>
+
     <ul>
       <li>Works best on <strong>structured/tabular data</strong> (databases, spreadsheets).</li>
       <li>Requires <strong>manual feature engineering</strong>.</li>
       <li>Examples: Logistic regression, Random Forests.</li>
     </ul>
   </li>
-  <li><strong>Deep Learning</strong>:
+  <li>
+    <p><strong>Deep Learning</strong>:</p>
     <ul>
       <li>Excels on <strong>unstructured data</strong> (images, text, audio).</li>
       <li>Learns <strong>representations automatically</strong> through layers of abstraction.</li>
@@ -414,6 +449,7 @@ If accuracy improves as the system sees more labeled emails, it is <strong>learn
 <hr />
 
 <h2 id="11-structured-vs-unstructured-data">11. Structured vs Unstructured Data</h2>
+
 <ul>
   <li><strong>Structured Data</strong>:
     <ul>
@@ -433,6 +469,7 @@ If accuracy improves as the system sees more labeled emails, it is <strong>learn
 <hr />
 
 <h2 id="12-core-ml-jargon">12. Core ML Jargon</h2>
+
 <ul>
   <li><strong>Training a Model</strong>: Fitting parameters using data.</li>
   <li><strong>Training Example</strong>: One input-output pair (x, y).</li>
@@ -444,6 +481,7 @@ If accuracy improves as the system sees more labeled emails, it is <strong>learn
 <hr />
 
 <h2 id="13-scientific-python-ecosystem">13. Scientific Python Ecosystem</h2>
+
 <ul>
   <li><strong>Numpy</strong>: Numerical computations.</li>
   <li><strong>Pandas</strong>: Data manipulation and tabular handling.</li>
@@ -456,6 +494,7 @@ If accuracy improves as the system sees more labeled emails, it is <strong>learn
 <hr />
 
 <h2 id="14-further-resources">14. Further Resources</h2>
+
 <ul>
   <li>Blog: <a href="https://sebastianraschka.com/blog/2020/intro-to-dl-ch01.html">Intro to Deep Learning</a> – by Sebastian Raschka.</li>
   <li>STAT451 lecture notes: <a href="https://github.com/rasbt/stat451-machine-learning-fs20/blob/master/L01/01-ml-overview__notes.pdf">GitHub Repo</a>.</li>
