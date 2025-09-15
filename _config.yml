@@ -229,6 +229,7 @@ exclude:
   - README.md
   - readme_preview/
   - vendor
+  - dgm-fall-2025/assets/hw/
 keep_files:
   - CNAME
   - .nojekyll
