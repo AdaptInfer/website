@@ -199,9 +199,8 @@
       <li>A vector is an <strong>n-by-1</strong> matrix, where <strong>n</strong> is the number of <strong>row</strong>, and <strong>1</strong> is the number of <strong>column</strong>.</li>
       <li>In deep learning, we often represent vectors as <strong>column vectors</strong>.</li>
       <li>The linear combination (pre-activation value) is written: $z = \mathbf{w}^\top \mathbf{x} + b$, where</li>
-    </ul>
-    <d-math block="">
-\mathbf{x} =
+      <li>
+\[\mathbf{x} =
 \begin{bmatrix}
 x_1 \\
 x_2 \\
@@ -219,47 +218,46 @@ w_m
 \end{bmatrix}
 \in \mathbb{R}^{m \times 1},
 \quad
-z \in \mathbb{R}
-</d-math>
+z \in \mathbb{R}\]
+      </li>
+    </ul>
   </li>
   <li><strong>Matrices:</strong>
     <ul>
       <li>A matrix is an <strong>n-by-m arrays</strong> of numbers, where <strong>n</strong> is the number of <strong>row</strong>, and <strong>m</strong> is the number of <strong>column</strong>.</li>
       <li>The linear combination is written: $\mathbf{z} = \mathbf{Xw} + b$, where</li>
     </ul>
-
-    <d-math block="">
-\mathbf{X} =
-\begin{bmatrix}
-x^{[1]}_1 &amp; x^{[1]}_2 &amp; \cdots &amp; x^{[1]}_m \\
-x^{[2]}_1 &amp; x^{[2]}_2 &amp; \cdots &amp; x^{[2]}_m \\
-\vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
-x^{[n]}_1 &amp; x^{[n]}_2 &amp; \cdots &amp; x^{[n]}_m
-\end{bmatrix}
-\in \mathbb{R}^{n \times m},
-\quad
-\mathbf{w} =
-\begin{bmatrix}
-w_1 \\
-w_2 \\
-\vdots \\
-w_m
-\end{bmatrix}
-\in \mathbb{R}^{m \times 1},
-\quad
-\mathbf{z} =
-\begin{bmatrix}
-z^{[1]} \\
-z^{[2]} \\
-\vdots \\
-z^{[n]}
-\end{bmatrix}
-\in \mathbb{R}^{n \times 1}
-</d-math>
-    <ul>
-      <li>Time Complexity of N-by-N matrices multiplication by naive algorithms: $O(n^3)$.</li>
-    </ul>
   </li>
+</ul>
+
+<p>\(\mathbf{X} =
+  \begin{bmatrix}
+  x^{[1]}_1 &amp; x^{[1]}_2 &amp; \cdots &amp; x^{[1]}_m \\
+  x^{[2]}_1 &amp; x^{[2]}_2 &amp; \cdots &amp; x^{[2]}_m \\
+  \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+  x^{[n]}_1 &amp; x^{[n]}_2 &amp; \cdots &amp; x^{[n]}_m
+  \end{bmatrix}
+  \in \mathbb{R}^{n \times m},
+  \quad
+  \mathbf{w} =
+  \begin{bmatrix}
+  w_1 \\
+  w_2 \\
+  \vdots \\
+  w_m
+  \end{bmatrix}
+  \in \mathbb{R}^{m \times 1},
+  \quad
+  \mathbf{z} =
+  \begin{bmatrix}
+  z^{[1]} \\
+  z^{[2]} \\
+  \vdots \\
+  z^{[n]}
+  \end{bmatrix}
+  \in \mathbb{R}^{n \times 1}\)</p>
+<ul>
+  <li>Time Complexity of N-by-N matrices multiplication by naive algorithms: $O(n^3)$.</li>
   <li><strong>Broadcasting:</strong>
     <ul>
       <li>The rigorous math formula of linear combination is: $\mathbf{z} = \mathbf{Xw} + \mathbf{1}_n b$.</li>
@@ -311,7 +309,7 @@ $P(X = x) = \theta^x (1-\theta)^{1-x}, \; x \in {0,1}$.
 $f(x) = \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}$
             <ul>
               <li>Called <strong>“Normal”</strong> because of the <strong>Central Limit Theorem</strong>.</li>
-              <li><strong>Standard Normal:</strong> when $ \mu (mean) = 0, \sigma (standard deviation) = 1 $.</li>
+              <li><strong>Standard Normal:</strong> when $\mu= 0, \sigma= 1$.</li>
             </ul>
           </li>
         </ul>
@@ -320,8 +318,8 @@ $f(x) = \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}$
   </li>
   <li><strong>Central Limit Theorem (CLT):</strong>
     <ul>
-      <li>Let $X_1, X_2, \ldots, X_n$ be independent and identically distributed (i.i.d.) random variables with mean $\mu$ and variance $\sigma^2$.</li>
-      <li>Define the <strong>sample mean</strong>:$\bar{X}_n = \frac{1}{n}(X_1 + X_2 + \cdots + X_n)$</li>
+      <li>Let $X_1, X_2, \ldots, X_n$ be independent and identically distributed (i.i.d.) random variables with mean $\mu$ and finite variance $\sigma^2$.</li>
+      <li>Define the <strong>sample mean</strong>: $\bar{X}_n = \frac{1}{n}(X_1 + X_2 + \cdots + X_n)$</li>
       <li>Then we have: $\frac{\bar{X}_n - \mu}{\frac{\sigma}{\sqrt{n}}} \to N(0,1)$ as $n \to \infty$</li>
     </ul>
   </li>
@@ -391,8 +389,11 @@ $f(x) = \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}$
   </li>
   <li><strong>Bayes’Rule:</strong>
     <ul>
-      <li>$ P(A \mid B) = \frac{P(B \mid A) P(A)}{P(B)} $</li>
-      <li>Example: Medical Test:
+      <li>
+        <p>$P(A \mid B) = \frac{P(B \mid A) P(A)}{P(B)}$</p>
+      </li>
+      <li>
+        <p>Example: Medical Test:</p>
         <ul>
           <li>$P(\text{disease} \mid \text{positive test}) = \frac{P(\text{positive test} \mid \text{disease}) \, P(\text{disease})} {P(\text{positive test})} $</li>
         </ul>
@@ -418,44 +419,37 @@ $f(x) = \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}$
     <ul>
       <li><strong>Definition:</strong></li>
     </ul>
+  </li>
+</ul>
 
-    <d-math block="">
-  
-\hat{\theta}_{\text{MAP}}
-= \arg\max{\theta} P(\theta \mid \text{data})
-= \arg\max_{\theta} P(\text{data} \mid \theta),P(\theta).
-</d-math>
+\[\hat{\theta}_{\text{MAP}}
+= \arg\max_{\theta} P(\theta \mid \text{data})
+= \arg\max_{\theta} \big[ P(\text{data} \mid \theta)\, P(\theta) \big].\]
 
-    <ul>
-      <li><strong>Interpretation:</strong><br />
+<ul>
+  <li><strong>Interpretation:</strong><br />
 MLE chooses $\theta$ that makes the observed data most “likely.”</li>
-      <li><strong>Log-likelihood:</strong></li>
-    </ul>
+  <li><strong>Log-likelihood:</strong></li>
+</ul>
 
-    <d-math block="">
-   
- \ell(\theta)
- = \log L(\theta)
- = \sum_i \Big[ x_i \log \theta + (1-x_i)\log(1-\theta) \Big].
- </d-math>
+\[\ell(\theta)
+   = \log L(\theta)
+   = \sum_i \Big[ x_i \log \theta + (1-x_i)\log(1-\theta) \Big].
+   &lt;/d-math&gt;\]
 
-    <ul>
-      <li><strong>Example (Bernoulli):</strong><br />
+<ul>
+  <li><strong>Example (Bernoulli):</strong><br />
 Suppose we observe $k$ successes in $n$ Bernoulli trials. Then</li>
-    </ul>
+</ul>
 
-    <d-math block="">
- \hat{\theta}_{\text{MLE}} = \frac{k}{n}.
- </d-math>
+\[\hat{\theta}_{\text{MLE}} = \frac{k}{n}.\]
 
+<ul>
+  <li><strong>Notes:</strong>
     <ul>
-      <li><strong>Notes:</strong>
-        <ul>
-          <li>MLE does not always exist.</li>
-          <li>MLE may not be unique.</li>
-          <li>MLE may not always be admissible.</li>
-        </ul>
-      </li>
+      <li>MLE does not always exist.</li>
+      <li>MLE may not be unique.</li>
+      <li>MLE may not always be admissible.</li>
     </ul>
   </li>
   <li>
@@ -464,18 +458,17 @@ Suppose we observe $k$ successes in $n$ Bernoulli trials. Then</li>
     <ul>
       <li><strong>Definition:</strong></li>
     </ul>
+  </li>
+</ul>
 
-    <d-math block="">
-  
-\hat{\theta}{\text{MAP}}
-= \arg\max{\theta} P(\theta \mid \text{data})
-= \arg\max_{\theta} P(\text{data} \mid \theta),P(\theta).
-</d-math>
+\[\hat{\theta}{\text{MAP}}
+  = \arg\max{\theta} P(\theta \mid \text{data})
+  = \arg\max_{\theta} P(\text{data} \mid \theta),P(\theta).\]
 
-    <ul>
-      <li>MAP incorporates a <strong>prior distribution</strong> $P(\theta)$.</li>
-      <li>MLE ignores the prior.</li>
-    </ul>
+<ul>
+  <li>MAP incorporates a <strong>prior distribution</strong> $P(\theta)$.</li>
+  <li>
+    <p>MLE ignores the prior.</p>
   </li>
   <li>
     <h4 id="regularization-as-map">Regularization as MAP</h4>
@@ -492,12 +485,10 @@ Suppose we observe $k$ successes in $n$ Bernoulli trials. Then</li>
 
 <p>Formally:</p>
 
-<d-math block="">
-  \hat{\theta}_{\text{reg}}
+\[\hat{\theta}_{\text{reg}}
   = \arg\max_{\theta} \Big[ \log L(\theta) - \lambda R(\theta) \Big]
   \quad\Longleftrightarrow\quad
-  \hat{\theta}_{\text{MAP}}
-  </d-math>
+  \hat{\theta}_{\text{MAP}}\]
 
 <h2 id="6-linear-regression">6. Linear Regression</h2>
 <p>Linear regression models the relationship between inputs (features) and outputs (responses).</p>
@@ -505,9 +496,7 @@ Suppose we observe $k$ successes in $n$ Bernoulli trials. Then</li>
 <ul>
   <li>
     <h4 id="model-definition">Model Definition</h4>
-    <d-math block="">
-y = X\beta + \epsilon
-</d-math>
+    <p>\(y = X\beta + \epsilon\)</p>
 
     <ul>
       <li>$y$: response variable (dependent variable).</li>
@@ -524,83 +513,76 @@ y = X\beta + \epsilon
     <ul>
       <li><strong>Coefficient of Determination ($R^2$):</strong></li>
     </ul>
-
-    <d-math block="">
-R^2 = 1 - \frac{SS_{\text{res}}}{SS_{\text{tot}}}
-</d-math>
-
-    <ul>
-      <li>
-        <p>Measures the proportion of variance in $y$ explained by the model.</p>
-      </li>
-      <li>
-        <p><strong>Mean Squared Error (MSE):</strong></p>
-      </li>
-    </ul>
-
-    <d-math block="">
-MSE = \frac{1}{n} \sum_i (y_i - \hat{y}_i)^2
-</d-math>
-
-    <ul>
-      <li><strong>Mean Absolute Error (MAE):</strong></li>
-    </ul>
-
-    <d-math block="">
-MAE = \frac{1}{n} \sum_i |y_i - \hat{y}_i|
-</d-math>
   </li>
+</ul>
+
+\[R^2 = 1 - \frac{SS_{\text{res}}}{SS_{\text{tot}}}\]
+
+<ul>
+  <li>
+    <p>Measures the proportion of variance in $y$ explained by the model.</p>
+  </li>
+  <li>
+    <p><strong>Mean Squared Error (MSE):</strong></p>
+  </li>
+</ul>
+
+\[MSE = \frac{1}{n} \sum_i (y_i - \hat{y}_i)^2\]
+
+<ul>
+  <li><strong>Mean Absolute Error (MAE):</strong></li>
+</ul>
+
+\[MAE = \frac{1}{n} \sum_i |y_i - \hat{y}_i|\]
+
+<ul>
   <li>
     <h4 id="ordinary-least-squares-ols">Ordinary Least Squares (OLS)</h4>
 
     <ul>
       <li><strong>Objective:</strong></li>
     </ul>
-
-    <d-math block="">
-\hat{\beta}_{\text{OLS}}
-= \arg\min_{\beta} \|y - X\beta\|^2
-</d-math>
-
-    <ul>
-      <li>
-        <p><strong>Residuals:</strong> $e_i = y_i - \hat{y}_i$.</p>
-      </li>
-      <li>
-        <p><strong>Closed-form solution:</strong></p>
-      </li>
-    </ul>
-
-    <d-math block="">
-\hat{\beta}_{\text{OLS}} = (X^TX)^{-1}X^Ty
-</d-math>
   </li>
+</ul>
+
+\[\hat{\beta}_{\text{OLS}}
+  = \arg\min_{\beta} \|y - X\beta\|^2\]
+
+<ul>
+  <li>
+    <p><strong>Residuals:</strong> $e_i = y_i - \hat{y}_i$.</p>
+  </li>
+  <li>
+    <p><strong>Closed-form solution:</strong></p>
+  </li>
+</ul>
+
+\[\hat{\beta}_{\text{OLS}} = (X^TX)^{-1}X^Ty\]
+
+<ul>
   <li>
     <h4 id="regularization-in-linear-regression">Regularization in Linear Regression</h4>
 
     <ul>
       <li><strong>Ridge Regression (L2):</strong></li>
     </ul>
-
-    <d-math block="">
-\hat{\beta}_{\text{ridge}}
-= \arg\min_{\beta} \|y - X\beta\|^2 + \lambda \|\beta\|_2^2
-</d-math>
-
-    <p>Equivalent MAP interpretation: Gaussian prior $\beta \sim N(0, \sigma^2I)$.</p>
-
-    <ul>
-      <li><strong>Lasso Regression (L1):</strong></li>
-    </ul>
-
-    <d-math block="">
- \hat{\beta}_{\text{lasso}}
- = \arg\min_{\beta} \|y - X\beta\|^2 + \lambda \|\beta\|_1
- </d-math>
-    <p>Equivalent MAP interpretation: Laplace prior $\beta \sim \text{Laplace}(0, b)$.<br />
-Encourages <strong>sparsity</strong> (many coefficients shrink to 0).</p>
   </li>
 </ul>
+
+\[\hat{\beta}_{\text{ridge}}
+  = \arg\min_{\beta} \|y - X\beta\|^2 + \lambda \|\beta\|_2^2\]
+
+<p>Equivalent MAP interpretation: Gaussian prior $\beta \sim N(0, \sigma^2I)$.</p>
+
+<ul>
+  <li><strong>Lasso Regression (L1):</strong></li>
+</ul>
+
+\[\hat{\beta}_{\text{lasso}}
+   = \arg\min_{\beta} \|y - X\beta\|^2 + \lambda \|\beta\|_1\]
+
+<p>Equivalent MAP interpretation: Laplace prior $\beta \sim \text{Laplace}(0, b)$.<br />
+  Encourages <strong>sparsity</strong> (many coefficients shrink to 0).</p>
  </d-article>
 
       <d-appendix>
