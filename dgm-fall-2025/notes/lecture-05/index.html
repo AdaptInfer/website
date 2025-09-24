@@ -1,0 +1,1183 @@
+<!doctype html>
+<html>
+  <head>
+    <head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="content-language" content="en" />
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <title>
+    STAT 453 | Lecture 05
+  </title>
+  <meta name="description" content="STAT 453 - University of Wisconsin-Madison - Fall 2025
+" />
+
+  <link
+    rel="shortcut icon"
+    href="/dgm-fall-2025/assets/img/favicon.ico"
+  />
+
+  <link rel="stylesheet" href="/dgm-fall-2025/assets/css/main.css" />
+  <link
+    rel="canonical"
+    href="/dgm-fall-2025/notes/lecture-05/"
+  />
+
+  
+  <!-- Load Latex JS -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+  
+</head>
+
+    <script src="/dgm-fall-2025/assets/js/distillpub/template.v2.js"></script>
+    <script src="/dgm-fall-2025/assets/js/distillpub/transforms.v2.js"></script>
+  </head>
+
+  <d-front-matter>
+    <script type="text/json">
+      {
+            "title": "Lecture 05",
+            "description": "Fitting Neurons with Gradient Descent",
+            "published": "September 17, 2025",
+            "lecturers": [
+              
+              {
+                "lecturer": "Ben Lengerich",
+                "lecturerURL": "https://lengerichlab.github.io/"
+              }
+              
+            ],
+            "authors": [
+              
+              {
+                "author": "Anna Schellin"
+              },
+              
+              {
+                "author": "Yuheng Mao"
+              },
+              
+              {
+                "author": "Flora He"
+              }
+              
+            ],
+            "editors": [
+              
+            ],
+            "katex": {
+              "delimiters": [
+                {
+                  "left": "$",
+                  "right": "$",
+                  "display": false
+                },
+                {
+                  "left": "$$",
+                  "right": "$$",
+                  "display": true
+                }
+              ]
+            }
+          }
+    </script>
+  </d-front-matter>
+
+  <body>
+    <header class="site-header">
+  <div class="wrapper">
+    <span class="site-title">
+      <a class="page-link" href="https://adaptinfer.org/dgm-fall-2025/"
+        >STAT 453</a
+      >
+    </span>
+
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path
+              fill="#424242"
+              d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
+            />
+            <path
+              fill="#424242"
+              d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
+            />
+            <path
+              fill="#424242"
+              d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
+            />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger">
+        <a class="page-link" href="/dgm-fall-2025/logistics/"
+          >logistics</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/lectures/"
+          >lectures</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/notes/">notes</a>
+        <a class="page-link" href="/dgm-fall-2025/calendar/"
+          >calendar</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/homework/"
+          >homework</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/project/">project</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+      <d-title>
+        <h1>Lecture 05</h1>
+        <p>Fitting Neurons with Gradient Descent</p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article> <h2 id="lecture-overview">Lecture Overview</h2>
+
+<ol>
+  <li>Online, batch, and minibatch mode</li>
+  <li>Relation between percetron and linear regression</li>
+  <li>An iterative training algorithm for linear regression</li>
+  <li>Calculus Refresher I: Derivatives</li>
+  <li>Calculus Refresher II: Gradients</li>
+  <li>Understanding gradient descent</li>
+  <li>Training an adaptive linear neuron (Adaline)</li>
+</ol>
+
+<hr />
+<h2 id="1-online-batch-and-minibatch-mode">1. Online, batch, and minibatch mode</h2>
+<h3 id="perceptron-recap">Perceptron Recap</h3>
+
+<p style="text-align:center;">
+  <img src="/dgm-fall-2025/assets/img/notes/lecture-05/perceptron_recap.png" style="max-width:35%; max-width:35%;" />
+</p>
+
+<p style="text-align:center;">
+, where
+</p>
+
+<d-math block="">
+\sigma \!\Bigl( \sum_{i=1}^{m} x_i w_i + b \Bigr)
+= \sigma \!\bigl( \mathbf{x}^{T} \mathbf{w} + b \bigr)
+= \hat{y}
+</d-math>
+
+<d-math block="">
+\sigma(z) =
+\begin{cases}
+0, &amp; z \le 0 \\
+1, &amp; z &gt; 0
+\end{cases}
+</d-math>
+
+<d-math block="">
+b = -\theta
+</d-math>
+
+<hr style="border: 1px dashed #999;" />
+
+<p>Let $\mathcal{D} = (\langle \mathbf{x}^{[1]}, y^{[1]} \rangle, \mathbf{x}^{[2]}, y^{[2]} \rangle, \dots, \mathbf{x}^{[n]}, y^{[n]} \rangle) \in (\mathbb{R}^{m} \times {0,1})^{n} $.</p>
+
+<ol>
+  <li>Initialize $ \mathbf{w} := \mathbf{0} \in \mathbb{R}^{m}, \quad b := 0 $</li>
+  <li>
+    <p>For every training epoch:</p>
+
+    <p>A. For every $ \langle x^{[i]}, y^{[i]} \rangle \in \mathcal{D} $:</p>
+
+    <ul>
+      <li>
+        <p>(a) Compute output (prediction) $ \hat{y}^{[i]} := \sigma( x^{[i]\top} \mathbf{w} + b \bigr) $</p>
+      </li>
+      <li>
+        <p>(b) Calculate error $ \mathrm{err} := \bigl( y^{[i]} - \hat{y}^{[i]} \bigr) $</p>
+      </li>
+      <li>
+        <p>(c) Update parameters $ \mathbf{w} := \mathbf{w} + \mathrm{err} \times x^{[i]}, \quad b := b + \mathrm{err} $</p>
+      </li>
+    </ul>
+  </li>
+</ol>
+
+<h3 id="on-line-mode--sgd-schocastic-gradient-descent">“On-line” mode (= SGD: Schocastic Gradient Descent)</h3>
+
+<ol>
+  <li>Initialize $ \mathbf{w} := \mathbf{0} \in \mathbb{R}^{m}, \quad b := 0 $</li>
+  <li>
+    <p>For every training epoch:</p>
+
+    <p>A. For <strong>every</strong> $ \langle x^{[i]}, y^{[i]} \rangle \in \mathcal{D} $:</p>
+
+    <ul>
+      <li>(a) Compute output (prediction)</li>
+      <li>(b) Calculate error</li>
+      <li>(c) Update $ \mathbf{w}, \mathbf{b}$</li>
+    </ul>
+  </li>
+</ol>
+
+<ul>
+  <li>For step 2, we usually <u>shuffle</u> the dataset prior to each epoch to prevent cycles</li>
+  <li>Applies to all common neuron models and (deep) neural network architectures</li>
+</ul>
+
+<h3 id="on-line-mode-ii-alternative">“On-line” mode II (alternative)</h3>
+
+<ol>
+  <li>Initialize $ \mathbf{w} := \mathbf{0} \in \mathbb{R}^{m}, \quad b := 0 $</li>
+  <li>
+    <p>For every training epoch:</p>
+
+    <p>A. <strong>Pick random</strong> $ \langle x^{[i]}, y^{[i]} \rangle \in \mathcal{D} $:</p>
+
+    <ul>
+      <li>(a) Compute output (prediction)</li>
+      <li>(b) Calculate error</li>
+      <li>(c) Update $ \mathbf{w}, \mathbf{b}$</li>
+    </ul>
+  </li>
+</ol>
+
+<ul>
+  <li>No shuffling required</li>
+</ul>
+
+<h3 id="batch-mode">Batch mode</h3>
+<ol>
+  <li>Initialize $ \mathbf{w} := \mathbf{0} \in \mathbb{R}^{m}, \quad b := 0 $</li>
+  <li>
+    <p>For every training epoch:</p>
+
+    <p>A. Take <strong>all</strong> training examples from $\mathcal{D} $:</p>
+
+    <ul>
+      <li>(a) Compute output (prediction)</li>
+      <li>(b) Calculate error</li>
+    </ul>
+
+    <p>B. Update $ \mathbf{w}, \mathbf{b}$</p>
+  </li>
+</ol>
+
+<h3 id="minibach-mode-mix-between-on-line-and-batch">Minibach mode (mix between on-line and batch)</h3>
+<ol>
+  <li>Initialize $ \mathbf{w} := \mathbf{0} \in \mathbb{R}^{m}, \quad b := 0 $</li>
+  <li>
+    <p>For every training epoch:</p>
+
+    <p>A. For every <strong>minibatch</strong> of size k, namely</p>
+
+    <p>$ (\langle x^{[i]}, y^{[i]} \rangle, \dots, \langle x^{[i+k]}, y^{[i+k]} \rangle) \in \mathcal{D}$</p>
+
+    <ul>
+      <li>(a) Compute output (prediction)</li>
+      <li>(b) Calculate error</li>
+      <li>(c) Update $ \mathbf{w} := \mathbf{w} + \Delta \mathbf{w}, \quad \mathbf{b} := \mathbf{b} + \Delta \mathbf{b} $</li>
+    </ul>
+  </li>
+</ol>
+
+<ul>
+  <li>This is the <strong>most common</strong> mode in deep learning because:
+    <ol>
+      <li>choosing a subset instead of one example at a time <u>takes advantage of vectorization</u> (faster iteration through epoch than on-line)</li>
+      <li>having fewer updates than “on-line” makes updates <u>less noisy</u>.</li>
+      <li>makes more updates / epoch than “batch” and is thus <u>faster</u></li>
+    </ol>
+  </li>
+</ul>
+
+<hr />
+
+<h2 id="2-relation-between-perceptron-and-linear-regression">2. Relation between perceptron and linear regression</h2>
+<h3 id="perceptron">Perceptron</h3>
+<ul>
+  <li>activation function is the threshold function</li>
+  <li>output is a binary label $\hat{y} \in ({0,1})$</li>
+</ul>
+
+<h3 id="linear-regression">Linear Regression</h3>
+<ul>
+  <li>activation function is the identity function $ \sigma(x) = x $</li>
+  <li>output is a real number $\hat{y} \in \mathbb{R}$</li>
+  <li>you can think of linear regression as a linear neuron</li>
+</ul>
+
+<h3 id="least-squares-linear-regression">(Least-Squares) Linear Regression</h3>
+
+<d-math block="">
+\mathbf{w} = (\mathbf{X}^{\top}\mathbf{X})^{-1}\mathbf{X}^{\top}y
+</d-math>
+
+<p>, assuming the bias is included in $ \mathbf{w}$, and the design matrix has an additional vector of 1’s</p>
+
+<ul>
+  <li>Generally, this is the best approach for linear regression</li>
+</ul>
+
+<hr />
+
+<h2 id="3-an-iterative-training-algorithm-for-linear-regression">3. An iterative training algorithm for linear regression</h2>
+
+<h3 id="least-squares-linear-regression-1">(Least-Squares) Linear Regression</h3>
+<ul>
+  <li>A very naive way to fit a linear regression model (and any neural net) is to start with initializing the parameters to 0’s or small random values</li>
+  <li>
+    <p>Then, for k rounds</p>
+
+    <ol>
+      <li>Choose another random set of weights</li>
+      <li>If the model performs <strong>better</strong>, <strong>keep</strong> those weights</li>
+      <li>If the model performs <strong>worse</strong>, <strong>discard</strong> the weights</li>
+    </ol>
+  </li>
+  <li>Guaranteed to find the optimal solution for very large k, but it would be terribly slow</li>
+</ul>
+
+<h3 id="better-way">Better way</h3>
+<ul>
+  <li>analyze what effect a change of a parameter has on the predictive performance (loss) of a model</li>
+  <li>then change the weight a little in the direction that improves the performance (minimizes the loss) the most</li>
+  <li>do this in several (small) steps until the loss does not further decrease</li>
+</ul>
+
+<h3 id="update-rules-on-line-mode">Update Rules (“on-line” mode)</h3>
+<h4 id="perceptron-learning-rule">Perceptron Learning Rule</h4>
+<ol>
+  <li>Initialize $ \mathbf{w} := \mathbf{0} \in \mathbb{R}^{m}, \quad b := 0 $</li>
+  <li>
+    <p>For every training epoch:</p>
+
+    <p>A. For every $ \langle x^{[i]}, y^{[i]} \rangle \in \mathcal{D} $:</p>
+
+    <ul>
+      <li>(a) $ \hat{y}^{[i]} := \sigma\bigl(x^{[i]\top}\mathbf{w} + b\bigr) $</li>
+      <li>(b) $ err := \bigl(y^{[i]} - \hat{y}^{[i]}\bigr) $</li>
+      <li>(c) $ \mathbf{w} := \mathbf{w} + err \times x^{[i]}, \quad b := b + err $</li>
+    </ul>
+  </li>
+</ol>
+
+<h4 id="stochastic-gradient-descent-vectorized">Stochastic Gradient Descent (Vectorized)</h4>
+<ol>
+  <li>
+    <p>Initialize $ \mathbf{w} := \mathbf{0} \in \mathbb{R}^{m}, \quad b := 0 $</p>
+  </li>
+  <li>
+    <p>For every training epoch:</p>
+
+    <p>A. For every $ \langle x^{[i]}, y^{[i]} \rangle \in \mathcal{D} $:</p>
+
+    <ul>
+      <li>
+        <p>(a) $ \hat{y}^{[i]} := \sigma\bigl(x^{[i]\top}\mathbf{w} + b\bigr) $</p>
+      </li>
+      <li>
+        <p>(b) $ \nabla_{\mathbf{w}}\mathcal{L} = \bigl(y^{[i]} - \hat{y}^{[i]}\bigr)x^{[i]}, \quad
+        \nabla_{b}\mathcal{L} = \bigl(y^{[i]} - \hat{y}^{[i]}\bigr) $</p>
+      </li>
+      <li>
+        <p>(c) $ \mathbf{w} := \mathbf{w} + \eta \times \bigl(-\nabla_{\mathbf{w}}\mathcal{L}\bigr), \quad
+        b := b + \eta \times \bigl(-\nabla_{b}\mathcal{L}\bigr) $</p>
+      </li>
+    </ul>
+
+    <p>where $\eta$ = learning rate,  $\bigl(-\nabla_{\mathbf{w}}\mathcal{L}\bigr)$ = negative gradient</p>
+  </li>
+</ol>
+
+<h4 id="stochastic-gradient-descent-for-understanding-only">Stochastic Gradient Descent (For understanding only)</h4>
+<ol>
+  <li>
+    <p>Initialize $ \mathbf{w} := \mathbf{0} \in \mathbb{R}^{m}, \quad b := 0 $</p>
+  </li>
+  <li>
+    <p>For every training epoch:</p>
+
+    <p>A. For every $ \langle x^{[i]}, y^{[i]} \rangle \in \mathcal{D} $:</p>
+
+    <ul>
+      <li>(a) $ \hat{y}^{[i]} := \sigma\bigl(x^{[i]\top}\mathbf{w} + b\bigr) $</li>
+    </ul>
+
+    <p><strong>B. For weight</strong> $ \boldsymbol{j \in {1, \ldots, m}} $<strong>:</strong></p>
+
+    <ul>
+      <li>
+        <p>(b) $ \frac{\partial \mathcal{L}}{\partial w_{j}} =
+             \bigl(y^{[i]} - \hat{y}^{[i]}\bigr)x_{j}^{[i]} $</p>
+      </li>
+      <li>
+        <p>(c) $ w_{j} := w_{j} + \eta \times
+             \Bigl(-\frac{\partial \mathcal{L}}{\partial w_{j}}\Bigr) $</p>
+      </li>
+    </ul>
+
+    <p>C. $ \frac{\partial \mathcal{L}}{\partial b} =
+       \bigl(y^{[i]} - \hat{y}^{[i]}\bigr) $, 
+       $ b := b + \eta \times \Bigl(-\frac{\partial \mathcal{L}}{\partial b}\Bigr) $</p>
+
+    <p>where $\eta \times \Bigl(-\frac{\partial \mathcal{L}}{\partial b}\Bigr)$ coincidentally appears almost to be the same as the perceptron rule, except that the prediction is a <strong>real number</strong>, and we have a <strong>learning rate</strong></p>
+  </li>
+</ol>
+
+<h3 id="this-learning-rule-is-called-gradient-descent">This learning rule is called <u>Gradient Descent</u></h3>
+<hr />
+<h2 id="4-calculus-refresher-i-derivatives">4. Calculus Refresher I: Derivatives</h2>
+<h3 id="differential-calculus-refresher">Differential Calculus Refresher</h3>
+<ol>
+  <li>The derivative of a function $f(x)$ at a <strong>point</strong> $x=a$ is defined as the limit of the difference quotient (if it exists):</li>
+</ol>
+
+<d-math block="">
+f'(a) = \lim\limits_{\Delta x \to 0} \frac{f(a+\Delta x) - f(a)}{\Delta x}
+</d-math>
+
+<ul>
+  <li>$\Delta x$ represents an increment in x</li>
+</ul>
+
+<ol>
+  <li>If a function $f(x)$ is differentiable at every point of an <strong>interval</strong> A, we say that $f(x)$ is differentiable on A. In this case, for each $ x=a \in A$ there exists a derivative $f’(a)$ corresponding to it.</li>
+</ol>
+
+<ul>
+  <li>This defines a new function on $A$, namely the <strong>derivative function</strong> $ f’(x)$</li>
+</ul>
+
+<d-math block="">
+f'(x) = \frac{df}{dx} = \lim\limits_{\Delta x \to 0} \frac{f(x+ \Delta x) - f(x)}{ \Delta x}
+</d-math>
+
+<ul>
+  <li>
+    <p><strong>Examples</strong></p>
+  </li>
+  <li>
+    <p>$ f(x)=2x$:</p>
+  </li>
+</ul>
+
+<d-math block="">
+f'(x)= \lim\limits_{\Delta x \to 0} \frac{f(x+\Delta x) - f(x)}{\Delta x}=\lim\limits_{\Delta x \to 0} \frac{2x+2\Delta x-2x}{\Delta x}
+</d-math>
+
+<d-math block="">
+=\lim\limits_{\Delta x \to 0} \frac{2\Delta x}{\Delta x}=2
+</d-math>
+
+<ul>
+  <li>$ f(x)=x^2$:</li>
+</ul>
+
+<d-math block="">
+f'(x)= \lim\limits_{\Delta x \to 0} \frac{f(x+\Delta x) - f(x)}{\Delta x}=\lim\limits_{\Delta x \to 0} \frac{x^2+2x \Delta x+(\Delta x)^2-x^2}{\Delta x}
+</d-math>
+
+<d-math block="">
+=\lim\limits_{\Delta x \to 0} \frac{2x \Delta x+(\Delta x)^2}{\Delta x}=\lim\limits_{\Delta x \to 0}2x+ \Delta x=2x
+</d-math>
+
+<h3 id="cheatsheet-1-frequently-used-derivative-formulas">Cheatsheet 1: Frequently used derivative formulas</h3>
+
+<d-math block="">
+f(x) = a \quad \Rightarrow \quad f'(x) = 0
+</d-math>
+
+<d-math block="">
+f(x) = x \quad \Rightarrow \quad f'(x) = 1
+</d-math>
+
+<d-math block="">
+f(x) = ax \quad \Rightarrow \quad f'(x) = a
+</d-math>
+
+<d-math block="">
+f(x) = x^a \quad \Rightarrow \quad f'(x) = ax^{a-1}
+</d-math>
+
+<d-math block="">
+f(x) = a^x \quad \Rightarrow \quad f'(x) = \log(a) a^x
+</d-math>
+
+<d-math block="">
+f(x) = \log(x) \quad \Rightarrow \quad f'(x) = \frac{1}{x}
+</d-math>
+
+<d-math block="">
+f(x) = \log_a(x) \quad \Rightarrow \quad f'(x) = \frac{1}{x \log(a)}
+</d-math>
+
+<d-math block="">
+f(x) = \sin(x) \quad \Rightarrow \quad f'(x) = \cos(x)
+</d-math>
+
+<d-math block="">
+f(x) = \cos(x) \quad \Rightarrow \quad f'(x) = -\sin(x)
+</d-math>
+
+<d-math block="">
+f(x) = \tan(x) \quad \Rightarrow \quad f'(x) = \sec^2(x)
+</d-math>
+
+<h3 id="cheatsheet-2-derivative-rules">Cheatsheet 2: Derivative Rules</h3>
+<ul>
+  <li>Sum Rule</li>
+</ul>
+
+<d-math block="">
+h(x) = f(x) + g(x), \quad h'(x) = f'(x) + g'(x)
+</d-math>
+
+<ul>
+  <li>Difference Rule</li>
+</ul>
+
+<d-math block="">
+h(x) = f(x) - g(x), \quad h'(x) = f'(x) - g'(x)
+</d-math>
+
+<ul>
+  <li>Product Rule</li>
+</ul>
+
+<d-math block="">
+h(x) = f(x) g(x), \quad h'(x) = f'(x) g(x) + f(x) g'(x)
+</d-math>
+
+<ul>
+  <li>Quotient Rule</li>
+</ul>
+
+<d-math block="">
+h(x) = \frac{f(x)}{g(x)}, \quad h'(x) = \frac{f'(x) g(x) - f(x) g'(x)}{g(x)^2}
+</d-math>
+
+<ul>
+  <li>Reciprocal Rule</li>
+</ul>
+
+<d-math block="">
+h(x) = \frac{1}{f(x)}, \quad h'(x) = \frac{-f'(x)}{f(x)^2}
+</d-math>
+
+<ul>
+  <li>Chain Rule</li>
+</ul>
+
+<d-math block="">
+h(x) = f(g(x)), \quad h'(x) = f'(g(x)) g'(x)
+</d-math>
+
+<ul>
+  <li>The <strong>chain rule</strong> is the essence of training neural networks.</li>
+</ul>
+
+<h3 id="chain-rule--computation-graph">Chain Rule &amp; Computation Graph</h3>
+
+<ul>
+  <li>For a nested function $ F(x)=f(g(x))=z$</li>
+  <li>Its computational graph:</li>
+</ul>
+
+<d-math block="">
+x \xrightarrow{g} g(x) \xrightarrow{f} f(g(x))=z
+</d-math>
+
+<ul>
+  <li>Derivative of the nested function: $F’(x)=f’(g(x))g’(x)=z’$</li>
+  <li>Computational graph of derivative function:</li>
+</ul>
+
+<d-math block="">
+x \xrightarrow{g} g(x) \xrightarrow{f'} f'(g(x))
+</d-math>
+
+<d-math block="">
+x \xrightarrow{g'} g'(x)
+</d-math>
+
+<d-math block="">
+f'(g(x)) \cdot g'(x)=z'
+</d-math>
+
+<ul>
+  <li>Pytorch keeps computational graphs in the background and computes the derivatives of most differentiable functions <strong>automatically</strong>.</li>
+</ul>
+
+<h3 id="chain-rule--leibniz-notation">Chain Rule &amp; Leibniz Notation</h3>
+
+<ul>
+  <li>For efficiency, we use the <strong>Leibniz notation</strong>:</li>
+</ul>
+
+<d-math block="">
+\frac{d}{dx}[f(g(x))]=\frac{df}{dg}\cdot \frac{dg}{dx}
+</d-math>
+
+<ul>
+  <li>this is useful when writing long function compositions:</li>
+</ul>
+
+<d-math block="">
+\frac{d}{dx}[f(g(h(u(v(x)))))]=\frac{df}{dg}\cdot \frac{dg}{dh} \cdot \frac{dh}{du} \cdot \frac{du}{dv} \cdot \frac{dv}{dx}
+</d-math>
+
+<ul>
+  <li>
+    <p>Here’s an example of implementing the Chain Rule (using Leibniz notation):</p>
+  </li>
+  <li>
+    <p>$f(x)=\log(\sqrt{x})$:</p>
+  </li>
+</ul>
+
+<d-math block="">
+\frac{d}{dg}\log(g)=\frac{1}{g}=\frac{1}{\sqrt{x}}
+</d-math>
+
+<d-math block="">
+\frac{d}{dx}x^{\frac{1}{2}}=\frac{1}{2 \sqrt{x}}
+</d-math>
+
+<d-math block="">
+\frac{df}{dx}=\frac{1}{2 \sqrt{x}}\cdot\frac{1}{\sqrt{x}}=\frac{1}{2x}
+</d-math>
+
+<ul>
+  <li>reverse mode and forward mode:</li>
+  <li>notice that:</li>
+</ul>
+
+<d-math block="">
+\frac{df}{dg}\cdot \frac{dg}{dh} \cdot \frac{dh}{du} \cdot \frac{du}{dv} \cdot \frac{dv}{dx} (reverse\ mode\: start\ from\ the\ outer\ parts ) 
+</d-math>
+
+<d-math block="">
+= \frac{dv}{dx} \cdot \frac{du}{dv} \cdot \frac{dh}{du} \cdot \frac{dg}{dh} \cdot \frac{df}{dg}(forward\ mode\: start\ from\ the\ inner\ parts)
+</d-math>
+
+<ul>
+  <li>Backpropagation is basically “reverse mode” auto-differentiation. It is cheaper than forward mode if we work with gradients because we would have matrix-vector multiplications instead of matrix-matrix multiplications.</li>
+</ul>
+
+<h2 id="5-calculus-refresher-ii-gradients">5. Calculus Refresher II: Gradients</h2>
+<h3 id="derivatives-of-multivariable-functions">Derivatives of Multivariable Functions</h3>
+<ol>
+  <li>For a multivariable function $f(x_1,x_2,x_3,…x_m)$:</li>
+</ol>
+
+<d-math block="">
+ \nabla f(\mathbf{\vec{x}}) =
+\begin{bmatrix}
+\frac{\partial f}{\partial x_1} \\
+\frac{\partial f}{\partial x_2} \\
+\vdots \\
+\frac{\partial f}{\partial x_m}
+\end{bmatrix} \in \mathbb{R}^{m \times 1}
+</d-math>
+
+<ul>
+  <li>Example:</li>
+  <li>$f(x,y)=x^2y+y$</li>
+</ul>
+
+<d-math block="">
+ \nabla f(\mathbf{x,y}) =
+\begin{bmatrix}
+\frac{\partial f}{\partial x} \\
+\frac{\partial f}{\partial y} \\
+\end{bmatrix}=
+\begin{bmatrix}
+2xy \\
+x^2+1 \\
+\end{bmatrix}
+</d-math>
+
+<h3 id="multivariable-chain-rule">Multivariable Chain Rule</h3>
+
+<d-math block="">
+\frac{d}{dx}[f(g(x),h(x))]=\frac{\partial f}{\partial g} \cdot \frac{\partial g}{\partial x}+ \frac{\partial f}{\partial h} \cdot \frac{\partial h}{\partial x}
+</d-math>
+
+<ul>
+  <li>Example:
+    <ul>
+      <li>$f(g,h)=g^2h+h$, where $g(x)=3x$ and $h(x)=x^2$</li>
+    </ul>
+  </li>
+</ul>
+
+<d-math block="">
+\frac{d}{dx}[f(g(x),h(x))]= 2gh \cdot 3+(g^2+1)\cdot 2x = 2xg^2+6gh+2x
+</d-math>
+
+<h3 id="multivariable-chain-rule-in-vector-form">Multivariable Chain Rule in <strong>vector form</strong></h3>
+
+<d-math block="">
+\frac{\partial f}{\partial x} =
+\begin{bmatrix}
+\frac{\partial f}{\partial g} &amp; \frac{\partial f}{\partial h}
+\end{bmatrix}
+\begin{bmatrix}
+\frac{\partial g}{\partial x} \\
+\frac{\partial h}{\partial x}
+\end{bmatrix}=
+\frac{\partial f}{\partial g} \frac{\partial g}{\partial x} + 
+\frac{\partial f}{\partial h} \frac{\partial h}{\partial x}
+</d-math>
+
+<ul>
+  <li>define:</li>
+</ul>
+
+<d-math block="">
+\mathbf{v}(x) =
+\begin{bmatrix}
+g(x) \\
+h(x)
+\end{bmatrix}
+</d-math>
+
+<ul>
+  <li>and:</li>
+</ul>
+
+<d-math block="">
+\mathbf{v'}(x) =
+\begin{bmatrix}
+\frac{dg}{dx} \\
+\frac{dh}{dx}
+\end{bmatrix}
+</d-math>
+
+<ul>
+  <li>we also have:</li>
+</ul>
+
+<d-math block="">
+\nabla f(\mathbf{g,h})=
+\begin{bmatrix}
+\frac{\partial f}{\partial g} \\
+\frac{\partial f}{\partial h}
+\end{bmatrix}
+</d-math>
+
+<ul>
+  <li>Putting it together:</li>
+</ul>
+
+<d-math block="">
+\frac{\partial f}{\partial x}=
+\nabla f(\mathbf{g,h}) \cdot \mathbf{v}'(x) =
+\begin{bmatrix}
+\frac{\partial f}{\partial g} &amp; \frac{\partial f}{\partial h}
+\end{bmatrix}
+\begin{bmatrix}
+\frac{dg}{dx} \\
+\frac{dh}{dx}
+\end{bmatrix}=
+\frac{\partial f}{\partial g} \frac{dg}{dx} + 
+\frac{\partial f}{\partial h} \frac{dh}{dx}
+</d-math>
+
+<h3 id="the-jacobian-matrix">The Jacobian Matrix</h3>
+
+<d-math block="">
+\mathbf{f}(\mathbf{x}) =
+\begin{bmatrix}
+f_1(x_1, x_2, \dots, x_m) \\
+f_2(x_1, x_2, \dots, x_m) \\
+\vdots \\
+f_m(x_1, x_2, \dots, x_m)
+\end{bmatrix}, 
+\quad 
+J(\mathbf{x}) = \frac{\partial \mathbf{f}}{\partial \mathbf{x}} =
+\begin{bmatrix}
+\frac{\partial f_1}{\partial x_1} &amp; \frac{\partial f_1}{\partial x_2} &amp; \cdots &amp; \frac{\partial f_1}{\partial x_m} \\
+\frac{\partial f_2}{\partial x_1} &amp; \frac{\partial f_2}{\partial x_2} &amp; \cdots &amp; \frac{\partial f_2}{\partial x_m} \\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+\frac{\partial f_m}{\partial x_1} &amp; \frac{\partial f_m}{\partial x_2} &amp; \cdots &amp; \frac{\partial f_m}{\partial x_m} 
+\end{bmatrix}
+\in \mathbb{R}^{m \times m}
+</d-math>
+
+<ul>
+  <li>The i-th row of the Jacobian matrix is the gradient vector of $f_i$:</li>
+</ul>
+
+<d-math block="">
+\nabla f_i(\mathbf{x}) =
+\begin{bmatrix}
+\frac{\partial f_i}{\partial x_1} \\
+\frac{\partial f_i}{\partial x_2} \\
+\vdots \\
+\frac{\partial f_i}{\partial x_m}
+\end{bmatrix}
+\in \mathbb{R}^{m \times 1}
+</d-math>
+
+<h2 id="6-understanding-gradient-descent">6. Understanding Gradient Descent</h2>
+
+<h3 id="back-to-linear-regression">Back to Linear Regression</h3>
+
+<p style="text-align:center;">
+  <img src="/dgm-fall-2025/assets/img/notes/lecture-05/Image1.png" style="max-width:40%;" />
+</p>
+
+<h3 id="gradient-descent">Gradient Descent</h3>
+<ul>
+  <li>Learning rate and steepness of the gradient determine how much we update</li>
+  <li>Steps get smaller as you get toward the minimum</li>
+  <li>Squared error gives convex loss function</li>
+  <li>MSE loss is convex loss because we assume it’s the Sum Squared Error (SSE) or Mean Squared Error (MSE)</li>
+</ul>
+
+<d-math block="">
+\text{SSE}(y, \hat{y}) = \sum_i (y_i - \hat{y}_i)^2
+</d-math>
+
+<ul>
+  <li>Not every loss is convex</li>
+  <li>Start with large learning rates and get smaller over time</li>
+</ul>
+
+<p><strong>Benefits of convexity:</strong></p>
+<ul>
+  <li>Especially for linear models, it is often not possible to achieve a zero loss even on the training data.</li>
+  <li>Theoretical guarantee of convexity: reaching a unique minimizer efficiently.</li>
+  <li>For general neural networks (due to nonlinear activation), no guarantee.</li>
+  <li>If the learning rate is too large, we can overshoot, and if the learning rate is too small, convergence is very slow.</li>
+</ul>
+
+<p style="text-align:center;">
+  <img src="/dgm-fall-2025/assets/img/notes/lecture-05/Image2.png" style="max-width:40%;" />
+</p>
+
+<hr />
+
+<h3 id="returning-to-previous-notes-on-least-squares-linear-regression">Returning to Previous Notes on Least-Squares Linear Regression</h3>
+
+<p>The update rule turns out to be this:</p>
+
+<p><strong>“On-line” mode (Perceptron learning rule)</strong></p>
+
+<ol>
+  <li>Initialize</li>
+</ol>
+
+<d-math block="">
+\mathbf{w} := 0 \in \mathbb{R}^m, \quad b := 0
+</d-math>
+
+<ol>
+  <li>For every training epoch:
+    <ul>
+      <li>For every $\langle x^{[i]}, y^{[i]} \rangle \in D$</li>
+    </ul>
+  </li>
+</ol>
+
+<d-math block="">
+\hat{y}^{[i]} := x^{[i]\top} \mathbf{w} + b
+</d-math>
+
+<d-math block="">
+\text{err} := y^{[i]} - \hat{y}^{[i]}
+</d-math>
+
+<d-math block="">
+\mathbf{w} := \mathbf{w} + \text{err} \cdot x^{[i]}, \quad b := b + \text{err}
+</d-math>
+
+<p><strong>Stochastic Gradient Descent (SGD)</strong></p>
+
+<ol>
+  <li>Initialize</li>
+</ol>
+
+<d-math block="">
+\mathbf{w} := 0, \quad b := 0
+</d-math>
+
+<ol>
+  <li>For every training epoch:
+    <ul>
+      <li>For every $\langle x^{[i]}, y^{[i]} \rangle \in D$</li>
+    </ul>
+  </li>
+</ol>
+
+<d-math block="">
+\hat{y}^{[i]} := x^{[i]\top} \mathbf{w} + b
+</d-math>
+
+<d-math block="">
+\mathbf{w} := \mathbf{w} - \eta \cdot \nabla_\mathbf{w} L, \quad b := b - \eta \cdot \nabla_b L
+</d-math>
+
+<ul>
+  <li>Where eta is the learning rate  .</li>
+</ul>
+
+<hr />
+
+<h3 id="linear-regression-loss-derivative">Linear Regression Loss Derivative</h3>
+
+<p>Sum of Squared Error (SSE) loss is also called squared loss.</p>
+
+<d-math block="">
+\mathcal{L}(\mathbf{w}, b) = \sum_i \bigl(\hat{y}^{[i]} - y^{[i]}\bigr)^2
+</d-math>
+
+<d-math block="">
+\frac{\partial \mathcal{L}}{\partial w_j} 
+= \frac{\partial}{\partial w_j} \sum_i \bigl(\hat{y}^{[i]} - y^{[i]}\bigr)^2
+= \frac{\partial}{\partial w_j} \sum_i \bigl(\sigma(\mathbf{w}^\top x^{[i]}) - y^{[i]}\bigr)^2
+</d-math>
+
+<d-math block="">
+= \sum_i 2\bigl(\sigma(\mathbf{w}^\top x^{[i]}) - y^{[i]}\bigr)
+\frac{\partial}{\partial w_j}\bigl(\sigma(\mathbf{w}^\top x^{[i]}) - y^{[i]}\bigr)
+</d-math>
+
+<d-math block="">
+= \sum_i 2\bigl(\sigma(\mathbf{w}^\top x^{[i]}) - y^{[i]}\bigr)
+\frac{d\sigma}{d(\mathbf{w}^\top x^{[i]})}
+\frac{\partial}{\partial w_j}\mathbf{w}^\top x^{[i]}
+</d-math>
+
+<d-math block="">
+= \sum_i 2\bigl(\sigma(\mathbf{w}^\top x^{[i]}) - y^{[i]}\bigr)
+\frac{d\sigma}{d(\mathbf{w}^\top x^{[i]})} \, x_j^{[i]}
+</d-math>
+
+<ul>
+  <li>These equations show SSE.</li>
+  <li>The activation function is the identity function in linear regression.</li>
+</ul>
+
+<hr />
+
+<h3 id="alternative-linear-regression-loss-derivative">Alternative Linear Regression Loss Derivative</h3>
+
+<p>Mean Squared Error (MSE) often scales by factor ½ for convenience.</p>
+
+<d-math block="">
+\mathcal{L}(\mathbf{w}, b) = \frac{1}{2n} \sum_i \bigl(\hat{y}^{[i]} - y^{[i]}\bigr)^2
+</d-math>
+
+<d-math block="">
+\frac{\partial \mathcal{L}}{\partial w_j} 
+= \frac{\partial}{\partial w_j} \frac{1}{2n} \sum_i \bigl(\hat{y}^{[i]} - y^{[i]}\bigr)^2
+= \frac{\partial}{\partial w_j} \sum_i \frac{1}{2n}\bigl(\sigma(\mathbf{w}^\top x^{[i]}) - y^{[i]}\bigr)^2
+</d-math>
+
+<d-math block="">
+= \sum_i \frac{1}{n}\bigl(\sigma(\mathbf{w}^\top x^{[i]}) - y^{[i]}\bigr)
+\frac{\partial}{\partial w_j}\bigl(\sigma(\mathbf{w}^\top x^{[i]}) - y^{[i]}\bigr)
+</d-math>
+
+<d-math block="">
+= \frac{1}{n}\sum_i \bigl(\sigma(\mathbf{w}^\top x^{[i]}) - y^{[i]}\bigr)
+\frac{d\sigma}{d(\mathbf{w}^\top x^{[i]})}
+\frac{\partial}{\partial w_j}\mathbf{w}^\top x^{[i]}
+</d-math>
+
+<d-math block="">
+= \frac{1}{n}\sum_i \bigl(\sigma(\mathbf{w}^\top x^{[i]}) - y^{[i]}\bigr)
+\frac{d\sigma}{d(\mathbf{w}^\top x^{[i]})} \, x_j^{[i]}
+</d-math>
+
+<ul>
+  <li>These equations show MSE.</li>
+  <li>The activation function is the identity function in linear regression.</li>
+</ul>
+
+<hr />
+
+<h3 id="how-to-think-about-contour-plots">How to Think About Contour Plots</h3>
+
+<p>The following show the loss plot for two weights as a contour plot and flattened into a 2D space. As you can see, updates are perpendicular to contour lines.</p>
+
+<p style="text-align:center;">
+  <img src="/dgm-fall-2025/assets/img/notes/lecture-05/Image6.png" style="max-width:40%;" />
+</p>
+
+<hr />
+
+<h3 id="stochastic-gradient-descent-as-surface-plot">Stochastic Gradient Descent as Surface Plot</h3>
+
+<p>Stochastic updates are a bit noisier because each minibatch is an approximation of the overall loss on the training set.</p>
+
+<p style="text-align:center;">
+  <img src="/dgm-fall-2025/assets/img/notes/lecture-05/Image7.png" style="max-width:40%;" />
+</p>
+
+<ul>
+  <li>These figures depict stochastic gradient descent.</li>
+  <li>If inputs are on very different scales, some weights will update more than others which will also harm convergence. This is why we always normalize inputs.</li>
+  <li>Stochastic (on-line or minibatch) are noisier than batch (whole-training-set) gradient descent.</li>
+</ul>
+
+<p><strong>Analogy:</strong><br />
+Imagine you are a scientist who develops a new pharmaceutical drug.</p>
+<ul>
+  <li>To know its average effectiveness, you’d test it on <strong>all patients in the world</strong> (like batch GD).</li>
+  <li>This is expensive and slow.</li>
+  <li>Instead, you select a <strong>smaller group of patients</strong> (like minibatch).</li>
+  <li>Your estimate won’t be perfect, but if the sample is large enough, it’s accurate enough to guide improvements.</li>
+</ul>
+
+<hr />
+
+<h2 id="7-training-and-adaptive-linear-neuron-adaline">7. Training and Adaptive Linear Neuron (Adaline)</h2>
+
+<h3 id="least-squares-linear-regression-2">(Least-Squares) Linear Regression</h3>
+
+<p>We want to speed up computations and memory when input data has large dimensions.</p>
+
+<d-math block="">
+\mathbf{w} = (\mathbf{X}^{\top}\mathbf{X})^{-1}\mathbf{X}^{\top}y
+</d-math>
+
+<p>Assuming the bias is included in <strong>w</strong>, and the design matrix has an additional vector of 1’s.</p>
+
+<hr />
+
+<h3 id="adaline">ADALINE</h3>
+
+<p>Widrow and Hoff’s ADALINE (1960): A nicely differential neuron model.</p>
+<ul>
+  <li>Stands for <strong>ADAptive LInear NEuron</strong>.</li>
+</ul>
+
+<p style="text-align:center;">
+  <img src="/dgm-fall-2025/assets/img/notes/lecture-05/Image9.png" style="max-width:40%;" />
+</p>
+ </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+    </div>
+
+    <footer class="site-footer">
+  <div class="wrapper">
+    <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Ben Lengerich</li><li>
+            <a class="u-email" href="mailto:TBD@wisc.edu"
+              >TBD@wisc.edu</a
+            >
+          </li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li>
+    <a
+      href="https://github.com/AdaptInfer"
+      target="_blank"
+      ><i class="fab fa-github"></i>
+      <span class="username">AdaptInfer</span></a
+    >
+  </li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>
+          &copy; Copyright 2025 University of Wisconsin.
+          <br />
+          
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  </body>
+
+  <d-bibliography
+    src="/dgm-fall-2025/assets/bibliography/2025-09-17-lecture-05.bib"
+  >
+  </d-bibliography>
+
+  <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/dgm-fall-2025/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link
+  rel="stylesheet"
+  href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css"
+/>
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+<script src="/dgm-fall-2025/assets/js/katex.js"></script>
+ 
+<!-- Load Anchor JS -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+<script>
+  anchors.options.visible = "hover";
+  anchors.add("article h2, article h3, article h4, article h5, article h6");
+</script>
+ 
+<!-- Adjust LaTeX JS -->
+<script src="/dgm-fall-2025/assets/js/latex.js"></script>
+
+
+<!-- Include custom icon fonts -->
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2025/assets/css/fontawesome-all.min.css"
+/>
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2025/assets/css/academicons.min.css"
+/>
+
+<!-- Google Analytics -->
+<script>
+  (function (i, s, o, g, r, a, m) {
+    i["GoogleAnalyticsObject"] = r;
+    (i[r] =
+      i[r] ||
+      function () {
+        (i[r].q = i[r].q || []).push(arguments);
+      }),
+      (i[r].l = 1 * new Date());
+    (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+    a.async = 1;
+    a.src = g;
+    m.parentNode.insertBefore(a, m);
+  })(
+    window,
+    document,
+    "script",
+    "//www.google-analytics.com/analytics.js",
+    "ga",
+  );
+
+  ga("create", "", "auto");
+  ga("send", "pageview");
+</script>
+
+</html>
