@@ -1,0 +1,745 @@
+<!doctype html>
+<html>
+  <head>
+    <head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="content-language" content="en" />
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <title>
+    STAT 453 | Lecture 04
+  </title>
+  <meta name="description" content="STAT 453 - University of Wisconsin-Madison - Fall 2025
+" />
+
+  <link
+    rel="shortcut icon"
+    href="/dgm-fall-2025/assets/img/favicon.ico"
+  />
+
+  <link rel="stylesheet" href="/dgm-fall-2025/assets/css/main.css" />
+  <link
+    rel="canonical"
+    href="/dgm-fall-2025/notes/lecture-04/"
+  />
+
+  
+  <!-- Load Latex JS -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+  
+</head>
+
+    <script src="/dgm-fall-2025/assets/js/distillpub/template.v2.js"></script>
+    <script src="/dgm-fall-2025/assets/js/distillpub/transforms.v2.js"></script>
+  </head>
+
+  <d-front-matter>
+    <script type="text/json">
+      {
+            "title": "Lecture 04",
+            "description": "Single-layer networks",
+            "published": "September 15, 2025",
+            "lecturers": [
+              
+              {
+                "lecturer": "Ben Lengerich",
+                "lecturerURL": "https://lengerichlab.github.io/"
+              }
+              
+            ],
+            "authors": [
+              
+              {
+                "author": "Lei Tang",
+                "authorURL": "NA"
+              },
+              
+              {
+                "author": "Stanley Zheng",
+                "authorURL": "https://s-tanley.github.io/"
+              }
+              
+            ],
+            "editors": [
+              
+              {
+                "editor": "Ben Lengerich",
+                "editorURL": "https://lengerichlab.github.io/"
+              },
+              
+              {
+                "editor": "Eva Song",
+                "editorURL": "NA"
+              }
+              
+            ],
+            "katex": {
+              "delimiters": [
+                {
+                  "left": "$",
+                  "right": "$",
+                  "display": false
+                },
+                {
+                  "left": "$$",
+                  "right": "$$",
+                  "display": true
+                }
+              ]
+            }
+          }
+    </script>
+  </d-front-matter>
+
+  <body>
+    <header class="site-header">
+  <div class="wrapper">
+    <span class="site-title">
+      <a class="page-link" href="https://adaptinfer.org/dgm-fall-2025/"
+        >STAT 453</a
+      >
+    </span>
+
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path
+              fill="#424242"
+              d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
+            />
+            <path
+              fill="#424242"
+              d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
+            />
+            <path
+              fill="#424242"
+              d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
+            />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger">
+        <a class="page-link" href="/dgm-fall-2025/logistics/"
+          >logistics</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/lectures/"
+          >lectures</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/notes/">notes</a>
+        <a class="page-link" href="/dgm-fall-2025/calendar/"
+          >calendar</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/homework/"
+          >homework</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/project/">project</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+      <d-title>
+        <h1>Lecture 04</h1>
+        <p>Single-layer networks</p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article> <h2 id="announcements">Announcements</h2>
+
+<ul>
+  <li>HW1 Due this Friday (Sep 19), submit your HW via Canvas.</li>
+  <li>If you are still on the waitlist for this course and waiting nervously, please send an email to Prof. Lengerich.</li>
+</ul>
+
+<hr />
+
+<h2 id="outline">Outline</h2>
+
+<ol>
+  <li><a href="#1-perceptrons">Perceptrons</a></li>
+  <li><a href="#2-geometric-intuition">Geometric intuition</a></li>
+  <li><a href="#3-notational-conventions-for-neural-networks">Notational conventions for single-layer nets</a></li>
+  <li><a href="#4-a-fully-connected-linear-layer-in-pytorch">A fully-connected (linear) layer in PyTorch</a></li>
+</ol>
+
+<hr />
+
+<h2 id="1-perceptrons">1. Perceptrons</h2>
+<h3 id="rosenblatts-perceptron">Rosenblatt’s Perceptron</h3>
+
+<p>First, we’ll talk about Rosenblatt’s perceptron, which is seen as the foundation of today’s artificial neural networks.</p>
+
+<p>What Rosenblatt proposed is actually “A learning rule for the computational/mathematical neuron model”. This contains two parts:</p>
+<ol>
+  <li>A computational/mathematical neuron model,</li>
+  <li>A learning rule.</li>
+</ol>
+
+<p>So back to 1957, Rosenblatt not only defined the mathematical model for an artificial neuron (weighted sum + activation function), but also formulated a learning rule that enables the model to learn autonomously from data.</p>
+
+<p>In our brain, there are lots of neurons. Similarly, we invented artificial neural networks to mimic this biological structure.</p>
+
+<figure id="example-figure" class="l-body-outset">
+  <div class="row">
+    <div class="col" style="width: 50%; float: left;">
+      <img src="/dgm-fall-2025/assets/img/notes/lecture-04/Biological%20Neuron.jpg" />
+      <figcaption>
+        <strong>Figure 1.</strong>
+        Biological Neuron.
+      </figcaption>
+    </div>
+    <div class="col" style="width: 50%; float: left;">
+      <img src="/dgm-fall-2025/assets/img/notes/lecture-04/Rosenblatt%E2%80%99s%20Perceptron.png" />
+      <figcaption>
+        <strong>Figure 2.</strong>
+        Rosenblatt’s Perceptron.
+      </figcaption>
+    </div>
+  </div>
+</figure>
+
+<p>The perceptron is the most basic unit of neural networks. However, even for perceptron, there are so many different variants. In today’s lecture, our “<strong>Perceptron</strong>” will specifically represent “<strong>a classic Rosenblatt Perceptron</strong>”. This basically means we’ll use the <strong>threshold function</strong> as our <strong>activation function</strong>.</p>
+
+<figure id="example-figure" class="l-body-outset">
+  <div class="row">
+    <div class="col three">
+      <img src="/dgm-fall-2025/assets/img/notes/lecture-04/Perceptrons.png" />
+    </div>
+    <figcaption>
+        <strong>Figure 3.</strong>
+        Overview of Perceptrons.
+      </figcaption>
+  </div>
+</figure>
+
+<p>While we’ll be somewhat loose about the terminology here, we are building foundations that will lead us to multi-layer perceptrons (MLPs).</p>
+
+<h4 id="terminology">Terminology</h4>
+
+<p>Before everything starts, we need to declare our terminology used here.</p>
+
+<p><strong>Generally</strong>, like when we talk about logistic regression, multilayer nets and extra, our terminology follow the convention below:</p>
+
+<ul>
+  <li>Net input = pre-activation = weighted input, $z$</li>
+  <li>Activations = activation function (net input); $\alpha = \sigma(z)$</li>
+  <li>Label output = threshold (activations of last layer); $\hat{y} = f(\alpha)$</li>
+</ul>
+
+<p>For some <strong>speical cases</strong>, we may use some specifical terminology:</p>
+
+<ul>
+  <li>In perceptron (the classic Rosenblatt Perceptron): activation function = threshold function</li>
+  <li>In linear regression: activation = identity function ($f(x)=x$), so net input = output</li>
+</ul>
+
+<h4 id="mathematical-formulation">Mathematical Formulation</h4>
+
+<p>A perceptron takes multiple inputs $x_1, x_2, \ldots, x_n$ and produces a single binary output. The mathematical formulation is:</p>
+
+<d-math block="">
+y = \sigma \left( \sum_{i=1}^{n} w_i x_i + b \right)
+</d-math>
+
+<p>where:</p>
+<ul>
+  <li>$w_i$ are the weights</li>
+  <li>$b$ is the bias term</li>
+  <li>$\sigma$ is the activation function (typically a step function for classical perceptrons)</li>
+</ul>
+
+<h4 id="activation-functions">Activation Functions</h4>
+
+<p>The activation function $\sigma$ determines the output of the perceptron. For the classical perceptron, we use a step function:</p>
+
+<d-math block="">
+\sigma(z) = \begin{cases}
+1 &amp; \text{if } z &gt; 0 \\
+0 &amp; \text{if } z \leq 0
+\end{cases}
+</d-math>
+
+<h4 id="handling-bias">Handling Bias</h4>
+
+<p>In the above, the bias and the weights are seperate, this is not very convenient when we are actually doing the calculation. A common approach to deal with the bias in neural networks is to include the bias directly into the input vector $X$ by adding an extra dimension with a constant value of 1:</p>
+
+<d-math block="">
+\begin{aligned}
+\tilde{X} &amp;= [x_1, x_2, \ldots, x_n, 1]^T \\
+\tilde{W} &amp;= [w_1, w_2, \ldots, w_n, b]^T
+\end{aligned}
+</d-math>
+
+<p>This allows us to write the perceptron output simply as:</p>
+
+<d-math block="">
+y = \sigma(\tilde{W}^T \tilde{X})
+</d-math>
+
+<h4 id="more-about-the-activation-functions">More about the Activation Functions</h4>
+
+<p>While the classical Rosenblatt perceptron uses the threshold function, modern neural networks employ various activation functions depending on the application and historical period:</p>
+
+<p><strong>Threshold Function (Perceptron, 1950+)</strong></p>
+<d-math block="">
+\sigma(z) = \begin{cases}
+1 &amp; \text{if } z &gt; 0 \\
+0 &amp; \text{if } z \leq 0
+\end{cases}
+</d-math>
+
+<p>This is the original activation function used in Rosenblatt’s perceptron. It produces binary outputs but is not differentiable, making it unsuitable for gradient-based learning.</p>
+
+<p><strong>Sigmoid Function (before 2000)</strong></p>
+<d-math block="">
+\sigma(z) = \frac{1}{1 + e^{-z}}
+</d-math>
+
+<p>The sigmoid function was widely used before 2000s. It’s smooth and differentiable, which enables backpropagation learning. However, it suffers from vanishing gradient problems in deep networks.</p>
+
+<p><strong>ReLU Function (popular since CNNs)</strong></p>
+<d-math block="">
+\text{ReLU}(z) = \max(0, z) = \begin{cases}
+z &amp; \text{if } z &gt; 0 \\
+0 &amp; \text{if } z \leq 0
+\end{cases}
+</d-math>
+
+<p>ReLU (Rectified Linear Unit) became popular with the rise of CNNs and deep learning. It’s computationally efficient and helps mitigate vanishing gradient problems.</p>
+
+<p><strong>Many Variants of ReLU</strong></p>
+
+<p>Modern deep learning employs numerous ReLU variants:</p>
+<ul>
+  <li><strong>Leaky ReLU</strong>: $\text{LeakyReLU}(z) = \max(\alpha z, z)$ where $\alpha$ is a small positive constant</li>
+  <li><strong>GeLU</strong>: $\text{GeLU}(z) = z \cdot \Phi(z)$ where $\Phi$ is the standard Gaussian CDF</li>
+  <li><strong>Swish</strong>: $\text{Swish}(z) = z \cdot \sigma(z)$</li>
+  <li><strong>Mish</strong>: $\text{Mish}(z) = z \cdot \tanh(\text{softplus}(z))$</li>
+</ul>
+
+<p>Each variant addresses specific issues like dead neurons (Leaky ReLU) or provides smoother approximations to ReLU (GeLU, Swish).</p>
+
+<h3 id="perceptron-learning-algorithm">Perceptron Learning Algorithm</h3>
+
+<p>The perceptron learning algorithm is a simple and elegant method for training a perceptron to classify linearly separable data. Here’s the formal algorithm:</p>
+
+<h4 id="algorithm-pseudocode">Algorithm (Pseudocode)</h4>
+
+<p>Let the training dataset be:</p>
+<d-math block="">
+D = \left\{(\mathbf{x}^{[1]}, y^{[1]}), (\mathbf{x}^{[2]}, y^{[2]}), \ldots, (\mathbf{x}^{[n]}, y^{[n]})\right\} \in (\mathbb{R}^m \times \{0,1\})^n
+</d-math>
+
+<p><strong>Algorithm Steps:</strong></p>
+
+<ol>
+  <li>
+    <p><strong>Initialize</strong> $\mathbf{w} := \mathbf{0}^m$ (assume weight includes bias)</p>
+  </li>
+  <li>
+    <p><strong>For every training epoch:</strong></p>
+    <ol>
+      <li><strong>For every</strong> $(\mathbf{x}^{[i]}, y^{[i]}) \in D$:
+        <ol>
+          <li>$\hat{y}^{[i]} := \sigma(\mathbf{x}^{[i]T} \mathbf{w})$ ← Only 0 or 1</li>
+          <li>$err := (y^{[i]} - \hat{y}^{[i]})$ ← Only -1, 0, or 1</li>
+          <li>$\mathbf{w} := \mathbf{w} + err \times \mathbf{x}^{[i]}$</li>
+        </ol>
+      </li>
+    </ol>
+  </li>
+</ol>
+
+<h4 id="algorithm-detailed-logic">Algorithm (Detailed Logic)</h4>
+
+<p>The learning rule can be broken down into three cases:</p>
+
+<ul>
+  <li><strong>If correct:</strong> Do nothing
+    <ul>
+      <li>When $\hat{y}^{[i]} = y^{[i]}$, then $err = 0$, so $\mathbf{w}$ remains unchanged</li>
+    </ul>
+  </li>
+  <li><strong>If incorrect:</strong>
+    <ul>
+      <li><strong>If output is 0 (target is 1):</strong> Add input vector to weight vector
+        <ul>
+          <li>$err = 1 - 0 = 1$, so $\mathbf{w} := \mathbf{w} + \mathbf{x}^{[i]}$</li>
+        </ul>
+      </li>
+      <li><strong>If output is 1 (target is 0):</strong> Subtract input vector from weight vector
+        <ul>
+          <li>$err = 0 - 1 = -1$, so $\mathbf{w} := \mathbf{w} - \mathbf{x}^{[i]}$</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<hr />
+
+<h2 id="2-geometric-intuition">2. Geometric Intuition</h2>
+
+<p>It might seem weird at first why we can directly add or subtract weights during learning. The key insight is that for linear classifiers like perceptrons:</p>
+
+<ul>
+  <li><strong>Angle is important, scale isn’t</strong>: The decision boundary depends on the direction of the weight vector, not its magnitude</li>
+  <li>This is why we can directly subtract weights during learning - we’re essentially rotating the decision boundary</li>
+</ul>
+
+<h3 id="decision-boundaries">Decision Boundaries</h3>
+
+<p>A perceptron creates a linear decision boundary in the input space. For a 2D input space with features $x_1$ and $x_2$, the decision boundary is defined by:</p>
+
+<d-math block="">
+w_1 x_1 + w_2 x_2 + b = 0
+</d-math>
+
+<p>This is a straight line that separates the input space into two regions:</p>
+<ul>
+  <li>Points where $w_1 x_1 + w_2 x_2 + b &gt; 0$ are classified as class 1</li>
+  <li>Points where $w_1 x_1 + w_2 x_2 + b \leq 0$ are classified as class 0</li>
+</ul>
+
+<h3 id="weight-vector-interpretation">Weight Vector Interpretation</h3>
+
+<p>The weight vector $\mathbf{w} = [w_1, w_2]^T$ is perpendicular to the decision boundary. The direction of $\mathbf{w}$ points toward the positive class, and its magnitude affects the “confidence” of the classification.</p>
+
+<h3 id="updating-weight-vector">Updating Weight Vector</h3>
+
+<p>When a positive example <strong>x</strong> (green) is misclassified by the current weight vector <strong>w</strong> (red)—i.e.,</p>
+
+<d-math block="">
+\mathbf{w}^{\top}\mathbf{x} + b &lt; 0
+</d-math>
+
+<p>—we update the model by moving the weights toward the example:</p>
+
+<d-math block="">
+\mathbf{w}_{\text{new}}=\mathbf{w}_{\text{old}}+\eta\,\mathbf{x},\qquad
+b_{\text{new}}=b_{\text{old}}+\eta .
+</d-math>
+
+<p>Geometrically, this adds a step in the direction of <strong>x</strong>, rotating and shifting the decision boundary so that <strong>x</strong> moves to the <strong>correct side</strong>. The blue arrow shows the new weight vector after the update; the dashed line indicates the margin change.</p>
+
+<figure id="example-figure" class="l-body-outset">
+  <div class="row">
+    <div class="col two">
+      <img src="/dgm-fall-2025/assets/img/notes/lecture-04/Updating%20Process.png" />
+    </div>
+  </div>
+  <figcaption>
+      <strong>Figure 4.</strong>
+      Updating Weight Vector.
+  </figcaption>
+</figure>
+
+<h3 id="perceptron-limitations">Perceptron Limitations</h3>
+
+<ul>
+  <li><strong>Linear only:</strong> Decision boundary is a hyperplane; no curved/non-linear splits.</li>
+  <li><strong>Binary output:</strong> One unit gives 0/1 only; multi-class needs extra machinery.</li>
+  <li><strong>Cannot solve XOR:</strong> XOR is not linearly separable → no single hyperplane fits.</li>
+  <li><strong>No convergence on non-separable data:</strong> If classes overlap/noisy, updates can oscillate.</li>
+  <li><strong>Many training optima, weak generalization:</strong> Many separating hyperplanes exist; the one found may have small margin and overfit.</li>
+</ul>
+
+<h3 id="parallel-histories">Parallel Histories</h3>
+<ul>
+  <li><strong>1838</strong> — Verhulst: introduces the <em>logistic function</em> (population growth).</li>
+  <li><strong>1943</strong> — McCulloch &amp; Pitts: logic neurons (no learning).</li>
+  <li><strong>1944</strong> — Berkson: introduces the <em>logit</em>.</li>
+  <li><strong>1957</strong> — Rosenblatt: perceptron + learning rule (connectionism).</li>
+  <li><strong>1958</strong> — Cox: logistic regression as general regression (statistics).</li>
+  <li><strong>1969</strong> — Minsky &amp; Papert: perceptron limits (can’t do XOR).</li>
+  <li><strong>1986</strong> — Rumelhart, Hinton &amp; Williams: backpropagation + sigmoids.
+    <ul>
+      <li><em>Can be seen as “solve the 1969 problem by stacking the 1958 model → MLE by gradient ascent / chain rule.”</em></li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="perceptrons-and-deep-learning">Perceptrons and Deep Learning</h3>
+
+<ul>
+  <li><strong>Core question:</strong> Why did the perceptron become the origin story for DL?</li>
+  <li><strong>Key reasons:</strong>
+    <ul>
+      <li><strong>A learning neuron:</strong> Rosenblatt framed a neuron with a simple learning rule and even built hardware—easy to rally around.</li>
+    </ul>
+  </li>
+  <li><strong>Clear path to depth:</strong> Stack the same unit + backprop → multilayer networks; “logistic” sounds like a single-model family.</li>
+  <li><strong>Community + story:</strong> Connectionist culture popularized the “neurons that learn” narrative more than GLM language did.</li>
+  <li><strong>Historical timing:</strong> Perceptron arrived before modern stats/ML branding, so it became the origin tale by practice and momentum.</li>
+</ul>
+
+<hr />
+
+<h2 id="3-notational-conventions-for-neural-networks">3. Notational Conventions for Neural Networks</h2>
+
+<h3 id="standard-notation">Standard Notation</h3>
+
+<p>When working with neural networks, we typically use the following conventions:</p>
+
+<ul>
+  <li><strong>Input</strong>: $\mathbf{x} \in \mathbb{R}^d$ where $d$ is the input dimension</li>
+  <li><strong>Weights</strong>: $\mathbf{W} \in \mathbb{R}^{m \times d}$ for a layer with $m$ outputs and $d$ inputs</li>
+  <li><strong>Bias</strong>: $\mathbf{b} \in \mathbb{R}^m$</li>
+  <li><strong>Pre-activation</strong>: $\mathbf{z} = \mathbf{W}\mathbf{x} + \mathbf{b}$</li>
+  <li><strong>Activation</strong>: $\mathbf{a} = \sigma(\mathbf{z})$</li>
+</ul>
+
+<h3 id="a-fully-connected-layer">A Fully-Connected Layer</h3>
+
+<p>With all the notation we have, we can come up with a fully-connected layer:</p>
+
+<figure id="example-figure" class="l-body-outset">
+  <div class="row">
+    <div class="col two">
+      <img src="/dgm-fall-2025/assets/img/notes/lecture-04/A%20Fully-Connected%20Layer%20with%20matrix.jpg" />
+    </div>
+  </div>
+  <figcaption>
+      <strong>Figure 5.</strong>
+      A Fully-Connected Layer with Matrix.
+  </figcaption>
+</figure>
+
+<h3 id="matrix-form">Matrix Form</h3>
+
+<p>For a batch of inputs $\mathbf{X} \in \mathbb{R}^{n \times d}$ (where $n$ is the batch size):</p>
+
+<d-math block="">
+\begin{aligned}
+\mathbf{Z} &amp;= \mathbf{X}\mathbf{W}^T + \mathbf{b} \\
+\mathbf{A} &amp;= \sigma(\mathbf{Z})
+\end{aligned}
+</d-math>
+
+<h3 id="intuition-of-wmathbfx-notation">Intuition of <d-math>W\mathbf{x}</d-math> notation</h3>
+
+<d-math block="">
+W\begin{bmatrix}x\\y\end{bmatrix}
+= \begin{bmatrix}a &amp; b\\ c &amp; d\end{bmatrix}\begin{bmatrix}x\\y\end{bmatrix}
+= x\begin{bmatrix}a\\c\end{bmatrix} + y\begin{bmatrix}b\\d\end{bmatrix}.
+</d-math>
+
+<ul>
+  <li><strong>Column view:</strong> The output is a linear combination of the <strong>columns of</strong> (W) with weights (x) and (y).</li>
+  <li><strong>First column</strong>: (a) scales the (x)-coordinate; (c) moves (x) into the (y) direction.</li>
+  <li><strong>Second column</strong>: (b) moves (y) into the (x) direction; (d) scales the (y)-coordinate.</li>
+</ul>
+
+<d-math block="">
+\begin{aligned}
+W=[\,\mathbf{w}_1\ \cdots\ \mathbf{w}_n\,],\quad
+\mathbf{x}=(x_1,\ldots,x_n)^{\top}
+\ \Rightarrow\ 
+W\mathbf{x}=\sum_{i=1}^{n} x_i\,\mathbf{w}_i.
+\end{aligned}
+</d-math>
+
+<hr />
+
+<h2 id="4-a-fully-connected-linear-layer-in-pytorch">4. A Fully Connected (Linear) Layer in PyTorch</h2>
+
+<figure id="example-figure" class="l-body-outset">
+  <div class="row">
+    <div class="col two">
+      <img src="/dgm-fall-2025/assets/img/notes/lecture-04/A%20Fully-Connected%20Layer.png" />
+    </div>
+  </div>
+  <figcaption>
+      <strong>Figure 6.</strong>
+      A Fully-Connected Layer.
+  </figcaption>
+</figure>
+
+<h3 id="implementation">Implementation</h3>
+
+<p>In PyTorch, a fully connected layer is implemented using <code class="language-plaintext highlighter-rouge">nn.Linear</code>:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="n">nn</span>
+
+<span class="c1"># Create a linear layer: input_size=784, output_size=10
+</span><span class="n">linear_layer</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">784</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+
+<span class="c1"># Forward pass
+</span><span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">784</span><span class="p">)</span>  <span class="c1"># batch_size=32, input_size=784
+</span><span class="n">output</span> <span class="o">=</span> <span class="n">linear_layer</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>  <span class="c1"># output shape: (32, 10)
+</span></code></pre></div></div>
+
+<h3 id="understanding-the-parameters">Understanding the Parameters</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Access weights and bias
+</span><span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Weight shape: </span><span class="si">{</span><span class="n">linear_layer</span><span class="p">.</span><span class="n">weight</span><span class="p">.</span><span class="n">shape</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>  <span class="c1"># (10, 784)
+</span><span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Bias shape: </span><span class="si">{</span><span class="n">linear_layer</span><span class="p">.</span><span class="n">bias</span><span class="p">.</span><span class="n">shape</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>      <span class="c1"># (10,)
+</span>
+<span class="c1"># The operation performed is: output = x @ weight.T + bias
+</span></code></pre></div></div>
+
+<h3 id="building-a-simple-perceptron">Building a Simple Perceptron</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Perceptron</span><span class="p">(</span><span class="n">nn</span><span class="p">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_size</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Perceptron</span><span class="p">,</span> <span class="bp">self</span><span class="p">).</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">linear</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">input_size</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">activation</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Sigmoid</span><span class="p">()</span>  <span class="c1"># or nn.Heaviside for step function
+</span>    
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">linear</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">.</span><span class="n">activation</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+
+<span class="c1"># Usage
+</span><span class="n">perceptron</span> <span class="o">=</span> <span class="n">Perceptron</span><span class="p">(</span><span class="n">input_size</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">tensor</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">]])</span>
+<span class="n">output</span> <span class="o">=</span> <span class="n">perceptron</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="key-takeaways">Key Takeaways</h2>
+
+<ol>
+  <li><strong>Historical Significance</strong>: Rosenblatt’s perceptron laid the foundation for modern neural networks</li>
+  <li><strong>Linear Separation</strong>: Single-layer perceptrons can only solve linearly separable problems</li>
+  <li><strong>Geometric Interpretation</strong>: The weight vector defines the decision boundary orientation</li>
+  <li><strong>Mathematical Foundation</strong>: Understanding matrix operations is crucial for neural network implementation</li>
+  <li><strong>PyTorch Implementation</strong>: <code class="language-plaintext highlighter-rouge">nn.Linear</code> provides an efficient implementation of fully connected layers</li>
+</ol>
+
+<h2 id="next-steps">Next Steps</h2>
+
+<p>In the next lecture, we will explore:</p>
+<ul>
+  <li>Multi-layer perceptrons (MLPs)</li>
+  <li>How adding hidden layers enables non-linear decision boundaries</li>
+  <li>The universal approximation theorem</li>
+  <li>Backpropagation algorithm for training deep networks</li>
+</ul>
+
+<hr />
+
+<p><em>Note: This lecture provides the fundamental building blocks that we’ll use throughout the course. Make sure you understand the geometric intuition and mathematical formulation before moving to more complex architectures.</em>
+Only basic.</p>
+ </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+    </div>
+
+    <footer class="site-footer">
+  <div class="wrapper">
+    <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Ben Lengerich</li><li>
+            <a class="u-email" href="mailto:TBD@wisc.edu"
+              >TBD@wisc.edu</a
+            >
+          </li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li>
+    <a
+      href="https://github.com/AdaptInfer"
+      target="_blank"
+      ><i class="fab fa-github"></i>
+      <span class="username">AdaptInfer</span></a
+    >
+  </li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>
+          &copy; Copyright 2025 University of Wisconsin.
+          <br />
+          
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  </body>
+
+  <d-bibliography
+    src="/dgm-fall-2025/assets/bibliography/2025-09-15-lecture-04.bib"
+  >
+  </d-bibliography>
+
+  <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/dgm-fall-2025/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link
+  rel="stylesheet"
+  href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css"
+/>
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+<script src="/dgm-fall-2025/assets/js/katex.js"></script>
+ 
+<!-- Load Anchor JS -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+<script>
+  anchors.options.visible = "hover";
+  anchors.add("article h2, article h3, article h4, article h5, article h6");
+</script>
+ 
+<!-- Adjust LaTeX JS -->
+<script src="/dgm-fall-2025/assets/js/latex.js"></script>
+
+
+<!-- Include custom icon fonts -->
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2025/assets/css/fontawesome-all.min.css"
+/>
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2025/assets/css/academicons.min.css"
+/>
+
+<!-- Google Analytics -->
+<script>
+  (function (i, s, o, g, r, a, m) {
+    i["GoogleAnalyticsObject"] = r;
+    (i[r] =
+      i[r] ||
+      function () {
+        (i[r].q = i[r].q || []).push(arguments);
+      }),
+      (i[r].l = 1 * new Date());
+    (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+    a.async = 1;
+    a.src = g;
+    m.parentNode.insertBefore(a, m);
+  })(
+    window,
+    document,
+    "script",
+    "//www.google-analytics.com/analytics.js",
+    "ga",
+  );
+
+  ga("create", "", "auto");
+  ga("send", "pageview");
+</script>
+
+</html>

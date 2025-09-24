@@ -68,7 +68,7 @@
             "editors": [
               
               {
-                "editor": "Editor 1"
+                "editor": "Eva Song"
               }
               
             ],
@@ -150,14 +150,15 @@
       <d-byline></d-byline>
 
       <d-article> <h2 id="todays-topics">Today’s Topics:</h2>
-<ol>
-  <li><a href="#1-tensors-in-deep-learning">Tensors in Deep Learning</a></li>
-  <li><a href="#2-tensors-and-pytorch">Tensors and PyTorch</a></li>
-  <li><a href="#3-vectors-matrices-and-broadcasting">Vectors, Matrices, and Broadcasting</a></li>
-  <li><a href="#4-probability-basics">Probability Basics</a></li>
-  <li><a href="#5-estimation-methods">Estimation Methods</a></li>
-  <li><a href="#6-linear-regression">Linear Regression</a></li>
-</ol>
+<ul>
+  <li><a href="#todays-topics">Today’s Topics:</a></li>
+  <li><a href="#1-tensors-in-deep-learning">1. Tensors in Deep Learning</a></li>
+  <li><a href="#2-tensors-and-pytorch">2. Tensors and PyTorch</a></li>
+  <li><a href="#3-vectors-matrices-and-broadcasting">3. Vectors, Matrices, and Broadcasting</a></li>
+  <li><a href="#4-probability-basics">4. Probability Basics</a></li>
+  <li><a href="#5-estimation-methods">5. Estimation Methods</a></li>
+  <li><a href="#6-linear-regression">6. Linear Regression</a></li>
+</ul>
 
 <h2 id="1-tensors-in-deep-learning">1. Tensors in Deep Learning</h2>
 <ul>
@@ -572,7 +573,7 @@ Suppose we observe $k$ successes in $n$ Bernoulli trials. Then</li>
 \[\hat{\beta}_{\text{ridge}}
   = \arg\min_{\beta} \|y - X\beta\|^2 + \lambda \|\beta\|_2^2\]
 
-<p>Equivalent MAP interpretation: Gaussian prior $\beta \sim N(0, \sigma^2I)$.</p>
+<p>Equivalent MAP interpretation: Gaussian prior $\beta \sim N(0,  \frac{\sigma^2}{\lambda})$.</p>
 
 <ul>
   <li><strong>Lasso Regression (L1):</strong></li>
@@ -581,7 +582,7 @@ Suppose we observe $k$ successes in $n$ Bernoulli trials. Then</li>
 \[\hat{\beta}_{\text{lasso}}
    = \arg\min_{\beta} \|y - X\beta\|^2 + \lambda \|\beta\|_1\]
 
-<p>Equivalent MAP interpretation: Laplace prior $\beta \sim \text{Laplace}(0, b)$.<br />
+<p>Equivalent MAP interpretation: Laplace prior $\beta \sim \text{Laplace}(0, \frac{\sigma}{\lambda})$.<br />
   Encourages <strong>sparsity</strong> (many coefficients shrink to 0).</p>
  </d-article>
 
