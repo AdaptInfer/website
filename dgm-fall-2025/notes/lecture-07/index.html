@@ -1,6 +1,7 @@
 <!doctype html>
 <html>
   <head>
+    <head>
   <meta charset="UTF-8" />
   <meta http-equiv="content-language" content="en" />
   <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
@@ -8,7 +9,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
   <title>
-    STAT 453
+    STAT 453 | Lecture 07
   </title>
   <meta name="description" content="STAT 453 - University of Wisconsin-Madison - Fall 2025
 " />
@@ -21,7 +22,7 @@
   <link rel="stylesheet" href="/dgm-fall-2025/assets/css/main.css" />
   <link
     rel="canonical"
-    href="/dgm-fall-2025/notes/"
+    href="/dgm-fall-2025/notes/lecture-07/"
   />
 
   
@@ -31,6 +32,55 @@
   
 </head>
 
+    <script src="/dgm-fall-2025/assets/js/distillpub/template.v2.js"></script>
+    <script src="/dgm-fall-2025/assets/js/distillpub/transforms.v2.js"></script>
+  </head>
+
+  <d-front-matter>
+    <script type="text/json">
+      {
+            "title": "Lecture 07",
+            "description": "Cluster and cloud computing resources",
+            "published": "September 24, 2025",
+            "lecturers": [
+              
+              {
+                "lecturer": "Ben Lengerich",
+                "lecturerURL": "https://adaptinfer.org"
+              }
+              
+            ],
+            "authors": [
+              
+              {
+                "author": "Frederik Lund Pedersen"
+              }
+              
+            ],
+            "editors": [
+              
+              {
+                "editor": "Editor 1"
+              }
+              
+            ],
+            "katex": {
+              "delimiters": [
+                {
+                  "left": "$",
+                  "right": "$",
+                  "display": false
+                },
+                {
+                  "left": "$$",
+                  "right": "$$",
+                  "display": true
+                }
+              ]
+            }
+          }
+    </script>
+  </d-front-matter>
 
   <body>
     <header class="site-header">
@@ -84,90 +134,77 @@
 
 
     <div class="page-content">
-      <div class="wrapper"><div class="post">
-  <header class="post-header">
-    <h1>Course Notes</h1>
-    <h2>The notes written by students and edited by instructors</h2>
-  </header>
-</div>
+      <d-title>
+        <h1>Lecture 07</h1>
+        <p>Cluster and cloud computing resources</p>
+      </d-title>
 
-<ul class="post-list">
-  
-  <li >
-    <p class="post-meta">September 24, 2025</p>
-    <h2>
-      <a class="post-title" href="/dgm-fall-2025/notes/lecture-07/"
-        >Lecture 07</a
-      >
-    </h2>
-    <p>Cluster and cloud computing resources</p>
-  </li>
-  
-  <li >
-    <p class="post-meta">September 17, 2025</p>
-    <h2>
-      <a class="post-title" href="/dgm-fall-2025/notes/lecture-05/"
-        >Lecture 05</a
-      >
-    </h2>
-    <p>Fitting Neurons with Gradient Descent</p>
-  </li>
-  
-  <li >
-    <p class="post-meta">September 15, 2025</p>
-    <h2>
-      <a class="post-title" href="/dgm-fall-2025/notes/lecture-04/"
-        >Lecture 04</a
-      >
-    </h2>
-    <p>Single-layer networks</p>
-  </li>
-  
-  <li >
-    <p class="post-meta">September 10, 2025</p>
-    <h2>
-      <a class="post-title" href="/dgm-fall-2025/notes/lecture-03/"
-        >Lecture 03</a
-      >
-    </h2>
-    <p>Statistics / linear algebra / calculus review</p>
-  </li>
-  
-  <li >
-    <p class="post-meta">September 8, 2025</p>
-    <h2>
-      <a class="post-title" href="/dgm-fall-2025/notes/lecture-02/"
-        >Lecture 02</a
-      >
-    </h2>
-    <p>A Brief History of Deep Learning</p>
-  </li>
-  
-  <li >
-    <p class="post-meta">September 5, 2025</p>
-    <h2>
-      <a class="post-title" href="/dgm-fall-2025/notes/lecture-01/"
-        >Lecture 01</a
-      >
-    </h2>
-    <p>Course Introduction, Introduction to DL</p>
-  </li>
-  
-  <li style="border-bottom: none;" >
-    <p class="post-meta">January 9, 2019</p>
-    <h2>
-      <a class="post-title" href="/dgm-fall-2025/notes/lecture-notes-template/"
-        >Lecture Notes Template</a
-      >
-    </h2>
-    <p>An example of a distill-style lecture notes that showcases the main elements.</p>
-  </li>
-  
-</ul>
+      <d-byline></d-byline>
 
+      <d-article> <h1 id="cluster-and-cloud-computing-resources">Cluster and cloud computing resources</h1>
 
+<h3 id="google-colab">Google Colab</h3>
 
-</div>
+<p>Google Colab provides free cloud-based Jupyter notebooks. Each session is limited to 12 hours of computation, which should be enough for this class. Colab is useful for quick work, but can be tedious since packages need to be reinstalled each time.</p>
+
+<p>Website: <a href="https://colab.research.google.com">colab.research.google.com</a></p>
+
+<figure>
+  <img src="/dgm-fall-2025/assets/img/notes/lecture-07/colab.png" alt="Google Colab interface" />
+  <figcaption><strong>Figure 1.</strong> Google Colab interface with GPU runtime enabled.</figcaption>
+</figure>
+
+<h3 id="turn-gpu-mode-default-cpu">Turn GPU mode, default CPU</h3>
+
+<p>To enable GPU acceleration, go to:<br />
+<code class="language-plaintext highlighter-rouge">Runtime</code> → <code class="language-plaintext highlighter-rouge">Change Runtime Type</code> → <code class="language-plaintext highlighter-rouge">Hardware Accelerator</code></p>
+
+<p>Colab comes preloaded with some packages, including PyTorch.</p>
+
+<h3 id="installing-packages">Installing packages</h3>
+
+<p>You can install additional packages in a notebook cell using:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>!pip install package_name
+</code></pre></div></div>
+
+<h3 id="github">GitHub</h3>
+
+<p>Colab can be directly connected to GitHub or Google Drive.<br />
+When you import a notebook from GitHub, save it to Drive, otherwise your changes will not be saved.</p>
+
+<h3 id="how-to-get-data">How to get data</h3>
+
+<p>Mount your Google Drive to the notebook to access files.<br />
+Once mounted, the notebook can open data as usual. Colab does not automatically have access to local data.</p>
+
+<p>Colab is a good way to get free GPU access. There are also many paid vendors for GPU access.</p>
+
+<figure>
+  <img src="/dgm-fall-2025/assets/img/notes/lecture-07/mount-drive.png" alt="Mounting Google Drive in Colab" />
+  <figcaption><strong>Figure 2.</strong> Mounting Google Drive in Colab to access datasets.</figcaption>
+</figure>
+
+<p>Once mounted, all your Drive files appear under <code class="language-plaintext highlighter-rouge">/content/drive/MyDrive/</code>.<br />
+You can then open datasets directly from these folders in your Colab notebook.</p>
+
+<figure>
+  <img src="/dgm-fall-2025/assets/img/notes/lecture-07/open-dataset.png" alt="Opening dataset files from Google Drive in Colab" />
+  <figcaption><strong>Figure 3.</strong> Example code showing how to open dataset files once Google Drive is mounted.</figcaption>
+</figure>
+
+<h3 id="chtc">CHTC</h3>
+
+<p>CHTC is UW’s own cloud computing server.<br />
+If you are working with faculty, you can get a free account and access.<br />
+Research is conducted on the use of these servers by UW.</p>
+
+<hr />
+ </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
     </div>
 
     <footer class="site-footer">
@@ -204,7 +241,15 @@
     </div>
   </div>
 </footer>
- <!-- Load jQuery -->
+
+  </body>
+
+  <d-bibliography
+    src="/dgm-fall-2025/assets/bibliography/2025-09-24-lecture-07.bib"
+  >
+  </d-bibliography>
+
+  <!-- Load jQuery -->
 <script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
 
 <!-- Load Common JS -->
@@ -266,5 +311,4 @@
   ga("send", "pageview");
 </script>
 
-  </body>
 </html>
