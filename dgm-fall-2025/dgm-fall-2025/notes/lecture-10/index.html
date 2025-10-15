@@ -1,0 +1,427 @@
+<!doctype html>
+<html>
+  <head>
+    <head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="content-language" content="en" />
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <title>
+    STAT 453 | Lecture 10
+  </title>
+  <meta name="description" content="STAT 453 - University of Wisconsin-Madison - Fall 2025
+" />
+
+  <link
+    rel="shortcut icon"
+    href="/dgm-fall-2025/assets/img/favicon.ico"
+  />
+
+  <link rel="stylesheet" href="/dgm-fall-2025/assets/css/main.css" />
+  <link
+    rel="canonical"
+    href="/dgm-fall-2025/notes/lecture-10/"
+  />
+
+  
+  <!-- Load Latex JS -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+  
+</head>
+
+    <script src="/dgm-fall-2025/assets/js/distillpub/template.v2.js"></script>
+    <script src="/dgm-fall-2025/assets/js/distillpub/transforms.v2.js"></script>
+  </head>
+
+  <d-front-matter>
+    <script type="text/json">
+      {
+            "title": "Lecture 10",
+            "description": "Regularization and Generalization",
+            "published": "October 13, 2025",
+            "lecturers": [
+              
+              {
+                "lecturer": "Ben Lengerich",
+                "lecturerURL": "https://adaptinfer.org"
+              }
+              
+            ],
+            "authors": [
+              
+              {
+                "author": "Neev Agrawal"
+              },
+              
+              {
+                "author": "Dong Hyeon Jeon"
+              },
+              
+              {
+                "author": "Colby Kipp Beliveau"
+              }
+              
+            ],
+            "editors": [
+              
+              {
+                "editor": "Editor1"
+              }
+              
+            ],
+            "katex": {
+              "delimiters": [
+                {
+                  "left": "$",
+                  "right": "$",
+                  "display": false
+                },
+                {
+                  "left": "$$",
+                  "right": "$$",
+                  "display": true
+                }
+              ]
+            }
+          }
+    </script>
+  </d-front-matter>
+
+  <body>
+    <header class="site-header">
+  <div class="wrapper">
+    <span class="site-title">
+      <a class="page-link" href="https://adaptinfer.org/dgm-fall-2025/"
+        >STAT 453</a
+      >
+    </span>
+
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path
+              fill="#424242"
+              d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
+            />
+            <path
+              fill="#424242"
+              d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
+            />
+            <path
+              fill="#424242"
+              d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
+            />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger">
+        <a class="page-link" href="/dgm-fall-2025/logistics/"
+          >logistics</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/lectures/"
+          >lectures</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/notes/">notes</a>
+        <a class="page-link" href="/dgm-fall-2025/calendar/"
+          >calendar</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/homework/"
+          >homework</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/project/">project</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+      <d-title>
+        <h1>Lecture 10</h1>
+        <p>Regularization and Generalization</p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article> <h2 id="todays-topics">Today’s Topics:</h2>
+<ul>
+  <li><a href="#1-improving-generalization">1. Improving Generalization</a></li>
+  <li><a href="#2-data-augmentation">2. Data Augmentation</a></li>
+  <li><a href="#3-early-stopping">3. Early Stopping</a></li>
+  <li><a href="#4-l1-and-l2-regularization">4. L1 and L2 Regularization</a></li>
+  <li><a href="#5-dropout">5. Dropout</a></li>
+</ul>
+
+<hr />
+
+<h2 id="1-improving-generalization">1. Improving Generalization</h2>
+
+<p>Generalization refers to how well a trained model performs on unseen data.<br />
+A model that generalizes well captures the <strong>true underlying patterns</strong> in the dataset instead of memorizing noise from the training set.</p>
+
+<p>Achieving high training accuracy is not enough — the goal is to ensure that the model <strong>performs well on new data</strong>.<br />
+Overfitting occurs when a model is too closely tailored to the training set, leading to poor test performance.</p>
+
+<p><strong>Key strategies to improve generalization:</strong></p>
+<ul>
+  <li>Collect more diverse data</li>
+  <li>Use data augmentation</li>
+  <li>Reduce model capacity (simpler models)</li>
+  <li>Apply regularization (L1, L2, dropout)</li>
+  <li>Use early stopping</li>
+  <li>Employ transfer/self-supervised learning</li>
+</ul>
+
+<figure>
+  <img src="/dgm-fall-2025/assets/img/notes/lecture-10/figure1.png" width="550" />
+  <figcaption>Figure 1. Strategies for improving model generalization.</figcaption>
+</figure>
+
+<hr />
+
+<h2 id="2-data-augmentation">2. Data Augmentation</h2>
+
+<p><strong>Data augmentation</strong> increases dataset size by generating <strong>label-preserving transformations</strong> — improving robustness and reducing overfitting.<br />
+Useful when labeled data is scarce or costly (e.g., medical imaging).</p>
+
+<p><strong>Common augmentations:</strong></p>
+<ul>
+  <li>Random crop / resize</li>
+  <li>Flipping, rotation, translation, zoom</li>
+  <li>Adding noise or color jitter</li>
+  <li>Mixup, CutMix</li>
+</ul>
+
+<p>These simulate real-world variations and encourage <strong>invariant feature learning</strong>.</p>
+
+<d-math block="">
+\mathcal{D}_{\mathrm{aug}} = \{ (h(x_i), y_i) \mid (x_i, y_i)\in\mathcal{D} \}
+</d-math>
+
+<figure>
+  <img src="/dgm-fall-2025/assets/img/notes/lecture-10/figure2.png" width="550" />
+  <figcaption>Figure 2. Original vs. augmented data.</figcaption>
+</figure>
+
+<hr />
+
+<h2 id="3-early-stopping">3. Early Stopping</h2>
+
+<p>Early stopping halts training when validation performance stops improving — preventing overfitting.</p>
+
+<p><strong>Procedure</strong></p>
+<ol>
+  <li>Split data into training/validation/test.</li>
+  <li>Track validation performance.</li>
+  <li>Stop training when validation loss stops decreasing.</li>
+</ol>
+
+<figure>
+  <img src="/dgm-fall-2025/assets/img/notes/lecture-10/figure3.png" width="550" />
+  <figcaption>Figure 3. Early stopping accuracy curve.</figcaption>
+</figure>
+<figure>
+  <img src="/dgm-fall-2025/assets/img/notes/lecture-10/figure4.png" width="550" />
+  <figcaption>Figure 4. Early stopping loss curve.</figcaption>
+</figure>
+
+<hr />
+
+<h2 id="4-l1-and-l2-regularization">4. L1 and L2 Regularization</h2>
+
+<p>Regularization penalizes large weights, encouraging simpler models and preventing overfitting.</p>
+
+<h3 id="41-l1-regularization-lasso">4.1 L1 Regularization (Lasso)</h3>
+
+<d-math block="">
+\mathcal{L}_{L1}=\frac{1}{n}\sum_{i=1}^n L(y^{[i]},\hat{y}^{[i]}) + \frac{\lambda}{n}\sum_j |w_j|
+</d-math>
+
+<ul>
+  <li>Promotes sparsity (many weights → 0)</li>
+  <li>Useful for feature selection</li>
+</ul>
+
+<figure>
+  <img src="/dgm-fall-2025/assets/img/notes/lecture-10/figure5.png" width="550" />
+  <figcaption>Figure 5. L1 regularization promotes sparsity.</figcaption>
+</figure>
+
+<h3 id="42-l2-regularization-ridge">4.2 L2 Regularization (Ridge)</h3>
+
+<d-math block="">
+\mathcal{L}_{L2}=\frac{1}{n}\sum_{i=1}^n L(y^{[i]},\hat{y}^{[i]}) + \frac{\lambda}{n}\sum_j w_j^2
+</d-math>
+
+<d-math block="">
+w_{i,j} := w_{i,j} - \eta\!\left(\frac{\partial L}{\partial w_{i,j}} + \frac{2\lambda}{n}w_{i,j}\right)
+</d-math>
+
+<figure>
+  <img src="/dgm-fall-2025/assets/img/notes/lecture-10/figure6.png" width="550" />
+  <figcaption>Figure 6. L2 regularization smooths weight distribution.</figcaption>
+</figure>
+
+<hr />
+
+<h2 id="5-dropout">5. Dropout</h2>
+
+<p>Dropout randomly removes a fraction of neurons during training — forcing the network to learn <strong>redundant, distributed representations</strong>.</p>
+
+<p><strong>Why it works</strong></p>
+<ul>
+  <li>Prevents co-adaptation</li>
+  <li>Acts like model ensemble</li>
+  <li>Improves robustness</li>
+</ul>
+
+<d-math block="">
+\tilde{h}_i = z_i h_i,\quad
+z_i =
+\begin{cases}
+0 &amp; \text{with probability } p \\
+1 &amp; \text{with probability } 1-p
+\end{cases}
+</d-math>
+
+<figure>
+  <img src="/dgm-fall-2025/assets/img/notes/lecture-10/figure7.png" width="550" />
+  <figcaption>Figure 7. Dropout training process.</figcaption>
+</figure>
+
+<figure>
+  <img src="/dgm-fall-2025/assets/img/notes/lecture-10/figure8.png" width="550" />
+  <figcaption>Figure 8. Dropout improves validation accuracy.</figcaption>
+</figure>
+
+<hr />
+
+<h2 id="summary">Summary</h2>
+
+<p>Regularization and generalization methods — like <strong>data augmentation, early stopping, L2, and dropout</strong> — are essential to ensure models learn meaningful patterns, not noise.<br />
+They enable robust generalization and stable performance on unseen data.</p>
+
+<hr />
+
+<footer>
+<p>© 2025 University of Wisconsin — STAT 453 Lecture Notes</p>
+</footer>
+ </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+    </div>
+
+    <footer class="site-footer">
+  <div class="wrapper">
+    <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Ben Lengerich</li><li>
+            <a class="u-email" href="mailto:TBD@wisc.edu"
+              >TBD@wisc.edu</a
+            >
+          </li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li>
+    <a
+      href="https://github.com/AdaptInfer"
+      target="_blank"
+      ><i class="fab fa-github"></i>
+      <span class="username">AdaptInfer</span></a
+    >
+  </li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>
+          &copy; Copyright 2025 University of Wisconsin.
+          <br />
+          
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  </body>
+
+  <d-bibliography
+    src="/dgm-fall-2025/assets/bibliography/2025-10-06-lecture-10.bib"
+  >
+  </d-bibliography>
+
+  <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/dgm-fall-2025/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link
+  rel="stylesheet"
+  href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css"
+/>
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+<script src="/dgm-fall-2025/assets/js/katex.js"></script>
+ 
+<!-- Load Anchor JS -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+<script>
+  anchors.options.visible = "hover";
+  anchors.add("article h2, article h3, article h4, article h5, article h6");
+</script>
+ 
+<!-- Adjust LaTeX JS -->
+<script src="/dgm-fall-2025/assets/js/latex.js"></script>
+
+
+<!-- Include custom icon fonts -->
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2025/assets/css/fontawesome-all.min.css"
+/>
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2025/assets/css/academicons.min.css"
+/>
+
+<!-- Google Analytics -->
+<script>
+  (function (i, s, o, g, r, a, m) {
+    i["GoogleAnalyticsObject"] = r;
+    (i[r] =
+      i[r] ||
+      function () {
+        (i[r].q = i[r].q || []).push(arguments);
+      }),
+      (i[r].l = 1 * new Date());
+    (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+    a.async = 1;
+    a.src = g;
+    m.parentNode.insertBefore(a, m);
+  })(
+    window,
+    document,
+    "script",
+    "//www.google-analytics.com/analytics.js",
+    "ga",
+  );
+
+  ga("create", "", "auto");
+  ga("send", "pageview");
+</script>
+
+</html>
