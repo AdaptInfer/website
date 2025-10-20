@@ -1,0 +1,676 @@
+<!doctype html>
+<html>
+  <head>
+    <head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="content-language" content="en" />
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <title>
+    STAT 453 | Lecture 11
+  </title>
+  <meta name="description" content="STAT 453 - University of Wisconsin-Madison - Fall 2025
+" />
+
+  <link
+    rel="shortcut icon"
+    href="/dgm-fall-2025/assets/img/favicon.ico"
+  />
+
+  <link rel="stylesheet" href="/dgm-fall-2025/assets/css/main.css" />
+  <link
+    rel="canonical"
+    href="/dgm-fall-2025/notes/lecture-11/"
+  />
+
+  
+  <!-- Load Latex JS -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+  
+</head>
+
+    <script src="/dgm-fall-2025/assets/js/distillpub/template.v2.js"></script>
+    <script src="/dgm-fall-2025/assets/js/distillpub/transforms.v2.js"></script>
+  </head>
+
+  <d-front-matter>
+    <script type="text/json">
+      {
+            "title": "Lecture 11",
+            "description": "Normalization / Initialization",
+            "published": "October 8, 2025",
+            "lecturers": [
+              
+              {
+                "lecturer": "Ben Lengerich",
+                "lecturerURL": "https://lengerichlab.github.io/"
+              }
+              
+            ],
+            "authors": [
+              
+              {
+                "author": "xinyu Pan"
+              },
+              
+              {
+                "author": "Olivia Chan"
+              },
+              
+              {
+                "author": "Alexander Beckerman"
+              }
+              
+            ],
+            "editors": [
+              
+              {
+                "editor": "Editor 1"
+              }
+              
+            ],
+            "katex": {
+              "delimiters": [
+                {
+                  "left": "$",
+                  "right": "$",
+                  "display": false
+                },
+                {
+                  "left": "$$",
+                  "right": "$$",
+                  "display": true
+                }
+              ]
+            }
+          }
+    </script>
+  </d-front-matter>
+
+  <body>
+    <header class="site-header">
+  <div class="wrapper">
+    <span class="site-title">
+      <a class="page-link" href="https://adaptinfer.org/dgm-fall-2025/"
+        >STAT 453</a
+      >
+    </span>
+
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path
+              fill="#424242"
+              d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
+            />
+            <path
+              fill="#424242"
+              d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
+            />
+            <path
+              fill="#424242"
+              d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
+            />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger">
+        <a class="page-link" href="/dgm-fall-2025/logistics/"
+          >logistics</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/lectures/"
+          >lectures</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/notes/">notes</a>
+        <a class="page-link" href="/dgm-fall-2025/calendar/"
+          >calendar</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/homework/"
+          >homework</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/project/">project</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+      <d-title>
+        <h1>Lecture 11</h1>
+        <p>Normalization / Initialization</p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article> <h1 id="lecture-notes-normalization-and-initialization-in-deep-learning">Lecture Notes: Normalization and Initialization in Deep Learning</h1>
+
+<blockquote>
+  <p>Based on lecture transcript and accompanying slides.
+Topic: <em>Normalization and Initialization</em> (Gordon, Lecture 11).
+Course context: Regularization, stability, and optimization in neural networks. </p>
+</blockquote>
+
+<hr />
+
+<h2 id="1-research-projects-and-reading-papers">1. Research Projects and Reading Papers</h2>
+
+<h3 id="11-choosing-a-project-direction">1.1 Choosing a Project Direction</h3>
+
+<p>Before designing architectures (e.g., transformers), it is recommended to <strong>first decide on an application domain</strong>.</p>
+
+<ul>
+  <li>Select an <strong>area of interest</strong> such as <em>medical image analysis</em>, <em>speech recognition</em>, or <em>sequence modeling</em>.</li>
+  <li>Perform a <strong>literature review</strong> of approximately 10 recent papers within that field.</li>
+  <li>Identify the <strong>model architectures and methods</strong> employed.</li>
+  <li>Even without full comprehension, one can <strong>replicate</strong> or <strong>slightly modify</strong> those studies to form a meaningful project.</li>
+</ul>
+
+<h3 id="12-critical-and-optimistic-reading">1.2 Critical and Optimistic Reading</h3>
+
+<p>Academic papers, even from leading institutions, invariably contain flaws.
+The productive mindset combines:</p>
+
+<ul>
+  <li><strong>Critical analysis</strong>: Identifying gaps, assumptions, or methodological weaknesses.</li>
+  <li><strong>Optimism and curiosity</strong>: Recognizing that <em>“all papers are wrong, but some are useful.”</em>
+This balance encourages innovation while maintaining intellectual humility.</li>
+</ul>
+
+<hr />
+
+<h2 id="2-motivation-for-normalization">2. Motivation for Normalization</h2>
+
+<h3 id="21-optimization-landscape-intuition">2.1 Optimization Landscape Intuition</h3>
+
+<p>Training via <strong>gradient descent</strong> can be visualized as movement over a <em>loss surface</em>.</p>
+
+<ul>
+  <li>Thus, if topological graph is warped, gradient descent will bounce around from tangent to tangent.</li>
+  <li>Proper normalization produces a <strong>more isotropic (spherical)</strong> loss contour, ensuring direct descent toward the minimum.</li>
+</ul>
+
+<h3 id="22-deep-learning-context">2.2 Deep Learning Context</h3>
+
+<ul>
+  <li>Input features can be normalized directly.</li>
+  <li>However, <strong>hidden layer activations</strong> evolve during training, altering their distribution dynamically.</li>
+  <li>This motivates <em>internal normalization</em> techniques such as <strong>Batch Normalization</strong>.</li>
+</ul>
+
+<hr />
+
+<h2 id="3-batch-normalization-batchnorm">3. Batch Normalization (BatchNorm)</h2>
+
+<h3 id="31-conceptual-overview">3.1 Conceptual Overview</h3>
+
+<p>Proposed by Ioffe and Szegedy (2015), Batch Normalization addresses instability in training deep networks.
+It normalizes <strong>intermediate activations</strong> within each <strong>mini-batch</strong> to stabilize distributions.
+Backpropogating larger parameters in gradient descent creates large partial derivatives, and multiplying many of them form a larger &amp; larger number; BatchNorm helps to deal with “exploding gradients”.</p>
+
+<p>Essentially, these are additional layers on our models which improve stability and convergence rates.</p>
+
+<p>Note: Assuming each minibatch is a node belonging to a given hidden layer, we are providing additional (normalization) information to each.</p>
+
+<p>Given activations $z_i$ for a layer across a mini-batch of size $n$:</p>
+
+<p>Normalizing Net Inputs:</p>
+
+\[\mu_B = \frac{1}{n}\sum_{i=1}^{n} z_i, \qquad 
+\sigma_B^2 = \frac{1}{n}\sum_{i=1}^{n}(z_i - \mu_B)^2\]
+
+<ul>
+  <li>$\mu_B$ and $\sigma_B^2$ are not learnable</li>
+</ul>
+
+\[\hat{z}_i = \frac{z_i - \mu_B}{\sigma_B}\]
+
+<p>However, in practice the below equation is used for numerical stability:</p>
+
+\[\hat{z}_i = \frac{z_i - \mu_B}{\sqrt{\sigma_B^2 + \varepsilon}}\]
+
+<p>Affine transformation (learnable scaling and shifting):</p>
+
+\[y_i = \gamma \hat{z}_i + \beta\]
+
+<ul>
+  <li>$\gamma$ and $\beta$ are learnable parameters allowing the network to <strong>recover the optimal scale and bias</strong>.
+    <ul>
+      <li>$\gamma$ controls the spread</li>
+      <li>$\beta$ controls the mean</li>
+    </ul>
+  </li>
+  <li>Optimal mean is 0 and optimal variance is 0, but the Batch norm layer can standardize with a zero mean and unit variance.</li>
+  <li>This mechanism maintains flexibility while mitigating <strong>exploding</strong> or <strong>vanishing gradients</strong>.</li>
+  <li>$\beta$ makes bias units redundant</li>
+</ul>
+
+<figure>
+  <img src="/dgm-fall-2025/assets/img/notes/lecture-11/lecture11.png" alt="Batchnorm" />
+  <figcaption>
+    <strong>Figure 1.</strong> batchnorm
+  </figcaption>
+</figure>
+
+<hr />
+
+<h3 id="32-learning-batchnorm-parameters">3.2 Learning BatchNorm Parameters</h3>
+
+<p>BatchNorm fits naturally into the computation graph:</p>
+
+<ol>
+  <li>Linear transformation: $z = Wx + b$</li>
+  <li>Normalization: $\hat{z}$</li>
+  <li>Rescaling and shifting: $y = \gamma \hat{z} + \beta$</li>
+  <li>Nonlinear activation: $a = f(y)$</li>
+</ol>
+
+<p>Since all operations are differentiable, <strong>backpropagation</strong> proceeds seamlessly.</p>
+
+<figure>
+  <img src="/dgm-fall-2025/assets/img/notes/lecture-11/figurelecture11.png" alt="Batchnorm and backprop" />
+  <figcaption>
+    <strong>Figure 2.</strong> batchnorm nad backprop
+  </figcaption>
+</figure>
+
+<hr />
+<hr />
+
+<h3 id="33-training-vs-inference">3.3 Training vs. Inference</h3>
+
+<ul>
+  <li><strong>Training phase</strong>: Uses <em>mini-batch statistics</em> ($\mu_B, \sigma_B^2$).</li>
+  <li><strong>Inference phase</strong>: Employs <em>moving averages</em> of $\mu$ and $\sigma^2$ accumulated during training.
+This ensures consistent behavior when batch sizes differ or when predictions are made one sample at a time.</li>
+</ul>
+
+<hr />
+
+<h3 id="34-batchnorm-in-pytorch">3.4 BatchNorm in PyTorch</h3>
+<ul>
+  <li>Can add BatchNorm into model via simple <code class="language-plaintext highlighter-rouge">torch.nn.BatchNorm1d/2d/3d(num_features)</code></li>
+  <li>Based on summary statistics of the mini-batch, we can normalize before scaling</li>
+  <li>Implement model.train() and model.test() before training and testing, respectively</li>
+</ul>
+
+<hr />
+
+<h3 id="35-empirical-benefits">3.5 Empirical Benefits</h3>
+
+<ol>
+  <li><strong>Accelerated convergence</strong> through more stable gradients.
+    <ul>
+      <li>The model has the same optimization without batch norm, but with a smoother learning rate, we can train more quickly</li>
+    </ul>
+  </li>
+  <li><strong>Mitigation</strong> of internal distribution shifts.</li>
+  <li><strong>Enables higher learning rates</strong> and deeper networks.</li>
+  <li>Often improves <strong>generalization</strong> due to mild regularization effects.</li>
+</ol>
+
+<hr />
+
+<h3 id="36-theoretical-explanations-multiple-perspectives">3.6 Theoretical Explanations (Multiple Perspectives)</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Year</th>
+      <th>Explanation</th>
+      <th>Source / Insight</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>2015</td>
+      <td><em>Internal Covariate Shift</em> hypothesis</td>
+      <td>Original BN paper</td>
+    </tr>
+    <tr>
+      <td>2018–2019</td>
+      <td><em>Smoothing of optimization landscape</em></td>
+      <td>MIT study (Santurkar et al.)</td>
+    </tr>
+    <tr>
+      <td>2018</td>
+      <td><em>Implicit regularization effect</em></td>
+      <td>Empirical observations</td>
+    </tr>
+    <tr>
+      <td>2019</td>
+      <td><em>Stabilized gradient dynamics allowing larger learning rates</em></td>
+      <td>Theoretical reinterpretation</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Despite differing theoretical justifications, all confirm that BN improves training stability and speed.</p>
+
+<hr />
+
+<h3 id="37-practical-considerations">3.7 Practical Considerations</h3>
+
+<ul>
+  <li><strong>Batch Size Sensitivity</strong>:
+    <ul>
+      <li>BatchNorm becomes more stable with larger mini-batches</li>
+      <li>To improve stability, we can introduce larger mini-batch sizes</li>
+    </ul>
+  </li>
+  <li><strong>Order of operations</strong>: Commonly <code class="language-plaintext highlighter-rouge">Linear/Conv → BatchNorm → ReLU</code>; variations may be task-dependent.</li>
+  <li><strong>PyTorch Implementation</strong>: <code class="language-plaintext highlighter-rouge">torch.nn.BatchNorm1d/2d/3d</code>; ensure proper use of <code class="language-plaintext highlighter-rouge">model.train()</code> and <code class="language-plaintext highlighter-rouge">model.eval()</code>.</li>
+  <li>
+    <p><strong>Alternative Normalization Methods</strong>:</p>
+
+    <ul>
+      <li><em>Layer Normalization</em> (LN): Across features of a single sample; suitable for sequence models and transformers.
+        <ul>
+          <li>Finds the mean and standard deviation based on feature vectors (while BN calculates mean/std based on mini-batch)</li>
+          <li>
+            <h2 id="applied-to-transformers">Applied to transformers</h2>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="4-initialization-of-network-weights">4. Initialization of Network Weights</h2>
+
+<h3 id="41-importance-of-initialization">4.1 Importance of Initialization</h3>
+
+<p>Improper initialization can result in:</p>
+
+<ul>
+  <li><strong>Symmetry</strong> among neurons (if all weights equal): we cannot initialize all weights to zero.
+    <ul>
+      <li>This is a problem because in fully connected layers nodes wouldn’t be differentiable</li>
+    </ul>
+  </li>
+  <li><strong>Vanishing or exploding gradients</strong>, especially in deep networks.
+Therefore, initialization affects both <strong>convergence rate</strong> and <strong>final performance</strong>.</li>
+</ul>
+
+<p>This results in the inability for hidden layers to be distingushed from one another, and prevents us from finding the optimal minima.</p>
+
+<hr />
+
+<h3 id="42-xavier-glorot-initialization">4.2 Xavier (Glorot) Initialization</h3>
+
+<p>Designed for activation functions centered near zero (e.g., <em>tanh</em>).
+Steps:</p>
+<ol>
+  <li>Initialize weights from Normal or Uniform distribution.</li>
+  <li>Scale weights proportional to the number of inputs to the layer.</li>
+</ol>
+
+\[W^{l} := W^{l} * \sqrt{\frac{1}{m^{l-1}}}\]
+
+<ul>
+  <li>m is the number of input units to the next layer</li>
+</ul>
+
+\[\begin{aligned}
+\mathrm{Var}\left(z_j^{(l)}\right) 
+&amp;= \mathrm{Var}\left(\sum_{k=1}^{m_{l-1}} W_{jk}^{(l)} a_k^{(l-1)}\right) \\
+&amp;= \sum_{k=1}^{m_{l-1}} \mathrm{Var}\left(W_{jk}^{(l)} a_k^{(l-1)}\right)
+= \sum_{k=1}^{m_{l-1}} \mathrm{Var}\left(W_{jk}^{(l)}\right) \mathrm{Var}\left(a_k^{(l-1)}\right) \\
+&amp;= \sum_{k=1}^{m_{l-1}} \mathrm{Var}\left(W^{(l)}\right) \mathrm{Var}\left(a^{(l-1)}\right)
+= m_{l-1} \, \mathrm{Var}\left(W^{(l)}\right) \mathrm{Var}\left(a^{(l-1)}\right)
+\end{aligned}\]
+
+<hr />
+
+<h3 id="43-he-kaiming-initialization">4.3 He (Kaiming) Initialization</h3>
+
+<p>Tailored for <strong>ReLU</strong> activations, which are non-symmetric around zero.</p>
+
+<p>Same steps as in Xavier Initialization, but we add a factor of $\sqrt{2}$ when scaling weights</p>
+
+\[W^{l} := W^{l} * \sqrt{\frac{2}{m^{l-1}}}\]
+
+<p>Reasoning:</p>
+
+\[W \sim \mathcal{N}\left(0, \frac{2}{n_{in}}\right)\]
+
+<p>This scaling compensates for the half-rectification effect of ReLU and maintains activation variance consistency.</p>
+
+<ul>
+  <li><strong>PyTorch default</strong>: Linear and convolutional layers use He initialization by default.</li>
+</ul>
+
+<hr />
+
+<h3 id="44-architectural-dependence">4.4 Architectural Dependence</h3>
+
+<p>The optimal initialization scheme may depend on:</p>
+
+<ul>
+  <li>Network <strong>depth</strong> and <strong>width</strong>.</li>
+  <li><strong>Nonlinearity</strong> used.</li>
+  <li>Presence of <strong>residual or skip connections</strong>.
+Deep architectures often rely on <em>residual connections</em> to alleviate gradient vanishing, beyond what normalization or initialization alone can achieve.</li>
+</ul>
+
+<hr />
+
+<h2 id="5-gradient-stability-and-residual-structures">5. Gradient Stability and Residual Structures</h2>
+
+<p>To combat vanishing/exploding gradients:</p>
+
+<ul>
+  <li>Introduce <strong>residual (skip) connections</strong> or <strong>scaled shortcuts</strong> that enable direct gradient flow.</li>
+  <li>Such designs have become integral to modern architectures (e.g., ResNets, Transformers).</li>
+</ul>
+
+<hr />
+
+<h2 id="6-implementation-summary">6. Implementation Summary</h2>
+
+<h3 id="61-normalization">6.1 Normalization</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Technique</th>
+      <th>Applied Axis</th>
+      <th>Common Use</th>
+      <th>Advantages</th>
+      <th>Limitations</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>BatchNorm</strong></td>
+      <td>Across mini-batch</td>
+      <td>CNNs</td>
+      <td>Fast convergence</td>
+      <td>Requires large batch</td>
+    </tr>
+    <tr>
+      <td><strong>LayerNorm</strong></td>
+      <td>Across features</td>
+      <td>Transformers</td>
+      <td>Batch-independent</td>
+      <td>Slightly slower</td>
+    </tr>
+    <tr>
+      <td><strong>InstanceNorm</strong></td>
+      <td>Across spatial dims</td>
+      <td>Style transfer</td>
+      <td>Instance-specific</td>
+      <td>Limited effect on stability</td>
+    </tr>
+    <tr>
+      <td><strong>GroupNorm</strong></td>
+      <td>Across channel groups</td>
+      <td>Small-batch CNNs</td>
+      <td>Stable</td>
+      <td>Needs tuning of group size</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h3 id="62-initialization-quick-reference">6.2 Initialization Quick Reference</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Scheme</th>
+      <th>Suitable Activation</th>
+      <th>Formula</th>
+      <th>Key Idea</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Xavier (Glorot)</strong></td>
+      <td>tanh / sigmoid</td>
+      <td>$Var(W)=1/(n_{in}+n_{out})$</td>
+      <td>Equalize activation variance</td>
+    </tr>
+    <tr>
+      <td><strong>He (Kaiming)</strong></td>
+      <td>ReLU / LeakyReLU</td>
+      <td>$Var(W)=2/n_{in}$</td>
+      <td>Compensate for ReLU truncation</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h2 id="7-key-takeaways">7. Key Takeaways</h2>
+
+<ol>
+  <li><strong>Normalization</strong> stabilizes internal representations, accelerates convergence, and improves training reliability.</li>
+  <li><strong>BatchNorm</strong> remains the most effective and widely used technique despite incomplete theoretical justification.</li>
+  <li><strong>Initialization</strong> directly influences optimization trajectory; <strong>Xavier</strong> and <strong>He</strong> methods are standard baselines.</li>
+  <li><strong>Residual connections</strong> further enhance gradient flow, crucial for very deep models.</li>
+  <li>Understanding and controlling the interplay between <strong>normalization, initialization, and architecture</strong> is central to modern deep learning engineering.</li>
+</ol>
+
+<hr />
+
+ </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+    </div>
+
+    <footer class="site-footer">
+  <div class="wrapper">
+    <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Ben Lengerich</li><li>
+            <a class="u-email" href="mailto:TBD@wisc.edu"
+              >TBD@wisc.edu</a
+            >
+          </li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li>
+    <a
+      href="https://github.com/AdaptInfer"
+      target="_blank"
+      ><i class="fab fa-github"></i>
+      <span class="username">AdaptInfer</span></a
+    >
+  </li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>
+          &copy; Copyright 2025 University of Wisconsin.
+          <br />
+          
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  </body>
+
+  <d-bibliography
+    src="/dgm-fall-2025/assets/bibliography/2025-10-08-lecture-11.bib"
+  >
+  </d-bibliography>
+
+  <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/dgm-fall-2025/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link
+  rel="stylesheet"
+  href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css"
+/>
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+<script src="/dgm-fall-2025/assets/js/katex.js"></script>
+ 
+<!-- Load Anchor JS -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+<script>
+  anchors.options.visible = "hover";
+  anchors.add("article h2, article h3, article h4, article h5, article h6");
+</script>
+ 
+<!-- Adjust LaTeX JS -->
+<script src="/dgm-fall-2025/assets/js/latex.js"></script>
+
+
+<!-- Include custom icon fonts -->
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2025/assets/css/fontawesome-all.min.css"
+/>
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2025/assets/css/academicons.min.css"
+/>
+
+<!-- Google Analytics -->
+<script>
+  (function (i, s, o, g, r, a, m) {
+    i["GoogleAnalyticsObject"] = r;
+    (i[r] =
+      i[r] ||
+      function () {
+        (i[r].q = i[r].q || []).push(arguments);
+      }),
+      (i[r].l = 1 * new Date());
+    (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+    a.async = 1;
+    a.src = g;
+    m.parentNode.insertBefore(a, m);
+  })(
+    window,
+    document,
+    "script",
+    "//www.google-analytics.com/analytics.js",
+    "ga",
+  );
+
+  ga("create", "", "auto");
+  ga("send", "pageview");
+</script>
+
+</html>
