@@ -152,8 +152,8 @@
       <d-article> <h1 id="lecture-notes-normalization-and-initialization-in-deep-learning">Lecture Notes: Normalization and Initialization in Deep Learning</h1>
 
 <blockquote>
-  <p>Based on lecture transcript and accompanying slides.
-Topic: <em>Normalization and Initialization</em> (Gordon, Lecture 11).
+  <p>Based on lecture transcript and accompanying slides.<br />
+Topic: <em>Normalization and Initialization</em> (Gordon, Lecture 11).<br />
 Course context: Regularization, stability, and optimization in neural networks. </p>
 </blockquote>
 
@@ -218,26 +218,34 @@ Backpropogating larger parameters in gradient descent creates large partial deri
 
 <p>Note: Assuming each minibatch is a node belonging to a given hidden layer, we are providing additional (normalization) information to each.</p>
 
-<p>Given activations $z_i$ for a layer across a mini-batch of size $n$:</p>
+<p>Given activations (z_i) for a layer across a mini-batch of size (n):</p>
 
 <p>Normalizing Net Inputs:</p>
 
-\[\mu_B = \frac{1}{n}\sum_{i=1}^{n} z_i, \qquad 
-\sigma_B^2 = \frac{1}{n}\sum_{i=1}^{n}(z_i - \mu_B)^2\]
+<d-math block="">
+\mu_B = \frac{1}{n}\sum_{i=1}^{n} z_i, \qquad 
+\sigma_B^2 = \frac{1}{n}\sum_{i=1}^{n}(z_i - \mu_B)^2
+</d-math>
 
 <ul>
   <li>$\mu_B$ and $\sigma_B^2$ are not learnable</li>
 </ul>
 
-\[\hat{z}_i = \frac{z_i - \mu_B}{\sigma_B}\]
+<d-math block="">
+\hat{z}_i = \frac{z_i - \mu_B}{\sigma_B}
+</d-math>
 
 <p>However, in practice the below equation is used for numerical stability:</p>
 
-\[\hat{z}_i = \frac{z_i - \mu_B}{\sqrt{\sigma_B^2 + \varepsilon}}\]
+<d-math block="">
+\hat{z}_i = \frac{z_i - \mu_B}{\sqrt{\sigma_B^2 + \varepsilon}}
+</d-math>
 
 <p>Affine transformation (learnable scaling and shifting):</p>
 
-\[y_i = \gamma \hat{z}_i + \beta\]
+<d-math block="">
+y_i = \gamma \hat{z}_i + \beta
+</d-math>
 
 <ul>
   <li>$\gamma$ and $\beta$ are learnable parameters allowing the network to <strong>recover the optimal scale and bias</strong>.
@@ -265,10 +273,10 @@ Backpropogating larger parameters in gradient descent creates large partial deri
 <p>BatchNorm fits naturally into the computation graph:</p>
 
 <ol>
-  <li>Linear transformation: $z = Wx + b$</li>
-  <li>Normalization: $\hat{z}$</li>
-  <li>Rescaling and shifting: $y = \gamma \hat{z} + \beta$</li>
-  <li>Nonlinear activation: $a = f(y)$</li>
+  <li>Linear transformation: (z = Wx + b)</li>
+  <li>Normalization: (\hat{z})</li>
+  <li>Rescaling and shifting: (y = \gamma \hat{z} + \beta)</li>
+  <li>Nonlinear activation: (a = f(y))</li>
 </ol>
 
 <p>Since all operations are differentiable, <strong>backpropagation</strong> proceeds seamlessly.</p>
@@ -286,8 +294,8 @@ Backpropogating larger parameters in gradient descent creates large partial deri
 <h3 id="33-training-vs-inference">3.3 Training vs. Inference</h3>
 
 <ul>
-  <li><strong>Training phase</strong>: Uses <em>mini-batch statistics</em> ($\mu_B, \sigma_B^2$).</li>
-  <li><strong>Inference phase</strong>: Employs <em>moving averages</em> of $\mu$ and $\sigma^2$ accumulated during training.
+  <li><strong>Training phase</strong>: Uses <em>mini-batch statistics</em> ((\mu_B, \sigma_B^2)).</li>
+  <li><strong>Inference phase</strong>: Employs <em>moving averages</em> of (\mu) and (\sigma^2) accumulated during training.
 This ensures consistent behavior when batch sizes differ or when predictions are made one sample at a time.</li>
 </ul>
 
@@ -373,14 +381,14 @@ This ensures consistent behavior when batch sizes differ or when predictions are
       <li><em>Layer Normalization</em> (LN): Across features of a single sample; suitable for sequence models and transformers.
         <ul>
           <li>Finds the mean and standard deviation based on feature vectors (while BN calculates mean/std based on mini-batch)</li>
-          <li>
-            <h2 id="applied-to-transformers">Applied to transformers</h2>
-          </li>
+          <li>Applied to transformers</li>
         </ul>
       </li>
     </ul>
   </li>
 </ul>
+
+<hr />
 
 <h2 id="4-initialization-of-network-weights">4. Initialization of Network Weights</h2>
 
@@ -411,20 +419,24 @@ Steps:</p>
   <li>Scale weights proportional to the number of inputs to the layer.</li>
 </ol>
 
-\[W^{l} := W^{l} * \sqrt{\frac{1}{m^{l-1}}}\]
+<d-math block="">
+W^{l} := W^{l} * \sqrt{\frac{1}{m^{l-1}}}
+</d-math>
 
 <ul>
   <li>m is the number of input units to the next layer</li>
 </ul>
 
-\[\begin{aligned}
+<d-math block="">
+\begin{aligned}
 \mathrm{Var}\left(z_j^{(l)}\right) 
 &amp;= \mathrm{Var}\left(\sum_{k=1}^{m_{l-1}} W_{jk}^{(l)} a_k^{(l-1)}\right) \\
 &amp;= \sum_{k=1}^{m_{l-1}} \mathrm{Var}\left(W_{jk}^{(l)} a_k^{(l-1)}\right)
 = \sum_{k=1}^{m_{l-1}} \mathrm{Var}\left(W_{jk}^{(l)}\right) \mathrm{Var}\left(a_k^{(l-1)}\right) \\
 &amp;= \sum_{k=1}^{m_{l-1}} \mathrm{Var}\left(W^{(l)}\right) \mathrm{Var}\left(a^{(l-1)}\right)
 = m_{l-1} \, \mathrm{Var}\left(W^{(l)}\right) \mathrm{Var}\left(a^{(l-1)}\right)
-\end{aligned}\]
+\end{aligned}
+</d-math>
 
 <hr />
 
@@ -432,13 +444,17 @@ Steps:</p>
 
 <p>Tailored for <strong>ReLU</strong> activations, which are non-symmetric around zero.</p>
 
-<p>Same steps as in Xavier Initialization, but we add a factor of $\sqrt{2}$ when scaling weights</p>
+<p>Same steps as in Xavier Initialization, but we add a factor of √2 when scaling weights:</p>
 
-\[W^{l} := W^{l} * \sqrt{\frac{2}{m^{l-1}}}\]
+<d-math block="">
+W^{l} := W^{l} * \sqrt{\frac{2}{m^{l-1}}}
+</d-math>
 
 <p>Reasoning:</p>
 
-\[W \sim \mathcal{N}\left(0, \frac{2}{n_{in}}\right)\]
+<d-math block="">
+W \sim \mathcal{N}\left(0, \frac{2}{n_{in}}\right)
+</d-math>
 
 <p>This scaling compensates for the half-rectification effect of ReLU and maintains activation variance consistency.</p>
 
@@ -535,13 +551,13 @@ Deep architectures often rely on <em>residual connections</em> to alleviate grad
     <tr>
       <td><strong>Xavier (Glorot)</strong></td>
       <td>tanh / sigmoid</td>
-      <td>$Var(W)=1/(n_{in}+n_{out})$</td>
+      <td><d-math>Var(W)=1/(n_{in}+n_{out})</d-math></td>
       <td>Equalize activation variance</td>
     </tr>
     <tr>
       <td><strong>He (Kaiming)</strong></td>
       <td>ReLU / LeakyReLU</td>
-      <td>$Var(W)=2/n_{in}$</td>
+      <td><d-math>Var(W)=2/n_{in}</d-math></td>
       <td>Compensate for ReLU truncation</td>
     </tr>
   </tbody>
@@ -560,7 +576,6 @@ Deep architectures often rely on <em>residual connections</em> to alleviate grad
 </ol>
 
 <hr />
-
  </d-article>
 
       <d-appendix>

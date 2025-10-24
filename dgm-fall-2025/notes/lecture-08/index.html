@@ -155,30 +155,93 @@
 
 <p>Basic Function: Sigmoid</p>
 
-\[\sigma(x) = \frac{1}{1 + e^{-x}}\]
+<d-math block="">
+\[
+\sigma(x) = \frac{1}{1 + e^{-x}}
+\]
+</d-math>
 
 <p>Use this as the activation fucntion in a neuron. Bounds between 0 and one means we can interpret the sigmoid output as probability. To predict labels we can use a threshold fuction but we do not use this for training.</p>
 
-\[y = \sigma(w^{T}x+b)\]
+<d-math block="">
+\[
+y = \sigma(w^{T}x+b)
+\]
+</d-math>
 
-\[P(y|x) = a^y*(1-a)^{(i-y)}\]
+<d-math block="">
+\[
+P(y|x) = a^y*(1-a)^{(i-y)}
+\]
+</d-math>
 
 <p>Which is the bernoulli distibution</p>
 
 <p>The likelihood function of the bernoulli function is</p>
 
-\[\prod_{i=1}^{n} \left( \sigma(z^{(i)}) \right)^{y^{(i)}} \left( 1 - \sigma(z^{(i)}) \right)^{1 - y^{(i)}}\]
+<d-math block="">
+\[
+\prod_{i=1}^{n} \left( \sigma(z^{(i)}) \right)^{y^{(i)}} \left( 1 - \sigma(z^{(i)}) \right)^{1 - y^{(i)}}
+\]
+</d-math>
 
 <p>But we often minimise the negaive log likelihood for feasability</p>
 
-\[\hat{w} = \arg\min \, \ell(w)\]
+<d-math block="">
+\[
+\hat{w} = \arg\min \, \ell(w)
+\]
+</d-math>
 
 <h4 id="logistic-loss-learning-rule">Logistic loss learning rule</h4>
 <p>Loss for one learning example</p>
 
-\[\mathcal{L}(\mathbf{w}) = -y^{(i)} \log\left( \sigma(z^{(i)}) \right) + (1 - y^{(i)}) \log\left( 1 - \sigma(z^{(i)})\right)\]
+<d-math block="">
+\[
+\mathcal{L}(\mathbf{w}) = -y^{(i)} \log\left( \sigma(z^{(i)}) \right) + (1 - y^{(i)}) \log\left( 1 - \sigma(z^{(i)})\right) 
+\]
+</d-math>
 
 <p>We apply this loss function with the same stochastic gradient rule from Linear regression to obrain graidents. After gradients are calculated we proceed with the same updating process as the ADALINE.</p>
+
+<hr />
+
+<h1 id="3-predicting-labels-vs-probabilities">3. Predicting Labels vs Probabilities</h1>
+
+<p>In logistic regression, the model produces a probability value between 0 and 1 through the sigmoid activation.<br />
+To convert this probability into a class label, we typically apply a <strong>threshold function</strong>.</p>
+
+<d-math block="">
+\[
+\hat{y} :=
+\begin{cases}
+1 &amp; \text{if } \sigma(z) &gt; 0.5 \\
+0 &amp; \text{otherwise}
+\end{cases}
+\]
+</d-math>
+
+<p>This threshold rule is equivalent to checking the sign of the linear combination before applying the sigmoid:</p>
+
+<d-math block="">
+\[
+\hat{y} :=
+\begin{cases}
+1 &amp; \text{if } z &gt; 0.0 \\
+0 &amp; \text{otherwise}
+\end{cases}
+\]
+</d-math>
+
+<p>We can think of this thresholding step as a <strong>separate part</strong> of the model that converts the continuous neural network output into a discrete class label.<br />
+However, it’s important to note that:</p>
+
+<ul>
+  <li><strong>Predicted class labels are not used during training.</strong><br />
+Logistic regression (like ADALINE and modern neural networks) optimizes based on probabilities, not the thresholded labels.</li>
+  <li>The reason is that the threshold function is <strong>not differentiable</strong>, so it cannot be used in gradient-based optimization.</li>
+  <li>The logistic function allows for smooth updates of the weights by using probabilities rather than binary outcomes.</li>
+</ul>
 
 <hr />
 
@@ -189,7 +252,11 @@
   <li>The logit function is:</li>
 </ul>
 
-\[\text{logit}(p) = \log\left(\frac{p}{1-p}\right)\]
+<d-math block="">
+\[
+\text{logit}(p) = \log\left(\frac{p}{1-p}\right)
+\]
+</d-math>
 
 <ul>
   <li>Typically means the net input of the last neuron layer</li>
@@ -202,7 +269,11 @@
   <li>Binary cross-entropy is defined as:</li>
 </ul>
 
-\[\mathcal{H_a(y)} = - \sum_{i} \Big[ y^{[i]} \log({a}^{[i]}) + (1 - y^{[i]}) \log(1 - {a}^{[i]}) \Big]\]
+<d-math block="">
+\[
+\mathcal{H_a(y)} = - \sum_{i} \Big[ y^{[i]} \log({a}^{[i]}) + (1 - y^{[i]}) \log(1 - {a}^{[i]}) \Big]
+\]
+</d-math>
 
 <ul>
   <li>(Multi-category) Cross Entropy for K different class labels is defined as:
@@ -212,7 +283,11 @@
   </li>
 </ul>
 
-\[\mathcal{H_a(y)} = - \sum_{i}^n \sum_{k=1}^{K} y^{[i]}_k \log(a^{[i]}_k)\]
+<d-math block="">
+\[
+\mathcal{H_a(y)} = - \sum_{i}^n \sum_{k=1}^{K} y^{[i]}_k \log(a^{[i]}_k)
+\]
+</d-math>
 
 <h1 id="5-logistic-regression-code-example">5. Logistic Regression Code Example</h1>
 <ul>
@@ -224,31 +299,14 @@
 
 <h2 id="approaches-to-multi-class-classification">Approaches to multi-class classification</h2>
 <ul>
-  <li>
-    <p>One-vs-all: predict each class label independently then choose the class with the highest confidence score</p>
-
-    <p><img width="455" height="252" alt="Screenshot 2025-10-05 at 12 44 22 PM" src="https://github.com/user-attachments/assets/3d87c85f-cb11-4d33-bda5-147e5aaf9822" /></p>
-  </li>
-  <li>
-    <p>All-vs-all: explicitly predict the probability of each competing outcome then choose the class with the highest confidence score</p>
-  </li>
+  <li>One-vs-all: predict each class label independently then choose the class with the highest confidence score</li>
+  <li>All-vs-all: explicitly predict the probability of each competing outcome then choose the class with the highest confidence score</li>
+  <li>Predict probabilities of class membership simultaneously (activations are class-membership probabilities, not mutually exclusive classes)</li>
 </ul>
 
-<p><img width="366" height="234" alt="Screenshot 2025-10-05 at 12 45 46 PM" src="https://github.com/user-attachments/assets/357b7a83-48d3-49c7-9f8d-b25f4b6319f4" /></p>
+<hr />
 
-<ul>
-  <li>Predict probabilities of class membership simultaneously
-    <ul>
-      <li>Activations are class-membership probabilities (NOT mutually exclusive classes)</li>
-    </ul>
-  </li>
-</ul>
-
-<p><img width="288" height="230" alt="Screenshot 2025-10-05 at 12 46 55 PM" src="https://github.com/user-attachments/assets/ce4c14c2-8827-4a04-a8ea-88e487019949" /></p>
-
-<p><img width="1010" height="110" alt="image" src="https://github.com/user-attachments/assets/21b431db-6250-4319-b760-d6ad7feb8778" /></p>
-
-<p>## 7. One-Hot Encoding and Multi-category Cross-Entropy</p>
+<h2 id="7-one-hot-encoding-and-multi-category-cross-entropy">7. One-Hot Encoding and Multi-category Cross-Entropy</h2>
 
 <h3 id="one-hot-encoding-for-multi-class-labels">One-Hot Encoding for Multi-class Labels</h3>
 
@@ -283,55 +341,90 @@
   </tbody>
 </table>
 
+<hr />
+
 <h3 id="multi-category-cross-entropy-loss">Multi-category Cross-Entropy Loss</h3>
 
 <p>The cross-entropy loss function for multi-class classification extends the binary case to handle $h$ different class labels. For $n$ training examples and $h$ classes:</p>
 
-\[\mathcal{L} = \sum_{i=1}^{n}\]
+<d-math block="">
+\[
+\mathcal{L} = \sum_{i=1}^{n}
+\]
+</d-math>
 
-\[\mathcal{L} = \sum_{i=1}^{n} \sum_{j=1}^{h} -y_j^{[i]} \log(a_j^{[i]})\]
+<d-math block="">
+\[
+\mathcal{L} = \sum_{i=1}^{n} \sum_{j=1}^{h} -y_j^{[i]} \log(a_j^{[i]})
+\]
+</d-math>
+
+<hr />
 
 <h3 id="relationship-to-binary-cross-entropy">Relationship to Binary Cross-Entropy</h3>
 
 <p>The multi-category cross-entropy reduces to binary cross-entropy when $h=2$:</p>
 
-<p><strong>Binary case:</strong>
-\(\mathcal{L} = -\sum_{i=1}^{n} \left(y^{[i]} \log(a^{[i]}) + (1-y^{[i]}) \log(1-a^{[i]})\right)\)</p>
+<p><strong>Binary case:</strong></p>
+<d-math block="">
+\[
+\mathcal{L} = -\sum_{i=1}^{n} \left(y^{[i]} \log(a^{[i]}) + (1-y^{[i]}) \log(1-a^{[i]})\right)
+\]
+</d-math>
 
-<p><strong>Multi-category case with one-hot encoding:</strong>
-\(\mathcal{L} = \sum_{i=1}^{n} \sum_{j=1}^{h} -y_j^{[i]} \log(a_j^{[i]})\)</p>
+<p><strong>Multi-category case with one-hot encoding:</strong></p>
+<d-math block="">
+\[
+\mathcal{L} = \sum_{i=1}^{n} \sum_{j=1}^{h} -y_j^{[i]} \log(a_j^{[i]})
+\]
+</d-math>
 
 <p>Both formulations measure how well the predicted probability distribution matches the true distribution.</p>
+
+<hr />
 
 <h3 id="practical-example">Practical Example</h3>
 
 <p>Consider a batch of 4 training examples with 3 classes:</p>
 
-<p><strong>True labels (one-hot):</strong>
-\(\mathbf{Y}_{\text{onehot}} = \begin{bmatrix}
+<p><strong>True labels (one-hot):</strong></p>
+<d-math block="">
+\[
+\mathbf{Y}_{\text{onehot}} = \begin{bmatrix}
 1 &amp; 0 &amp; 0 \\
 0 &amp; 1 &amp; 0 \\
 0 &amp; 0 &amp; 1 \\
 0 &amp; 0 &amp; 1
-\end{bmatrix}\)</p>
+\end{bmatrix}
+\]
+</d-math>
 
-<p><strong>Predicted probabilities:</strong>
-\(\mathbf{A}_{\text{softmax}} = \begin{bmatrix}
+<p><strong>Predicted probabilities:</strong></p>
+<d-math block="">
+\[
+\mathbf{A}_{\text{softmax}} = \begin{bmatrix}
 0.3792 &amp; 0.3104 &amp; 0.3104 \\
 0.3072 &amp; 0.4147 &amp; 0.2780 \\
 0.4263 &amp; 0.2248 &amp; 0.3490 \\
 0.2668 &amp; 0.2978 &amp; 0.4354
-\end{bmatrix}\)</p>
+\end{bmatrix}
+\]
+</d-math>
 
 <p><strong>Loss calculations:</strong></p>
 <ul>
-  <li>Example 1: $\mathcal{L}^{[1]} = -1 \cdot \log(0.3792) = 0.969692$</li>
-  <li>Example 2: $\mathcal{L}^{[2]} = -1 \cdot \log(0.4147) = 0.880200$</li>
-  <li>Example 3: $\mathcal{L}^{[3]} = -1 \cdot \log(0.3490) = 1.052680$</li>
-  <li>Example 4: $\mathcal{L}^{[4]} = -1 \cdot \log(0.4354) = 0.831490$</li>
+  <li>Example 1: <d-math inline="">\(\mathcal{L}^{[1]} = -1 \cdot \log(0.3792) = 0.969692\)</d-math></li>
+  <li>Example 2: <d-math inline="">\(\mathcal{L}^{[2]} = -1 \cdot \log(0.4147) = 0.880200\)</d-math></li>
+  <li>Example 3: <d-math inline="">\(\mathcal{L}^{[3]} = -1 \cdot \log(0.3490) = 1.052680\)</d-math></li>
+  <li>Example 4: <d-math inline="">\(\mathcal{L}^{[4]} = -1 \cdot \log(0.4354) = 0.831490\)</d-math></li>
 </ul>
 
-<p><strong>Average loss:</strong> $\mathcal{L} = \frac{1}{4}(0.9697 + 0.8802 + 1.0527 + 0.8315) \approx 0.9335$</p>
+<p><strong>Average loss:</strong></p>
+<d-math block="">
+\[
+\mathcal{L} = \frac{1}{4}(0.9697 + 0.8802 + 1.0527 + 0.8315) \approx 0.9335
+\]
+</d-math>
 
 <hr />
 
@@ -339,55 +432,113 @@
 
 <h3 id="gradient-computation-via-chain-rule">Gradient Computation via Chain Rule</h3>
 
-<p>To update weights using gradient descent, we need to compute $\frac{\partial \mathcal{L}}{\partial w_i}$ for each weight. Using the multivariable chain rule through the computational graph:</p>
+<p>To update weights using gradient descent, we need to compute the gradient for each weight. Using the multivariable chain rule:</p>
 
-\[\frac{\partial \mathcal{L}}{\partial w_{1,2}} = \frac{\partial \mathcal{L}}{\partial a_1} \cdot \frac{\partial a_1}{\partial z_1} \cdot \frac{\partial z_1}{\partial w_{1,2}} + \frac{\partial \mathcal{L}}{\partial a_2} \cdot \frac{\partial a_2}{\partial z_1} \cdot \frac{\partial z_1}{\partial w_{1,2}}\]
+<d-math block="">
+\[
+\frac{\partial \mathcal{L}}{\partial w_{1,2}} =
+\frac{\partial \mathcal{L}}{\partial a_1}
+\cdot \frac{\partial a_1}{\partial z_1}
+\cdot \frac{\partial z_1}{\partial w_{1,2}} +
+\frac{\partial \mathcal{L}}{\partial a_2}
+\cdot \frac{\partial a_2}{\partial z_1}
+\cdot \frac{\partial z_1}{\partial w_{1,2}}
+\]
+</d-math>
+
+<hr />
 
 <h3 id="simplified-gradient-formula">Simplified Gradient Formula</h3>
 
 <p>After applying the chain rule and simplifying, the gradient reduces to:</p>
 
-\[\frac{\partial \mathcal{L}}{\partial w_{j,i}} = -(y_j - a_j)x_i\]
+<d-math block="">
+\[
+\frac{\partial \mathcal{L}}{\partial w_{j,i}} = -(y_j - a_j)x_i
+\]
+</d-math>
 
-<p><strong>Vectorized form:</strong>
-\(\nabla_{\mathbf{W}} \mathcal{L} = -(\mathbf{X}^{\top}(\mathbf{Y} - \mathbf{A}))^{\top}\)</p>
+<p><strong>Vectorized form:</strong></p>
+<d-math block="">
+\[
+\nabla_{\mathbf{W}} \mathcal{L} = -(\mathbf{X}^{\top}(\mathbf{Y} - \mathbf{A}))^{\top}
+\]
+</d-math>
 
 <p>where:</p>
 <ul>
-  <li>$\mathbf{W} \in \mathbb{R}^{h \times m}$ (weight matrix)</li>
-  <li>$\mathbf{X} \in \mathbb{R}^{n \times m}$ (input features)</li>
-  <li>$\mathbf{A} \in \mathbb{R}^{n \times h}$ (predicted probabilities)</li>
-  <li>$\mathbf{Y} \in \mathbb{R}^{n \times h}$ (one-hot labels)</li>
+  <li>
+    <d-math inline="">\(\mathbf{W} \in \mathbb{R}^{h \times m}\)</d-math>
+    <p>(weight matrix)</p>
+  </li>
+  <li>
+    <d-math inline="">\(\mathbf{X} \in \mathbb{R}^{n \times m}\)</d-math>
+    <p>(input features)</p>
+  </li>
+  <li>
+    <d-math inline="">\(\mathbf{A} \in \mathbb{R}^{n \times h}\)</d-math>
+    <p>(predicted probabilities)</p>
+  </li>
+  <li>
+    <d-math inline="">\(\mathbf{Y} \in \mathbb{R}^{n \times h}\)</d-math>
+    <p>(one-hot labels)</p>
+  </li>
 </ul>
+
+<hr />
 
 <h3 id="gradient-descent-update-rule">Gradient Descent Update Rule</h3>
 
 <p>The stochastic gradient descent algorithm for softmax regression:</p>
 
-<p><strong>Initialize:</strong> $\mathbf{W} := \mathbf{0} \in \mathbb{R}^{h \times m}$, $\mathbf{b} := \mathbf{0} \in \mathbb{R}^h$</p>
+<p><strong>Initialize:</strong></p>
+<d-math block="">
+\[
+\mathbf{W} := \mathbf{0} \in \mathbb{R}^{h \times m}, \quad
+\mathbf{b} := \mathbf{0} \in \mathbb{R}^{h}
+\]
+</d-math>
 
 <p><strong>For each training epoch:</strong></p>
-<ul>
-  <li>
-    <p><strong>For each training example</strong> $(x^{[i]}, y^{[i]})$:</p>
-
-    <p>a <strong>Forward pass:</strong> Compute predictions</p>
-
-\[\hat{y}^{[i]} = \sigma_{\text{softmax}}(\mathbf{W}x^{[i]} + \mathbf{b})\]
-
-    <p>b <strong>Compute gradients:</strong>
-\(\nabla_{\mathbf{W}} \mathcal{L} = -(y^{[i]} - \hat{y}^{[i]}) \cdot x^{[i]^{\top}}\)
-\(\nabla_{\mathbf{b}} \mathcal{L} = -(y^{[i]} - \hat{y}^{[i]})\)</p>
-
-    <p>c <strong>Update parameters:</strong>
-\(\mathbf{W} := \mathbf{W} + \eta \times (-\nabla_{\mathbf{W}} \mathcal{L})\)
-\(\mathbf{b} := \mathbf{b} + \eta \times (-\nabla_{\mathbf{b}} \mathcal{L})\)</p>
+<ol>
+  <li><strong>Forward pass:</strong>
+    <d-math block="">
+\[
+\hat{y}^{[i]} = \sigma_{\text{softmax}}(\mathbf{W}x^{[i]} + \mathbf{b})
+\]
+</d-math>
   </li>
-</ul>
+  <li><strong>Compute gradients:</strong>
+    <d-math block="">
+\[
+\nabla_{\mathbf{W}} \mathcal{L} = -(y^{[i]} - \hat{y}^{[i]}) \cdot x^{[i]^{\top}}
+\]
+</d-math>
+    <d-math block="">
+\[
+\nabla_{\mathbf{b}} \mathcal{L} = -(y^{[i]} - \hat{y}^{[i]})
+\]
+</d-math>
+  </li>
+  <li><strong>Update parameters:</strong>
+    <d-math block="">
+\[
+\mathbf{W} := \mathbf{W} + \eta \times (-\nabla_{\mathbf{W}} \mathcal{L})
+\]
+</d-math>
+    <d-math block="">
+\[
+\mathbf{b} := \mathbf{b} + \eta \times (-\nabla_{\mathbf{b}} \mathcal{L})
+\]
+</d-math>
+  </li>
+</ol>
 
-<p>where $\eta$ is the learning rate.</p>
+<p>where <d-math inline="">\(\eta\)</d-math> is the learning rate.</p>
 
-<p><strong>Note:</strong> The gradient has the same elegant form as in logistic regression and ADALINE: the error $(y - \hat{y})$ multiplied by the input $x$.</p>
+<p><strong>Note:</strong><br />
+The gradient has the same elegant form as in logistic regression and ADALINE —<br />
+the error term <d-math inline="">\((y - \hat{y})\)</d-math> multiplied by the input <d-math inline="">\(x\)</d-math>.</p>
  </d-article>
 
       <d-appendix>

@@ -72,7 +72,7 @@
             "editors": [
               
               {
-                "editor": "Editor Name"
+                "editor": "Editor 1"
               }
               
             ],
@@ -155,14 +155,16 @@
 
       <d-article> <h2 id="1-introduction">1. Introduction</h2>
 
-<p>Training deep neural networks centers on minimizing a scalar loss via gradient-based optimization. Two pillars enable this:</p>
+<p>Training deep neural networks centers on minimizing a scalar loss via gradient-based optimization.<br />
+Two pillars enable this:</p>
 
 <ul>
-  <li><strong>Backpropagation</strong> efficiently computes $\nabla_{\theta} L$ (gradients of the loss w.r.t. parameters).</li>
+  <li><strong>Backpropagation</strong> efficiently computes <d-math block="">$begin:math:display$\\nabla_{\\theta} L$end:math:display$</d-math><br />
+(gradients of the loss w.r.t. parameters).</li>
   <li><strong>Gradient Descent (GD)</strong> (and variants like SGD/Adam) update the parameters using these gradients.</li>
 </ul>
 
-<p>Modern frameworks automate the derivative calculations through automatic differentiation (autodiff).</p>
+<p>Modern frameworks automate derivative calculations through <strong>automatic differentiation (autodiff)</strong>.</p>
 
 <hr />
 
@@ -180,39 +182,64 @@
 
 <h2 id="3-computation-graphs">3. Computation Graphs</h2>
 
-<p>A computation graph is a directed acyclic graph (DAG) representing an expression as simple ops (nodes) with data dependencies (edges). It underpins forward evaluation and reverse-mode gradient computation.</p>
+<p>A computation graph is a directed acyclic graph (DAG) representing an expression as simple ops (nodes) with data dependencies (edges).<br />
+It underpins forward evaluation and reverse-mode gradient computation.</p>
 
 <h3 id="chain-rule-on-graphs">Chain Rule on Graphs</h3>
 
-<p>For a scalar loss $L$ depending on parameters $\theta$ through intermediate variables, e.g.,</p>
+<p>For a scalar loss $begin:math:text$L$end:math:text$ depending on parameters $begin:math:text$\theta$end:math:text$ through intermediate variables:</p>
 
-\[x = f(\theta), \quad y = g(x), \quad L = h(y),\]
+<d-math block="">
+$begin:math:display$
+x = f(\\theta), \\quad y = g(x), \\quad L = h(y)
+$end:math:display$
+</d-math>
 
-<p>reverse-mode autodiff applies the chain rule backward:</p>
+<p>Reverse-mode autodiff applies the chain rule backward:</p>
 
-\[\frac{\partial L}{\partial \theta} = \frac{\partial L}{\partial y} \cdot \frac{\partial y}{\partial x} \cdot \frac{\partial x}{\partial \theta}.\]
+<d-math block="">
+$begin:math:display$
+\\frac{\\partial L}{\\partial \\theta} =
+\\frac{\\partial L}{\\partial y}
+\\cdot
+\\frac{\\partial y}{\\partial x}
+\\cdot
+\\frac{\\partial x}{\\partial \\theta}
+$end:math:display$
+</d-math>
+
+<hr />
 
 <h3 id="example-relu">Example: ReLU</h3>
 
 <p>The Rectified Linear Unit is:</p>
 
-\[\text{ReLU}(z) = \max(0, z), \quad \frac{d}{dz} \text{ReLU}(z) = \begin{cases}
-1, &amp; z &gt; 0, \\
-0, &amp; z \leq 0.
-\end{cases}\]
+<d-math block="">
+$begin:math:display$
+\\text{ReLU}(z) = \\max(0, z), \\quad
+\\frac{d}{dz} \\text{ReLU}(z) =
+\\begin{cases}
+1, &amp; z &gt; 0,\\\\
+0, &amp; z \\leq 0
+\\end{cases}
+$end:math:display$
+</d-math>
 
 <p>A single-neuron computation can be decomposed as:</p>
 
-\[u = w \cdot x, \quad v = u + b, \quad a = \text{ReLU}(v).\]
+<d-math block="">
+$begin:math:display$
+u = w \\cdot x, \\quad v = u + b, \\quad a = \\text{ReLU}(v)
+$end:math:display$
+</d-math>
 
-<p>Gradients flow only through the active branch ($v &gt; 0$), helping mitigate vanishing gradients and enabling efficient layer stacking.</p>
+<p>Gradients flow only through the active branch ($begin:math:text$v &gt; 0$end:math:text$), helping mitigate vanishing gradients and enabling efficient layer stacking.</p>
 
-<h3 id="common-graph-structures">Common Graph Structures</h3>
-
+<p><strong>Common Graph Structures</strong></p>
 <ul>
-  <li><strong>Single-path chains</strong>: univariate chain rule applies node-by-node.</li>
-  <li><strong>Weight sharing</strong>: parameters reused across paths (CNNs/RNNs); partials accumulate across all uses.</li>
-  <li><strong>Fully connected layer</strong>: $y = \sigma(Wx + b)$ with multivariate chain rule across fan-in/fan-out.</li>
+  <li>Single-path chains: univariate chain rule applies node-by-node.</li>
+  <li>Weight sharing: parameters reused across paths (CNNs/RNNs); partials accumulate.</li>
+  <li>Fully connected layer: <d-math block="">$begin:math:display$y = \\sigma(Wx + b)$end:math:display$</d-math> with multivariate chain rule.</li>
 </ul>
 
 <hr />
@@ -220,63 +247,90 @@
 <h2 id="4-automatic-differentiation-in-pytorch">4. Automatic Differentiation in PyTorch</h2>
 
 <h3 id="reverse-vs-forward-mode">Reverse vs. Forward Mode</h3>
-
 <ul>
   <li><strong>Reverse mode (backprop)</strong>: efficient when a scalar loss depends on many parameters (typical in DL).</li>
-  <li><strong>Forward mode</strong>: efficient when #inputs $\ll$ #outputs (less common in DL training loops).</li>
+  <li><strong>Forward mode</strong>: efficient when #inputs ≪ #outputs (less common in DL).</li>
 </ul>
 
 <h3 id="autograd-workflow">Autograd Workflow</h3>
 
 <ol>
-  <li><strong>Track tensors</strong>: create tensors with <code class="language-plaintext highlighter-rouge">requires_grad=True</code>.</li>
-  <li><strong>Build graph</strong>: run the forward pass; PyTorch records ops dynamically (define-by-run).</li>
-  <li><strong>Backward pass</strong>: call <code class="language-plaintext highlighter-rouge">loss.backward()</code> to compute gradients.</li>
-  <li><strong>Access/use grads</strong>: read <code class="language-plaintext highlighter-rouge">param.grad</code>; update with an optimizer; zero grads for the next step.</li>
+  <li>Track tensors: create tensors with <code class="language-plaintext highlighter-rouge">requires_grad=True</code>.</li>
+  <li>Build graph: run forward pass (PyTorch records ops dynamically).</li>
+  <li>Backward pass: call <code class="language-plaintext highlighter-rouge">loss.backward()</code> to compute gradients.</li>
+  <li>Access/use grads: read <code class="language-plaintext highlighter-rouge">param.grad</code>; update with optimizer; zero grads next step.</li>
 </ol>
-
-<p><strong>Minimal example:</strong></p>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">torch</span>
-
-<span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">tensor</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-<span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">3</span><span class="o">*</span><span class="n">x</span>
-<span class="n">y</span><span class="p">.</span><span class="n">backward</span><span class="p">()</span>
-<span class="k">print</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="n">grad</span><span class="p">)</span>  <span class="c1"># 2*x + 3 = 7
-</span></code></pre></div></div>
 
 <hr />
 
-<h2 id="5-pytorch-api-model--training-loop">5. PyTorch API: Model &amp; Training Loop</h2>
+<h3 id="minimal-example-step-by-step-annotated">Minimal example (step-by-step annotated):</h3>
 
-<h3 id="define-a-model-nnmodule">Define a Model (nn.Module)</h3>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">torch</span>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="n">nn</span>
+<span class="c1"># Step 1: Create a tensor with gradient tracking enabled
+# requires_grad=True tells PyTorch to record all operations on this tensor
+</span><span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">tensor</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
-<span class="k">class</span> <span class="nc">Net</span><span class="p">(</span><span class="n">nn</span><span class="p">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="c1"># Step 2: Define a simple computation
+# y = x**2 + 3*x creates a dynamic computation graph:
+#   - Node1: x
+#   - Node2: square operation
+#   - Node3: multiply by 3
+#   - Node4: add both results
+</span><span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">3</span><span class="o">*</span><span class="n">x</span>
+
+<span class="c1"># Step 3: Compute gradient dy/dx
+# PyTorch traverses the graph in reverse order (reverse-mode autodiff)
+# Using chain rule:
+#   dy/dx = d(x^2)/dx + 3 * d(x)/dx = 2x + 3
+</span><span class="n">y</span><span class="p">.</span><span class="n">backward</span><span class="p">()</span>
+
+<span class="c1"># Step 4: Access the stored gradient value
+# PyTorch stores the computed gradient in x.grad
+</span><span class="k">print</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="n">grad</span><span class="p">)</span>  <span class="c1"># Expected: 2*x + 3 = 7
+</span>
+<span class="c1"># Internally:
+# - PyTorch dynamically builds a graph as ops execute
+# - During backward(), it walks that graph in reverse, accumulating grads
+# - After backward, the graph is freed unless retain_graph=True is passed
+</span>
+<span class="o">---</span>
+
+<span class="c1">## 5. PyTorch API: Model &amp; Training Loop
+</span>
+<span class="c1">### Define a Model (nn.Module)
+</span>
+<span class="sb">``</span><span class="err">`</span><span class="n">python</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="n">nn</span>
+
+<span class="c1"># This defines a fully connected linear layer with ReLU activation
+# nn.Module is a base class that lets PyTorch track all parameters automatically.
+</span><span class="k">class</span> <span class="nc">Net</span><span class="p">(</span><span class="n">nn</span><span class="p">.</span><span class="n">Module</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">().</span><span class="n">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="p">.</span><span class="n">fc</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-    
+        <span class="bp">self</span><span class="p">.</span><span class="n">fc</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># 10 inputs -&gt; 1 output
+</span>    
     <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">torch</span><span class="p">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">fc</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="c1"># The forward() method defines how data flows through layers
+</span>        <span class="c1"># Here, x is multiplied by W, adds b, then applies ReLU activation.
+</span>        <span class="k">return</span> <span class="n">torch</span><span class="p">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">fc</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
 </code></pre></div></div>
 
 <h3 id="create-components">Create Components</h3>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">model</span> <span class="o">=</span> <span class="n">Net</span><span class="p">()</span>
-<span class="n">criterion</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">nn</span><span class="p">.</span><span class="n">MSELoss</span><span class="p">()</span>
-<span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">optim</span><span class="p">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">model</span><span class="p">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">)</span>
-</code></pre></div></div>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">model</span> <span class="o">=</span> <span class="n">Net</span><span class="p">()</span>  <span class="c1"># Create an instance of the network
+</span><span class="n">criterion</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">nn</span><span class="p">.</span><span class="n">MSELoss</span><span class="p">()</span>  <span class="c1"># Mean Squared Error loss
+</span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">optim</span><span class="p">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">model</span><span class="p">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">)</span>  <span class="c1"># Stochastic Gradient Descent
+</span></code></pre></div></div>
 
 <h3 id="training-loop-skeleton">Training Loop Skeleton</h3>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_epochs</span><span class="p">):</span>
-    <span class="n">optimizer</span><span class="p">.</span><span class="n">zero_grad</span><span class="p">()</span>        <span class="c1"># 1) clear old grads
-</span>    <span class="n">outputs</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>      <span class="c1"># 2) forward
-</span>    <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">targets</span><span class="p">)</span>
-    <span class="n">loss</span><span class="p">.</span><span class="n">backward</span><span class="p">()</span>              <span class="c1"># 3) backprop
-</span>    <span class="n">optimizer</span><span class="p">.</span><span class="n">step</span><span class="p">()</span>             <span class="c1"># 4) update
+    <span class="n">optimizer</span><span class="p">.</span><span class="n">zero_grad</span><span class="p">()</span>        <span class="c1"># Clear old gradients from previous iteration
+</span>    <span class="n">outputs</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>      <span class="c1"># Forward pass: compute predictions via model(x)
+</span>    <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">targets</span><span class="p">)</span>  <span class="c1"># Compute loss value
+</span>    <span class="n">loss</span><span class="p">.</span><span class="n">backward</span><span class="p">()</span>              <span class="c1"># Backward pass: compute dLoss/dW for each parameter
+</span>    <span class="n">optimizer</span><span class="p">.</span><span class="n">step</span><span class="p">()</span>             <span class="c1"># Update parameters: W := W - lr * dLoss/dW
 </span></code></pre></div></div>
 
 <h3 id="good-practices">Good Practices</h3>
@@ -305,19 +359,57 @@
 
 <p><strong>Forward:</strong></p>
 
-\[u = wx = 6, \quad v = u + b = 7, \quad a = \text{ReLU}(v) = 7.\]
+<d-math block="">
+$begin:math:display$
+u = wx = 6, \\quad v = u + b = 7, \\quad a = \\text{ReLU}(v) = 7
+$end:math:display$
+</d-math>
 
 <p><strong>Backward:</strong></p>
 
-\[\frac{\partial a}{\partial v} = \mathbb{1}[v &gt; 0] = 1, \quad \frac{\partial v}{\partial u} = 1, \quad \frac{\partial u}{\partial w} = x, \quad \frac{\partial u}{\partial x} = w, \quad \frac{\partial v}{\partial b} = 1.\]
-
-<p>Thus:</p>
-
-\[\frac{\partial a}{\partial w} = \frac{\partial a}{\partial v} \frac{\partial v}{\partial u} \frac{\partial u}{\partial w} = 1 \cdot 1 \cdot x = 3, \quad \frac{\partial a}{\partial b} = 1 \cdot 1 = 1.\]
+<d-math block="">
+$begin:math:display$
+\\frac{\\partial a}{\\partial v} = \\mathbb{1}[v &gt; 0] = 1, \\quad
+\\frac{\\partial v}{\\partial u} = 1, \\quad
+\\frac{\\partial u}{\\partial w} = x, \\quad
+\\frac{\\partial u}{\\partial x} = w, \\quad
+\\frac{\\partial v}{\\partial b} = 1
+$end:math:display$
+</d-math>
 
 <hr />
 
-<h2 id="8-summary">8. Summary</h2>
+<h2 id="8-dynamic-computation-graphs-define-by-run">8. Dynamic Computation Graphs (Define-by-Run)</h2>
+
+<p><strong>Why ReLU helps:</strong></p>
+
+<p>PyTorch uses a <strong>dynamic computation graph</strong> approach, also called define-by-run. The graph is built on-the-fly during the forward pass, meaning you can use standard Python control flow (loops, conditionals) and the graph structure can change every iteration.</p>
+
+<p><strong>Key advantages:</strong></p>
+<ul>
+  <li><strong>Flexibility</strong>: Different graph structures for different inputs (e.g., variable-length sequences, conditional branching)</li>
+  <li><strong>Debugging</strong>: Easier to debug with standard Python tools since execution is immediate</li>
+  <li><strong>Intuitive</strong>: Code reads like normal Python rather than symbolic graph construction</li>
+</ul>
+
+<p><strong>Contrast with static graphs</strong> 
+(e.g., TensorFlow 1.x): Static frameworks require defining the entire graph upfront, then running it repeatedly. This can be more efficient for production but less flexible for research and prototyping.</p>
+
+<hr />
+
+<h2 id="9-common-pytorch-pitfalls">9. Common PyTorch Pitfalls</h2>
+
+<h3 id="pitfall-1-forgetting-to-zero-gradients">Pitfall 1: Forgetting to Zero Gradients</h3>
+
+<p>Gradients accumulate by default in PyTorch. If you don’t call <code class="language-plaintext highlighter-rouge">optimizer.zero_grad()</code> before each backward pass, gradients from previous iterations will keep adding up, corrupting your parameter updates and causing training to diverge.</p>
+
+<h3 id="pitfall-2-missing-torchno_grad-during-inference">Pitfall 2: Missing <code class="language-plaintext highlighter-rouge">torch.no_grad()</code> During Inference</h3>
+
+<p>During evaluation or inference, PyTorch still builds the computation graph by default, wasting memory and slowing down predictions by 2-3x. Always wrap inference code with <code class="language-plaintext highlighter-rouge">torch.no_grad()</code> to disable gradient tracking. Also remember to call <code class="language-plaintext highlighter-rouge">model.eval()</code> to switch dropout and batch normalization to evaluation mode.</p>
+
+<hr />
+
+<h2 id="10-summary">10. Summary</h2>
 
 <ul>
   <li>Computation graphs formalize dependencies and enable systematic application of the chain rule.</li>
