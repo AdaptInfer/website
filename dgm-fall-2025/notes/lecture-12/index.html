@@ -485,7 +485,7 @@ This is like a “friction” or dampening parameter.</p>
           <li>
             <p>[RMSProp Term:]{.underline}</p>
 
-            <p>$r:= \beta \cdot MeanSquare(w_{i,j},t-1)+(1+\beta)(\frac{\partial L}{\partial w_{i,j}(t)})^2$</p>
+            <p>$r:= \beta \cdot MeanSquare(w_{i,j},t-1)+(1-\beta)(\frac{\partial L}{\partial w_{i,j}(t)})^2$</p>
 
             <ul>
               <li>$r$ is the size of the gradients (large $r$ is steep)</li>
