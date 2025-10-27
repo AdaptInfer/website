@@ -1,0 +1,769 @@
+<!doctype html>
+<html>
+  <head>
+    <head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="content-language" content="en" />
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <title>
+    STAT 453 | Lecture 14
+  </title>
+  <meta name="description" content="STAT 453 - University of Wisconsin-Madison - Fall 2025
+" />
+
+  <link
+    rel="shortcut icon"
+    href="/dgm-fall-2025/assets/img/favicon.ico"
+  />
+
+  <link rel="stylesheet" href="/dgm-fall-2025/assets/css/main.css" />
+  <link
+    rel="canonical"
+    href="/dgm-fall-2025/notes/lecture-14/"
+  />
+
+  
+  <!-- Load Latex JS -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+  
+</head>
+
+    <script src="/dgm-fall-2025/assets/js/distillpub/template.v2.js"></script>
+    <script src="/dgm-fall-2025/assets/js/distillpub/transforms.v2.js"></script>
+  </head>
+
+  <d-front-matter>
+    <script type="text/json">
+      {
+            "title": "Lecture 14",
+            "description": "Midterm Review",
+            "published": "September 8, 2025",
+            "lecturers": [
+              
+              {
+                "lecturer": "Ben Lengerich",
+                "lecturerURL": "https://adaptinfer.org/"
+              }
+              
+            ],
+            "authors": [
+              
+              {
+                "author": "Ritvik Gudlavalleti"
+              },
+              
+              {
+                "author": ""
+              },
+              
+              {
+                "author": "Aidan Simkin"
+              },
+              
+              {
+                "author": ""
+              },
+              
+              {
+                "author": "Mohammad Zaidan"
+              },
+              
+              {
+                "author": ""
+              }
+              
+            ],
+            "editors": [
+              
+              {
+                "editor": "Ben Lengerich",
+                "editorURL": "https://adaptinfer.org"
+              }
+              
+            ],
+            "katex": {
+              "delimiters": [
+                {
+                  "left": "$",
+                  "right": "$",
+                  "display": false
+                },
+                {
+                  "left": "$$",
+                  "right": "$$",
+                  "display": true
+                }
+              ]
+            }
+          }
+    </script>
+  </d-front-matter>
+
+  <body>
+    <header class="site-header">
+  <div class="wrapper">
+    <span class="site-title">
+      <a class="page-link" href="https://adaptinfer.org/dgm-fall-2025/"
+        >STAT 453</a
+      >
+    </span>
+
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path
+              fill="#424242"
+              d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
+            />
+            <path
+              fill="#424242"
+              d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
+            />
+            <path
+              fill="#424242"
+              d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
+            />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger">
+        <a class="page-link" href="/dgm-fall-2025/logistics/"
+          >logistics</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/lectures/"
+          >lectures</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/notes/">notes</a>
+        <a class="page-link" href="/dgm-fall-2025/calendar/"
+          >calendar</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/homework/"
+          >homework</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/project/">project</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+      <d-title>
+        <h1>Lecture 14</h1>
+        <p>Midterm Review</p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article> <h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+  <li><a href="#1-what-is-machine-learning">What is Machine Learning?</a></li>
+  <li><a href="#2-the-building-blocks-of-deep-learning">The Building Blocks of Deep Learning</a></li>
+  <li><a href="#3-rosenblatts-perceptron">Rosenblatt’s Perceptron</a></li>
+  <li><a href="#4-logistic-regression">Logistic Regression</a></li>
+  <li><a href="#5-multilayer-perceptron">Multilayer Perceptron</a></li>
+  <li><a href="#6-backpropagation-an-algorithm-to-train-models-with-hidden-variables">Backpropagation: An Algorithm to Train Models with Hidden Variables</a></li>
+  <li><a href="#7-pytorch-automated-differentiation">PyTorch: Automated Differentiation</a></li>
+  <li><a href="#8-improvements-to-optimization">Improvements to Optimization</a></li>
+  <li><a href="#9-regularization">Regularization</a></li>
+  <li><a href="#10-normalization">Normalization</a></li>
+</ol>
+
+<hr />
+
+<h2 id="1-what-is-machine-learning">1. What is Machine Learning?</h2>
+
+<figure>
+  <img src="/dgm-fall-2025/assets/img/notes/lecture-14/TPP.png" width="550" />
+  <figcaption>Figure 1. Traditional Programming Paradigm vs. Machine Learning Paradigm</figcaption>
+</figure>
+<p>Machine learning is using statistically based methods to improve a model through its inputs and outputs.</p>
+
+<h3 id="definition-and-types">Definition and Types</h3>
+
+<p>Formally, a computer program is said to learn from experience $E$ with respect to some task $T$ and performance measure $P$ if its performance at $T$ as measured by $P$ improves with $E$.</p>
+
+<p><strong>Supervised Learning</strong></p>
+<ul>
+  <li>Task $T$: Learn a function $h : X \to Y$</li>
+  <li>Experience $E$: Labeled samples ${(x^{(i)}, y^{(i)})}_{i=1}^n$</li>
+  <li>Performance $P$: A measure of how good $h$ is</li>
+</ul>
+
+<p><strong>Unsupervised Learning</strong></p>
+<ul>
+  <li>Task $T$: Discover structure in data</li>
+  <li>Experience $E$: Unlabeled samples ${x^{(i)}}_{i=1}^n$</li>
+  <li>Performance $P$: Measure of fit or utility</li>
+</ul>
+
+<p><strong>Reinforcement Learning</strong></p>
+<ul>
+  <li>Task $T$: Learn a policy $\pi : S \to A$</li>
+  <li>Experience $E$: Interaction with environment</li>
+  <li>Performance $P$: Expected reward</li>
+</ul>
+
+<h3 id="the-connection-between-fields">The Connection Between Fields</h3>
+
+<p>The relationship between artificial intelligence, machine learning, and deep learning can be understood hierarchically. AI represents a system that accomplishes a task through a machine learning or deep learning model. Machine Learning uses statistically based methods to improve a system’s performance through the inputs and outputs of the system. Deep Learning is a subset of machine learning with specific architectures, such as those trained with backpropagation.</p>
+<figure>
+  <img src="/dgm-fall-2025/assets/img/notes/lecture-14/Connection.png" width="150" />
+  <figcaption>Figure 2. Overlaying fields of AI, Machine Learning, and Deep Learning.</figcaption>
+</figure>
+<hr />
+
+<h2 id="2-the-building-blocks-of-deep-learning">2. The Building Blocks of Deep Learning</h2>
+
+<h3 id="mcculloch--pitts-neuron-model-1943">McCulloch &amp; Pitt’s Neuron Model (1943)</h3>
+
+<p>Warren McCulloch and Walter Pitts created the first computational model of a neuron. The goal is to sum up the inputs and apply a threshold function. Their model used threshold-based activation with weights of $+1$ or $-1$, but did not support continuous weighting.</p>
+
+<h3 id="from-biological-neuron-to-artificial-neuron">From Biological Neuron to Artificial Neuron</h3>
+
+<p>The McCulloch &amp; Pitts neuron with threshold and binary weights can represent “AND”, “OR”, and “NOT” operations, but cannot represent “XOR”.</p>
+
+<figure>
+  <img src="/dgm-fall-2025/assets/img/notes/lecture-14/Biology.png" width="250" />
+  <figcaption>Figure 3. Biological neuron to Computational neuron.</figcaption>
+</figure>
+
+<hr />
+
+<h2 id="3-rosenblatts-perceptron">3. Rosenblatt’s Perceptron</h2>
+
+<h3 id="core-concept">Core Concept</h3>
+
+<p>Frank Rosenblatt introduced a learning rule for the computational neuron model in 1957. The perceptron generalizes McCulloch-Pitts neurons by introducing continuous weighting and using an activation function (typically a threshold function for the classic Rosenblatt perceptron).</p>
+
+<figure>
+  <img src="/dgm-fall-2025/assets/img/notes/lecture-14/Rosen_perceptron.png" width="250" />
+  <figcaption>Figure 4. Classic Rosenblatt Perceptron.</figcaption>
+</figure>
+
+<h3 id="perceptron-learning-algorithm">Perceptron Learning Algorithm</h3>
+
+<p>The perceptron can find a decision boundary if classes are linearly separable. Given a dataset $D = {(x^{[1]}, y^{[1]}), \ldots, (x^{[N]}, y^{[N]})}$, the algorithm proceeds as follows:</p>
+
+<ol>
+  <li>Initialize $w := 0_m$ (assume weight includes bias)</li>
+  <li>For every training epoch:
+    <ul>
+      <li>For every $(x^{[i]}, y^{[i]}) \in D$:
+        <ul>
+          <li>$\hat{y}^{[i]} := \sigma(x^{[i]T} w)$ (only 0 or 1)</li>
+          <li>$\text{err} := (y^{[i]} - \hat{y}^{[i]})$ (only $-1$, $0$, or $1$)</li>
+          <li>$w := w + \text{err} \times x^{[i]}$</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ol>
+
+<h3 id="geometric-intuition">Geometric Intuition</h3>
+
+<p>The decision boundary is a hyperplane in input space, and the weight vector $w$ is perpendicular to this decision boundary. Learning adjusts the orientation of the decision boundary.</p>
+
+<h3 id="perceptron-limitations">Perceptron Limitations</h3>
+
+<p>The perceptron has several important limitations. As a linear classifier, it cannot learn non-linear boundaries and is limited to binary classification, making it unable to solve XOR problems. It does not converge if classes are not linearly separable. While many solutions may achieve zero training error, most will not be optimal in terms of generalization performance.</p>
+
+<h3 id="activation-functions">Activation Functions</h3>
+
+<p>Modern neural networks use various activation functions beyond the threshold function:</p>
+
+<p><strong>Sigmoid</strong>: Smooth and differentiable, outputs in $(0, 1)$</p>
+
+<p><strong>Tanh</strong>: Mean-centered, outputs in $(-1, 1)$. Advantages include mean centering, positive and negative values, and larger gradients. It’s important to normalize inputs to mean zero and use random weight initialization with average weight centered at zero.</p>
+
+<p><strong>ReLU</strong>: $\text{ReLU}(z) = \max(0, z)$</p>
+
+<p><strong>Leaky ReLU</strong>: Allows small negative values</p>
+
+<p><strong>ELU</strong>: Exponential Linear Unit</p>
+
+<p><strong>SELU</strong>: Scaled Exponential Linear Unit</p>
+
+<figure>
+  <img src="/dgm-fall-2025/assets/img/notes/lecture-14/activation.png" width="550" />
+</figure>
+
+<figure>
+  <img src="/dgm-fall-2025/assets/img/notes/lecture-14/activation_2.png" width="550" />
+</figure>
+<hr />
+
+<h2 id="4-logistic-regression">4. Logistic Regression</h2>
+
+<h3 id="logistic-regression-neuron">Logistic Regression Neuron</h3>
+
+<p>For binary classes $y \in {0, 1}$, logistic regression uses a sigmoid activation function.</p>
+
+<h3 id="probability-formulation">Probability Formulation</h3>
+
+<table>
+  <tbody>
+    <tr>
+      <td>Given the output $a = \sigma(w^T x)$, we compute the probability as $P(y = 1</td>
+      <td>x) = a$, following the Bernoulli distribution.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="maximum-likelihood-estimation">Maximum Likelihood Estimation</h3>
+
+<p>Under maximum likelihood estimation, we maximize the multi-sample likelihood:</p>
+
+\[L(w) = \prod_{i=1}^n P(y^{(i)}|x^{(i)})\]
+
+<p>The log-likelihood is:</p>
+
+\[\log L(w) = \sum_{i=1}^n \log P(y^{(i)}|x^{(i)})\]
+
+<h3 id="gradient-descent-learning-rule">Gradient Descent Learning Rule</h3>
+
+<p>We optimize via gradient descent using stochastic updates:</p>
+
+\[w := w + \eta \nabla_w \log P(y^{(i)}|x^{(i)})\]
+
+<hr />
+
+<h2 id="5-multilayer-perceptron">5. Multilayer Perceptron</h2>
+
+<h3 id="architecture">Architecture</h3>
+
+<p>A multilayer perceptron is a computation graph with multiple fully-connected layers. By stacking multiple layers of perceptrons, the network can learn non-linear decision boundaries.</p>
+
+<h3 id="multinomial-softmax-logistic-regression">Multinomial (“Softmax”) Logistic Regression</h3>
+
+<p>For multi-class classification, we use the softmax function, which is a “soft” (differentiable) version of “max”:</p>
+
+<figure>
+  <img src="/dgm-fall-2025/assets/img/notes/lecture-14/softmax.png" width="250" />
+  <figcaption>Figure 6. Softmax Archictecture</figcaption>
+</figure>
+
+\[\text{softmax}(z_i) = \frac{e^{z_i}}{\sum_j e^{z_j}}\]
+
+<h3 id="loss-function">Loss Function</h3>
+
+<p>Assuming one-hot encoding, the cross-entropy loss is:</p>
+
+\[L = -\sum_i y_i \log(\hat{y}_i)\]
+
+<h3 id="solving-xor">Solving XOR</h3>
+
+<p>Multilayer perceptrons can solve the XOR problem that single-layer perceptrons cannot. A single hidden layer is sufficient for the XOR problem, demonstrating the power of depth.</p>
+
+<hr />
+
+<h2 id="6-backpropagation-an-algorithm-to-train-models-with-hidden-variables">6. Backpropagation: An Algorithm to Train Models with Hidden Variables</h2>
+
+<h3 id="the-training-problem">The Training Problem</h3>
+
+<p>How can we train a multilayer model when there are no targets or ground truth for the hidden nodes? The solution is backpropagation.</p>
+
+<h3 id="core-concept-1">Core Concept</h3>
+
+<p>Neural networks are function compositions that can be represented as computation graphs. By applying the chain rule and working in reverse order, we can compute gradients efficiently:</p>
+
+\[\frac{\partial f}{\partial x_i} = \sum_j \frac{\partial f}{\partial z_j} \frac{\partial z_j}{\partial x_i}\]
+
+<h3 id="computation-graphs">Computation Graphs</h3>
+
+<p>Computation graphs consist of input variables, intermediate computations, and outputs. The chain rule is applied in reverse to propagate gradients.</p>
+
+<p><strong>Forward pass</strong>: Compute activations from inputs to outputs</p>
+
+<p><strong>Backward pass</strong>: Compute gradients from outputs to inputs, where the local gradient is multiplied by the upstream gradient</p>
+
+<figure>
+  <img src="/dgm-fall-2025/assets/img/notes/lecture-14/backprop.png" width="250" />
+</figure>
+
+<h3 id="weight-sharing">Weight-Sharing</h3>
+
+<p>When the same weights are used in multiple locations in the network, gradients are accumulated from all uses of those weights.</p>
+
+<hr />
+
+<h2 id="7-pytorch-automated-differentiation">7. PyTorch: Automated Differentiation</h2>
+
+<p>PyTorch provides automated differentiation, making it easy to train neural networks through three main steps:</p>
+
+<p><strong>Step 1: Definition</strong> - Define model architecture, specifying layers and activation functions</p>
+
+<p><strong>Step 2: Creation</strong> - Instantiate the model, initialize optimizer and loss function</p>
+
+<p><strong>Step 3: Training</strong> - Perform forward pass to compute predictions, compute loss, perform backward pass to compute gradients using <code class="language-plaintext highlighter-rouge">.backward()</code>, update weights using the optimizer, and zero gradients before the next iteration</p>
+
+<hr />
+
+<h2 id="8-improvements-to-optimization">8. Improvements to Optimization</h2>
+
+<h3 id="non-convex-loss">Non-Convex Loss</h3>
+
+<p>While linear regression, Adaline, logistic regression, and softmax regression have convex loss functions, deep neural networks typically have non-convex loss landscapes. In practice, we usually end up at different local minima if we repeat the training.</p>
+
+<h3 id="minibatch-training">Minibatch Training</h3>
+
+<p>Minibatch learning is a form of stochastic gradient descent where each minibatch can be considered a sample drawn from the training set. This means the gradient is noisier, which can be good (providing a chance to escape local minima) or bad (leading to extensive oscillation).</p>
+
+<h3 id="learning-rate-decay">Learning Rate Decay</h3>
+
+<p>Due to batch effects, minibatch loss and gradients are approximations, typically resulting in oscillations. To dampen oscillations towards the end of training, we can decay the learning rate. However, decreasing the learning rate too early is dangerous. A practical tip is to try training the model without learning rate decay first, then add it later.</p>
+
+<p>Common variants include:</p>
+
+<ol>
+  <li><strong>Exponential Decay</strong>: $\eta_t := \eta_0 e^{-k \cdot t}$ where $k$ is the decay rate</li>
+  <li><strong>Halving</strong>: $\eta_t := \eta_{t-1}/2$ where $t$ is a multiple of $T_0$ (e.g., $T_0 = 100$)</li>
+  <li><strong>Inverse decay</strong>: $\eta_t := \frac{\eta_0}{1 + k \cdot t}$</li>
+</ol>
+
+<h3 id="training-with-momentum">Training with Momentum</h3>
+
+<p>The main idea is to dampen oscillations by using “velocity” (the speed of the “movement” from previous updates). Not only move in the opposite direction of the gradient, but also move in the weighted averaged direction of the last few updates:</p>
+
+\[v_t = \gamma v_{t-1} + \eta \nabla_w L\]
+
+\[w_t = w_{t-1} - v_t\]
+
+<h3 id="nesterov-momentum">Nesterov Momentum</h3>
+
+<p>Nesterov momentum is an improvement that looks ahead before making the step. Since we already know where the momentum part will push us in this step, we calculate the new gradient with that update in mind.</p>
+
+<h3 id="adaptive-learning-rates">Adaptive Learning Rates</h3>
+
+<p>The rule of thumb for adaptive learning rates is to decrease learning if the gradient changes its direction and increase learning if the gradient stays consistent.</p>
+
+<h3 id="rmsprop">RMSProp</h3>
+
+<p>RMSProp is an unpublished but very popular algorithm by Geoff Hinton, based on Rprop and very similar to AdaDelta. The main idea is to divide the learning rate by an exponentially decreasing moving average of the squared gradients (RMS stands for “Root Mean Squared”). This takes into account that gradients can vary widely in magnitude.</p>
+
+<h3 id="adam-adaptive-moment-estimation">ADAM (Adaptive Moment Estimation)</h3>
+
+<p>ADAM is probably the most widely used optimization algorithm in deep learning. It combines momentum with RMSProp:</p>
+
+<ul>
+  <li>Momentum-like term: $m_t = \beta_1 m_{t-1} + (1 - \beta_1) \nabla_w L$</li>
+  <li>RMSProp term: $v_t = \beta_2 v_{t-1} + (1 - \beta_2) (\nabla_w L)^2$</li>
+  <li>ADAM update: $w_t = w_{t-1} - \frac{\eta}{\sqrt{v_t} + \epsilon} m_t$</li>
+</ul>
+
+<hr />
+
+<h2 id="9-regularization">9. Regularization</h2>
+
+<h3 id="where-we-are">Where We Are</h3>
+
+<p>Good news: We can solve non-linear problems! Bad news: Our multilayer neural networks have lots of parameters and it’s easy to overfit the data.</p>
+
+<h3 id="parameters-vs-hyperparameters">Parameters vs Hyperparameters</h3>
+
+<p><strong>Parameters</strong> (learned from data): weights (weight parameters) and biases (bias units)</p>
+
+<p><strong>Hyperparameters</strong> (set before training): minibatch size, data normalization schemes, number of epochs, number of hidden layers, number of hidden units, learning rates, loss function, activation function types, regularization schemes, weight initialization schemes, and optimization algorithm type</p>
+
+<h3 id="overfitting-and-underfitting">Overfitting and Underfitting</h3>
+
+<p>Underfitting occurs when the model is too simple, resulting in high bias. Overfitting occurs when the model is too complex, resulting in high variance. The goal is to find the right balance.</p>
+
+<figure>
+  <img src="/dgm-fall-2025/assets/img/notes/lecture-14/overfittingvsunderfitting.png" width="250" />
+</figure>
+
+<h3 id="bias-variance-decomposition">Bias-Variance Decomposition</h3>
+
+\[\text{Total Error} = \text{Bias}^2 + \text{Variance} + \text{Irreducible Error}\]
+
+<p>Bias is the error from incorrect assumptions, while variance is the error from sensitivity to the training set.</p>
+
+<h3 id="general-strategies-to-avoid-overfitting">General Strategies to Avoid Overfitting</h3>
+
+<p>Collecting more data, especially high-quality data, is best and always recommended. Alternative approaches include semi-supervised learning, transfer learning, and self-supervised learning. Data augmentation is helpful, and reducing model capacity can also help.</p>
+
+<h3 id="data-augmentation">Data Augmentation</h3>
+
+<p>The key idea is that if we know the label shouldn’t depend on a transformation $h(x)$, then we can generate new training data $(h(x^{(i)}), y^{(i)})$. However, we must already know something that our outcome doesn’t depend on. For image classification, this includes transformations like rotation, zooming, and sepia filters.</p>
+
+<h3 id="reduce-networks-capacity">Reduce Network’s Capacity</h3>
+
+<p>The key idea is that the simplest model that matches the outputs should generalize the best. Strategies include choosing a smaller architecture (fewer hidden layers and units), adding dropout, using ReLU with L1 penalty to prune dead activations, enforcing smaller weights through early stopping or L2 norm penalty, and adding noise through dropout. With recent large language models and foundation models, it’s possible to use a large pretrained model and perform efficient fine-tuning.</p>
+
+<h3 id="early-stopping">Early Stopping</h3>
+
+<p>Split your dataset into three parts, using the test set only once at the end and using validation accuracy for tuning. Stop training early by observing the training/validation accuracy gap during training and stopping when the train and validation gap grows.</p>
+
+<h3 id="l2-regularization">L2 Regularization</h3>
+
+<p>Add a penalty term to the loss function:</p>
+
+\[L_{\text{total}} = L_{\text{data}} + \lambda \sum_i w_i^2\]
+
+<p>This encourages smaller weights and helps prevent overfitting. In PyTorch, use the <code class="language-plaintext highlighter-rouge">weight_decay</code> parameter in the optimizer.</p>
+
+<h3 id="dropout">Dropout</h3>
+
+<p>Randomly “drop” (set to zero) activations during training. Each neuron has probability $p$ of being dropped. This forces the network to learn redundant representations and acts as an ensemble of many networks. At test time, use all neurons but scale activations by $p$.</p>
+
+<hr />
+
+<h2 id="10-normalization">10. Normalization</h2>
+
+<h3 id="normalization-and-gradient-descent">Normalization and Gradient Descent</h3>
+
+<p>Normalizing inputs helps gradient descent converge faster by making the optimization landscape more isotropic (circular rather than elliptical).</p>
+
+<h3 id="problem-in-deep-models">Problem in Deep Models</h3>
+
+<p>Normalizing the inputs only affects the first hidden layer. What about the rest of the layers? Internal covariate shift refers to the problem that the distribution of layer inputs changes during training.</p>
+
+<h3 id="batch-normalization-batchnorm">Batch Normalization (“BatchNorm”)</h3>
+
+<p>Batch normalization normalizes hidden layer inputs, helps with exploding/vanishing gradient problems, and can increase training stability and convergence rate. It can be understood as additional normalization layers with additional parameters.</p>
+
+<p><strong>Step 1: Normalize Net Inputs</strong></p>
+
+<p>For each minibatch, compute mean and variance, then normalize:</p>
+
+\[\hat{z} = \frac{z - \mu_{\text{batch}}}{\sqrt{\sigma^2_{\text{batch}} + \epsilon}}\]
+
+<p><strong>Step 2: Pre-Activation Scaling</strong></p>
+
+<p>Scale and shift:</p>
+
+\[\tilde{z} = \gamma \hat{z} + \beta\]
+
+<p>where $\gamma$ and $\beta$ are learnable parameters. Technically, a BatchNorm layer could learn to perform standardization with zero mean and unit variance.</p>
+
+<h3 id="batchnorm-and-backpropagation">BatchNorm and Backpropagation</h3>
+
+<p>Gradients flow through normalization, with the chain rule applied to compute gradients with respect to $\gamma$, $\beta$, and inputs.</p>
+
+<h3 id="batchnorm-in-pytorch">BatchNorm in PyTorch</h3>
+
+<p>Use <code class="language-plaintext highlighter-rouge">nn.BatchNorm1d(num_features)</code> for fully-connected layers and <code class="language-plaintext highlighter-rouge">nn.BatchNorm2d(num_channels)</code> for convolutional layers.</p>
+
+<h3 id="batchnorm-at-test-time">BatchNorm at Test-Time</h3>
+
+<p>Use an exponentially weighted average (moving average) of mean and variance:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>running_mean = momentum * running_mean + (1 - momentum) * sample_mean
+</code></pre></div></div>
+
+<p>where momentum is typically around 0.1 (and the same for variance). Alternatively, you can also use global training set mean and variance.</p>
+
+<h3 id="layer-normalization">Layer Normalization</h3>
+
+<p>Batch normalization calculates mean and standard deviation based on a minibatch, whereas layer normalization calculates mean and standard deviation based on feature/embedding vectors. In statistical language, batch normalization achieves zero mean unit variance, whereas layer normalization projects the feature vector to the unit sphere. Layer normalization is used in Transformers.</p>
+
+<hr />
+
+<h2 id="initialization">Initialization</h2>
+
+<h3 id="weight-initialization">Weight Initialization</h3>
+
+<p>We can’t initialize all weights to 0 due to the symmetry problem, but we want weights to be relatively small. Traditionally, we can initialize weights by sampling from a random uniform distribution in range $[0, 1]$, or better, $[-0.5, 0.5]$. Alternatively, we could sample from a Gaussian distribution with mean 0 and small variance (e.g., 0.1 or 0.01).</p>
+
+<h3 id="xavier-initialization">Xavier Initialization</h3>
+
+<p>Xavier Glorot and Yoshua Bengio introduced this method in their 2010 paper “Understanding the difficulty of training deep feedforward neural networks.” The method involves:</p>
+
+<ol>
+  <li>Initializing weights from a Gaussian or uniform distribution</li>
+  <li>Scaling the weights proportional to the number of inputs to the layer (for the first hidden layer, that is the number of features in the dataset; for the second hidden layer, that is the number of units in the first hidden layer)</li>
+</ol>
+
+<p>Formula:</p>
+
+\[W \sim \mathcal{N}\left(0, \frac{2}{n_{\text{in}} + n_{\text{out}}}\right)\]
+
+<h3 id="he-initialization">He Initialization</h3>
+
+<p>Kaiming He et al. introduced this method in their 2015 paper “Delving deep into rectifiers: Surpassing human-level performance on imagenet classification.” Assuming activations with mean 0, Xavier initialization assumes a derivative of 1 for the activation function (which is reasonable for tanh). For ReLU, the activations are not centered at zero. He initialization takes this into account by adding a scaling factor of $\sqrt{2}$:</p>
+
+\[W \sim \mathcal{N}\left(0, \frac{2}{n_{\text{in}}}\right)\]
+
+<hr />
+
+<h2 id="convolutional-neural-networks">Convolutional Neural Networks</h2>
+
+<h3 id="why-images-are-hard">Why Images Are Hard</h3>
+
+<p>Images present several challenges: high dimensionality (even small images have thousands of pixels), spatial structure (nearby pixels are correlated), and translation invariance (objects can appear anywhere in the image).</p>
+
+<h3 id="full-connectivity-problem">Full Connectivity Problem</h3>
+
+<p>Full connectivity is problematic for large inputs. For example, $3 \times 200 \times 200$ images imply 120,000 weights per neuron in the first hidden layer. This leads to too many parameters (causing overfitting) and is computationally expensive.</p>
+
+<h3 id="cnns">CNNs</h3>
+
+<p>Yann LeCun introduced convolutional neural networks in 1989. The key idea is to share parameters: instead of learning position-specific weights, learn weights defined for relative positions. Learn “filters” that are reused across the image to generalize across spatial translation of input. The core concept is to replace matrix multiplication in neural networks with a convolution. Later developments have shown that this approach can work for any graph-structured data, not just images.</p>
+
+<h3 id="weight-sharing-in-kernels">Weight Sharing in Kernels</h3>
+
+<p>Reused weights are small and the same filter is applied to different regions of the input, dramatically reducing the number of parameters.</p>
+
+<h3 id="pooling-lossy-compression">Pooling: Lossy Compression</h3>
+
+<p>Pooling reduces spatial dimensions. Max pooling takes the maximum value in each region, while average pooling takes the average value. Pooling provides translation invariance and reduces computation in subsequent layers.</p>
+
+<h3 id="main-ideas-of-cnns">Main Ideas of CNNs</h3>
+
+<p><strong>Sparse-connectivity</strong>: A single element in the feature map is connected to only a small patch of pixels (very different from connecting to the whole input image in multilayer perceptrons)</p>
+
+<p><strong>Parameter-sharing</strong>: The same weights are used for different patches of the input image</p>
+
+<p><strong>Many layers</strong>: Combining extracted local patterns to global patterns</p>
+
+<h3 id="key-concepts">Key Concepts</h3>
+
+<p><strong>Sparse Connectivity</strong>: Each neuron only connects to a small region of the input, reducing the number of parameters and exploiting local spatial structure.</p>
+
+<p><strong>Receptive Fields</strong>: The region of the input that affects a particular neuron. Receptive fields grow over depth, allowing deeper layers to represent more global features.</p>
+
+<p><strong>Parameter Sharing</strong>: Same filter weights used across the entire image, enabling detection of features regardless of position and dramatically reducing parameter count.</p>
+
+<h3 id="impact-of-convolutions-on-size">Impact of Convolutions on Size</h3>
+
+<p>Output size depends on input size, kernel size, stride, and padding:</p>
+
+\[\text{output size} = \left\lfloor \frac{\text{input size} - \text{kernel size} + 2 \times \text{padding}}{\text{stride}} \right\rfloor + 1\]
+
+<h3 id="padding">Padding</h3>
+
+<p>Add zeros around the border of the input to preserve spatial dimensions. “Valid” padding means no padding, while “Same” padding ensures output size equals input size.</p>
+
+<h3 id="backpropagation-in-cnns">Backpropagation in CNNs</h3>
+
+<p>The same concept applies as before: multivariable chain rule, now with an additional weight-sharing constraint. Gradients are accumulated across all positions where a filter is applied. Convolution in the forward pass corresponds to transposed convolution in the backward pass.</p>
+
+<figure>
+  <img src="/dgm-fall-2025/assets/img/notes/lecture-14/CNN.png" width="250" />
+</figure>
+<hr />
+
+<h2 id="summary">Summary</h2>
+
+<p>We’ve covered the fundamentals of deep learning from perceptrons to CNNs. Key concepts include backpropagation, optimization, regularization, and normalization. Modern deep learning combines all these techniques. Next topics will cover more advanced architectures and generative models.</p>
+ </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+    </div>
+
+    <footer class="site-footer">
+  <div class="wrapper">
+    <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Ben Lengerich</li><li>
+            <a class="u-email" href="mailto:TBD@wisc.edu"
+              >TBD@wisc.edu</a
+            >
+          </li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li>
+    <a
+      href="https://github.com/AdaptInfer"
+      target="_blank"
+      ><i class="fab fa-github"></i>
+      <span class="username">AdaptInfer</span></a
+    >
+  </li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>
+          &copy; Copyright 2025 University of Wisconsin.
+          <br />
+          
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  </body>
+
+  <d-bibliography
+    src="/dgm-fall-2025/assets/bibliography/2025-10-20-lecture-14.bib"
+  >
+  </d-bibliography>
+
+  <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/dgm-fall-2025/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link
+  rel="stylesheet"
+  href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css"
+/>
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+<script src="/dgm-fall-2025/assets/js/katex.js"></script>
+ 
+<!-- Load Anchor JS -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+<script>
+  anchors.options.visible = "hover";
+  anchors.add("article h2, article h3, article h4, article h5, article h6");
+</script>
+ 
+<!-- Adjust LaTeX JS -->
+<script src="/dgm-fall-2025/assets/js/latex.js"></script>
+
+
+<!-- Include custom icon fonts -->
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2025/assets/css/fontawesome-all.min.css"
+/>
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2025/assets/css/academicons.min.css"
+/>
+
+<!-- Google Analytics -->
+<script>
+  (function (i, s, o, g, r, a, m) {
+    i["GoogleAnalyticsObject"] = r;
+    (i[r] =
+      i[r] ||
+      function () {
+        (i[r].q = i[r].q || []).push(arguments);
+      }),
+      (i[r].l = 1 * new Date());
+    (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+    a.async = 1;
+    a.src = g;
+    m.parentNode.insertBefore(a, m);
+  })(
+    window,
+    document,
+    "script",
+    "//www.google-analytics.com/analytics.js",
+    "ga",
+  );
+
+  ga("create", "", "auto");
+  ga("send", "pageview");
+</script>
+
+</html>
