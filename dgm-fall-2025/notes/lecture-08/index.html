@@ -68,7 +68,7 @@
             "editors": [
               
               {
-                "editor": "Editor 1"
+                "editor": "Shengdong Yao"
               }
               
             ],
@@ -151,7 +151,7 @@
 
       <d-article> <h2 id="logistic-regression">Logistic Regression</h2>
 
-<p>This lecture we covered logisitcs regression in the context of an atrificial nueron. We also explored logits and cross entropy (negative likelihood) and learnt how to genralise classification to multiple classes.</p>
+<p>This lecture we covered logistic regression in the context of an artificial nueron. We also explored logits and cross entropy (negative likelihood) and learnt how to generalise classification to multiple classes.</p>
 
 <p>Basic Function: Sigmoid</p>
 
@@ -161,7 +161,7 @@
 \]
 </d-math>
 
-<p>Use this as the activation fucntion in a neuron. Bounds between 0 and one means we can interpret the sigmoid output as probability. To predict labels we can use a threshold fuction but we do not use this for training.</p>
+<p>Use this as the activation function in a neuron. Bounds between 0 and one means we can interpret the sigmoid output as probability. To predict labels we can use a threshold fuction but we do not use this for training.</p>
 
 <d-math block="">
 \[
@@ -175,9 +175,9 @@ P(y|x) = a^y*(1-a)^{(i-y)}
 \]
 </d-math>
 
-<p>Which is the bernoulli distibution</p>
+<p>Which is the bernoulli distribution</p>
 
-<p>The likelihood function of the bernoulli function is</p>
+<p>The likelihood function of the bernoulli distribution is</p>
 
 <d-math block="">
 \[
@@ -185,7 +185,7 @@ P(y|x) = a^y*(1-a)^{(i-y)}
 \]
 </d-math>
 
-<p>But we often minimise the negaive log likelihood for feasability</p>
+<p>But we often minimise the negaive log likelihood for feasibility</p>
 
 <d-math block="">
 \[
@@ -301,7 +301,36 @@ Logistic regression (like ADALINE and modern neural networks) optimizes based on
 <ul>
   <li>One-vs-all: predict each class label independently then choose the class with the highest confidence score</li>
   <li>All-vs-all: explicitly predict the probability of each competing outcome then choose the class with the highest confidence score</li>
-  <li>Predict probabilities of class membership simultaneously (activations are class-membership probabilities, not mutually exclusive classes)</li>
+  <li>
+    <p>Predict probabilities of class membership simultaneously (softmax activations are mutually exclusive class probabilities that sum to 1)</p>
+  </li>
+  <li>
+    <h3 id="the-softmax-function">The Softmax Function</h3>
+  </li>
+</ul>
+
+<p>The softmax function converts a vector of logits (net inputs) into a probability distribution:</p>
+
+<d-math block="">
+\[
+\sigma_{\text{softmax}}(\mathbf{z})_j = \frac{e^{z_j}}{\sum_{k=1}^{K} e^{z_k}}
+\]
+</d-math>
+
+<p>where:</p>
+<ul>
+  <li>$\mathbf{z} = \mathbf{Wx} + \mathbf{b}$ are the logits (net inputs)</li>
+  <li>$K$ is the number of classes</li>
+  <li>The outputs sum to 1: $\sum_{j=1}^{K} \sigma_{\text{softmax}}(\mathbf{z})_j = 1$</li>
+</ul>
+
+<h3 id="why-softmax">Why “Softmax”?</h3>
+
+<p>Softmax is a <strong>differentiable (soft) version of the max function</strong>:</p>
+<ul>
+  <li>The argmax function (hard max) outputs 1 for the largest value and 0 for all others</li>
+  <li>Softmax outputs probabilities, with the largest logit getting the highest probability</li>
+  <li>Because it’s differentiable, we can use gradient descent to optimize it</li>
 </ul>
 
 <hr />
