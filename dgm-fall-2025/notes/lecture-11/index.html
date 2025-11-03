@@ -254,7 +254,7 @@ y_i = \gamma \hat{z}_i + \beta
       <li>$\beta$ controls the mean</li>
     </ul>
   </li>
-  <li>Optimal mean is 0 and optimal variance is 0, but the Batch norm layer can standardize with a zero mean and unit variance.</li>
+  <li>An optimal activation distribution typically has zero mean and unit variance. Batch normalization standardizes activations to have zero mean and unit variance, improving training stability.</li>
   <li>This mechanism maintains flexibility while mitigating <strong>exploding</strong> or <strong>vanishing gradients</strong>.</li>
   <li>$\beta$ makes bias units redundant</li>
 </ul>

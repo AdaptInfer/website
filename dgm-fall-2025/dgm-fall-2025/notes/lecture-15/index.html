@@ -1,0 +1,540 @@
+<!doctype html>
+<html>
+  <head>
+    <head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="content-language" content="en" />
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <title>
+    STAT 453 | Lecture 15
+  </title>
+  <meta name="description" content="STAT 453 - University of Wisconsin-Madison - Fall 2025
+" />
+
+  <link
+    rel="shortcut icon"
+    href="/dgm-fall-2025/assets/img/favicon.ico"
+  />
+
+  <link rel="stylesheet" href="/dgm-fall-2025/assets/css/main.css" />
+  <link
+    rel="canonical"
+    href="/dgm-fall-2025/notes/lecture-15/"
+  />
+
+  
+  <!-- Load Latex JS -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+  
+</head>
+
+    <script src="/dgm-fall-2025/assets/js/distillpub/template.v2.js"></script>
+    <script src="/dgm-fall-2025/assets/js/distillpub/transforms.v2.js"></script>
+  </head>
+
+  <d-front-matter>
+    <script type="text/json">
+      {
+            "title": "Lecture 15",
+            "description": "A Linear Intro to Generative Models",
+            "published": "October 27, 2025",
+            "lecturers": [
+              
+              {
+                "lecturer": "Ben Lengerich",
+                "lecturerURL": "https://adaptinfer.org"
+              }
+              
+            ],
+            "authors": [
+              
+              {
+                "author": "Kyoheon Hwang"
+              },
+              
+              {
+                "author": "Jan Rovirosa Illa"
+              },
+              
+              {
+                "author": "Lynn Huang"
+              }
+              
+            ],
+            "editors": [
+              
+              {
+                "editor": "-"
+              }
+              
+            ],
+            "katex": {
+              "delimiters": [
+                {
+                  "left": "$",
+                  "right": "$",
+                  "display": false
+                },
+                {
+                  "left": "$$",
+                  "right": "$$",
+                  "display": true
+                }
+              ]
+            }
+          }
+    </script>
+  </d-front-matter>
+
+  <body>
+    <header class="site-header">
+  <div class="wrapper">
+    <span class="site-title">
+      <a class="page-link" href="https://adaptinfer.org/dgm-fall-2025/"
+        >STAT 453</a
+      >
+    </span>
+
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path
+              fill="#424242"
+              d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
+            />
+            <path
+              fill="#424242"
+              d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
+            />
+            <path
+              fill="#424242"
+              d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
+            />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger">
+        <a class="page-link" href="/dgm-fall-2025/logistics/"
+          >logistics</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/lectures/"
+          >lectures</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/notes/">notes</a>
+        <a class="page-link" href="/dgm-fall-2025/calendar/"
+          >calendar</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/homework/"
+          >homework</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/project/">project</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+      <d-title>
+        <h1>Lecture 15</h1>
+        <p>A Linear Intro to Generative Models</p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article> <h2 id="todays-topics">Today’s Topics:</h2>
+<ul>
+  <li><a href="#1-generative-models">1. Generative Models</a></li>
+  <li><a href="#2-generative-and-discriminative-models">2. Generative and Discriminative Models</a></li>
+  <li><a href="#3-example-discriminative-model-logistic-regression">3. Example Discriminative Model:Logistic Regression</a></li>
+  <li><a href="#4-example-generative-model-naive-bayes">4. Example Generative Model:Naive Bayes</a></li>
+  <li><a href="#5-discriminative-vs-generative-models">5. Discriminative vs Generative Models</a></li>
+  <li><a href="#6-logistic-regression-vs-naive-bayes">6. Logistic Regression vs Naive Bayes</a></li>
+  <li><a href="#7-modern-dgms">7. Modern DGMs</a></li>
+</ul>
+
+<hr />
+
+<h2 id="1generative-models">1.Generative Models</h2>
+
+<h3 id="deep-generative-models-dgm">Deep Generative Models (DGM)</h3>
+
+<p><strong>Key Characteristics</strong></p>
+<ul>
+  <li>Previoulsy, we learned about discriminative model that can classify images (e.g., CNN).</li>
+  <li>Now, we will learn generative models that not only classify images, but they can also generate them on their own - such as ChatGPT, Gemini or DeepSeek.</li>
+</ul>
+
+<figure>
+  <img src="/dgm-fall-2025/assets/img/notes/lecture-15/figure1.png" width="550" />
+  <figcaption>Figure 1. Difference between discriminative and generative model</figcaption>
+</figure>
+
+<p><br /></p>
+
+<hr />
+
+<h2 id="2-generative-and-discriminative-models">2. Generative and Discriminative Models</h2>
+
+<h3 id="more-detail-about-difference-between-two-models">More detail about difference between two Models</h3>
+<p><strong>1. Generative Models</strong></p>
+<ul>
+  <li>Models focus on learning the underlying distribution of the data</li>
+  <li>aim to understand how the data is generated, so allows them to create new data</li>
+  <li>Models the joint distribution $P(X,Y)$ where $X$ represents the features Y denotes the class labels</li>
+</ul>
+
+<p><strong>2. Descriminative Models</strong></p>
+<ul>
+  <li>Models focus on modeling and decision boundary between classes</li>
+  <li>learn conditional distribution $P(Y \mid X)$ which represents the probability of a class label given the input features</li>
+  <li>used for classification tasks or distinguishing between classes based on features</li>
+</ul>
+
+<figure>
+  <img src="/dgm-fall-2025/assets/img/notes/lecture-15/figure2.png" width="550" />
+  <figcaption>Figure 2. entire data distribution vs conditional probability </figcaption>
+</figure>
+
+<p><br /></p>
+
+<hr />
+<p><strong>3. Two paths to P(Y|X)</strong></p>
+
+<p><strong>Descriminative Models</strong></p>
+<ul>
+  <li>Direct path</li>
+  <li>When you observe X, Y then you directly learn $P(Y \mid X)$ which is the boundary between classes</li>
+  <li>$P(Y \mid X)$ is, “Given X(data), what is the most likely Y(label)</li>
+  <li>In classification, $\hat{Y} = argmax_Y P(Y \mid X)$</li>
+</ul>
+
+<p><strong>Generative Models</strong></p>
+<ul>
+  <li>Observe (X, Y)</li>
+  <li>you first learn:
+    <ul>
+      <li>$P(X \mid Y)$ → how data X is distributed within each class</li>
+      <li>$P(Y)$ → Distribution of Y (the prior)</li>
+    </ul>
+  </li>
+  <li>also you can calculate $P(X) = \int_{Y} P(X,Y) \ dY$ which is the marginal probability of X regardless of Y</li>
+  <li>finally we yield $P(Y \mid X)$ using bayes’ rule
+    <ul>
+      <li>$P(Y \mid X) = \frac{P(X \mid Y) \, P(Y)}{P(X)}$</li>
+    </ul>
+  </li>
+  <li>In classification task, we don’t need to calculate $P(X)$
+    <ul>
+      <li>$\hat{Y} = argmax_Y P(X \mid Y) \ P(Y)$</li>
+    </ul>
+  </li>
+</ul>
+
+<figure>
+  <img src="/dgm-fall-2025/assets/img/notes/lecture-15/figure3.png" width="550" />
+  <figcaption>Figure 3. Path to P(Y|X)</figcaption>
+</figure>
+
+<p><br /></p>
+
+<hr />
+
+<h2 id="3-example-discriminative-modellogistic-regression">3. Example Discriminative Model:Logistic Regression</h2>
+<p><strong>Core Characteristic of Discriminative Model:</strong> Parameterization</p>
+<ul>
+  <li>Parameterization in Logistic Regression
+    <ul>
+      <li>$P(Y = 1 \mid X) = \sigma(\theta^{T} \ X)$, where $\sigma(z) = \frac{1}{1+e^{-z}}$ is the sigmoid function</li>
+      <li>$P(Y = 0 \mid X) = 1 - P(Y=1 \mid X)$</li>
+      <li>“Why do we choose this form of parameterization?”</li>
+      <li>Because in logistic regression, we <strong>assume the log-odds of the probability is a linear function of the input</strong></li>
+    </ul>
+  </li>
+</ul>
+<figure>
+  <img src="/dgm-fall-2025/assets/img/notes/lecture-15/figure5.png" width="550" />
+</figure>
+<ul>
+  <li>In logistic regression the log odds is a linear combination of the features X</li>
+  <li>Estimate $\hat{\theta}$ form observation:</li>
+</ul>
+<figure>
+  <img src="/dgm-fall-2025/assets/img/notes/lecture-15/figure4.png" width="550" />
+</figure>
+
+<p><br /></p>
+
+<hr />
+
+<h2 id="4-example-generative-model-naive-bayes">4. Example Generative Model: Naive Bayes</h2>
+<p><strong>Core Characteristic of Generative Model:</strong></p>
+
+<p>We observe X and Y. Then we learn $P(X \mid Y) and P(Y)$ and we use it to derive $P(Y \mid X) = \frac{P(X \mid Y) P(Y)}{P(X)}$, where $P(Y = 1) = \frac{number \hspace{1em} of \hspace{1em} samples \hspace{1em} with \hspace{1em} Y = K}{Total \hspace{1em} samples}$</p>
+<ul>
+  <li>Parameterize
+    <ul>
+      <li>Assume $P(X \mid Y) = \prod_{j=1}^{d} P(X_j \mid Y)$</li>
+      <li>$P(X_j \mid Y) = N (\mu_{jk} , \sigma_{jk}^{2})$</li>
+    </ul>
+  </li>
+  <li>Estimate
+    <ul>
+      <li>$\hat{\mu} , \hat{\sigma} = argmax_{\mu , \sigma} P(X \mid Y)$</li>
+    </ul>
+  </li>
+  <li>Calculate
+    <ul>
+      <li>$P(Y=1 \mid X) = \frac{\prod_{j=1}^{d} P(X_j \mid Y) P(Y=1)}{P(X)}$</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="map--regularization-note">MAP / Regularization Note:</h2>
+
+<p>Logistic regression: 
+We change our $\hat{\theta}$ estimates from observations by:</p>
+
+<figure>
+  <img src="/dgm-fall-2025/assets/img/notes/lecture-15/figure6.png" width="550" />
+</figure>
+
+<p><br /></p>
+
+<hr />
+
+<h2 id="5-discriminative-vs-generative-models">5. Discriminative vs Generative Models</h2>
+
+<ul>
+  <li>Discriminative models optimize the conditional likelihood:
+$\hat{\theta_{disc}} = argmax_{\theta} P(Y \mid X; \theta) = argmax_{\theta} \frac{P(X \mid Y ; \theta) P(Y; \theta)}{P(X; \theta)}$</li>
+  <li>
+    <p>Generative models optimize the joint likelihood:
+$\hat{\theta_{disc}} = argmax_{\theta} P(X, Y; \theta) = argmax_{\theta} P(X \mid Y ; \theta) P(Y; \theta)$</p>
+
+    <p>This means they are exactly the same optimization when $P(X; \theta)$ is invariant to $\theta$</p>
+  </li>
+</ul>
+
+<p><br /></p>
+
+<hr />
+
+<h2 id="6-logistic-regression-vs-naive-bayes">6. Logistic Regression vs Naive Bayes</h2>
+
+<h3 id="logistic-regression">Logistic Regression**</h3>
+<ul>
+  <li><strong>Type</strong> : Discriminative</li>
+  <li>It directly models the decision boundary: $P(Y \mid X; \theta)$</li>
+  <li>It does <strong>not</strong> models how data is generated only the probability that a given (X) belongs to a certain class (Y )</li>
+  <li>Defines : $P(Y \mid X; \theta) = \sigma(\theta^T X) = \frac{1}{1 + e^{-\theta^T X}}$</li>
+  <li>Estimates:
+    <ul>
+      <li>Parameters are learned by maximizing the conditional likelihood: $\hat{\theta_{lr}} = argmax_{\theta} P(Y \mid X; \theta)$</li>
+      <li>Or equivalently, by maximizing the <strong>log-likelihood</strong>:
+$\hat{\theta_{lr}} = \arg\max_{\theta} \sum_i \left[Y_i \log \sigma(\theta^{T} X_i) + (1 - Y_i) \log \left(1 - \sigma(\theta^{T} X_i)\right)\right]$</li>
+    </ul>
+  </li>
+  <li>Properties:
+    <ul>
+      <li><strong>Lower asymptotic error</strong> : As the sample size approaches infinity, the learned boundary becomes optimal and the error rate decreases.</li>
+      <li><strong>Slower convergence</strong> : Requires more data to achieve stable performance because it learns only from discriminative information.</li>
+    </ul>
+  </li>
+</ul>
+
+<p><br /></p>
+
+<hr />
+
+<h3 id="naive-bayes">Naive Bayes</h3>
+<ul>
+  <li><strong>Type</strong> : Generative
+    <ul>
+      <li>Learns the <strong>joint distribution</strong> of data $P(X, Y; \theta) = P(Y; \theta) \cdot P(X \mid Y; \theta)$</li>
+      <li>Using Bayes’ rule, we can derive the posterior: $P(Y \mid X) = \frac{P(X \mid Y) \, P(Y)}{P(X)}$</li>
+    </ul>
+  </li>
+  <li>Assumption: <strong>Conditional independence assumption</strong> $P(X \mid Y) = \prod_{j=1}^{d} P(X_j \mid Y)$</li>
+  <li>Estimates: Parameters are learned by maximizing the <strong>joint likelihood</strong>: $\hat{\theta_{NB}} = \arg\max_{\theta} P(X, Y; \theta)$</li>
+  <li>Properties:
+    <ul>
+      <li><strong>Higher asymptotic error</strong> : Because the independence assumption is not always true, it can produce biased estimates when data features are correlated</li>
+      <li><strong>Faster convergence</strong> : Simpler assumptions mean fewer parameters, allowing it to learn well even from small datasets</li>
+    </ul>
+  </li>
+</ul>
+
+<p><br /></p>
+
+<hr />
+
+<h3 id="discriminative-vs-generative-a-proposition">Discriminative vs Generative: A proposition</h3>
+<ul>
+  <li><strong>“While discriminative learning has lower asymptotic error, a generative classifier may also approach its (higher) asymptotic error much faster.”</strong></li>
+  <li>This statement compares the <strong>learning efficiency</strong> and <strong>error behavior</strong> of  <strong>discriminative</strong> vs <strong>generative</strong> models</li>
+  <li>Underlying Assumption :
+    <ul>
+      <li><strong>Generative models</strong> of the form $P(X, Y; \theta)$ make <strong>more simplifying assumptions</strong> than <strong>discriminative models</strong> of the form $P(Y \mid X; \theta)$</li>
+      <li>These assumptions often allow faster convergence (fewer samples needed), but may lead to <strong>higher asymptotic error</strong> due to bias in modeling</li>
+      <li>However, it is <strong>not always true</strong> In some data distributions, discriminative and generative approaches can perform similarly, or even the opposite may occur, depending on model misspecification</li>
+    </ul>
+  </li>
+</ul>
+
+<p><br /></p>
+
+<hr />
+
+<h2 id="7-modern-deep-generative-models-dgms">7. Modern Deep Generative Models (DGMs)</h2>
+<ul>
+  <li>Goal : To design <strong>generative models</strong> of the form $P(X, Y; \theta)$ that can model complex data distributions <strong>without making overly strong simplifying assumptions</strong>.</li>
+  <li>Key Idea : Hidden Structure ( z ): Deep generative models introduce a <strong>latent (hidden) variable ( z )</strong> that captures the underlying structure of high-dimensional observations ( x )
+    <ul>
+      <li>( z ) explains or encodes meaningful patterns in the data</li>
+      <li>( x ) is generated from ( z ) through a probabilistic process, e.g. $P_{\theta} (x \mid z)$</li>
+      <li>But we <strong>never directly observe</strong> the latent variable (z )</li>
+      <li>Because of this, <strong>two key computations become difficult</strong>:
+        <ul>
+          <li>
+            <ol>
+              <li><strong>Marginal likelihood</strong> : $p_\theta(x) = \int p_\theta(x, z)\,dz$
+We must integrate over all possible latent variables ( z ), which is intractable in high-dimensional space</li>
+            </ol>
+          </li>
+          <li>
+            <ol>
+              <li><strong>Posterior inference</strong> : $p_\theta(z \mid x) \propto p_\theta(x \mid z)\,p(z)$. The posterior distribution of ( z ) given ( x ) is typically complex and cannot be computed analytically.</li>
+            </ol>
+          </li>
+          <li>
+            <ol>
+              <li>Each type of <strong>Deep Generative Model (DGM)</strong> makes a <strong>tradeoff</strong> between: <strong>Expressiveness</strong> (how flexible the model is) and <strong>Computational tractability</strong> (how easy it is to compute or train)</li>
+            </ol>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+ </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+    </div>
+
+    <footer class="site-footer">
+  <div class="wrapper">
+    <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Ben Lengerich</li><li>
+            <a class="u-email" href="mailto:TBD@wisc.edu"
+              >TBD@wisc.edu</a
+            >
+          </li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li>
+    <a
+      href="https://github.com/AdaptInfer"
+      target="_blank"
+      ><i class="fab fa-github"></i>
+      <span class="username">AdaptInfer</span></a
+    >
+  </li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>
+          &copy; Copyright 2025 University of Wisconsin.
+          <br />
+          
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  </body>
+
+  <d-bibliography
+    src="/dgm-fall-2025/assets/bibliography/2025-10-27-lecture-15.bib"
+  >
+  </d-bibliography>
+
+  <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/dgm-fall-2025/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link
+  rel="stylesheet"
+  href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css"
+/>
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+<script src="/dgm-fall-2025/assets/js/katex.js"></script>
+ 
+<!-- Load Anchor JS -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+<script>
+  anchors.options.visible = "hover";
+  anchors.add("article h2, article h3, article h4, article h5, article h6");
+</script>
+ 
+<!-- Adjust LaTeX JS -->
+<script src="/dgm-fall-2025/assets/js/latex.js"></script>
+
+
+<!-- Include custom icon fonts -->
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2025/assets/css/fontawesome-all.min.css"
+/>
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2025/assets/css/academicons.min.css"
+/>
+
+<!-- Google Analytics -->
+<script>
+  (function (i, s, o, g, r, a, m) {
+    i["GoogleAnalyticsObject"] = r;
+    (i[r] =
+      i[r] ||
+      function () {
+        (i[r].q = i[r].q || []).push(arguments);
+      }),
+      (i[r].l = 1 * new Date());
+    (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+    a.async = 1;
+    a.src = g;
+    m.parentNode.insertBefore(a, m);
+  })(
+    window,
+    document,
+    "script",
+    "//www.google-analytics.com/analytics.js",
+    "ga",
+  );
+
+  ga("create", "", "auto");
+  ga("send", "pageview");
+</script>
+
+</html>
