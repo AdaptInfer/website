@@ -232,7 +232,13 @@ This is not just a plan—it must reflect <strong>actual work done</strong> so f
 
 <ul>
   <li>
-    <p><strong>Format</strong>: Each team will deliver a <strong>7-minute presentation</strong> in class, summarizing their project. Presentations will include a brief introduction, methods overview, key findings, and future directions. This is the only portion of the project that will have individual (per-person) grades.</p>
+    <p><strong>Format</strong>: Each team will deliver a <strong>7-minute presentation</strong> in class, summarizing their project. Presentations will include a brief introduction, methods overview, key findings, and future directions. This is the only portion of the project that will have individual (per-person) grades, so make sure every group member contributes to the presentation.</p>
+  </li>
+  <li>
+    <p><strong>Recommended Content</strong> (but please adapt to fit your project): Title slide; Executive summary; Problem; State of the Field; Method; Results; Limitations / Next Steps; Takeaway</p>
+  </li>
+  <li>
+    <p><strong>Presenting</strong> We will use Prof. Lengerich’s laptop to present slides in our classroom. <strong>Submit your slides in presentation format (PPTX, Keynote, or PDF) 24 hours before your scheduled presentation.</strong></p>
   </li>
   <li>
     <p><strong>Grading</strong>:</p>
@@ -251,16 +257,32 @@ This is not just a plan—it must reflect <strong>actual work done</strong> so f
 <p><strong>Due:</strong> Friday, December 12, 2025, at 11:59 PM via Canvas.</p>
 
 <ul>
-  <li>
-    <p><strong>Content</strong>:</p>
-
+  <li><strong>Content</strong>:
     <ul>
       <li>ICML-style paper (8 pages).</li>
-      <li>Sections: Introduction, Background &amp; Related Work, Methods, Experiments, and Conclusions.</li>
+      <li>Sections:
+        <ul>
+          <li>Abstract</li>
+          <li>Introduction</li>
+          <li>Background &amp; Related Work (synthesize the related works into a narrative that places your work in context)</li>
+          <li>Methods</li>
+          <li>Experiments</li>
+          <li>Discussion (limitations, broader impact, etc.)</li>
+          <li>Conclusions</li>
+          <li>Reference (separate page using <code class="language-plaintext highlighter-rouge">\clearpage</code>)</li>
+        </ul>
+      </li>
     </ul>
   </li>
-  <li>
-    <p><strong>Grading</strong>:</p>
+  <li><strong>Experimental expectations</strong>:
+    <ul>
+      <li>At least one reasonable baseline.</li>
+      <li>At least one ablation / diagnostic (e.g. remove a term from your loss function, swap encoder, reduce data, etc).</li>
+      <li>Error / qualitative analysis (failure cases, calibration, representative samples, etc).</li>
+      <li>Report uncertainty where applicable (e.g., variance over training runs).</li>
+    </ul>
+  </li>
+  <li><strong>Grading</strong>:
     <ul>
       <li>10%: Problem definition and literature review.</li>
       <li>30%: Methodology (soundness and originality).</li>

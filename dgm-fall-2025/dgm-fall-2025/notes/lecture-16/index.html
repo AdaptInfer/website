@@ -1,0 +1,491 @@
+<!doctype html>
+<html>
+  <head>
+    <head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="content-language" content="en" />
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <title>
+    STAT 453 | Lecture 16 - Autoencoders and Variational Autoencoders (VAEs)
+  </title>
+  <meta name="description" content="STAT 453 - University of Wisconsin-Madison - Fall 2025
+" />
+
+  <link
+    rel="shortcut icon"
+    href="/dgm-fall-2025/assets/img/favicon.ico"
+  />
+
+  <link rel="stylesheet" href="/dgm-fall-2025/assets/css/main.css" />
+  <link
+    rel="canonical"
+    href="/dgm-fall-2025/notes/lecture-16/"
+  />
+
+  
+  <!-- Load Latex JS -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+  
+</head>
+
+    <script src="/dgm-fall-2025/assets/js/distillpub/template.v2.js"></script>
+    <script src="/dgm-fall-2025/assets/js/distillpub/transforms.v2.js"></script>
+  </head>
+
+  <d-front-matter>
+    <script type="text/json">
+      {
+            "title": "Lecture 16 - Autoencoders and Variational Autoencoders (VAEs)",
+            "description": "Detailed lecture notes exploring Autoencoders, their variants, and Variational Autoencoders in Deep Generative Models.",
+            "published": "October 29, 2025",
+            "lecturers": [
+              
+              {
+                "lecturer": "Ben Lengerich",
+                "lecturerURL": "https://adaptinfer.org"
+              }
+              
+            ],
+            "authors": [
+              
+              {
+                "author": "Kimaya Patil"
+              },
+              
+              {
+                "author": "Sijia Wu"
+              },
+              
+              {
+                "author": "Alicia Lyu"
+              },
+              
+              {
+                "author": "Hannah Xu"
+              }
+              
+            ],
+            "editors": [
+              
+              {
+                "editor": "Assistant Editor"
+              }
+              
+            ],
+            "katex": {
+              "delimiters": [
+                {
+                  "left": "$",
+                  "right": "$",
+                  "display": false
+                },
+                {
+                  "left": "$$",
+                  "right": "$$",
+                  "display": true
+                }
+              ]
+            }
+          }
+    </script>
+  </d-front-matter>
+
+  <body>
+    <header class="site-header">
+  <div class="wrapper">
+    <span class="site-title">
+      <a class="page-link" href="https://adaptinfer.org/dgm-fall-2025/"
+        >STAT 453</a
+      >
+    </span>
+
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path
+              fill="#424242"
+              d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
+            />
+            <path
+              fill="#424242"
+              d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
+            />
+            <path
+              fill="#424242"
+              d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
+            />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger">
+        <a class="page-link" href="/dgm-fall-2025/logistics/"
+          >logistics</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/lectures/"
+          >lectures</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/notes/">notes</a>
+        <a class="page-link" href="/dgm-fall-2025/calendar/"
+          >calendar</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/homework/"
+          >homework</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/project/">project</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+      <d-title>
+        <h1>Lecture 16 - Autoencoders and Variational Autoencoders (VAEs)</h1>
+        <p>Detailed lecture notes exploring Autoencoders, their variants, and Variational Autoencoders in Deep Generative Models.</p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article> <h2 id="1-introduction-and-overview">1. Introduction and Overview</h2>
+
+<p>This lecture focuses on <strong>Deep Generative Models (DGMs)</strong> — models designed to learn the underlying data distribution, enabling both prediction and generation of new samples. 
+We move from <strong>discriminative models</strong>, which model $P(Y|X)$, to <strong>generative models</strong>, which model $P(X, Y)$ or $P(X)$.</p>
+
+<p>Autoencoders (AEs) and Variational Autoencoders (VAEs) form the foundation of this shift, combining <strong>unsupervised representation learning</strong> with <strong>probabilistic inference</strong>.</p>
+
+<hr />
+
+<h2 id="2-discriminative-vs-generative-modeling">2. Discriminative vs. Generative Modeling</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Model Type</th>
+      <th>Learns</th>
+      <th>Objective</th>
+      <th>Examples</th>
+      <th> </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Discriminative</strong></td>
+      <td>$P(Y</td>
+      <td>X)$</td>
+      <td>Classify or predict outcomes</td>
+      <td>Logistic Regression, CNNs</td>
+    </tr>
+    <tr>
+      <td><strong>Generative</strong></td>
+      <td>$P(X, Y)$ or $P(X</td>
+      <td>Y)$</td>
+      <td>Model data generation process</td>
+      <td>Autoencoders, VAEs, GANs</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>In generative models, <strong>latent variables</strong> $z$ represent hidden structure in the data, making the following computations challenging:</p>
+
+<p>\(p_\theta(x) = \int p_\theta(x, z) \, dz\)
+\(p_\theta(z|x) \propto p_\theta(x|z) p(z)\)</p>
+
+<p>Because $z$ is unobserved, both the marginal likelihood and posterior inference are intractable in complex data, requiring <strong>approximate inference</strong>.</p>
+
+<hr />
+
+<h2 id="3-deep-generative-models-dgms">3. Deep Generative Models (DGMs)</h2>
+
+<p>DGMs use neural networks to parameterize probability distributions over observed data $x$ and latent variables $z$. 
+The “deep” structure arises from multiple layers of hidden variables that represent hierarchical abstractions.</p>
+
+<p><strong>Key ideas:</strong></p>
+<ul>
+  <li>Learn probabilistic mappings between $x$ and $z$.</li>
+  <li>Use neural networks for non-linear transformations.</li>
+  <li>Combine deep learning’s representational power with probabilistic reasoning.</li>
+</ul>
+
+<hr />
+
+<h2 id="4-autoencoders-concept-and-motivation">4. Autoencoders: Concept and Motivation</h2>
+
+<p>An <strong>Autoencoder (AE)</strong> is an unsupervised neural network trained to reproduce its input. 
+It compresses the input into a <strong>latent representation (code)</strong> and reconstructs the input from this compressed form.</p>
+
+<p><strong>Applications:</strong></p>
+<ul>
+  <li>Dimensionality reduction and data visualization</li>
+  <li>Noise removal and feature denoising</li>
+  <li>Data compression and reconstruction</li>
+  <li>Feature learning for downstream tasks</li>
+</ul>
+
+<hr />
+
+<h2 id="5-architecture-of-an-autoencoder">5. Architecture of an Autoencoder</h2>
+
+<p>An autoencoder consists of:</p>
+
+<ul>
+  <li><strong>Encoder:</strong> $h = g(x)$ — compresses the input into latent representation.</li>
+  <li><strong>Decoder:</strong> $\hat{x} = f(h) = f(g(x))$ — reconstructs the input.</li>
+</ul>
+
+<p><strong>Training objective:</strong>
+\(L(x, \hat{x}) = ||x - \hat{x}||^2\)</p>
+
+<p>By minimizing reconstruction loss, the network learns to capture meaningful low-dimensional structure.</p>
+
+<hr />
+
+<h2 id="6-autoencoders-vs-pca">6. Autoencoders vs PCA</h2>
+
+<p>While PCA performs <strong>linear</strong> dimensionality reduction, AEs learn <strong>non-linear</strong> mappings through neural activations. 
+PCA can be seen as a special case of an AE with one linear hidden layer.</p>
+
+<p><strong>Advantages of AEs:</strong></p>
+<ul>
+  <li>Capture complex non-linear manifolds</li>
+  <li>Can be stacked to form <strong>Deep Autoencoders</strong></li>
+  <li>Support feature learning and transfer to other models</li>
+</ul>
+
+<hr />
+
+<h2 id="7-autoencoder-variants">7. Autoencoder Variants</h2>
+
+<h3 id="71-denoising-autoencoders-dae">7.1 Denoising Autoencoders (DAE)</h3>
+<p>Train the network to reconstruct the original data from a <strong>noisy input</strong>, e.g. by adding Gaussian noise or dropout.<br />
+This improves robustness and generalization.</p>
+
+<h3 id="72-dropout-autoencoders">7.2 Dropout Autoencoders</h3>
+<p>Add dropout layers to force redundancy in learned features, preventing overfitting and improving noise tolerance.</p>
+
+<h3 id="73-sparse-autoencoders">7.3 Sparse Autoencoders</h3>
+<p>Encourage sparsity in activations using an <strong>L1 penalty</strong>. Only a few neurons activate for each input, leading to interpretable latent representations.</p>
+
+<h3 id="74-variational-autoencoders-vaes">7.4 Variational Autoencoders (VAEs)</h3>
+<p>Introduce a <strong>probabilistic latent space</strong>, enabling smooth interpolation and random sampling of new data points.</p>
+
+<hr />
+
+<h2 id="8-variational-autoencoders-vaes-theory-and-intuition">8. Variational Autoencoders (VAEs): Theory and Intuition</h2>
+
+<p>VAEs model the data generation process as:</p>
+
+<ol>
+  <li>Sample latent variable $z \sim p(z)$ (e.g., $\mathcal{N}(0, I)$).</li>
+  <li>
+    <table>
+      <tbody>
+        <tr>
+          <td>Generate data $x$ from conditional distribution $p_\theta(x</td>
+          <td>z)$.</td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ol>
+
+<table>
+  <tbody>
+    <tr>
+      <td>The encoder approximates the posterior $q_\phi(z</td>
+      <td>x)$ using neural networks, producing mean and variance parameters $(\mu, \sigma)$.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>We cannot compute $\log p_\theta(x)$ directly because the marginalization over $z$ is intractable.<br />
+By introducing an approximate posterior $q_\phi(z|x)$ and applying Jensen’s inequality:</p>
+
+\[\log p_\theta(x) = \log \int p_\theta(x,z)dz 
+\ge \mathbb{E}_{q_\phi(z|x)}[\log p_\theta(x|z)] - D_{KL}(q_\phi(z|x)||p(z))\]
+
+<p>This lower bound is the <strong>Evidence Lower Bound (ELBO)</strong>, which VAEs maximize during training.</p>
+
+<p><strong>Objective (Evidence Lower Bound - ELBO):</strong></p>
+
+\[\mathcal{L}(\theta, \phi; x) = \mathbb{E}_{q_\phi(z|x)}[\log p_\theta(x|z)] - D_{KL}(q_\phi(z|x) || p(z))\]
+
+<ul>
+  <li>First term → reconstruction accuracy</li>
+  <li>Second term → regularization ensuring latent space continuity</li>
+</ul>
+
+<hr />
+
+<h2 id="9-the-reparameterization-trick">9. The Reparameterization Trick</h2>
+
+<p>To allow gradients to flow through random sampling, we use:</p>
+
+\[z = \mu + \sigma \odot \epsilon, \quad \epsilon \sim \mathcal{N}(0, I)\]
+
+<p>This separates stochasticity from the deterministic part, making training possible with backpropagation.</p>
+
+<hr />
+
+<h2 id="10-generating-new-samples-with-vaes">10. Generating New Samples with VAEs</h2>
+
+<p>After training:</p>
+<ol>
+  <li>Sample $z \sim \mathcal{N}(0, I)$</li>
+  <li>Decode with $x = f_\theta(z)$</li>
+</ol>
+
+<p>The result is a newly generated data sample similar to the training distribution — for instance, a new handwritten digit when trained on MNIST.</p>
+
+<hr />
+
+<h2 id="11-applications">11. Applications</h2>
+
+<ul>
+  <li><strong>Image denoising</strong> (e.g., Gondara 2016, medical imaging)</li>
+  <li><strong>Data generation</strong> and augmentation</li>
+  <li><strong>Anomaly detection</strong> (via reconstruction error)</li>
+  <li><strong>Feature learning</strong> for unsupervised tasks</li>
+  <li><strong>Data compression</strong> and transfer learning</li>
+</ul>
+
+<hr />
+
+<h2 id="12-summary-and-takeaways">12. Summary and Takeaways</h2>
+
+<ul>
+  <li>Autoencoders learn compact latent representations for reconstruction and feature extraction.</li>
+  <li>Denoising and Sparse variants enhance robustness and interpretability.</li>
+  <li>Variational Autoencoders combine neural networks with probabilistic inference, enabling sample generation.</li>
+  <li>The <strong>reparameterization trick</strong> enables stochastic training with gradient descent.</li>
+  <li>These architectures are foundational to <strong>modern generative AI models</strong> (GANs, diffusion models).</li>
+</ul>
+
+<hr />
+
+<h2 id="references">References</h2>
+
+<ul>
+  <li>Michelucci, Umberto. <em>Modern Autoencoders: Theory and Applications</em>. arXiv preprint arXiv:2201.03898, 2022.</li>
+  <li>Gondara, L. “Medical Image Denoising Using Convolutional Denoising Autoencoders.” <em>IEEE ICDMW</em>, 2016.</li>
+  <li>Kingma, D. P., and Welling, M. “Auto-Encoding Variational Bayes.” arXiv preprint arXiv:1312.6114, 2013.</li>
+</ul>
+ </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+    </div>
+
+    <footer class="site-footer">
+  <div class="wrapper">
+    <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Ben Lengerich</li><li>
+            <a class="u-email" href="mailto:TBD@wisc.edu"
+              >TBD@wisc.edu</a
+            >
+          </li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li>
+    <a
+      href="https://github.com/AdaptInfer"
+      target="_blank"
+      ><i class="fab fa-github"></i>
+      <span class="username">AdaptInfer</span></a
+    >
+  </li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>
+          &copy; Copyright 2025 University of Wisconsin.
+          <br />
+          
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  </body>
+
+  <d-bibliography
+    src="/dgm-fall-2025/assets/bibliography/2025-10-29-lecture-16.bib"
+  >
+  </d-bibliography>
+
+  <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/dgm-fall-2025/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link
+  rel="stylesheet"
+  href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css"
+/>
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+<script src="/dgm-fall-2025/assets/js/katex.js"></script>
+ 
+<!-- Load Anchor JS -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+<script>
+  anchors.options.visible = "hover";
+  anchors.add("article h2, article h3, article h4, article h5, article h6");
+</script>
+ 
+<!-- Adjust LaTeX JS -->
+<script src="/dgm-fall-2025/assets/js/latex.js"></script>
+
+
+<!-- Include custom icon fonts -->
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2025/assets/css/fontawesome-all.min.css"
+/>
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2025/assets/css/academicons.min.css"
+/>
+
+<!-- Google Analytics -->
+<script>
+  (function (i, s, o, g, r, a, m) {
+    i["GoogleAnalyticsObject"] = r;
+    (i[r] =
+      i[r] ||
+      function () {
+        (i[r].q = i[r].q || []).push(arguments);
+      }),
+      (i[r].l = 1 * new Date());
+    (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+    a.async = 1;
+    a.src = g;
+    m.parentNode.insertBefore(a, m);
+  })(
+    window,
+    document,
+    "script",
+    "//www.google-analytics.com/analytics.js",
+    "ga",
+  );
+
+  ga("create", "", "auto");
+  ga("send", "pageview");
+</script>
+
+</html>
