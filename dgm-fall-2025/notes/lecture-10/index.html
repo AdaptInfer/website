@@ -68,7 +68,7 @@
             "editors": [
               
               {
-                "editor": "Editor1"
+                "editor": "Yi Zhang"
               }
               
             ],
@@ -243,10 +243,15 @@ Useful when labeled data is scarce or costly (e.g., medical imaging).</p>
 \mathcal{L}_{L1}=\frac{1}{n}\sum_{i=1}^n L(y^{[i]},\hat{y}^{[i]}) + \frac{\lambda}{n}\sum_j |w_j|
 </d-math>
 
-<ul>
-  <li>Promotes sparsity (many weights → 0)</li>
-  <li>Useful for feature selection</li>
-</ul>
+<p>-L1 Regularization (Lasso) adds the sum of the absolute values of all weights as a penalty term to the loss function, helping to control model complexity.</p>
+
+<p>-It drives many weights to zero, producing a sparse solution and enabling automatic feature selection.</p>
+
+<p>-Geometrically, the circular contours represent the cost function, while the diamond shape represents the L1 constraint boundary. The model seeks a balance between minimizing the loss and satisfying the constraint.</p>
+
+<p>-Because the diamond has sharp corners that align with the coordinate axes, the optimal point often lies on an axis, causing some weights to become exactly zero.</p>
+
+<p>-This regularization prevents overfitting and makes the resulting model simpler and more interpretable.</p>
 
 <figure>
   <img src="/dgm-fall-2025/assets/img/notes/lecture-10/figure5.png" width="550" />
@@ -262,6 +267,16 @@ Useful when labeled data is scarce or costly (e.g., medical imaging).</p>
 <d-math block="">
 w_{i,j} := w_{i,j} - \eta\!\left(\frac{\partial L}{\partial w_{i,j}} + \frac{2\lambda}{n}w_{i,j}\right)
 </d-math>
+
+<p>-L2 Regularization (Ridge) adds the sum of squared weights as a penalty term to the loss function, discouraging large coefficients.</p>
+
+<p>-Unlike L1, it does not force weights to zero, but instead smooths them toward smaller values, distributing the influence more evenly among features.</p>
+
+<p>-Geometrically, the circular contour lines represent the cost function, while the gray circle represents the L2 constraint.</p>
+
+<p>-The optimal point lies where the cost contour just touches the constraint circle, balancing the trade-off between minimizing the cost and the penalty term.</p>
+
+<p>-Because the circle has no sharp corners, all weights are shrunk but rarely become zero, which means L2 encourages weight smoothing rather than sparsity.</p>
 
 <figure>
   <img src="/dgm-fall-2025/assets/img/notes/lecture-10/figure6.png" width="550" />

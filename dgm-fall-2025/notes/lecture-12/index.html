@@ -69,7 +69,7 @@
             "editors": [
               
               {
-                "editor": "Editor 1"
+                "editor": "Shengdong Yao"
               }
               
             ],
@@ -218,6 +218,12 @@ Model output, loss, and gradient is calculated for each minibatch.</p>
       </li>
     </ul>
   </li>
+  <li>Noise is a double-edged sword:
+    <ul>
+      <li><strong>Good:</strong> helps escape local minima.</li>
+      <li><strong>Bad:</strong> causes oscillation.</li>
+    </ul>
+  </li>
   <li>
     <p>Minibatch Training: Practical Tip</p>
 
@@ -231,6 +237,9 @@ Model output, loss, and gradient is calculated for each minibatch.</p>
       </li>
       <li>
         <p>Nice to match the batch size to the number of class sizes in the dataset because want to have the minibatches perserve the distribution of labels from the population in the minibatch sample.</p>
+      </li>
+      <li>
+        <p>Smaller batches → noisier gradients → more loss oscillation but similar final accuracy.</p>
       </li>
       <li>
         <p>In Figure 1 below, more loss oscillation with the smaller batches sizes, but the accuracy is similar.</p>
@@ -309,6 +318,41 @@ This can also be done through validation set testing.</p>
     </ul>
   </li>
 </ul>
+
+<p>Common Forms of Learning Rate Decay</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Type</th>
+      <th style="text-align: left">Formula</th>
+      <th style="text-align: left">Notes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left"><strong>Exponential Decay</strong></td>
+      <td style="text-align: left">$\eta_t = \eta_0 e^{-k t}$</td>
+      <td style="text-align: left">Smooth continuous decay; $k$ is rate hyperparameter</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><strong>Step (Halving)</strong></td>
+      <td style="text-align: left">$\eta_t = \eta_{t-1}/2$ every $T_0$ epochs</td>
+      <td style="text-align: left">Simple, common in classification</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><strong>Inverse Decay</strong></td>
+      <td style="text-align: left">$\eta_t = \frac{\eta_0}{1 + k t}$</td>
+      <td style="text-align: left">Slower decay, often more stable</td>
+    </tr>
+  </tbody>
+</table>
+
+<blockquote>
+  <p>⚖️ <strong>Key idea:</strong> Decay reduces update magnitude so the model “settles” near the minimum instead of bouncing around.</p>
+</blockquote>
+
+<hr />
 
 <hr />
 
