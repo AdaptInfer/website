@@ -53,6 +53,18 @@
               
               {
                 "author": ""
+              },
+              
+              {
+                "author": ""
+              },
+              
+              {
+                "author": ""
+              },
+              
+              {
+                "author": ""
               }
               
             ],
@@ -140,7 +152,75 @@
 
       <d-byline></d-byline>
 
-      <d-article> <h2 id="overview">Overview</h2>
+      <d-article> <h2 id="november-3--generative-adversarial-networks-gans">November 3 — Generative Adversarial Networks (GANs)</h2>
+
+<h3 id="topics">Topics</h3>
+
+<ol>
+  <li>Review: Autoencoders</li>
+  <li>Generative Adversarial Networks (GANs)</li>
+  <li>GANs and VAEs: A Unified View</li>
+</ol>
+
+<hr />
+
+<h2 id="1-autoencoders-review">1. Autoencoders (Review)</h2>
+
+<p><strong>Goal:</strong> Learn a compressed latent representation of input ( x ).</p>
+
+<p><strong>Structure:</strong>
+$
+\hat{x} = f(h) = f(g(x))
+$
+where:</p>
+
+<ul>
+  <li>( $g$ ): encoder</li>
+  <li>( $f$ ): decoder</li>
+</ul>
+
+<h3 id="variants">Variants</h3>
+
+<h4 id="denoising-autoencoders">Denoising Autoencoders</h4>
+
+<ul>
+  <li>Add noise (e.g., dropout or Gaussian noise) to input.</li>
+  <li>Train to reconstruct the original, uncorrupted input.</li>
+  <li>Purpose: Learn robust representations that can remove noise.</li>
+</ul>
+
+<h4 id="autoencoders-with-dropout">Autoencoders with Dropout</h4>
+
+<ul>
+  <li>Dropout layers encourage redundancy in learned features.</li>
+  <li>Improves generalization and robustness to missing inputs.</li>
+</ul>
+
+<h4 id="sparse-autoencoders">Sparse Autoencoders</h4>
+
+<ul>
+  <li>
+    <p>Loss function:
+$
+L = \lVert x - \hat{x} \rVert^2 + \lambda \sum_i |h_i|
+$</p>
+  </li>
+  <li>Adds an L1 penalty on activations to enforce sparsity.</li>
+  <li>Produces interpretable features — each neuron learns a distinct factor.</li>
+</ul>
+
+<h4 id="variational-autoencoders-vaes">Variational Autoencoders (VAEs)</h4>
+
+<ul>
+  <li>Latent variable ( $z \sim \mathcal{N}(0, I)$ )</li>
+  <li>Enables sampling new data points.</li>
+  <li>Provides a probabilistic framework for generative modeling.</li>
+</ul>
+
+<hr />
+<h2 id="2-generative-adversarial-networks-gans">2. Generative Adversarial Networks (GANs)</h2>
+
+<h2 id="overview">Overview</h2>
 
 <p>Generative Adversarial Networks (GANs) were introduced by Goodfellow et al. (2014), and is a generative modeling framework between a <strong>generator</strong> that produces synthetic samples and a <strong>discriminator</strong> that tries to distinguish them from real data. Unlike autoencoders or autoregressive models, GANs can generate an entire sample with less steps.</p>
 
@@ -223,7 +303,54 @@ while the discriminator maximizes it by improving classification.</p>
 
 <hr />
 
-<h2 id="gans-vs-vaes-and-variational-em-view">GANs vs VAEs and Variational-EM View</h2>
+<h2 id="3-gans-and-vaes-a-unified-view">3. GANs and VAEs: A Unified View</h2>
+
+<h3 id="a-unified-view">A Unified View</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Feature</th>
+      <th>Autoencoders (AEs)</th>
+      <th>Variational Autoencoders (VAEs)</th>
+      <th>GANs</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Goal</td>
+      <td>Learn latent representations</td>
+      <td>Probabilistic generative model</td>
+      <td>Adversarial generative model</td>
+    </tr>
+    <tr>
+      <td>Latent Variable</td>
+      <td>Deterministic ( $h = g(x)$ )</td>
+      <td>( $z \sim \mathcal{N}(0, I)$ )</td>
+      <td>( $z \sim p_z(z)$ )</td>
+    </tr>
+    <tr>
+      <td>Training</td>
+      <td>Reconstruction loss</td>
+      <td>ELBO (KL + reconstruction)</td>
+      <td>Adversarial minimax loss</td>
+    </tr>
+    <tr>
+      <td>Sampling</td>
+      <td>Deterministic decode</td>
+      <td>Random sampling via latent prior</td>
+      <td>Generator sampling ( G(z) )</td>
+    </tr>
+    <tr>
+      <td>Weakness</td>
+      <td>Not generative</td>
+      <td>Blurry outputs</td>
+      <td>Instability in training</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="vaes-vs-gans-a-cloesup">VAEs vs. GANs: a cloesup</h3>
 
 <table>
   <thead>
