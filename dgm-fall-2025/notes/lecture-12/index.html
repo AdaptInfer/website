@@ -70,6 +70,10 @@
               
               {
                 "editor": "Shengdong Yao"
+              },
+              
+              {
+                "editor": "Yi Zhang"
               }
               
             ],
@@ -552,21 +556,29 @@ This is like a “friction” or dampening parameter.</p>
 
 <ul>
   <li>
-    <p>“torch.optim.SGD(model.parameters(), lr=0.01, momentum = 0.9)”</p>
+    <p>One of the simplest optimizers is SGD. For example:
+<code class="language-plaintext highlighter-rouge">torch.optim.SGD(model.parameters(), lr=0.01, momentum=0.9)</code>
+The momentum term helps smooth the updates so the training process doesn’t shake too much when the gradient changes quickly.</p>
   </li>
   <li>
-    <p>“torch.optim.Adam(model.parameters(), lr=0.0001)”</p>
+    <p>Another optimizer we use a lot is Adam:
+<code class="language-plaintext highlighter-rouge">torch.optim.Adam(model.parameters(), lr=0.0001)</code>
+Adam basically combines ideas from Momentum and RMSProp, which is why it usually works well without too much tuning.</p>
 
     <ul>
       <li>
-        <p>i.e. “torch.optim.Adam(params, lr = 0.001, betas=(0.9, 0.999), eps=1e-08, weight_decay=0, amsgrad=False)</p>
+        <p>A more complete version looks like:
+<code class="language-plaintext highlighter-rouge">torch.optim.Adam(params, lr=0.001, betas=(0.9, 0.999), eps=1e-08)</code>
+The two values in <code class="language-plaintext highlighter-rouge">betas</code> control how fast the moving averages of the gradients (and squared gradients) decay over time.</p>
 
         <ul>
-          <li>In the RMSProp equation, $\alpha$ is the “0.9” value and $\beta$ is the 0.999 value.</li>
+          <li>Inside the RMSProp-style update in Adam:<br />
+<strong>0.9 corresponds to α</strong>,<br />
+<strong>0.999 corresponds to β</strong>.</li>
         </ul>
       </li>
       <li>
-        <p>Remember to save and load optimizer state if you are using momentum/ADAM!</p>
+        <p>If you are using an optimizer that keeps internal state (like momentum or Adam), remember to <strong>save and load the optimizer state</strong> when you resume training. Otherwise, the optimizer will forget where it left off.</p>
       </li>
     </ul>
   </li>

@@ -1,0 +1,388 @@
+<!doctype html>
+<html>
+  <head>
+    <head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="content-language" content="en" />
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <title>
+    STAT 453 | Lecture 19
+  </title>
+  <meta name="description" content="STAT 453 - University of Wisconsin-Madison - Fall 2025
+" />
+
+  <link
+    rel="shortcut icon"
+    href="/dgm-fall-2025/assets/img/favicon.ico"
+  />
+
+  <link rel="stylesheet" href="/dgm-fall-2025/assets/css/main.css" />
+  <link
+    rel="canonical"
+    href="/dgm-fall-2025/notes/lecture-19/"
+  />
+
+  
+  <!-- Load Latex JS -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+  
+</head>
+
+    <script src="/dgm-fall-2025/assets/js/distillpub/template.v2.js"></script>
+    <script src="/dgm-fall-2025/assets/js/distillpub/transforms.v2.js"></script>
+  </head>
+
+  <d-front-matter>
+    <script type="text/json">
+      {
+            "title": "Lecture 19",
+            "description": "Sequence Learning with RNNs",
+            "published": "November 10, 2025",
+            "lecturers": [
+              
+              {
+                "lecturer": "Ben Lengerich",
+                "lecturerURL": "https://adaptinfer.org"
+              }
+              
+            ],
+            "authors": [
+              
+              {
+                "author": "Yi Zhang"
+              },
+              
+              {
+                "author": "Yufan Cheng"
+              }
+              
+            ],
+            "editors": [
+              
+              {
+                "editor": "Editor 1"
+              }
+              
+            ],
+            "katex": {
+              "delimiters": [
+                {
+                  "left": "$",
+                  "right": "$",
+                  "display": false
+                },
+                {
+                  "left": "$$",
+                  "right": "$$",
+                  "display": true
+                }
+              ]
+            }
+          }
+    </script>
+  </d-front-matter>
+
+  <body>
+    <header class="site-header">
+  <div class="wrapper">
+    <span class="site-title">
+      <a class="page-link" href="https://adaptinfer.org/dgm-fall-2025/"
+        >STAT 453</a
+      >
+    </span>
+
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path
+              fill="#424242"
+              d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
+            />
+            <path
+              fill="#424242"
+              d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
+            />
+            <path
+              fill="#424242"
+              d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
+            />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger">
+        <a class="page-link" href="/dgm-fall-2025/logistics/"
+          >logistics</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/lectures/"
+          >lectures</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/notes/">notes</a>
+        <a class="page-link" href="/dgm-fall-2025/calendar/"
+          >calendar</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/homework/"
+          >homework</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/project/">project</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+      <d-title>
+        <h1>Lecture 19</h1>
+        <p>Sequence Learning with RNNs</p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article> <h2 id="1-motivation">1. Motivation</h2>
+<p>Traditional models like Bag-of-Words and CNNs cannot fully capture sequential dependencies in text or time series. RNNs are introduced to handle <strong>variable-length sequences</strong> and preserve <strong>temporal order</strong>.</p>
+
+<ul>
+  <li><strong>Bag-of-Words</strong>: Ignores order, fixed length.</li>
+  <li><strong>HMM</strong>: Captures sequential dependency, but limited capacity.</li>
+  <li><strong>CNN</strong>: Captures local context but fixed-size window.</li>
+  <li><strong>RNN</strong>: Processes sequences step-by-step, retaining contextual information through hidden states.</li>
+</ul>
+
+<hr />
+
+<h2 id="2-rnn-architecture">2. RNN Architecture</h2>
+<p>At each time step <em>t</em>:</p>
+
+<ul>
+  <li>
+    <p>Input: $x_t$ (current token/feature)</p>
+  </li>
+  <li>
+    <p>Hidden state: $h_t$</p>
+  </li>
+  <li>
+    <p>Output: $y_t$</p>
+  </li>
+</ul>
+
+<h3 id="variants-of-sequence-tasks">Variants of Sequence Tasks</h3>
+<ul>
+  <li><strong>Many-to-One</strong>: Sentiment classification (sequence → label)</li>
+  <li><strong>One-to-Many</strong>: Image captioning (vector → sequence)</li>
+  <li><strong>Many-to-Many</strong>: Translation, video tagging (sequence → sequence)</li>
+</ul>
+
+<hr />
+
+<h2 id="3-training-with-backpropagation-through-time-bptt">3. Training with Backpropagation Through Time (BPTT)</h2>
+<p>RNNs are trained via <strong>BPTT</strong>, where gradients are propagated across time steps.</p>
+
+<h3 id="loss-function">Loss Function</h3>
+<p>\(L = \sum_t \text{loss}(y_t, \hat{y}_t)\)</p>
+
+<h3 id="problems">Problems</h3>
+<ul>
+  <li><strong>Vanishing gradients</strong>: Long-term dependencies are lost.</li>
+  <li><strong>Exploding gradients</strong>: Instability in training.</li>
+</ul>
+
+<h3 id="remedies">Remedies</h3>
+<ul>
+  <li>Gradient clipping</li>
+  <li>Truncated BPTT (limit propagation length)</li>
+  <li>Use <strong>LSTM/GRU</strong> architectures.</li>
+</ul>
+
+<hr />
+
+<h2 id="4-lstm-long-short-term-memory">4. LSTM (Long Short-Term Memory)</h2>
+<p>Designed to handle long-term dependencies by introducing gates and a memory cell.</p>
+
+<h3 id="components">Components</h3>
+<ul>
+  <li><strong>Cell state (c_t)</strong>: Long-term memory highway.</li>
+  <li><strong>Forget gate (f_t)</strong>: Decides what to erase.</li>
+  <li><strong>Input gate (i_t)</strong>: Decides what new information to add.</li>
+  <li><strong>Output gate (o_t)</strong>: Decides what to output.</li>
+</ul>
+
+<h3 id="key-equations">Key Equations</h3>
+
+\[\begin{aligned}
+f_t &amp;= \sigma(W_f[x_t, h_{t-1}] + b_f) \\
+i_t &amp;= \sigma(W_i[x_t, h_{t-1}] + b_i) \\
+\{g}_t &amp;= \tanh(W_g[x_t, h_{t-1}] + b_g) \\
+c_t &amp;= f_t \odot c_{t-1} + i_t \odot \{g}_t \\
+o_t &amp;= \sigma(W_o[x_t, h_{t-1}] + b_o) \\
+h_t &amp;= o_t \odot \tanh(c_t)
+\end{aligned}\]
+
+<hr />
+
+<h2 id="5many-to-one-word-rnns">5.Many-to-One Word RNNs</h2>
+
+<h2 id="task-definition">Task Definition</h2>
+<ul>
+  <li><strong>Input</strong>: A sequence of words (sentence or text).</li>
+  <li><strong>Output</strong>: A fixed-size vector used to predict a single class label (e.g., sentiment).</li>
+</ul>
+
+<h2 id="data-processing-pipeline">Data Processing Pipeline</h2>
+<ol>
+  <li><strong>Step 1 — Build Vocabulary</strong>
+    <ul>
+      <li>Construct a word-index dictionary from the training corpus.</li>
+      <li>Include special tokens: <code class="language-plaintext highlighter-rouge">&lt;unk&gt;</code> for unknown words, <code class="language-plaintext highlighter-rouge">&lt;pad&gt;</code> for sequence padding.</li>
+    </ul>
+  </li>
+  <li><strong>Step 2 — Convert Text to Indices</strong>
+    <ul>
+      <li>Replace each word with its index from the vocabulary.</li>
+      <li>Pad shorter sequences with <code class="language-plaintext highlighter-rouge">&lt;pad&gt;</code> to achieve uniform length.</li>
+      <li>Keep track of the true sequence lengths for batching.</li>
+    </ul>
+  </li>
+  <li><strong>Step 3 — Convert Indices to One-Hot (for illustration)</strong>
+    <ul>
+      <li>Each word index is represented as a one-hot vector of size <code class="language-plaintext highlighter-rouge">|V|</code>.</li>
+      <li>This is only conceptual; real implementations use embeddings instead.</li>
+    </ul>
+  </li>
+  <li><strong>Step 4 — Convert One-Hot to Embeddings</strong>
+    <ul>
+      <li>Multiply the one-hot vector by an embedding matrix to obtain dense representations.</li>
+      <li>Each row of the embedding matrix corresponds to a word vector.</li>
+    </ul>
+  </li>
+</ol>
+
+<h2 id="6-summary">6. Summary</h2>
+<p>| Concept | Description |
+|———-|————–|
+| RNN | Models sequence dependency via hidden states |
+| BPTT | Backpropagation through time; may cause vanishing/exploding gradients |
+| LSTM | Uses gates to manage information flow |
+| Gradient Clipping | Prevents gradient explosion |
+| Truncated BPTT | Limits gradient flow length |
+| Application | NLP, speech, translation, time series prediction |</p>
+
+ </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+    </div>
+
+    <footer class="site-footer">
+  <div class="wrapper">
+    <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Ben Lengerich</li><li>
+            <a class="u-email" href="mailto:TBD@wisc.edu"
+              >TBD@wisc.edu</a
+            >
+          </li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li>
+    <a
+      href="https://github.com/AdaptInfer"
+      target="_blank"
+      ><i class="fab fa-github"></i>
+      <span class="username">AdaptInfer</span></a
+    >
+  </li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>
+          &copy; Copyright 2025 University of Wisconsin.
+          <br />
+          
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  </body>
+
+  <d-bibliography
+    src="/dgm-fall-2025/assets/bibliography/2025-11-10-lecture-19.bib"
+  >
+  </d-bibliography>
+
+  <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/dgm-fall-2025/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link
+  rel="stylesheet"
+  href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css"
+/>
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+<script src="/dgm-fall-2025/assets/js/katex.js"></script>
+ 
+<!-- Load Anchor JS -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+<script>
+  anchors.options.visible = "hover";
+  anchors.add("article h2, article h3, article h4, article h5, article h6");
+</script>
+ 
+<!-- Adjust LaTeX JS -->
+<script src="/dgm-fall-2025/assets/js/latex.js"></script>
+
+
+<!-- Include custom icon fonts -->
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2025/assets/css/fontawesome-all.min.css"
+/>
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2025/assets/css/academicons.min.css"
+/>
+
+<!-- Google Analytics -->
+<script>
+  (function (i, s, o, g, r, a, m) {
+    i["GoogleAnalyticsObject"] = r;
+    (i[r] =
+      i[r] ||
+      function () {
+        (i[r].q = i[r].q || []).push(arguments);
+      }),
+      (i[r].l = 1 * new Date());
+    (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+    a.async = 1;
+    a.src = g;
+    m.parentNode.insertBefore(a, m);
+  })(
+    window,
+    document,
+    "script",
+    "//www.google-analytics.com/analytics.js",
+    "ga",
+  );
+
+  ga("create", "", "auto");
+  ga("send", "pageview");
+</script>
+
+</html>
