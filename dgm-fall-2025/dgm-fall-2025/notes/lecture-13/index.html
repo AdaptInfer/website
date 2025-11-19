@@ -68,7 +68,7 @@
             "editors": [
               
               {
-                "editor": "Editor1"
+                "editor": "Xinyu Pan"
               }
               
             ],
@@ -275,6 +275,7 @@
 <ul>
   <li>For a 3×200×200 RGB image: 120,000 input pixels. Each neuron in first hidden layer needs 120,000 weights</li>
   <li>Multiple hidden layers → parameter explosion</li>
+  <li>In principle, a fully connected network has the capacity to approximate the mapping from raw pixels to labels, but in practice this quickly becomes impractical: the number of parameters grows linearly with the number of input pixels in every hidden unit and layer. By contrast, a CNN uses small filters (e.g., 3×3, 5×5) whose number of weights is independent of the input image size. The same filter is reused across all spatial positions, which dramatically reduces the parameter count and makes learning on high-dimensional image data feasible.</li>
 </ul>
 
 <figure>
@@ -540,6 +541,7 @@ W: input width. K: kernel width. P: padding. S: stride</p>
 
 <ul>
   <li>CNNs are not inherently invariant to translation, rotation, or scale. Consequently, applying data augmentation by shifting, rotating, or scaling images can make CNN more robust during CNN training.</li>
+  <li>In practice, CNNs provide only local / weak translation invariance: weight sharing and pooling make the network less sensitive to small shifts within a receptive field, but the activations still depend on where a pattern appears in the image overall. This is why CNNs can still be sensitive to small perturbations and even adversarial examples, despite using convolution and pooling.</li>
 </ul>
 
 <h2 id="5-cnn-backprop">5. CNN Backprop</h2>
@@ -560,6 +562,7 @@ W: input width. K: kernel width. P: padding. S: stride</p>
 <ul>
   <li>For each kernel, there are multiple receptive fields in the input. For instance, a 3 × 3 kernel applied to a 5 × 5 input produces 4 receptive fields. During backpropagation, we compute the gradient for each receptive field and then take the average to update the kernel weights.
 \(w = w - \eta*\frac{\frac{l}{w}_1+\frac{l}{w}_2+\frac{l}{w}_3+\frac{l}{w}_4}{4}\)</li>
+  <li>the same kernel weight is reused at many spatial locations, so its gradient is the <strong>sum of the contributions</strong> from all those locations. Backprop does not “break” for CNNs — we simply accumulate all the partial derivatives for the shared weight and then apply one update.</li>
 </ul>
 
 <h2 id="6-cnn-pytorch">6. CNN PyTorch</h2>

@@ -68,7 +68,7 @@
             "editors": [
               
               {
-                "editor": "Editor 1"
+                "editor": "Yi Zhang"
               }
               
             ],
@@ -300,12 +300,26 @@ This ensures consistent behavior when batch sizes differ or when predictions are
 </ul>
 
 <hr />
-
 <h3 id="34-batchnorm-in-pytorch">3.4 BatchNorm in PyTorch</h3>
+
 <ul>
-  <li>Can add BatchNorm into model via simple <code class="language-plaintext highlighter-rouge">torch.nn.BatchNorm1d/2d/3d(num_features)</code></li>
-  <li>Based on summary statistics of the mini-batch, we can normalize before scaling</li>
-  <li>Implement model.train() and model.test() before training and testing, respectively</li>
+  <li>
+    <p>You can add Batch Normalization to a model using<br />
+<code class="language-plaintext highlighter-rouge">torch.nn.BatchNorm1d/2d/3d(num_features)</code>, depending on the dimensionality of the input (1D for MLPs, 2D for images in CNNs, 3D for volumetric data).<br />
+BatchNorm layers are usually placed <strong>after linear or convolution layers and before the activation function</strong>.</p>
+  </li>
+  <li>
+    <p>BatchNorm normalizes each mini-batch using its mean and variance, and then applies learnable scaling (γ) and shifting (β).<br />
+This helps stabilize the distribution of activations, speeds up training, reduces internal covariate shift, and often allows the use of larger learning rates.</p>
+  </li>
+  <li>
+    <p>Remember to set the correct mode of the model:</p>
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">model.train()</code> (training mode): BatchNorm uses <strong>mini-batch statistics</strong>.</li>
+      <li><code class="language-plaintext highlighter-rouge">model.eval()</code> (evaluation mode): BatchNorm uses the <strong>running mean and variance</strong> accumulated during training.<br />
+Forgetting to switch modes can lead to inconsistent performance between training and testing.</li>
+    </ul>
+  </li>
 </ul>
 
 <hr />
