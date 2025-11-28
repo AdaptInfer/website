@@ -69,7 +69,7 @@
             "editors": [
               
               {
-                "editor": "Editor 1"
+                "editor": "Xinyu Pan"
               }
               
             ],
@@ -182,7 +182,32 @@
 <h4 id="2-growth-of-parameters-slide-10">2. Growth of Parameters (Slide 10)</h4>
 
 <p>Every connection introduces a weight and a bias. As the network grows, the <strong>number of trainable parameters</strong> increases rapidly.<br />
-This highlights both the expressive power of MLPs and their tendency to overfit.</p>
+This highlights both the expressive power of MLPs and their tendency to overfit.<br />
+<strong>Example:</strong><br />
+In the lecture, the instructor computed the exact number of parameters for a sample network:</p>
+
+<ul>
+  <li>Input layer: 2 units</li>
+  <li>Hidden layer 1: 5 units</li>
+  <li>Hidden layer 2: 4 units</li>
+  <li>Output layer: 3 units</li>
+</ul>
+
+<p>Trainable parameters:</p>
+<ul>
+  <li><strong>Biases:</strong> 12</li>
+  <li><strong>Weights:</strong>
+    <ul>
+      <li>(2 \times 5 = 10)</li>
+      <li>(5 \times 4 = 20)</li>
+      <li>(4 \times 3 = 12)</li>
+    </ul>
+  </li>
+</ul>
+
+<p><strong>Total = 42 weights + 12 biases = 54 trainable parameters.</strong></p>
+
+<p>This concrete example highlights how rapidly parameters grow even in small MLPs, which is why automatic differentiation (e.g., PyTorch) is essential for practical training.</p>
 
 <p><img src="/dgm-fall-2025/assets/img/notes/lecture-09/slide10.png" width="500" /></p>
 
@@ -193,8 +218,22 @@ This highlights both the expressive power of MLPs and their tendency to overfit.
 <p>Adding more layers leads to <strong>deep learning</strong>.</p>
 <ul>
   <li>Shallow networks can already approximate many functions, but depth enables <strong>hierarchical feature learning</strong>.</li>
-  <li>Early layers capture simple features, while deeper layers build on them to represent complex structures.</li>
+  <li>Early layers capture simple features, while deeper layers build on them to represent complex structures.
+    <h3 id="-1-function-composition">• 1. Function Composition</h3>
+    <p>Deep networks perform <strong>function composition</strong> layer-by-layer.<br />
+Each layer builds a higher-order representation from the previous one, allowing the model to express complex functions <strong>more efficiently</strong> than a single very wide layer.</p>
+  </li>
 </ul>
+
+<h3 id="-2-expressiveness-width-vs-depth">• 2. Expressiveness: Width vs. Depth</h3>
+<p>The instructor highlighted an important rule of thumb:</p>
+
+<ul>
+  <li>Increasing <strong>width</strong> grows expressiveness <strong>polynomially</strong></li>
+  <li>Increasing <strong>depth</strong> grows expressiveness <strong>exponentially</strong></li>
+</ul>
+
+<p>This means a deep network can represent certain functions with <strong>far fewer parameters</strong> than a shallow but extremely wide network.</p>
 
 <p>This is the conceptual leap from “just a perceptron with more neurons” to the foundation of deep architectures.</p>
 

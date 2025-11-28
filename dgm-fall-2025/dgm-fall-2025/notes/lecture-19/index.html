@@ -58,14 +58,14 @@
               
               {
                 "author": "Yufan Cheng"
+              },
+              
+              {
+                "author": "Erica Henderson"
               }
               
             ],
             "editors": [
-              
-              {
-                "editor": "Editor 1"
-              }
               
             ],
             "katex": {
@@ -145,133 +145,248 @@
 
       <d-byline></d-byline>
 
-      <d-article> <h2 id="1-motivation">1. Motivation</h2>
-<p>Traditional models like Bag-of-Words and CNNs cannot fully capture sequential dependencies in text or time series. RNNs are introduced to handle <strong>variable-length sequences</strong> and preserve <strong>temporal order</strong>.</p>
+      <d-article> <h2 id="motivation-why-text-modeling-is-challenging">Motivation: Why Text Modeling Is Challenging</h2>
+
+<p>Modeling text sequences is difficult due to:</p>
 
 <ul>
-  <li><strong>Bag-of-Words</strong>: Ignores order, fixed length.</li>
-  <li><strong>HMM</strong>: Captures sequential dependency, but limited capacity.</li>
-  <li><strong>CNN</strong>: Captures local context but fixed-size window.</li>
-  <li><strong>RNN</strong>: Processes sequences step-by-step, retaining contextual information through hidden states.</li>
+  <li><strong>Variable sequence length</strong></li>
+  <li><strong>Long-range dependencies</strong></li>
+  <li><strong>Need for generative models</strong></li>
+  <li><strong>Large data requirements</strong></li>
+</ul>
+
+<h2 id="historical-approaches">Historical Approaches</h2>
+
+<h3 id="bag-of-words-bow">Bag-of-Words (BOW)</h3>
+
+<p>Represents text as unordered word counts.</p>
+
+<p><strong>Problem:</strong> Word order is lost<br />
+Example:</p>
+<ul>
+  <li>“NOT good”</li>
+  <li>“good NOT”<br />
+become identical vectors.</li>
+</ul>
+
+<h3 id="hidden-markov-models-hmms">Hidden Markov Models (HMMs)</h3>
+
+<p>Use the Markov assumption:</p>
+
+\[P(Y_n \mid X_1,\ldots,X_n) = P(Y_n \mid X_n)\]
+
+<p><strong>Problem:</strong> Only captures one-step dependencies.</p>
+
+<h3 id="convolutional-neural-networks-cnns">Convolutional Neural Networks (CNNs)</h3>
+
+<p>Capture local patterns using filters.</p>
+
+<p><strong>Limitation:</strong> Require fixed-length input; cannot naturally handle long sequences.</p>
+
+<hr />
+
+<h2 id="recurrent-neural-networks">Recurrent Neural Networks</h2>
+
+<p>RNNs address sequential dependence using recurrent connections.</p>
+
+<h3 id="the-recurrence-equation">The Recurrence Equation</h3>
+
+\[h^{(t)} = \sigma(W_{hx}x^{(t)} + W_{hh}h^{(t-1)} + b_h)\]
+
+<p>Where:</p>
+
+<ul>
+  <li>$h^{(t)}$: Hidden state</li>
+  <li>$x^{(t)}$: Input at time $t$</li>
+  <li>$W_{hx}, W_{hh}$: Input and recurrent weights</li>
+  <li>$\sigma$: Typically <code class="language-plaintext highlighter-rouge">tanh</code></li>
+</ul>
+
+<h3 id="unrolling-through-time">Unrolling Through Time</h3>
+
+<p>Unrolling converts an RNN into a deep network with depth equal to sequence length.</p>
+
+<h3 id="rnn-architectures">RNN Architectures</h3>
+
+<ul>
+  <li><strong>Many-to-One:</strong> sentiment classification</li>
+  <li><strong>One-to-Many:</strong> image captioning</li>
+  <li><strong>Many-to-Many:</strong>
+    <ul>
+      <li>synchronous: video captioning</li>
+      <li>delayed: machine translation</li>
+    </ul>
+  </li>
 </ul>
 
 <hr />
 
-<h2 id="2-rnn-architecture">2. RNN Architecture</h2>
-<p>At each time step <em>t</em>:</p>
+<h2 id="training-rnns-backpropagation-through-time-bptt">Training RNNs: Backpropagation Through Time (BPTT)</h2>
+
+<p>Training RNNs involves unrolling through time and applying the chain rule.</p>
+
+<h3 id="gradient-expression">Gradient Expression</h3>
+
+\[\frac{\partial L^{(t)}}{\partial W_{hh}} =
+\frac{\partial L^{(t)}}{\partial y^{(t)}}
+\frac{\partial y^{(t)}}{\partial h^{(t)}}
+\Biggl(
+\sum_{k=1}^t
+\frac{\partial h^{(t)}}{\partial h^{(k)}}
+\frac{\partial h^{(k)}}{\partial W_{hh}}
+\Biggr)\]
+
+<p>Key term:</p>
+
+\[\frac{\partial h^{(t)}}{\partial h^{(k)}} =
+\prod_{i=k+1}^{t}
+\frac{\partial h^{(i)}}{\partial h^{(i-1)}}\]
+
+<p>A product of many Jacobians → unstable.</p>
+
+<h3 id="vanishing-and-exploding-gradients">Vanishing and Exploding Gradients</h3>
 
 <ul>
-  <li>
-    <p>Input: $x_t$ (current token/feature)</p>
-  </li>
-  <li>
-    <p>Hidden state: $h_t$</p>
-  </li>
-  <li>
-    <p>Output: $y_t$</p>
-  </li>
+  <li>If Jacobians &lt; 1 → <strong>vanishing gradients</strong></li>
+  <li>If Jacobians &gt; 1 → <strong>exploding gradients</strong></li>
 </ul>
 
-<h3 id="variants-of-sequence-tasks">Variants of Sequence Tasks</h3>
+<p>Consequences:</p>
+
 <ul>
-  <li><strong>Many-to-One</strong>: Sentiment classification (sequence → label)</li>
-  <li><strong>One-to-Many</strong>: Image captioning (vector → sequence)</li>
-  <li><strong>Many-to-Many</strong>: Translation, video tagging (sequence → sequence)</li>
-</ul>
-
-<hr />
-
-<h2 id="3-training-with-backpropagation-through-time-bptt">3. Training with Backpropagation Through Time (BPTT)</h2>
-<p>RNNs are trained via <strong>BPTT</strong>, where gradients are propagated across time steps.</p>
-
-<h3 id="loss-function">Loss Function</h3>
-<p>\(L = \sum_t \text{loss}(y_t, \hat{y}_t)\)</p>
-
-<h3 id="problems">Problems</h3>
-<ul>
-  <li><strong>Vanishing gradients</strong>: Long-term dependencies are lost.</li>
-  <li><strong>Exploding gradients</strong>: Instability in training.</li>
+  <li>Loss of long-range memory</li>
+  <li>Training instability</li>
 </ul>
 
 <h3 id="remedies">Remedies</h3>
+
 <ul>
-  <li>Gradient clipping</li>
-  <li>Truncated BPTT (limit propagation length)</li>
-  <li>Use <strong>LSTM/GRU</strong> architectures.</li>
+  <li><strong>Gradient clipping</strong></li>
+  <li><strong>Truncated BPTT</strong></li>
+  <li><strong>LSTM / GRU architectures</strong></li>
 </ul>
 
 <hr />
 
-<h2 id="4-lstm-long-short-term-memory">4. LSTM (Long Short-Term Memory)</h2>
-<p>Designed to handle long-term dependencies by introducing gates and a memory cell.</p>
+<h2 id="long-short-term-memory-lstm">Long Short-Term Memory (LSTM)</h2>
 
-<h3 id="components">Components</h3>
-<ul>
-  <li><strong>Cell state (c_t)</strong>: Long-term memory highway.</li>
-  <li><strong>Forget gate (f_t)</strong>: Decides what to erase.</li>
-  <li><strong>Input gate (i_t)</strong>: Decides what new information to add.</li>
-  <li><strong>Output gate (o_t)</strong>: Decides what to output.</li>
-</ul>
+<p>LSTMs solve gradient issues by introducing a <strong>cell state</strong> $c_t$ that acts as a memory highway.</p>
 
-<h3 id="key-equations">Key Equations</h3>
+<h3 id="lstm-gate-equations">LSTM Gate Equations</h3>
 
 \[\begin{aligned}
 f_t &amp;= \sigma(W_f[x_t, h_{t-1}] + b_f) \\
 i_t &amp;= \sigma(W_i[x_t, h_{t-1}] + b_i) \\
-\{g}_t &amp;= \tanh(W_g[x_t, h_{t-1}] + b_g) \\
-c_t &amp;= f_t \odot c_{t-1} + i_t \odot \{g}_t \\
+g_t &amp;= \tanh(W_g[x_t, h_{t-1}] + b_g) \\
+c_t &amp;= f_t \odot c_{t-1} + i_t \odot g_t \\
 o_t &amp;= \sigma(W_o[x_t, h_{t-1}] + b_o) \\
 h_t &amp;= o_t \odot \tanh(c_t)
 \end{aligned}\]
 
-<hr />
+<h3 id="interpretation">Interpretation</h3>
 
-<h2 id="5many-to-one-word-rnns">5.Many-to-One Word RNNs</h2>
-
-<h2 id="task-definition">Task Definition</h2>
 <ul>
-  <li><strong>Input</strong>: A sequence of words (sentence or text).</li>
-  <li><strong>Output</strong>: A fixed-size vector used to predict a single class label (e.g., sentiment).</li>
+  <li><strong>Forget gate:</strong> remove irrelevant memory</li>
+  <li><strong>Input gate + candidate:</strong> add new information</li>
+  <li><strong>Output gate:</strong> expose memory to next layer</li>
+  <li><strong>Cell state:</strong> preserves long-term gradients</li>
 </ul>
 
-<h2 id="data-processing-pipeline">Data Processing Pipeline</h2>
+<hr />
+
+<h2 id="preparing-text-for-rnns">Preparing Text for RNNs</h2>
+
+<h3 id="step-1--build-vocabulary">Step 1 — Build Vocabulary</h3>
+
+<p>Include: <code class="language-plaintext highlighter-rouge">&lt;unk&gt;</code>, <code class="language-plaintext highlighter-rouge">&lt;pad&gt;</code>, <code class="language-plaintext highlighter-rouge">&lt;bos&gt;</code>, <code class="language-plaintext highlighter-rouge">&lt;eos&gt;</code>.</p>
+
+<h3 id="step-2--convert-text-to-indices">Step 2 — Convert Text to Indices</h3>
+
+<p>Pad sequences to equal length for batching.</p>
+
+<h3 id="step-3--one-hot-encoding-conceptual">Step 3 — One-Hot Encoding (conceptual)</h3>
+
+<p>Not used in modern practice due to high dimensionality.</p>
+
+<h3 id="step-4--word-embeddings">Step 4 — Word Embeddings</h3>
+
+<p>Learned dense vectors:</p>
+
+<ul>
+  <li>Low dimension (e.g., 300-D)</li>
+  <li>Similar words → similar embeddings</li>
+  <li>Implemented via <code class="language-plaintext highlighter-rouge">nn.Embedding</code></li>
+</ul>
+
+<hr />
+
+<h2 id="rnns-for-generative-modeling">RNNs for Generative Modeling</h2>
+
+<p>RNNs model the autoregressive distribution:</p>
+
+<p>$P_{\theta}(X) = \prod_{t} P_{\theta}(X_t \mid X_{&lt;t})$</p>
+
+<p>Training objective:</p>
+
+<p>$\max_{\theta} \sum_i \sum_t \log P_{\theta}(X_{i,t} \mid X_{i,&lt;t})$</p>
+
+<p>Used in classic language modeling.</p>
+
+<hr />
+
+<h2 id="many-to-one-word-rnn-example">Many-to-One Word RNN Example</h2>
+
 <ol>
-  <li><strong>Step 1 — Build Vocabulary</strong>
-    <ul>
-      <li>Construct a word-index dictionary from the training corpus.</li>
-      <li>Include special tokens: <code class="language-plaintext highlighter-rouge">&lt;unk&gt;</code> for unknown words, <code class="language-plaintext highlighter-rouge">&lt;pad&gt;</code> for sequence padding.</li>
-    </ul>
-  </li>
-  <li><strong>Step 2 — Convert Text to Indices</strong>
-    <ul>
-      <li>Replace each word with its index from the vocabulary.</li>
-      <li>Pad shorter sequences with <code class="language-plaintext highlighter-rouge">&lt;pad&gt;</code> to achieve uniform length.</li>
-      <li>Keep track of the true sequence lengths for batching.</li>
-    </ul>
-  </li>
-  <li><strong>Step 3 — Convert Indices to One-Hot (for illustration)</strong>
-    <ul>
-      <li>Each word index is represented as a one-hot vector of size <code class="language-plaintext highlighter-rouge">|V|</code>.</li>
-      <li>This is only conceptual; real implementations use embeddings instead.</li>
-    </ul>
-  </li>
-  <li><strong>Step 4 — Convert One-Hot to Embeddings</strong>
-    <ul>
-      <li>Multiply the one-hot vector by an embedding matrix to obtain dense representations.</li>
-      <li>Each row of the embedding matrix corresponds to a word vector.</li>
-    </ul>
-  </li>
+  <li>Build vocabulary</li>
+  <li>Convert text → indices</li>
+  <li>Convert indices → embeddings</li>
+  <li>Feed sequence into RNN</li>
+  <li>Use final hidden state for classification</li>
 </ol>
 
-<h2 id="6-summary">6. Summary</h2>
-<p>| Concept | Description |
-|———-|————–|
-| RNN | Models sequence dependency via hidden states |
-| BPTT | Backpropagation through time; may cause vanishing/exploding gradients |
-| LSTM | Uses gates to manage information flow |
-| Gradient Clipping | Prevents gradient explosion |
-| Truncated BPTT | Limits gradient flow length |
-| Application | NLP, speech, translation, time series prediction |</p>
+<hr />
+
+<h2 id="summary">Summary</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Concept</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>RNN</td>
+      <td>Maintains hidden state to model sequential data</td>
+    </tr>
+    <tr>
+      <td>BPTT</td>
+      <td>Unrolls through time; gradient instability</td>
+    </tr>
+    <tr>
+      <td>LSTM</td>
+      <td>Gates + memory cell enable long-term learning</td>
+    </tr>
+    <tr>
+      <td>Gradient Clipping</td>
+      <td>Prevents gradient explosion</td>
+    </tr>
+    <tr>
+      <td>Truncated BPTT</td>
+      <td>Limits backpropagation depth</td>
+    </tr>
+    <tr>
+      <td>Embeddings</td>
+      <td>Dense word representations</td>
+    </tr>
+    <tr>
+      <td>Applications</td>
+      <td>NLP, speech, translation, time series</td>
+    </tr>
+  </tbody>
+</table>
 
  </d-article>
 
