@@ -71,6 +71,10 @@
             ],
             "editors": [
               
+              {
+                "editor": "Jeff Zhang"
+              }
+              
             ],
             "katex": {
               "delimiters": [
@@ -149,11 +153,54 @@
 
       <d-byline></d-byline>
 
-      <d-article> <h2 id="part-1-from-rnn-to-self-attention--the-transformer"><strong>Part 1: From RNN to Self-Attention &amp; The Transformer</strong></h2>
+      <d-article> <h2 id="todays-topics">Today’s Topics:</h2>
+<ul>
+  <li>
+    <p><a href="#todays-topics">Today’s Topics:</a></p>
+  </li>
+  <li><a href="#part-1-from-rnn-to-self-attention--the-transformer">Part 1: From RNN to Self-Attention &amp; The Transformer</a>
+    <ul>
+      <li><a href="#1-the-limitations-of-rnns">1. The Limitations of RNNs</a></li>
+      <li><a href="#2-the-transformer-solution">2. The Transformer Solution</a></li>
+      <li><a href="#3-self-attention-the-basic-non-learnable-form">3. Self-Attention: The Basic (Non-Learnable) Form</a></li>
+      <li><a href="#4-learnable-self-attention-query-key-value">4. Learnable Self-Attention: Query, Key, Value</a></li>
+      <li><a href="#5-multi-head-attention">5. Multi-Head Attention</a></li>
+      <li><a href="#6-the-complete-transformer-architecture">6. The Complete Transformer Architecture</a></li>
+    </ul>
+  </li>
+  <li><a href="#part-2-gpt-architecture--probabilistic-model">Part 2: GPT Architecture &amp; Probabilistic Model</a>
+    <ul>
+      <li><a href="#1-architecture-simplification-from-transformer-to-gpt">1. Architecture Simplification: From Transformer to GPT</a></li>
+      <li><a href="#2-probabilistic-modeling-next-token-prediction">2. Probabilistic Modeling: Next-Token Prediction</a></li>
+      <li><a href="#3-gpt-vs-traditional-seq2seq-translation">3. GPT vs. Traditional Seq2Seq (Translation)</a></li>
+    </ul>
+  </li>
+  <li><a href="#part-3-the-evolution-of-the-gpt-series-gpt1-to-gpt4">Part 3: The Evolution of the GPT Series (GPT-1 to GPT-4)</a>
+    <ul>
+      <li><a href="#1-from-our-gpt0-to-gpt1">1. From our “GPT-0” to GPT-1</a></li>
+      <li><a href="#2-from-gpt1-to-gpt2">2. From GPT-1 to GPT-2</a></li>
+      <li><a href="#3-from-gpt2-to-gpt3">3. From GPT-2 to GPT-3</a></li>
+      <li><a href="#4-from-gpt3-to-gpt4">4. From GPT-3 to GPT-4</a></li>
+      <li><a href="#5-comparison-table-gpt1-to-gpt4">5. Comparison Table: GPT-1 to GPT-4</a></li>
+    </ul>
+  </li>
+  <li><a href="#part-4-mixture-of-experts-moe--final-summary">Part 4: Mixture of Experts (MoE) &amp; Final Summary</a>
+    <ul>
+      <li><a href="#1-mixture-of-experts-moe-architecture">1. Mixture of Experts (MoE): Architecture</a></li>
+      <li><a href="#2-probabilistic-view-of-moe">2. Probabilistic View of MoE</a></li>
+      <li><a href="#3-error-analysis-the-role-of-diversity">3. Error Analysis: The Role of Diversity</a></li>
+      <li><a href="#4-implications-for-llms">4. Implications for LLMs</a></li>
+      <li><a href="#5-summary-transformer-vs-gpt">5. Summary: Transformer vs. GPT</a></li>
+      <li><a href="#6-summary-from-gpt1-to-gpt4">6. Summary: From GPT-1 to GPT-4</a></li>
+    </ul>
+  </li>
+  <li><a href="#conclusion">Conclusion</a></li>
+  <li><a href="#references">References</a></li>
+</ul>
+
+<h2 id="part-1-from-rnn-to-self-attention--the-transformer"><strong>Part 1: From RNN to Self-Attention &amp; The Transformer</strong></h2>
 
 <p><em>(Ref: Slides 1–10, 15–16)</em></p>
-
-<hr />
 
 <h3 id="1-the-limitations-of-rnns"><strong>1. The Limitations of RNNs</strong></h3>
 
@@ -161,9 +208,13 @@
 
 <p>Recurrent Neural Networks (RNNs) were the dominant architecture for sequence modeling before the Transformer era. RNNs process sequences <strong>sequentially</strong>, maintaining a hidden state $h^{\langle t \rangle}$ that gets updated at each time step:</p>
 
-\[h^{\langle t \rangle} = f(W_{hh} h^{\langle t-1 \rangle} + W_{hx} x^{\langle t \rangle})\]
+<d-math block="">
+h^{\langle t \rangle} = f(W_{hh} h^{\langle t-1 \rangle} + W_{hx} x^{\langle t \rangle})
+</d-math>
 
-\[y^{\langle t \rangle} = g(W_{yh} h^{\langle t \rangle})\]
+<d-math block="">
+y^{\langle t \rangle} = g(W_{yh} h^{\langle t \rangle})
+</d-math>
 
 <p>While this recurrent structure allows the model to process sequences of arbitrary length, it introduces several critical problems:</p>
 
@@ -222,25 +273,33 @@
 
 <p>Given a sequence of token embeddings:</p>
 
-\[X = [x_1, x_2, \ldots, x_T] \in \mathbb{R}^{T \times d}\]
+<d-math block="">
+X = [x_1, x_2, \ldots, x_T] \in \mathbb{R}^{T \times d}
+</d-math>
 
 <p>where $T$ is the sequence length and $d$ is the embedding dimension.</p>
 
 <p><strong>Step 1: Compute similarity scores</strong> between the current token $x_i$ and all tokens $x_j$:</p>
 
-\[\text{score}_{ij} = x_i^{\top} x_j\]
+<d-math block="">
+\text{score}_{ij} = x_i^{\top} x_j
+</d-math>
 
 <p>This is simply the dot product between embeddings, measuring their similarity.</p>
 
 <p><strong>Step 2: Normalize scores</strong> using softmax to get attention weights:</p>
 
-\[a_{i,j} = \text{softmax}\left([x_i^{\top} x_j]_{j \in [1,T]}\right) = \frac{\exp(x_i^{\top} x_j)}{\sum_{j'=1}^{T} \exp(x_i^{\top} x_{j'})}\]
+<d-math block="">
+a_{i,j} = \text{softmax}\left([x_i^{\top} x_j]_{j \in [1,T]}\right) = \frac{\exp(x_i^{\top} x_j)}{\sum_{j'=1}^{T} \exp(x_i^{\top} x_{j'})}
+</d-math>
 
 <p>These weights $a_{i,j}$ sum to 1 across all $j$ for each position $i$.</p>
 
 <p><strong>Step 3: Compute context-aware representation</strong> as a weighted sum:</p>
 
-\[A_i = \sum_{j=1}^{T} a_{ij} \cdot x_j\]
+<d-math block="">
+A_i = \sum_{j=1}^{T} a_{ij} \cdot x_j
+</d-math>
 
 <p>The output $A_i$ is called a <strong>context-aware embedding vector</strong> because it incorporates information from all positions in the sequence, weighted by their relevance to position $i$.</p>
 
@@ -254,7 +313,9 @@
 
 <p>To make self-attention learnable, we introduce <strong>three trainable weight matrices</strong> that transform the input embeddings:</p>
 
-\[\text{query} = W^q x_i, \quad \text{key} = W^k x_i, \quad \text{value} = W^v x_i\]
+<d-math block="">
+\text{query} = W^q x_i, \quad \text{key} = W^k x_i, \quad \text{value} = W^v x_i
+</d-math>
 
 <p>where:</p>
 
@@ -266,7 +327,9 @@
 
 <p>For the entire sequence, we compute:</p>
 
-\[Q = X W^q, \quad K = X W^k, \quad V = X W^v\]
+<d-math block="">
+Q = X W^q, \quad K = X W^k, \quad V = X W^v
+</d-math>
 
 <p><strong>Intuition</strong>:</p>
 
@@ -282,23 +345,31 @@
 
 <p><strong>Step 1: Compute attention scores</strong> (compatibility between queries and keys):</p>
 
-\[\text{score}_{ij} = \frac{q_i^{\top} k_j}{\sqrt{d_k}}\]
+<d-math block="">
+\text{score}_{ij} = \frac{q_i^{\top} k_j}{\sqrt{d_k}}
+</d-math>
 
 <p>The scaling by $\sqrt{d_k}$ prevents the dot products from becoming too large (which would cause softmax to saturate).</p>
 
 <p><strong>Step 2: Apply softmax</strong> to get attention weights:</p>
 
-\[a_{ij} = \frac{\exp(\text{score}_{ij})}{\sum_{j'=1}^{T} \exp(\text{score}_{ij'})}\]
+<d-math block="">
+a_{ij} = \frac{\exp(\text{score}_{ij})}{\sum_{j'=1}^{T} \exp(\text{score}_{ij'})}
+</d-math>
 
 <p>This is a form of <strong>similarity or compatibility measure</strong> (multiplicative attention). The softmax ensures weights are normalized and can be interpreted as probabilities.</p>
 
 <p><strong>Step 3: Weighted aggregation</strong> of values:</p>
 
-\[h_i = \sum_{j=1}^{T} a_{ij} \cdot v_j\]
+<d-math block="">
+h_i = \sum_{j=1}^{T} a_{ij} \cdot v_j
+</d-math>
 
 <p>Or in matrix form for the entire sequence:</p>
 
-\[\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^{\top}}{\sqrt{d_k}}\right) V\]
+<d-math block="">
+\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^{\top}}{\sqrt{d_k}}\right) V
+</d-math>
 
 <p><strong>Key Insight</strong>: For each query position $i$, the model learns which key-value pairs to attend to. The attention weights $a_{ij}$ tell us how much position $i$ should focus on position $j$.</p>
 
@@ -310,11 +381,15 @@
 
 <p>Instead of performing attention once, Transformers use <strong>multiple attention heads</strong> operating in parallel. Each head can learn to capture different types of relationships:</p>
 
-\[\text{head}_h = \text{Attention}(Q W_h^Q, K W_h^K, V W_h^V)\]
+<d-math block="">
+\text{head}_h = \text{Attention}(Q W_h^Q, K W_h^K, V W_h^V)
+</d-math>
 
 <p>The outputs of all heads are concatenated and linearly transformed:</p>
 
-\[\text{MultiHead}(Q, K, V) = \text{Concat}(\text{head}_1, \ldots, \text{head}_H) W^O\]
+<d-math block="">
+\text{MultiHead}(Q, K, V) = \text{Concat}(\text{head}_1, \ldots, \text{head}_H) W^O
+</d-math>
 
 <p>where $W^O$ is an output projection matrix.</p>
 
@@ -349,14 +424,22 @@
 <ol>
   <li><strong>Input Embedding</strong>: Converts tokens to dense vectors</li>
   <li><strong>Positional Encoding</strong>: Adds position information (since attention is permutation-invariant)
-\(PE_{(pos, 2i)} = \sin\left(\frac{pos}{10000^{2i/d}}\right)\)
-\(PE_{(pos, 2i+1)} = \cos\left(\frac{pos}{10000^{2i/d}}\right)\)</li>
+    <d-math block="">
+PE_{(pos, 2i)} = \sin\left(\frac{pos}{10000^{2i/d}}\right)
+</d-math>
+    <d-math block="">
+PE_{(pos, 2i+1)} = \cos\left(\frac{pos}{10000^{2i/d}}\right)
+</d-math>
+  </li>
   <li><strong>$N_x$ Encoder Layers</strong>, each containing:
     <ul>
       <li><strong>Multi-Head Self-Attention</strong>: Full bidirectional attention (every position can attend to every other position)</li>
       <li><strong>Add &amp; Norm</strong>: Residual connection + Layer Normalization</li>
       <li><strong>Feed-Forward Network</strong>: Position-wise FFN applied independently to each position
-\(\text{FFN}(x) = \max(0, xW_1 + b_1)W_2 + b_2\)</li>
+        <d-math block="">
+\text{FFN}(x) = \max(0, xW_1 + b_1)W_2 + b_2
+</d-math>
+      </li>
       <li><strong>Add &amp; Norm</strong>: Another residual connection + Layer Normalization</li>
     </ul>
   </li>
@@ -429,8 +512,6 @@
 
 <p><em>(Ref: Slides 11–14, 17–21)</em></p>
 
-<hr />
-
 <h3 id="1-architecture-simplification-from-transformer-to-gpt"><strong>1. Architecture Simplification: From Transformer to GPT</strong></h3>
 
 <p>GPT (Generative Pre-trained Transformer) represents a significant architectural shift from the original Transformer model.</p>
@@ -470,7 +551,9 @@
 
 <p>Given a sequence of tokens $U = {u_1, u_2, …, u_n}$, the joint probability of the entire sequence $P(U)$ is factored using the chain rule:</p>
 
-\[P(U) = \prod_{i=1}^{n} P(u_i \mid u_{1}, \dots, u_{i-1})\]
+<d-math block="">
+P(U) = \prod_{i=1}^{n} P(u_i \mid u_{1}, \dots, u_{i-1})
+</d-math>
 
 <ul>
   <li>$u_i$: The token at the current step.</li>
@@ -481,7 +564,9 @@
 
 <p>The model is trained to maximize the log-likelihood of the data. We define the loss function (typically Cross-Entropy) as:</p>
 
-\[\mathcal{L}(\Theta) = - \sum_{i} \log P(u_i \mid u_{i-k}, \dots, u_{i-1}; \Theta)\]
+<d-math block="">
+\mathcal{L}(\Theta) = - \sum_{i} \log P(u_i \mid u_{i-k}, \dots, u_{i-1}; \Theta)
+</d-math>
 
 <ul>
   <li><strong>Input:</strong> A sequence of tokens.</li>
@@ -499,7 +584,9 @@
 
 <p>GPT can be viewed as a directed PGM:</p>
 
-\[P_\theta(X) = \prod_{i} \prod_{t} P_\theta(X_{i,t} \mid X_{i,&lt;t})\]
+<d-math block="">
+P_\theta(X) = \prod_{i} \prod_{t} P_\theta(X_{i,t} \mid X_{i,&lt;t})
+</d-math>
 
 <p><strong>Model structure:</strong></p>
 
@@ -524,16 +611,7 @@
   <li><strong>Mechanism:</strong>
     <ol>
       <li><strong>Encode:</strong> Read the entire English sentence into a context vector ($Context$).</li>
-      <li>
-        <table>
-          <tbody>
-            <tr>
-              <td><strong>Decode:</strong> Generate French based on $P(French</td>
-              <td>Context)$.</td>
-            </tr>
-          </tbody>
-        </table>
-      </li>
+      <li><strong>Decode:</strong> Generate French based on $p(\text{French} \mid \text{Context})$</li>
     </ol>
   </li>
   <li><strong>Key Feature:</strong> The Encoder is <strong>bidirectional</strong> (it sees the whole English sentence at once).</li>
@@ -597,8 +675,6 @@
 <h2 id="part-3-the-evolution-of-the-gpt-series-gpt-1-to-gpt-4"><strong>Part 3: The Evolution of the GPT Series (GPT-1 to GPT-4)</strong></h2>
 
 <p><em>(Ref: Slides 22–26, 36)</em></p>
-
-<hr />
 
 <h3 id="1-from-our-gpt-0-to-gpt-1"><strong>1. From our “GPT-0” to GPT-1</strong></h3>
 
@@ -828,8 +904,6 @@
 
 <p><em>(Ref: Slides 27–35)</em></p>
 
-<hr />
-
 <h3 id="1-mixture-of-experts-moe-architecture"><strong>1. Mixture of Experts (MoE): Architecture</strong></h3>
 
 <p>As models scale (e.g., GPT-4), <strong>Mixture of Experts (MoE)</strong> decouples total model capacity from computational cost, allowing for massive parameter counts without slowing down inference.</p>
@@ -888,7 +962,9 @@ Layer Norm → [Router → Select Experts → FFNN₁, FFNN₂, ..., FFNNₙ] �
 
 <p>The router computes:</p>
 
-\[\text{MoE}(x) = \sum_{i=1}^{N} g_i(x) \cdot \text{Expert}_i(x)\]
+<d-math block="">
+\text{MoE}(x) = \sum_{i=1}^{N} g_i(x) \cdot \text{Expert}_i(x)
+</d-math>
 
 <p>where $g_i(x)$ is the gating weight for expert $i$.</p>
 
@@ -896,36 +972,25 @@ Layer Norm → [Router → Select Experts → FFNN₁, FFNN₂, ..., FFNNₙ] �
 
 <h3 id="2-probabilistic-view-of-moe"><strong>2. Probabilistic View of MoE</strong></h3>
 
-<table>
-  <tbody>
-    <tr>
-      <td>MoE acts as a probabilistic ensemble where the contribution of each expert is dynamic. The output probability $P(Y</td>
-      <td>X)$ is:</td>
-    </tr>
-  </tbody>
-</table>
+<p>MoE acts as a probabilistic ensemble where the contribution of each expert is dynamic. The output probability $P(Y \mid X)$
+is:</p>
 
-\[P(Y | X) = \sum_{m} g_m(X) \cdot P_m(Y | X)\]
+<d-math block="">
+P(Y | X) = \sum_{m} g_m(X) \cdot P_m(Y | X)
+</d-math>
 
 <p>where:</p>
 
 <ul>
-  <li>
-    <table>
-      <tbody>
-        <tr>
-          <td>$P_m(Y</td>
-          <td>X)$ is expert $m$’s prediction</td>
-        </tr>
-      </tbody>
-    </table>
-  </li>
+  <li>$P(Y \mid X)$ is expert $m$’s prediction</li>
   <li>$g_m(X)$ is the <strong>gating function</strong> (weight for expert $m$)</li>
 </ul>
 
 <p><strong>Constraints:</strong></p>
 
-\[\sum_{m} g_m(X) = 1, \quad g_m(X) \geq 0 \quad \forall m, X\]
+<d-math block="">
+\sum_{m} g_m(X) = 1, \quad g_m(X) \geq 0 \quad \forall m, X
+</d-math>
 
 <p>This formulation <strong>unifies several ensemble approaches</strong>:</p>
 
@@ -971,26 +1036,8 @@ Layer Norm → [Router → Select Experts → FFNN₁, FFNN₂, ..., FFNNₙ] �
 <p>Define:</p>
 
 <ul>
-  <li>
-    <table>
-      <tbody>
-        <tr>
-          <td><strong>Ensemble mean</strong>: $\bar{f}(x) = \mathbb{E}[Y</td>
-          <td>X] = \sum_m g_m(X) \cdot f_m(x)$</td>
-        </tr>
-      </tbody>
-    </table>
-  </li>
-  <li>
-    <table>
-      <tbody>
-        <tr>
-          <td><strong>Individual expert mean</strong>: $f_m(x) = \mathbb{E}_m[Y</td>
-          <td>X]$</td>
-        </tr>
-      </tbody>
-    </table>
-  </li>
+  <li><strong>Ensemble mean</strong>: $\bar{f}(x) = \mathbb{E}[Y \mid X] = \sum_m g_m(X)\, f_m(x)$</li>
+  <li><strong>Individual expert mean</strong>: $f_m(x) = \mathbb{E}_m[Y \mid X]$</li>
 </ul>
 
 <p>Compare:</p>
@@ -1026,7 +1073,9 @@ Layer Norm → [Router → Select Experts → FFNN₁, FFNN₂, ..., FFNNₙ] �
 
 <p><strong>Intuition</strong>: Expert errors are wrong in individualized ways and cancel out through consensus.</p>
 
-\[\text{Ensemble Error} &lt; \text{Average Expert Error} \quad \text{when experts are diverse}\]
+<d-math block="">
+\text{Ensemble Error} &lt; \text{Average Expert Error} \quad \text{when experts are diverse}
+</d-math>
 
 <p><strong>→ Slight “overfitting” of experts helps!</strong></p>
 

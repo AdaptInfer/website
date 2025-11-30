@@ -64,7 +64,7 @@
             "editors": [
               
               {
-                "editor": ""
+                "editor": "Xinyu Pan"
               }
               
             ],
@@ -150,6 +150,11 @@
 <h2 id="the-attention-mechanism">The Attention Mechanism</h2>
 
 <p><strong>Motivation:</strong> Different parts of our input relate to different parts of our output. Sometimes these important relationships can be far apart, like in machine translation. Attention helps us dynamically calculate what is important.</p>
+<h3 id="why-attention-was-needed-long-range-dependency-problem">Why Attention Was Needed (Long-Range Dependency Problem)</h3>
+<p>RNNs compress an entire input sequence into a <strong>single hidden vector</strong>, which makes capturing long-range dependencies difficult.<br />
+During backpropagation, gradients must pass through many time steps, causing <strong>vanishing/exploding gradients</strong>.</p>
+
+<p>Attention solves this by <strong>directly referencing the entire input sequence</strong> when predicting each output, instead of relying on hidden states to store all information.</p>
 
 <ul>
   <li><strong>Origin:</strong> Originally from Natural Language Processing (NLP) and language translation.</li>
@@ -192,6 +197,12 @@
 <blockquote>
   <p><strong>Aside:</strong> CNNs were an example of <strong>Hard Attention</strong>. As the filter slides over the image, the part of the image inside the filter gets attention weight 1, and the rest gets weight 0.</p>
 </blockquote>
+
+<h3 id="why-attention-reduces-the-need-for-recurrence">Why Attention Reduces the Need for Recurrence</h3>
+<ul>
+  <li>Attention repeatedly refers back to the input, so the hidden state no longer needs to store all global information.</li>
+  <li>This insight led to eliminating recurrence entirely in the Transformer.</li>
+</ul>
 
 <hr />
 

@@ -72,7 +72,7 @@
             "editors": [
               
               {
-                "editor": "Assistant Editor"
+                "editor": "Jeff Zhang"
               }
               
             ],
@@ -153,7 +153,25 @@
 
       <d-byline></d-byline>
 
-      <d-article> <h2 id="1-introduction-and-overview">1. Introduction and Overview</h2>
+      <d-article> <h2 id="todays-topics">Today’s Topics:</h2>
+<ul>
+  <li><a href="#todays-topics">Today’s Topics:</a></li>
+  <li><a href="#1-introduction-and-overview">1. Introduction and Overview</a></li>
+  <li><a href="#2-discriminative-vs-generative-modeling">2. Discriminative vs. Generative Modeling</a></li>
+  <li><a href="#3-deep-generative-models-dgms">3. Deep Generative Models (DGMs)</a></li>
+  <li><a href="#4-autoencoders-concept-and-motivation">4. Autoencoders: Concept and Motivation</a></li>
+  <li><a href="#5-architecture-of-an-autoencoder">5. Architecture of an Autoencoder</a></li>
+  <li><a href="#6-autoencoders-vs-pca">6. Autoencoders vs PCA</a></li>
+  <li><a href="#7-autoencoder-variants">7. Autoencoder Variants</a></li>
+  <li><a href="#8-variational-autoencoders-vaes-theory-and-intuition">8. Variational Autoencoders (VAEs): Theory and Intuition</a></li>
+  <li><a href="#9-the-reparameterization-trick">9. The Reparameterization Trick</a></li>
+  <li><a href="#10-generating-new-samples-with-vaes">10. Generating New Samples with VAEs</a></li>
+  <li><a href="#11-applications">11. Applications</a></li>
+  <li><a href="#12-summary-and-takeaways">12. Summary and Takeaways</a></li>
+  <li><a href="#references">References</a></li>
+</ul>
+
+<h2 id="1-introduction-and-overview">1. Introduction and Overview</h2>
 
 <p>This lecture focuses on <strong>Deep Generative Models (DGMs)</strong> — models designed to learn the underlying data distribution, enabling both prediction and generation of new samples. 
 We move from <strong>discriminative models</strong>, which model $P(Y|X)$, to <strong>generative models</strong>, which model $P(X, Y)$ or $P(X)$.</p>
@@ -162,7 +180,7 @@ We move from <strong>discriminative models</strong>, which model $P(Y|X)$, to <s
 
 <hr />
 
-<h2 id="2-discriminative-vs-generative-modeling">2. Discriminative vs. Generative Modeling</h2>
+<h2 id="2-discriminative-vs-generative-modeling">2. Discriminative vs Generative Modeling</h2>
 
 <table>
   <thead>
@@ -171,32 +189,39 @@ We move from <strong>discriminative models</strong>, which model $P(Y|X)$, to <s
       <th>Learns</th>
       <th>Objective</th>
       <th>Examples</th>
-      <th> </th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td><strong>Discriminative</strong></td>
-      <td>$P(Y</td>
-      <td>X)$</td>
+      <td>$P(Y \mid X)$</td>
       <td>Classify or predict outcomes</td>
       <td>Logistic Regression, CNNs</td>
     </tr>
     <tr>
       <td><strong>Generative</strong></td>
-      <td>$P(X, Y)$ or $P(X</td>
-      <td>Y)$</td>
+      <td>$P(X, Y)$ or $P(X \mid Y)$</td>
       <td>Model data generation process</td>
       <td>Autoencoders, VAEs, GANs</td>
     </tr>
   </tbody>
 </table>
 
+<!-- format modified by JZ -->
+
 <p>In generative models, <strong>latent variables</strong> $z$ represent hidden structure in the data, making the following computations challenging:</p>
 
-<p>\(p_\theta(x) = \int p_\theta(x, z) \, dz\)
-\(p_\theta(z|x) \propto p_\theta(x|z) p(z)\)</p>
+<!--$$ p_\theta(x) = \int p_\theta(x, z) \, dz $$
+$$ p_\theta(z|x) \propto p_\theta(x|z) p(z) $$ -->
 
+<d-math block="">
+p_\theta(x) = \int p_\theta(x, z)\, dz
+</d-math>
+
+<d-math block="">
+p_\theta(z \mid x) \propto p_\theta(x \mid z)\, p(z)
+</d-math>
+<!-- format modified by JZ -->
 <p>Because $z$ is unobserved, both the marginal likelihood and posterior inference are intractable in complex data, requiring <strong>approximate inference</strong>.</p>
 
 <hr />
@@ -211,13 +236,14 @@ The “deep” structure arises from multiple layers of hidden variables that re
   <li>Learn probabilistic mappings between $x$ and $z$.</li>
   <li>Use neural networks for non-linear transformations.</li>
   <li>Combine deep learning’s representational power with probabilistic reasoning.</li>
+  <li>Latent variable $z$ capture hidden structure that explains high-dimensional observations $x$. <!-- add by JZ --></li>
 </ul>
 
 <hr />
 
 <h2 id="4-autoencoders-concept-and-motivation">4. Autoencoders: Concept and Motivation</h2>
 
-<p>An <strong>Autoencoder (AE)</strong> is an unsupervised neural network trained to reproduce its input. 
+<p>An <strong>Autoencoder (AE)</strong> is an <strong>unsupervised</strong> (no labeled) neural network trained to reproduce its input. 
 It compresses the input into a <strong>latent representation (code)</strong> and reconstructs the input from this compressed form.</p>
 
 <p><strong>Applications:</strong></p>
@@ -240,8 +266,12 @@ It compresses the input into a <strong>latent representation (code)</strong> and
 </ul>
 
 <p><strong>Training objective:</strong>
-\(L(x, \hat{x}) = ||x - \hat{x}||^2\)</p>
+<!--$$ L(x, \hat{x}) = ||x - \hat{x}||^2 $$--></p>
 
+<d-math block="">
+L(x, \hat{x}) = ||x - \hat{x}||^2
+</d-math>
+<!-- format modified by JZ -->
 <p>By minimizing reconstruction loss, the network learns to capture meaningful low-dimensional structure.</p>
 
 <hr />
@@ -279,42 +309,31 @@ This improves robustness and generalization.</p>
 
 <h2 id="8-variational-autoencoders-vaes-theory-and-intuition">8. Variational Autoencoders (VAEs): Theory and Intuition</h2>
 
+<!-- format of this section was modified by JZ to address render error. No content changed-->
 <p>VAEs model the data generation process as:</p>
 
 <ol>
   <li>Sample latent variable $z \sim p(z)$ (e.g., $\mathcal{N}(0, I)$).</li>
-  <li>
-    <table>
-      <tbody>
-        <tr>
-          <td>Generate data $x$ from conditional distribution $p_\theta(x</td>
-          <td>z)$.</td>
-        </tr>
-      </tbody>
-    </table>
-  </li>
+  <li>Generate data $x$ from conditional distribution $p_\theta(x \mid z)$.  <!-- format modified by JZ --></li>
 </ol>
 
-<table>
-  <tbody>
-    <tr>
-      <td>The encoder approximates the posterior $q_\phi(z</td>
-      <td>x)$ using neural networks, producing mean and variance parameters $(\mu, \sigma)$.</td>
-    </tr>
-  </tbody>
-</table>
+<p>The encoder approximates the posterior $q_\phi(z \mid x)$ using neural networks, producing mean and variance parameters $(\mu, \sigma)$.</p>
 
 <p>We cannot compute $\log p_\theta(x)$ directly because the marginalization over $z$ is intractable.<br />
-By introducing an approximate posterior $q_\phi(z|x)$ and applying Jensen’s inequality:</p>
+By introducing an approximate posterior $q_\phi(z \mid x)$ and applying Jensen’s inequality:</p>
 
-\[\log p_\theta(x) = \log \int p_\theta(x,z)dz 
-\ge \mathbb{E}_{q_\phi(z|x)}[\log p_\theta(x|z)] - D_{KL}(q_\phi(z|x)||p(z))\]
+<d-math block="">
+\log p_\theta(x) = \log \int p_\theta(x,z)dz 
+\ge \mathbb{E}_{q_\phi(z|x)}[\log p_\theta(x|z)] - D_{KL}(q_\phi(z|x)||p(z))
+</d-math>
 
 <p>This lower bound is the <strong>Evidence Lower Bound (ELBO)</strong>, which VAEs maximize during training.</p>
 
 <p><strong>Objective (Evidence Lower Bound - ELBO):</strong></p>
 
-\[\mathcal{L}(\theta, \phi; x) = \mathbb{E}_{q_\phi(z|x)}[\log p_\theta(x|z)] - D_{KL}(q_\phi(z|x) || p(z))\]
+<d-math block="">
+\mathcal{L}(\theta, \phi; x) = \mathbb{E}_{q_\phi(z|x)}[\log p_\theta(x|z)] - D_{KL}(q_\phi(z|x) || p(z))
+</d-math>
 
 <ul>
   <li>First term → reconstruction accuracy</li>
@@ -327,7 +346,11 @@ By introducing an approximate posterior $q_\phi(z|x)$ and applying Jensen’s in
 
 <p>To allow gradients to flow through random sampling, we use:</p>
 
-\[z = \mu + \sigma \odot \epsilon, \quad \epsilon \sim \mathcal{N}(0, I)\]
+<!-- format of this section was modified by JZ to address render error. No content changed-->
+
+<d-math block=""> 
+z = \mu + \sigma \odot \epsilon, \quad \epsilon \sim \mathcal{N}(0, I) 
+</d-math>
 
 <p>This separates stochasticity from the deterministic part, making training possible with backpropagation.</p>
 

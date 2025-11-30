@@ -1,0 +1,635 @@
+<!doctype html>
+<html>
+  <head>
+    <head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="content-language" content="en" />
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <title>
+    STAT 453 | Lecture 22
+  </title>
+  <meta name="description" content="STAT 453 - University of Wisconsin-Madison - Fall 2025
+" />
+
+  <link
+    rel="shortcut icon"
+    href="/dgm-fall-2025/assets/img/favicon.ico"
+  />
+
+  <link rel="stylesheet" href="/dgm-fall-2025/assets/css/main.css" />
+  <link
+    rel="canonical"
+    href="/dgm-fall-2025/notes/lecture-22/"
+  />
+
+  
+  <!-- Load Latex JS -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+  
+</head>
+
+    <script src="/dgm-fall-2025/assets/js/distillpub/template.v2.js"></script>
+    <script src="/dgm-fall-2025/assets/js/distillpub/transforms.v2.js"></script>
+  </head>
+
+  <d-front-matter>
+    <script type="text/json">
+      {
+            "title": "Lecture 22",
+            "description": "Unsupervised Training of LLMs",
+            "published": "November 29, 2025",
+            "lecturers": [
+              
+              {
+                "lecturer": "Ben Lengerich",
+                "lecturerURL": "https://adaptinfer.org"
+              }
+              
+            ],
+            "authors": [
+              
+              {
+                "author": "Zefan Cai"
+              },
+              
+              {
+                "author": "Wenjie Hu"
+              },
+              
+              {
+                "author": "Lucy Xian"
+              },
+              
+              {
+                "author": "Jack Cannon"
+              }
+              
+            ],
+            "editors": [
+              
+              {
+                "editor": ""
+              }
+              
+            ],
+            "katex": {
+              "delimiters": [
+                {
+                  "left": "$",
+                  "right": "$",
+                  "display": false
+                },
+                {
+                  "left": "$$",
+                  "right": "$$",
+                  "display": true
+                }
+              ]
+            }
+          }
+    </script>
+  </d-front-matter>
+
+  <body>
+    <header class="site-header">
+  <div class="wrapper">
+    <span class="site-title">
+      <a class="page-link" href="https://adaptinfer.org/dgm-fall-2025/"
+        >STAT 453</a
+      >
+    </span>
+
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path
+              fill="#424242"
+              d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
+            />
+            <path
+              fill="#424242"
+              d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
+            />
+            <path
+              fill="#424242"
+              d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
+            />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger">
+        <a class="page-link" href="/dgm-fall-2025/logistics/"
+          >logistics</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/lectures/"
+          >lectures</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/notes/">notes</a>
+        <a class="page-link" href="/dgm-fall-2025/calendar/"
+          >calendar</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/homework/"
+          >homework</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/project/">project</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+      <d-title>
+        <h1>Lecture 22</h1>
+        <p>Unsupervised Training of LLMs</p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article> <h2 id="11-unsupervised-training-of-llms-overview">1.1 Unsupervised Training of LLMs (Overview)</h2>
+
+<h3 id="goal">Goal</h3>
+<p>Train large language models (LLMs) using maximum likelihood estimation (MLE) on raw text—no labels, no supervision, no explicit objectives beyond predicting the next token.</p>
+
+<h3 id="context-from-gpt-1--gpt-4">Context (From GPT-1 → GPT-4)</h3>
+
+<p>LLMs have grown dramatically in:</p>
+
+<ul>
+  <li><strong>Scale</strong>: 1.5B parameters → over 1T parameters</li>
+  <li><strong>Context length</strong>: 512 → 128k tokens</li>
+  <li><strong>Depth &amp; width</strong>: 12 → 96+ layers; 12 → 96+ heads</li>
+  <li><strong>Embedding dimension</strong>: 768 → over 12k</li>
+  <li><strong>Vocab</strong>: 40k → 50k+</li>
+  <li><strong>Training data</strong>: 5GB BookCorpus → private 13T tokens (~50 TB)</li>
+</ul>
+
+<p>Modern tokenizers often include image patches, enabling multimodality.
+Mixture-of-Experts architectures further boost scale.
+Training now also includes reinforcement learning for alignment after pretraining.</p>
+
+<h2 id="12-mle-training-of-language-models">1.2 MLE Training of Language Models</h2>
+
+<h3 id="directed-probabilistic-graphical-model">Directed Probabilistic Graphical Model</h3>
+
+<p>LLMs use an autoregressive factorization, which can be visualized as a directed graphical model where each token depends on all previous tokens.</p>
+
+<h3 id="mle-objective">MLE Objective</h3>
+
+<p>LLMs are trained to maximize the log-likelihood of observed sequences:</p>
+
+\[\hat{\theta}_{\text{MLE}} = \arg\max_\theta \mathbb{E}_{x\sim P_{\text{data}}}[\log P_\theta(x)]\]
+
+<p>They model sequences autoregressively, factorizing the joint probability as:</p>
+
+\[P_\theta(X) = \prod_i \prod_t P_\theta(X_{i,t} \mid X_{i,&lt;t})\]
+
+<p>where (i) indexes sequences in the dataset and (t) indexes token positions within each sequence.</p>
+
+<h3 id="mle--emergent-understanding">MLE → Emergent Understanding</h3>
+
+<p>The model directly fits the data distribution without introducing structured latent variables or explicitly controlling entropy. However, a key insight emerges from this simple objective:</p>
+
+<blockquote>
+  <p>“The simplest way to predict the next token is to understand what happened throughout the context.”</p>
+</blockquote>
+
+<p>For example, to predict the word “is” in “The capital of France ___ Paris.”, the model must:</p>
+<ul>
+  <li><strong>Resolve subject-verb agreement</strong> (singular subject requires singular verb)</li>
+  <li><strong>Recognize a factual structure</strong> (this is a statement about geography)</li>
+  <li><strong>Know the domain</strong> (geography, world capitals)</li>
+</ul>
+
+<p>Unlike earlier n-gram language models (e.g., Brants et al., 2007), modern LLMs model relationships between token embeddings via the Transformer architecture, enabling them to capture long-range dependencies at scale.</p>
+
+<h3 id="what-mle-does-well">What MLE Does Well</h3>
+
+<ul>
+  <li>Directly models empirical sequences</li>
+  <li>Efficient and scalable</li>
+  <li>Allows training on extremely large corpora</li>
+</ul>
+
+<h3 id="but-mle-has-hidden-problems">But MLE Has Hidden Problems</h3>
+
+<ul>
+  <li>Implicit low-entropy bias → overconfident predictions</li>
+  <li>Mode collapse / degeneration / memorization</li>
+  <li><strong>Neural text degeneration (Holtzman 2020)</strong>
+    <ul>
+      <li>e.g., repeated phrases</li>
+      <li>generic completions</li>
+      <li>“The man said the man said…”</li>
+      <li>lack of diversity unless sampling is carefully tuned</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="scale--emergent-capabilities">Scale &amp; Emergent Capabilities</h2>
+
+<h3 id="21-emergent-capabilities-in-llms">2.1 Emergent Capabilities in LLMs</h3>
+
+<h4 id="what-happens-as-we-scale-training">What Happens as We Scale Training?</h4>
+
+<figure id="scaling-laws" class="l-body-outset">
+  <div class="row">
+    <div class="col" style="width: 100%; float: left;">
+      <img src="/dgm-fall-2025/assets/img/notes/lecture-22/3.1.png" />
+      <figcaption>
+        <strong>Figure 1.</strong>
+        Language modeling performance improves smoothly as we increase
+        the model size, dataset size, and amount of compute used for training.
+        For optimal performance all three factors must be scaled up in tandem.
+        Empirical performance has a power-law relationship with each individual
+        factor when not bottlenecked by the other two.
+      </figcaption>
+    </div>
+  </div>
+</figure>
+
+<figure id="emergent-abilities" class="l-body-outset">
+  <div class="row">
+    <div class="col" style="width: 100%; float: left;">
+      <img src="/dgm-fall-2025/assets/img/notes/lecture-22/3.2.png" />
+      <figcaption>
+        <strong>Figure 2.</strong>
+        Smooth improvements in overall loss can lead to sharp “emergent”
+        jumps in task performance. An ability is called emergent if it is
+        not present in smaller models but appears in larger models
+        (Wei et al., 2022).
+      </figcaption>
+    </div>
+  </div>
+</figure>
+
+<h4 id="examples-of-emergence">Examples of Emergence</h4>
+
+<ol>
+  <li><strong>In-Context Learning</strong> : Model learns to perform tasks from examples provided in the prompt.</li>
+  <li><strong>Chain-of-Thought Reasoning</strong> :  Model generates intermediate reasoning steps.</li>
+  <li><strong>Factual structure understanding</strong>: To fill in “The capital of France ___ Paris”, model must:
+    <ul>
+      <li>Track subject-verb agreement;</li>
+      <li>Understand the underlying fact structure;</li>
+      <li>Recognize task domain (geography).</li>
+    </ul>
+  </li>
+</ol>
+
+<h4 id="hypotheses-for-emergence">Hypotheses for Emergence</h4>
+
+<ul>
+  <li>Scale increases representational capacity</li>
+  <li>MLE forces models to capture global dependencies</li>
+  <li>Large training corpora contain implicit demonstrations of reasoning</li>
+  <li>Transformers act as meta-learners over massive data distributions</li>
+</ul>
+
+<h3 id="22-challenges-in-scaling-unsupervised-training">2.2 Challenges in Scaling Unsupervised Training</h3>
+
+<h4 id="data-filtering-issues">Data Filtering Issues</h4>
+
+<p>At trillion-token scale, filtering toxic, low-quality, or duplicated text becomes extremely difficult.</p>
+
+<h4 id="parallel-training">Parallel Training</h4>
+
+<p>Training trillion-parameter models requires:</p>
+<ul>
+  <li>Expert parallelism</li>
+  <li>Distributed optimization</li>
+  <li>Fault tolerance</li>
+  <li>Training pipelines like DeepSpeed / Megatron</li>
+</ul>
+
+<h4 id="llm360-initiative">LLM360 Initiative</h4>
+
+<p>Open efforts like LLM360 / TxT360 aim to make complete training pipelines observable and reproducible for education and research.</p>
+
+<h2 id="3-challenges-of-mle-based-unsupervised-training">3. Challenges of MLE-Based Unsupervised Training</h2>
+
+<h3 id="31-mle-as-kl-divergence">3.1 MLE as KL Divergence</h3>
+
+<p>Maximum likelihood training of a language model is equivalent to
+minimizing the KL divergence from the data distribution to the model:</p>
+
+\[\begin{aligned}
+  heta_{\text{MLE}}
+&amp;= \arg\max_\theta \mathbb{E}_{x \sim P_{\text{data}}}\big[\log P_\theta(x)\big] \\
+&amp;= \arg\min_\theta \mathrm{KL}\big(P_{\text{data}} \,\|\, P_\theta\big)
+\end{aligned}\]
+
+<p>because</p>
+
+\[\mathrm{KL}\big(P_{\text{data}} \,\|\, P_\theta\big)
+= \mathbb{E}_{x \sim P_{\text{data}}}\big[-\log P_\theta(x)\big] + \text{const}\]
+
+<p><strong>Implications of this KL direction</strong></p>
+
+<ul>
+  <li>The model must <strong>place probability mass on <em>all</em> observed sequences</strong>, even if some are incoherent or low-quality.</li>
+  <li>This can lead to:
+    <ul>
+      <li><strong>Repetition and genericity</strong><br />
+e.g. outputs like “<em>The man said the man said…</em>”.</li>
+      <li><strong>Poor calibration</strong> on out-of-distribution prompts.</li>
+      <li><strong>Memorization of rare patterns</strong> in the data.</li>
+      <li>Strong dependence on <strong>sampling / decoding strategy</strong>.</li>
+      <li>Important role of <strong>entropy and confidence</strong> in the model’s behavior.</li>
+    </ul>
+  </li>
+</ul>
+
+<hr />
+
+<h3 id="32-what-mle-does-not-provide">3.2 What MLE <em>Does Not</em> Provide</h3>
+
+<p>The MLE objective only cares about matching the joint distribution of tokens.
+It does <strong>not</strong> explicitly encode:</p>
+
+<ul>
+  <li><strong>Semantics</strong> (meaning, truthfulness, usefulness).</li>
+  <li><strong>Task goals</strong> (what we want the model to accomplish).</li>
+  <li><strong>Rewards or preferences</strong> (which outputs are better for users).</li>
+</ul>
+
+<p>So, a pure MLE-trained LM is a very good <em>next-token predictor</em>, but not
+necessarily aligned with human intents or downstream tasks.</p>
+
+<hr />
+
+<h3 id="33-entropy-and-confidence">3.3 Entropy and Confidence</h3>
+
+<p>For an autoregressive LM at time step (t), the <strong>token-level entropy</strong> is</p>
+
+\[\begin{aligned}
+H_t
+&amp;= -\sum_v P(x_t = v \mid x_{&lt;t}) \log P(x_t = v \mid x_{&lt;t}) \\
+&amp;= \mathbb{E}_{v}\big[-\log P(x_t = v \mid x_{&lt;t})\big]
+\end{aligned}\]
+
+<ul>
+  <li><strong>Low entropy</strong> ⇒ the distribution is very peaked ⇒ <strong>high confidence</strong>.</li>
+  <li><strong>High entropy</strong> ⇒ the distribution is more spread out ⇒ <strong>lower confidence / more diversity</strong>.</li>
+</ul>
+
+<p>A key design question:</p>
+<blockquote>
+  <p><em>Do we want the model to be low-entropy or high-entropy in its predictions?</em></p>
+</blockquote>
+
+<p>Low entropy improves log-likelihood but can cause over-confidence and
+degenerate text; high entropy improves diversity but can hurt accuracy.</p>
+
+<hr />
+
+<h3 id="34-connection-to-variational-inference">3.4 Connection to Variational Inference</h3>
+
+<p>Recall the variational inference decomposition:</p>
+
+\[\begin{aligned}
+\log p(x \mid \theta)
+&amp;= \mathbb{E}_{z \sim q}\big[\log p(x, z \mid \theta)\big] \\
+&amp;\quad + H(q) \\
+&amp;\quad + \mathrm{KL}\big(q(z \mid x) \,\|\, p(z \mid x, \theta)\big)
+\end{aligned}\]
+
+<p>This yields the <strong>Evidence Lower Bound (ELBO)</strong>:</p>
+
+\[\begin{aligned}
+\log p(x \mid \theta)
+&amp;\ge \mathbb{E}_{z \sim q}\big[\log p(x, z \mid \theta)\big] \\
+&amp;\quad + H(q)
+\end{aligned}\]
+
+<ul>
+  <li>Maximizing the ELBO <strong>explicitly rewards higher entropy</strong> (H(q)) of the
+approximate posterior (q(z \mid x)).</li>
+</ul>
+
+<p>By contrast, in autoregressive MLE we directly maximize
+(\mathbb{E}<em>{x \sim P</em>{\text{data}}}[\log P_\theta(x)]) <strong>without an
+explicit entropy term</strong> for (P_\theta(x)).
+This often drives the model toward <strong>lower-entropy</strong> distributions.</p>
+
+<hr />
+
+<h3 id="35-mle-entropy-and-degeneration">3.5 MLE, Entropy, and Degeneration</h3>
+
+<p>Formally, the MLE objective is</p>
+
+\[\hat{\theta}_{\text{MLE}}
+= \arg\max_\theta \mathbb{E}_{x \sim P_{\text{data}}}\big[\log P_\theta(x)\big]\]
+
+<p>Properties:</p>
+
+<ul>
+  <li>It <strong>optimizes the data likelihood only</strong>, without explicitly controlling the
+entropy of (P_\theta(x)).</li>
+  <li>In practice, this frequently pushes (P_\theta(x)) toward <strong>low-entropy,
+highly peaked</strong> distributions.</li>
+  <li>Consequences:
+    <ul>
+      <li><strong>Mode collapse / degeneration</strong>: the model focuses on a few high-probability
+patterns.</li>
+      <li><strong>Memorization</strong>: reproduces specific training sequences.</li>
+      <li>With deterministic decoding (e.g. large-beam beam search), this can produce
+extremely <strong>repetitive, unnatural text</strong> (“neural text degeneration”).</li>
+    </ul>
+  </li>
+</ul>
+
+<hr />
+
+<h3 id="36-mitigating-low-entropy-problems">3.6 Mitigating Low-Entropy Problems</h3>
+
+<p>A common strategy is to <strong>modify the objective</strong> so we do not purely
+optimize log-likelihood.</p>
+
+<h4 id="361-entropy-regularized-mle">3.6.1 Entropy-regularized MLE</h4>
+
+<p>Add an explicit entropy bonus to the training objective:</p>
+
+\[\hat{\theta}
+=
+\arg\max_{\theta}
+\left[
+  \mathbb{E}_{x \sim P_{\mathrm{data}}} \log P_{\theta}(x)
+  + \lambda \sum_{t} H\!\left(P_{\theta}(x_t \mid x_{&lt;t})\right)
+\right]\]
+
+<p>where (\lambda &gt; 0) controls how strongly we encourage
+<strong>higher-entropy token distributions</strong>.</p>
+
+<h4 id="362-label-smoothing">3.6.2 Label Smoothing</h4>
+
+<p>Instead of one-hot targets, use <strong>smoothed labels</strong> for classification:</p>
+
+\[ilde{y}_\varepsilon =
+\begin{cases}
+1 - \varepsilon, &amp; y = 1, \\
+\dfrac{\varepsilon}{V - 1}, &amp; y = 0.
+\end{cases}\]
+
+<ul>
+  <li>(V): vocabulary size</li>
+  <li>(\varepsilon): small smoothing constant (e.g. 0.1)</li>
+</ul>
+
+<p>Effect: discourages the model from assigning probability 1 to any token,
+implicitly <strong>increasing entropy</strong> and improving calibration.</p>
+
+<h4 id="363-contrastive-and-preference-based-objectives">3.6.3 Contrastive and Preference-Based Objectives</h4>
+
+<p>Other families of objectives also combat degeneration:</p>
+
+<ul>
+  <li><strong>Contrastive losses</strong> (e.g. noise-contrastive, InfoNCE):
+compare good vs bad sequences to shape the distribution.</li>
+  <li><strong>Scheduled sampling / noise-contrastive objectives</strong>:
+expose the model to its own predictions during training.</li>
+  <li><strong>Risk minimization / utility / preference-based losses</strong>:
+optimize directly for downstream task performance or human preferences
+(e.g. RLHF, ranking losses).</li>
+</ul>
+
+<p>These augment or replace pure MLE so that the model is not just a
+low-entropy next-token predictor, but better aligned with human-desired
+behavior.</p>
+
+<h2 id="references">References</h2>
+<ul>
+  <li><strong>Radford et al. (2018)</strong> — <em>Improving Language Understanding by Generative Pre-Training</em> (GPT-1)</li>
+  <li><strong>Brants et al. (2007)</strong> — <em>Large Language Models in Machine Translation</em></li>
+  <li><strong>Holtzman et al. (2020)</strong> — <em>The Curious Case of Neural Text Degeneration</em></li>
+  <li><strong>Kaplan et al. (2021)</strong> — <em>Scaling Laws for Neural Language Models</em></li>
+  <li><strong>Understanding LLMs (2024)</strong> — <em>Overviews of LLM training to inference pipeline</em></li>
+  <li><strong>LLM360 / TxT360</strong></li>
+</ul>
+
+<hr />
+
+<footer>
+<p>© 2025 University of Wisconsin — STAT 453 Lecture Notes</p>
+</footer>
+
+ </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+    </div>
+
+    <footer class="site-footer">
+  <div class="wrapper">
+    <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Ben Lengerich</li><li>
+            <a class="u-email" href="mailto:TBD@wisc.edu"
+              >TBD@wisc.edu</a
+            >
+          </li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li>
+    <a
+      href="https://github.com/AdaptInfer"
+      target="_blank"
+      ><i class="fab fa-github"></i>
+      <span class="username">AdaptInfer</span></a
+    >
+  </li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>
+          &copy; Copyright 2025 University of Wisconsin.
+          <br />
+          
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  </body>
+
+  <d-bibliography
+    src="/dgm-fall-2025/assets/bibliography/2025-11-19-lecture-22.bib"
+  >
+  </d-bibliography>
+
+  <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/dgm-fall-2025/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link
+  rel="stylesheet"
+  href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css"
+/>
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+<script src="/dgm-fall-2025/assets/js/katex.js"></script>
+ 
+<!-- Load Anchor JS -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+<script>
+  anchors.options.visible = "hover";
+  anchors.add("article h2, article h3, article h4, article h5, article h6");
+</script>
+ 
+<!-- Adjust LaTeX JS -->
+<script src="/dgm-fall-2025/assets/js/latex.js"></script>
+
+
+<!-- Include custom icon fonts -->
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2025/assets/css/fontawesome-all.min.css"
+/>
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2025/assets/css/academicons.min.css"
+/>
+
+<!-- Google Analytics -->
+<script>
+  (function (i, s, o, g, r, a, m) {
+    i["GoogleAnalyticsObject"] = r;
+    (i[r] =
+      i[r] ||
+      function () {
+        (i[r].q = i[r].q || []).push(arguments);
+      }),
+      (i[r].l = 1 * new Date());
+    (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+    a.async = 1;
+    a.src = g;
+    m.parentNode.insertBefore(a, m);
+  })(
+    window,
+    document,
+    "script",
+    "//www.google-analytics.com/analytics.js",
+    "ga",
+  );
+
+  ga("create", "", "auto");
+  ga("send", "pageview");
+</script>
+
+</html>

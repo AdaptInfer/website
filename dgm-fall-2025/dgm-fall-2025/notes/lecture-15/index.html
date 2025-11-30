@@ -68,7 +68,7 @@
             "editors": [
               
               {
-                "editor": "-"
+                "editor": "Jeff Zhang"
               }
               
             ],
@@ -286,8 +286,9 @@
     </ul>
   </li>
   <li>Estimate
+ <!-- - $\hat{\mu} , \hat{\sigma} = argmax_{\mu , \sigma} P(X \mid Y)$ -->
     <ul>
-      <li>$\hat{\mu} , \hat{\sigma} = argmax_{\mu , \sigma} P(X \mid Y)$</li>
+      <li>$\hat{\mu}, \hat{\sigma} = \arg\max_{\mu, \sigma} P(X \mid Y)$</li>
     </ul>
   </li>
   <li>Calculate
@@ -314,10 +315,12 @@ We change our $\hat{\theta}$ estimates from observations by:</p>
 
 <ul>
   <li>Discriminative models optimize the conditional likelihood:
-$\hat{\theta_{disc}} = argmax_{\theta} P(Y \mid X; \theta) = argmax_{\theta} \frac{P(X \mid Y ; \theta) P(Y; \theta)}{P(X; \theta)}$</li>
+<!--$\hat{\theta_{disc}} = argmax_{\theta} P(Y \mid X; \theta) = argmax_{\theta} \frac{P(X \mid Y ; \theta) P(Y; \theta)}{P(X; \theta)}$-->
+$\widehat{\theta_{disc}} = argmax_{\theta} P(Y \mid X; \theta) = argmax_{\theta} \frac{P(X \mid Y ; \theta) P(Y; \theta)}{P(X; \theta)}$</li>
   <li>
     <p>Generative models optimize the joint likelihood:
-$\hat{\theta_{disc}} = argmax_{\theta} P(X, Y; \theta) = argmax_{\theta} P(X \mid Y ; \theta) P(Y; \theta)$</p>
+<!--$\hat{\theta_{disc}} = argmax_{\theta} P(X, Y; \theta) = argmax_{\theta} P(X \mid Y ; \theta) P(Y; \theta)$-->
+$\widehat{\theta_{disc}} = argmax_{\theta} P(X, Y; \theta) = argmax_{\theta} P(X \mid Y ; \theta) P(Y; \theta)$</p>
 
     <p>This means they are exactly the same optimization when $P(X; \theta)$ is invariant to $\theta$</p>
   </li>
@@ -329,17 +332,20 @@ $\hat{\theta_{disc}} = argmax_{\theta} P(X, Y; \theta) = argmax_{\theta} P(X \mi
 
 <h2 id="6-logistic-regression-vs-naive-bayes">6. Logistic Regression vs Naive Bayes</h2>
 
-<h3 id="logistic-regression">Logistic Regression**</h3>
+<!--### Logistic Regression**-->
+<h3 id="logistic-regression">Logistic Regression</h3>
 <ul>
   <li><strong>Type</strong> : Discriminative</li>
   <li>It directly models the decision boundary: $P(Y \mid X; \theta)$</li>
   <li>It does <strong>not</strong> models how data is generated only the probability that a given (X) belongs to a certain class (Y )</li>
   <li>Defines : $P(Y \mid X; \theta) = \sigma(\theta^T X) = \frac{1}{1 + e^{-\theta^T X}}$</li>
   <li>Estimates:
+ <!--Parameters are learned by maximizing the conditional likelihood: $\hat{\theta_{lr}} = argmax_{\theta} P(Y \mid X; \theta)$-->
     <ul>
-      <li>Parameters are learned by maximizing the conditional likelihood: $\hat{\theta_{lr}} = argmax_{\theta} P(Y \mid X; \theta)$</li>
+      <li>Parameters are learned by maximizing the conditional likelihood: $\widehat{\theta_{lr}} = argmax_{\theta} P(Y \mid X; \theta)$</li>
       <li>Or equivalently, by maximizing the <strong>log-likelihood</strong>:
-$\hat{\theta_{lr}} = \arg\max_{\theta} \sum_i \left[Y_i \log \sigma(\theta^{T} X_i) + (1 - Y_i) \log \left(1 - \sigma(\theta^{T} X_i)\right)\right]$</li>
+<!--$\hat{\theta_{lr}} = \arg\max_{\theta} \sum_i \left[Y_i \log \sigma(\theta^{T} X_i) + (1 - Y_i) \log \left(1 - \sigma(\theta^{T} X_i)\right)\right]$-->
+$\widehat{\theta_{lr}} = \arg\max_{\theta} \sum_i \left[Y_i \log \sigma(\theta^{T} X_i) + (1 - Y_i) \log \left(1 - \sigma(\theta^{T} X_i)\right)\right]$</li>
     </ul>
   </li>
   <li>Properties:
@@ -362,8 +368,9 @@ $\hat{\theta_{lr}} = \arg\max_{\theta} \sum_i \left[Y_i \log \sigma(\theta^{T} X
       <li>Using Bayes’ rule, we can derive the posterior: $P(Y \mid X) = \frac{P(X \mid Y) \, P(Y)}{P(X)}$</li>
     </ul>
   </li>
-  <li>Assumption: <strong>Conditional independence assumption</strong> $P(X \mid Y) = \prod_{j=1}^{d} P(X_j \mid Y)$</li>
-  <li>Estimates: Parameters are learned by maximizing the <strong>joint likelihood</strong>: $\hat{\theta_{NB}} = \arg\max_{\theta} P(X, Y; \theta)$</li>
+  <li>Assumption: <strong>Conditional independence assumption</strong> $P(X \mid Y) = \prod_{j=1}^{d} P(X_j \mid Y)$
+<!--- Estimates: Parameters are learned by maximizing the **joint likelihood**: $\hat{\theta_{NB}} = \arg\max_{\theta} P(X, Y; \theta)$--></li>
+  <li>Estimates: Parameters are learned by maximizing the <strong>joint likelihood</strong>: $\widehat{\theta_{NB}} = \arg\max_{\theta} P(X, Y; \theta)$</li>
   <li>Properties:
     <ul>
       <li><strong>Higher asymptotic error</strong> : Because the independence assumption is not always true, it can produce biased estimates when data features are correlated</li>
