@@ -67,6 +67,10 @@
             ],
             "editors": [
               
+              {
+                "editor": "Reid Chen"
+              }
+              
             ],
             "katex": {
               "delimiters": [
@@ -292,6 +296,20 @@ h_t &amp;= o_t \odot \tanh(c_t)
   <li><strong>Output gate:</strong> expose memory to next layer</li>
   <li><strong>Cell state:</strong> preserves long-term gradients</li>
 </ul>
+
+<p>Forget gate controls which information is remembered, and which is forgotten. It can reset the cell state:
+\(f_{t} = \sigma(W_{fx} x^t + W_{fh} h^{t - 1} + b_{f})\)
+The sigmoid activation function has a range of $[0, 1]$. The output from the forget gate $f_{t}$ is later multiplied element-wise with the cell state. If $f_{t}$ is close to 0, it can make the cell state $C$ to “forget” some information.</p>
+
+<p>Input gate adds stuff to the cell state:
+\(i_{t} = \sigma(W_{ix} x^t + W_{ih} h^{t - 1} + b_{i})\)
+Input node
+\(g_{t} =\tanh(W_{gx} x^t + W_{gh} h^{t-1} + b_{g})\)
+is element-wise multiplied with the input gate. The product then later is element-wise added to the cell state $C$.</p>
+
+<p>Output gate is used to update the values of hidden units:
+\(o_{t} = \sigma(W_{ox} x^t + W_{oh} h^{t-1} + b_{o}).\)
+The new value for the hidden unit will be the element-wise product between $\tanh(C^t)$ and $o_{t}$.</p>
 
 <hr />
 
