@@ -72,7 +72,7 @@
             "editors": [
               
               {
-                "editor": ""
+                "editor": "Yufan Cheng"
               }
               
             ],
@@ -189,7 +189,7 @@ Training now also includes reinforcement learning for alignment after pretrainin
 
 <p>They model sequences autoregressively, factorizing the joint probability as:</p>
 
-\[P_\theta(X) = \prod_i \prod_t P_\theta(X_{i,t} \mid X_{i,&lt;t})\]
+\[P_\theta(X) = \prod_{i} \prod_{t} P_\theta(X_{i,t} \mid X_{i, &lt; t})\]
 
 <p>where (i) indexes sequences in the dataset and (t) indexes token positions within each sequence.</p>
 
