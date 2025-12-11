@@ -73,6 +73,10 @@
               
               {
                 "editor": "Jeff Zhang"
+              },
+              
+              {
+                "editor": "Mohammad Zaidan"
               }
               
             ],
@@ -154,6 +158,7 @@
       <d-byline></d-byline>
 
       <d-article> <h2 id="todays-topics">Today’s Topics:</h2>
+
 <ul>
   <li>
     <p><a href="#todays-topics">Today’s Topics:</a></p>
@@ -425,10 +430,10 @@ h_i = \sum_{j=1}^{T} a_{ij} \cdot v_j
   <li><strong>Input Embedding</strong>: Converts tokens to dense vectors</li>
   <li><strong>Positional Encoding</strong>: Adds position information (since attention is permutation-invariant)
     <d-math block="">
-PE_{(pos, 2i)} = \sin\left(\frac{pos}{10000^{2i/d}}\right)
+PE*{(pos, 2i)} = \sin\left(\frac{pos}{10000^{2i/d}}\right)
 </d-math>
     <d-math block="">
-PE_{(pos, 2i+1)} = \cos\left(\frac{pos}{10000^{2i/d}}\right)
+PE*{(pos, 2i+1)} = \cos\left(\frac{pos}{10000^{2i/d}}\right)
 </d-math>
   </li>
   <li><strong>$N_x$ Encoder Layers</strong>, each containing:
@@ -551,9 +556,7 @@ PE_{(pos, 2i+1)} = \cos\left(\frac{pos}{10000^{2i/d}}\right)
 
 <p>Given a sequence of tokens $U = {u_1, u_2, …, u_n}$, the joint probability of the entire sequence $P(U)$ is factored using the chain rule:</p>
 
-<d-math block="">
-P(U) = \prod_{i=1}^{n} P(u_i \mid u_{1}, \dots, u_{i-1})
-</d-math>
+<p>$P(U) = \prod_{i=1}^{n} P(u_i \mid u_{1}, \dots, u_{i-1})$</p>
 
 <ul>
   <li>$u_i$: The token at the current step.</li>
@@ -562,11 +565,10 @@ P(U) = \prod_{i=1}^{n} P(u_i \mid u_{1}, \dots, u_{i-1})
 
 <h4 id="b-training-objective"><strong>B. Training Objective</strong></h4>
 
-<p>The model is trained to maximize the log-likelihood of the data. We define the loss function (typically Cross-Entropy) as:</p>
+<p>We define the loss function (typically Cross-Entropy) as:</p>
 
-<d-math block="">
-\mathcal{L}(\Theta) = - \sum_{i} \log P(u_i \mid u_{i-k}, \dots, u_{i-1}; \Theta)
-</d-math>
+<p>$\mathcal{L}(\theta) = - \sum_{i} \log P(u_i \mid u_{i-k}, \dots, u_{i-1}; \theta)
+$</p>
 
 <ul>
   <li><strong>Input:</strong> A sequence of tokens.</li>
@@ -584,16 +586,20 @@ P(U) = \prod_{i=1}^{n} P(u_i \mid u_{1}, \dots, u_{i-1})
 
 <p>GPT can be viewed as a directed PGM:</p>
 
-<d-math block="">
-P_\theta(X) = \prod_{i} \prod_{t} P_\theta(X_{i,t} \mid X_{i,&lt;t})
-</d-math>
+<p>$P_{\theta}(X) = \prod_i \prod_t P_{\theta} (X_{i,t} \mid X_{i,&lt;t})$</p>
+
+<p>when we transform this probability into log-likelihood form, the probabilistic objective becomes maximizing :</p>
+
+<p>$\max_{\theta} \sum_{i} \sum_{t} \log P_{\theta} (X_{i,t} \mid X_{i,&lt;t})$</p>
+
+<p>which corresponds to MLE objective.</p>
 
 <p><strong>Model structure:</strong></p>
 
 <ul>
   <li>Input: token embeddings + positional encodings</li>
   <li>Masked multi-head attention: Enforces “causality”</li>
-  <li>Decoder stack: Learns $P(X_t \mid X_{&lt;t})$</li>
+  <li>Decoder stack: Learns \(P(X_t \mid X_{&lt;t})\)</li>
   <li>Output: softmax over vocabulary</li>
 </ul>
 
@@ -642,7 +648,7 @@ P_\theta(X) = \prod_{i} \prod_{t} P_\theta(X_{i,t} \mid X_{i,&lt;t})
   <thead>
     <tr>
       <th style="text-align: left">Feature</th>
-      <th style="text-align: left">Traditional Seq2Seq (e.g., BERT/T5)</th>
+      <th style="text-align: left">Traditional Seq2Seq (e.g., T5)</th>
       <th style="text-align: left">GPT (Decoder-Only)</th>
     </tr>
   </thead>
@@ -1390,13 +1396,13 @@ P(Y | X) = \sum_{m} g_m(X) \cdot P_m(Y | X)
 <script>
   (function (i, s, o, g, r, a, m) {
     i["GoogleAnalyticsObject"] = r;
-    (i[r] =
+    ((i[r] =
       i[r] ||
       function () {
         (i[r].q = i[r].q || []).push(arguments);
       }),
-      (i[r].l = 1 * new Date());
-    (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+      (i[r].l = 1 * new Date()));
+    ((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
     a.async = 1;
     a.src = g;
     m.parentNode.insertBefore(a, m);

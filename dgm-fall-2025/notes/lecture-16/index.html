@@ -159,6 +159,7 @@
       <d-byline></d-byline>
 
       <d-article> <h2 id="todays-topics">Today’s Topics:</h2>
+
 <ul>
   <li><a href="#todays-topics">Today’s Topics:</a></li>
   <li><a href="#1-introduction-and-overview">1. Introduction and Overview</a></li>
@@ -178,7 +179,7 @@
 
 <h2 id="1-introduction-and-overview">1. Introduction and Overview</h2>
 
-<p>This lecture focuses on <strong>Deep Generative Models (DGMs)</strong> — models designed to learn the underlying data distribution, enabling both prediction and generation of new samples. 
+<p>This lecture focuses on <strong>Deep Generative Models (DGMs)</strong> — models designed to learn the underlying data distribution, enabling both prediction and generation of new samples.
 We move from <strong>discriminative models</strong>, which model $P(Y|X)$, to <strong>generative models</strong>, which model $P(X, Y)$ or $P(X)$.</p>
 
 <p>Autoencoders (AEs) and Variational Autoencoders (VAEs) form the foundation of this shift, combining <strong>unsupervised representation learning</strong> with <strong>probabilistic inference</strong>.</p>
@@ -233,10 +234,11 @@ p_\theta(z \mid x) \propto p_\theta(x \mid z)\, p(z)
 
 <h2 id="3-deep-generative-models-dgms">3. Deep Generative Models (DGMs)</h2>
 
-<p>DGMs use neural networks to parameterize probability distributions over observed data $x$ and latent variables $z$. 
+<p>DGMs use neural networks to parameterize probability distributions over observed data $x$ and latent variables $z$.
 The “deep” structure arises from multiple layers of hidden variables that represent hierarchical abstractions.</p>
 
 <p><strong>Key ideas:</strong></p>
+
 <ul>
   <li>Learn probabilistic mappings between $x$ and $z$.</li>
   <li>Use neural networks for non-linear transformations.</li>
@@ -248,10 +250,11 @@ The “deep” structure arises from multiple layers of hidden variables that re
 
 <h2 id="4-autoencoders-concept-and-motivation">4. Autoencoders: Concept and Motivation</h2>
 
-<p>An <strong>Autoencoder (AE)</strong> is an <strong>unsupervised</strong> (no labeled) neural network trained to reproduce its input. 
+<p>An <strong>Autoencoder (AE)</strong> is an <strong>unsupervised</strong> (no labeled) neural network trained to reproduce its input.
 It compresses the input into a <strong>latent representation (code)</strong> and reconstructs the input from this compressed form.</p>
 
 <p><strong>Applications:</strong></p>
+
 <ul>
   <li>Dimensionality reduction and data visualization</li>
   <li>Noise removal and feature denoising</li>
@@ -270,8 +273,9 @@ It compresses the input into a <strong>latent representation (code)</strong> and
   <li><strong>Decoder:</strong> $\hat{x} = f(h) = f(g(x))$ — reconstructs the input.</li>
 </ul>
 
-<p><strong>Training objective:</strong>
-<!--$$ L(x, \hat{x}) = ||x - \hat{x}||^2 $$--></p>
+<p><strong>Training objective:</strong></p>
+
+<!--$$ L(x, \hat{x}) = ||x - \hat{x}||^2 $$-->
 
 <d-math block="">
 L(x, \hat{x}) = ||x - \hat{x}||^2
@@ -283,10 +287,11 @@ L(x, \hat{x}) = ||x - \hat{x}||^2
 
 <h2 id="6-autoencoders-vs-pca">6. Autoencoders vs PCA</h2>
 
-<p>While PCA performs <strong>linear</strong> dimensionality reduction, AEs learn <strong>non-linear</strong> mappings through neural activations. 
+<p>While PCA performs <strong>linear</strong> dimensionality reduction, AEs learn <strong>non-linear</strong> mappings through neural activations.
 PCA can be seen as a special case of an AE with one linear hidden layer.</p>
 
 <p><strong>Advantages of AEs:</strong></p>
+
 <ul>
   <li>Capture complex non-linear manifolds</li>
   <li>Can be stacked to form <strong>Deep Autoencoders</strong></li>
@@ -298,16 +303,20 @@ PCA can be seen as a special case of an AE with one linear hidden layer.</p>
 <h2 id="7-autoencoder-variants">7. Autoencoder Variants</h2>
 
 <h3 id="71-denoising-autoencoders-dae">7.1 Denoising Autoencoders (DAE)</h3>
+
 <p>Train the network to reconstruct the original data from a <strong>noisy input</strong>, e.g. by adding Gaussian noise or dropout.<br />
 This improves robustness and generalization.</p>
 
 <h3 id="72-dropout-autoencoders">7.2 Dropout Autoencoders</h3>
+
 <p>Add dropout layers to force redundancy in learned features, preventing overfitting and improving noise tolerance.</p>
 
 <h3 id="73-sparse-autoencoders">7.3 Sparse Autoencoders</h3>
+
 <p>Encourage sparsity in activations using an <strong>L1 penalty</strong>. Only a few neurons activate for each input, leading to interpretable latent representations.</p>
 
 <h3 id="74-variational-autoencoders-vaes">7.4 Variational Autoencoders (VAEs)</h3>
+
 <p>Introduce a <strong>probabilistic latent space</strong>, enabling smooth interpolation and random sampling of new data points.</p>
 
 <hr />
@@ -317,23 +326,31 @@ This improves robustness and generalization.</p>
 <p>Define the latent space to follow a normal distribution, which enables sampling.
 We want to first sample $z$ from $p_{\theta^\star}(z)$ and translate $z$ into $x$ using the decoder network. We want to estimate the true parameters $\theta^\star$ of this generative model How should we represent this model? we can choose a prior $p(z)$ to be simple, e.g. Gaussian. Then, the conditional $p(x \mid z)$ is complex. We will use a neural network.</p>
 
-<p>How do we train this model? We maximize the likelihood of the training data
-\(p_{\theta}(x) = \int p_{\theta}(z) p_{\theta}(x \mid z) \, dz\)
-Since we are modeling probabilistic generation of data, the encoder and decoder networks are probabilistic. We use
-\(q_{\phi}(z \mid x)\)
-to represent the encoder network and
-\(p_{\theta}(x \mid z)\)
-to represent the decoder network.</p>
+<p>How do we train this model? We maximize the likelihood of the training data</p>
 
-<p>Now, equipped with our encoder and decoder networks, let us work out the log data likelihood:
-\(\begin{align}
+\[p_{\theta}(x) = \int p_{\theta}(z) p_{\theta}(x \mid z) \, dz\]
+
+<p>Since we are modeling probabilistic generation of data, the encoder and decoder networks are probabilistic. We use</p>
+
+\[q_{\phi}(z \mid x)\]
+
+<p>to represent the encoder network and</p>
+
+\[p_{\theta}(x \mid z)\]
+
+<p>to represent the decoder network.</p>
+
+<p>Now, equipped with our encoder and decoder networks, let us work out the log data likelihood:</p>
+
+\[\begin{align}
 \log p_{\theta}(x) &amp;= \mathbb{E}_{z \sim q_{\phi}(z \mid x)}[\log p_{\theta}(x)] \\
 &amp;= \mathbb{E} _{z} \left[ \log \frac{p_{\theta}(x\mid z) p_{\theta}(z)}{p_{\theta}(z \mid x)} \right] \\
 &amp;= \mathbb{E} _{z} \left[ \log \frac{p_{\theta}(x\mid z) p_{\theta}(z)}{p_{\theta}(z \mid x)} \frac{q_{\phi}(z \mid x)}{q_{\phi} (z \mid x)} \right] \\
 &amp;= \mathbb{E}_{z}[\log p_{\theta}(x \mid z)] - \mathbb{E}_{z}\left[ \log \frac{q_{\phi}(z \mid x)}{p_{\theta}(z)} \right] + \mathbb{E}_{z}\left[\log \frac{q_{\phi}(z \mid x)}{p_\theta(z \mid x)} \right] \\
 &amp;= \mathbb{E}_{z}[\log p_{\theta}(x \mid z)] - D_{KL}(q_{\phi}(z \mid x) \mid\mid p_{\theta}(z)) + D_{KL}(q_{\phi}(z \mid x) \mid\mid p_{\theta}(z \mid x))
-\end{align}\)
-The decoder network gives $p_{\theta}(x \mid z)$. We can compute the estimate of the first term (reconstruction accuracy) through sampling.
+\end{align}\]
+
+<p>The decoder network gives $p_{\theta}(x \mid z)$. We can compute the estimate of the first term (reconstruction accuracy) through sampling.
 The second term (regularization ensuring latent space continuity) is a KL divergence between Gaussians for the encoder and the z prior. This term has a nice closed-form solution.
 We cannot compute the third term, but we know KL divergence is always non-negative.
 We will use the first two terms as a loss function (Evidence Lower Bound, ELBO), which we can take the gradient of and optimize.
@@ -358,6 +375,7 @@ z = \mu + \sigma \odot \epsilon, \quad \epsilon \sim \mathcal{N}(0, I)
 <h2 id="10-generating-new-samples-with-vaes">10. Generating New Samples with VAEs</h2>
 
 <p>After training:</p>
+
 <ol>
   <li>Sample $z \sim \mathcal{N}(0, I)$</li>
   <li>Decode with $x = f_\theta(z)$</li>
@@ -488,13 +506,13 @@ z = \mu + \sigma \odot \epsilon, \quad \epsilon \sim \mathcal{N}(0, I)
 <script>
   (function (i, s, o, g, r, a, m) {
     i["GoogleAnalyticsObject"] = r;
-    (i[r] =
+    ((i[r] =
       i[r] ||
       function () {
         (i[r].q = i[r].q || []).push(arguments);
       }),
-      (i[r].l = 1 * new Date());
-    (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+      (i[r].l = 1 * new Date()));
+    ((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
     a.async = 1;
     a.src = g;
     m.parentNode.insertBefore(a, m);

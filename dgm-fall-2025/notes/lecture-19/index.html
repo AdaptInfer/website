@@ -168,6 +168,7 @@
 
 <p><strong>Problem:</strong> Word order is lost<br />
 Example:</p>
+
 <ul>
   <li>“NOT good”</li>
   <li>“good NOT”<br />
@@ -297,19 +298,49 @@ h_t &amp;= o_t \odot \tanh(c_t)
   <li><strong>Cell state:</strong> preserves long-term gradients</li>
 </ul>
 
-<p>Forget gate controls which information is remembered, and which is forgotten. It can reset the cell state:
-\(f_{t} = \sigma(W_{fx} x^t + W_{fh} h^{t - 1} + b_{f})\)
-The sigmoid activation function has a range of $[0, 1]$. The output from the forget gate $f_{t}$ is later multiplied element-wise with the cell state. If $f_{t}$ is close to 0, it can make the cell state $C$ to “forget” some information.</p>
+<p>Forget gate controls which information is remembered, and which is forgotten. It can reset the cell state:</p>
 
-<p>Input gate adds stuff to the cell state:
-\(i_{t} = \sigma(W_{ix} x^t + W_{ih} h^{t - 1} + b_{i})\)
-Input node
-\(g_{t} =\tanh(W_{gx} x^t + W_{gh} h^{t-1} + b_{g})\)
-is element-wise multiplied with the input gate. The product then later is element-wise added to the cell state $C$.</p>
+\[f_{t} = \sigma(W_{fx} x^t + W_{fh} h^{t - 1} + b_{f})\]
 
-<p>Output gate is used to update the values of hidden units:
-\(o_{t} = \sigma(W_{ox} x^t + W_{oh} h^{t-1} + b_{o}).\)
-The new value for the hidden unit will be the element-wise product between $\tanh(C^t)$ and $o_{t}$.</p>
+<p>The sigmoid activation function has a range of $[0, 1]$. The output from the forget gate $f_{t}$ is later multiplied element-wise with the cell state. If $f_{t}$ is close to 0, it can make the cell state $C$ to “forget” some information.</p>
+
+<p>Input gate adds stuff to the cell state:</p>
+
+\[i_{t} = \sigma(W_{ix} x^t + W_{ih} h^{t - 1} + b_{i})\]
+
+<p>Input node</p>
+
+\[g_{t} =\tanh(W_{gx} x^t + W_{gh} h^{t-1} + b_{g})\]
+
+<p>is element-wise multiplied with the input gate. The product then later is element-wise added to the cell state $C$.</p>
+
+<p>Output gate is used to update the values of hidden units:</p>
+
+\[o_{t} = \sigma(W_{ox} x^t + W_{oh} h^{t-1} + b_{o}).\]
+
+<p>The new value for the hidden unit will be the element-wise product between $\tanh(C^t)$ and $o_{t}$.</p>
+
+<h3 id="why-lstms-help-with-vanishing-gradients">Why LSTMs help with vanishing gradients</h3>
+
+<p>A key reason LSTMs work better than vanilla RNNs is how the <strong>cell state</strong> (c_t) is updated. Recall the cell update:</p>
+
+\[c_t = f_t \odot c_{t-1} + i_t \odot g_t.\]
+
+<p>If we look at the gradient of the loss (L) with respect to an earlier cell state (c_{t-k}), the dominant term is a product of forget gates:</p>
+
+\[\frac{\partial L}{\partial c_{t-k}}
+\approx
+\frac{\partial L}{\partial c_t}
+\prod_{j=t-k+1}^{t} f_j.\]
+
+<ul>
+  <li>When the forget gates (f_j) are close to 1, the product stays close to 1 and gradients can flow back over many time steps.</li>
+  <li>When the model decides some information is no longer needed, it can set (f_j) closer to 0, actively “forgetting” that part of the state.</li>
+</ul>
+
+<p>This is very different from a vanilla RNN, where the hidden state is repeatedly multiplied by a weight matrix and passed through a nonlinearity. In that case, the Jacobian often has eigenvalues much smaller (or larger) than 1, leading to <strong>vanishing</strong> or <strong>exploding</strong> gradients.</p>
+
+<p>The LSTM cell therefore provides an almost <strong>linear highway</strong> for gradients along the (c_t) path, with the gates controlling when to preserve information and when to reset it.</p>
 
 <hr />
 
@@ -405,7 +436,6 @@ The new value for the hidden unit will be the element-wise product between $\tan
     </tr>
   </tbody>
 </table>
-
  </d-article>
 
       <d-appendix>
@@ -496,13 +526,13 @@ The new value for the hidden unit will be the element-wise product between $\tan
 <script>
   (function (i, s, o, g, r, a, m) {
     i["GoogleAnalyticsObject"] = r;
-    (i[r] =
+    ((i[r] =
       i[r] ||
       function () {
         (i[r].q = i[r].q || []).push(arguments);
       }),
-      (i[r].l = 1 * new Date());
-    (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+      (i[r].l = 1 * new Date()));
+    ((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
     a.async = 1;
     a.src = g;
     m.parentNode.insertBefore(a, m);
