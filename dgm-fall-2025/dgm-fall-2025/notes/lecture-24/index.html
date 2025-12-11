@@ -1,0 +1,709 @@
+<!doctype html>
+<html>
+  <head>
+    <head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="content-language" content="en" />
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <title>
+    STAT 453 | Lecture 24
+  </title>
+  <meta name="description" content="STAT 453 - University of Wisconsin-Madison - Fall 2025
+" />
+
+  <link
+    rel="shortcut icon"
+    href="/dgm-fall-2025/assets/img/favicon.ico"
+  />
+
+  <link rel="stylesheet" href="/dgm-fall-2025/assets/css/main.css" />
+  <link
+    rel="canonical"
+    href="/dgm-fall-2025/notes/lecture-24/"
+  />
+
+  
+  <!-- Load Latex JS -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+  
+</head>
+
+    <script src="/dgm-fall-2025/assets/js/distillpub/template.v2.js"></script>
+    <script src="/dgm-fall-2025/assets/js/distillpub/transforms.v2.js"></script>
+  </head>
+
+  <d-front-matter>
+    <script type="text/json">
+      {
+            "title": "Lecture 24",
+            "description": "Prompts and In-Context Learning",
+            "published": "November 26, 2025",
+            "lecturers": [
+              
+              {
+                "lecturer": "Ben Lengerich",
+                "lecturerURL": "https://adaptinfer.org"
+              }
+              
+            ],
+            "authors": [
+              
+              {
+                "author": "Oliver Hannagan",
+                "authorURL": "NA"
+              },
+              
+              {
+                "author": "Mia Pati",
+                "authorURL": "NA"
+              },
+              
+              {
+                "author": "Angelique Carrillo",
+                "authorURL": "NA"
+              }
+              
+            ],
+            "editors": [
+              
+              {
+                "editor": "Yufan Cheng"
+              },
+              
+              {
+                "editor": "Chenyi Tong",
+                "editorURL": "https://oldwizard7.github.io/chenyi.github.io//"
+              }
+              
+            ],
+            "katex": {
+              "delimiters": [
+                {
+                  "left": "$",
+                  "right": "$",
+                  "display": false
+                },
+                {
+                  "left": "$$",
+                  "right": "$$",
+                  "display": true
+                }
+              ]
+            }
+          }
+    </script>
+  </d-front-matter>
+
+  <body>
+    <header class="site-header">
+  <div class="wrapper">
+    <span class="site-title">
+      <a class="page-link" href="https://adaptinfer.org/dgm-fall-2025/"
+        >STAT 453</a
+      >
+    </span>
+
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path
+              fill="#424242"
+              d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
+            />
+            <path
+              fill="#424242"
+              d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
+            />
+            <path
+              fill="#424242"
+              d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
+            />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger">
+        <a class="page-link" href="/dgm-fall-2025/logistics/"
+          >logistics</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/lectures/"
+          >lectures</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/notes/">notes</a>
+        <a class="page-link" href="/dgm-fall-2025/calendar/"
+          >calendar</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/homework/"
+          >homework</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/project/">project</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+      <d-title>
+        <h1>Lecture 24</h1>
+        <p>Prompts and In-Context Learning</p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article> <h2 id="1-prompting-as-the-interface-to-llms">1. Prompting as the Interface to LLMs</h2>
+
+<p>Prompting is the main way we “program” modern large language models (LLMs).<br />
+Instead of changing the model weights, we:</p>
+
+<ul>
+  <li>Fix the model parameters, and</li>
+  <li>Change the <strong>input text</strong> (the prompt) to define the task and desired behavior.</li>
+</ul>
+
+<h3 id="11-what-is-a-prompt">1.1 What is a Prompt?</h3>
+
+<p>A <strong>prompt</strong> is any text we feed into the model before it generates an output.<br />
+It can include:</p>
+
+<ul>
+  <li>Instructions (e.g., <em>“Summarize the following article in one paragraph.”</em>)</li>
+  <li>Examples of the task (e.g., input–output pairs)</li>
+  <li>Constraints on style or format (e.g., <em>“Answer in JSON.”</em>)</li>
+</ul>
+
+<p>The model then continues the text by sampling or choosing the most likely next tokens.</p>
+
+<h3 id="12-prompting-vs-traditional-supervised-learning">1.2 Prompting vs. Traditional Supervised Learning</h3>
+
+<p><strong>Traditional supervised learning</strong>:</p>
+
+<ul>
+  <li>Learns a mapping from input (x) to label (y) via gradient descent.</li>
+  <li>Requires a labeled dataset and task-specific training.</li>
+</ul>
+
+<p><strong>Prompting with a frozen LLM</strong>:</p>
+
+<ul>
+  <li>Keeps the model weights <strong>fixed</strong>.</li>
+  <li>Encodes the task in the <strong>prompt structure</strong>.</li>
+  <li>Uses the model as a general conditional distribution<br />
+[p_\theta(\text{output} \mid \text{prompt}).]</li>
+</ul>
+
+<p>The key idea: a single pre-trained model can perform many different tasks just by changing the prompt.</p>
+
+<hr />
+
+<h2 id="2-zero-shot-and-few-shot-learning">2. Zero-Shot and Few-Shot Learning</h2>
+
+<h3 id="21-zero-shot-learning">2.1 Zero-Shot Learning</h3>
+
+<p><strong>Zero-shot learning</strong>: the model is asked to perform a task <strong>without seeing any examples</strong> of that task in the prompt.</p>
+
+<p>The prompt typically includes:</p>
+
+<ul>
+  <li>A short natural-language description of the task, and</li>
+  <li>The specific instance to solve.</li>
+</ul>
+
+<p>Example (question answering):</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Answer the question using a short phrase.
+
+Question: Where was Tom Brady born?
+Answer:
+</code></pre></div></div>
+
+<p>The model uses its internal knowledge and language understanding to complete the answer, even though we never fine-tuned it specifically for this QA dataset.</p>
+
+<p>A well-known illustration of zero-shot behavior comes from summarization with the prompt “TL;DR:”. Even without any fine-tuning or task-specific examples, GPT-2 can produce a reasonable one-sentence summary simply by appending “TL;DR:” to the end of an article. During pre-training, the model encountered this construction frequently on the web, where “TL;DR:” conventionally introduces a brief summary. As a result, a single well-chosen prompt is enough to activate this implicit knowledge and elicit summary-like behavior in a purely zero-shot setting.</p>
+
+<h3 id="22-few-shot-learning">2.2 Few-Shot Learning</h3>
+
+<p><strong>Few-shot learning</strong>: we prepend a few input–output examples of the task directly into the prompt.</p>
+
+<p>Example (sentiment classification):</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Review: "This movie was amazing!"
+Sentiment: positive
+
+Review: "The plot was boring and predictable."
+Sentiment: negative
+
+Review: "Performances were mixed but I liked the atmosphere."
+Sentiment:
+</code></pre></div></div>
+
+<p>The examples in the prompt implicitly define:</p>
+
+<ul>
+  <li>The task (sentiment analysis),</li>
+  <li>The label space (e.g., positive/negative),</li>
+  <li>The output format.</li>
+</ul>
+
+<p>The model then “continues the pattern” for the new review.</p>
+
+<h3 id="23-prompts-as-task-descriptions">2.3 Prompts as Task Descriptions</h3>
+
+<p>From the model’s perspective, all of these are just token sequences.<br />
+However, the pattern of tokens in the prompt:</p>
+
+<ul>
+  <li>Encodes how to interpret the input, and</li>
+  <li>Suggests how to format the output.</li>
+</ul>
+
+<p>As models scale, they increasingly succeed at zero- and few-shot tasks without any extra training, which is one of the surprising <strong>emergent abilities</strong> of LLMs.</p>
+
+<figure class="figure">
+  <img src="/assets/img/notes/lecture-24/1.png" />
+  <figcaption><strong>Figure 1.</strong> GPT-2 performance on LAMBADA, CBT, and WikiText2 as model size increases (Radford et al., 2019).</figcaption>
+</figure>
+
+<h3 id="24-prompt-design-good-patterns-and-failure-modes">2.4 Prompt design: good patterns and failure modes</h3>
+
+<p>In practice, prompt design matters a lot. Small changes in phrasing can lead to surprisingly large differences in performance.</p>
+
+<p>Some <strong>helpful patterns</strong>:</p>
+
+<ul>
+  <li>
+    <p>Be explicit about the task and output format<br />
+(“Classify the sentiment as <code class="language-plaintext highlighter-rouge">positive</code> or <code class="language-plaintext highlighter-rouge">negative</code>.” rather than “What do you think?”).</p>
+  </li>
+  <li>
+    <p>Provide clear separators between examples<br />
+(e.g., using <code class="language-plaintext highlighter-rouge">Input: ...</code> / <code class="language-plaintext highlighter-rouge">Output: ...</code> or <code class="language-plaintext highlighter-rouge">Q:</code> / <code class="language-plaintext highlighter-rouge">A:</code>).</p>
+  </li>
+  <li>
+    <p>Use consistent labeling and formatting across all examples in a few-shot prompt.</p>
+  </li>
+</ul>
+
+<p>Common <strong>failure modes</strong>:</p>
+
+<ul>
+  <li>
+    <p><strong>Under-specified prompts</strong><br />
+The model guesses the task or label space and may produce inconsistent outputs.</p>
+  </li>
+  <li>
+    <p><strong>Leading or biased phrasing</strong><br />
+Prompts that contain strong opinions (e.g., “Obviously this is bad, right?”) can push the model toward sycophantic or biased responses.</p>
+  </li>
+  <li>
+    <p><strong>Prompt length vs. context budget</strong><br />
+Adding too many examples can exceed the context window or push important information (like the final question) too far from the end of the prompt.</p>
+  </li>
+</ul>
+
+<p>Prompting is therefore both a powerful interface and a source of instability: good prompts can elicit impressive behavior, but brittle prompts can hide the model’s true capabilities or amplify biases.</p>
+
+<hr />
+
+<h2 id="3-in-context-learning-icl">3. In-Context Learning (ICL)</h2>
+
+<h3 id="31-definition">3.1 Definition</h3>
+
+<p><strong>In-context learning</strong> is the phenomenon where a language model appears to “learn” a new mapping from examples provided in the context window, without explicitly updating its parameters.</p>
+
+<p>We show the model a few examples ((x<em>i, y_i)) in the prompt.<br />
+Then we give it a new (x</em>{\text{test}}) and ask it to generate (y_{\text{test}}).</p>
+
+<p>All adaptation happens implicitly through the <strong>forward pass</strong> on the prompt.</p>
+
+<p>This is sometimes described as <em>“learning via inference rather than via gradient updates.”</em></p>
+
+<h3 id="32-example-translation-via-icl">3.2 Example: Translation via ICL</h3>
+
+<p>Translate English to French:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sea otter        =&gt; loutre de mer
+peppermint       =&gt; menthe poivrée
+plush giraffe    =&gt; girafe peluche
+cheese           =&gt;
+</code></pre></div></div>
+
+<p>The model:</p>
+
+<ul>
+  <li>Recognizes the pattern (English phrase, arrow, French phrase).</li>
+  <li>Produces an appropriate French translation for <strong>“cheese”</strong>.</li>
+</ul>
+
+<p>No weights were updated; the examples were only in the prompt.</p>
+
+<h3 id="33-relationship-to-few-shot-learning">3.3 Relationship to Few-Shot Learning</h3>
+
+<p>“Few-shot prompting” and “in-context learning” are closely related:</p>
+
+<ul>
+  <li><strong>Few-shot prompting</strong> = how we construct prompts with examples.</li>
+  <li><strong>In-context learning</strong> = the behavior where the model uses those examples to solve new inputs.</li>
+</ul>
+
+<p>Empirically:</p>
+
+<ul>
+  <li>Performance often improves as we add more relevant in-context examples (up to the context window limit).</li>
+  <li>For many tasks, a large LLM with good few-shot prompts can rival or beat smaller, task-specific fine-tuned models.</li>
+</ul>
+
+<figure class="figure">
+  <img src="/assets/img/notes/lecture-24/2.png" />
+  <figcaption><strong>Figure 2.</strong> Few-shot in-context learning on SuperGLUE: GPT-3 performance as the number of examples in context increases (Brown et al., 2020).</figcaption>
+</figure>
+
+<hr />
+
+<h2 id="4-chain-of-thought-cot-prompting">4. Chain-of-Thought (CoT) Prompting</h2>
+
+<h3 id="41-motivation">4.1 Motivation</h3>
+
+<p>Standard prompts often ask the model to directly output an answer:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Q: 23 − 7 = ?
+A:
+</code></pre></div></div>
+
+<p>This can work, but for more complex reasoning (multi-step arithmetic, logic puzzles, word problems), models may:</p>
+
+<ul>
+  <li>Rely on shallow heuristics.</li>
+  <li>Make mistakes that a detailed derivation would avoid.</li>
+</ul>
+
+<p><strong>Chain-of-thought (CoT) prompting</strong> encourages the model to output the reasoning steps, not just the final answer.</p>
+
+<h3 id="42-example-of-cot">4.2 Example of CoT</h3>
+
+<p>Instead of:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Q: Roger has 5 tennis balls. He buys 2 more cans of tennis balls.
+Each can has 3 tennis balls. How many tennis balls does he now have?
+A:
+</code></pre></div></div>
+
+<p>We prompt the model to reason step-by-step:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Q: Roger has 5 tennis balls. He buys 2 more cans of tennis balls.
+Each can has 3 tennis balls. How many tennis balls does he now have?
+
+A: Let's think step by step.
+Roger has 5 tennis balls.
+He buys 2 cans, each with 3 balls, so that is 2 * 3 = 6 balls.
+In total, he has 5 + 6 = 11 balls.
+The answer is 11.
+</code></pre></div></div>
+
+<p>When given more problems with this style of answer, the model tends to:</p>
+
+<ul>
+  <li>Generate intermediate reasoning steps.</li>
+  <li>Reach correct final answers more often.</li>
+</ul>
+
+<h3 id="43-why-cot-helps">4.3 Why CoT Helps</h3>
+
+<p>Chain-of-thought prompting:</p>
+
+<ul>
+  <li>Encourages the model to expand the computation into multiple steps.</li>
+  <li>Reduces the chance that it jumps to a wrong shortcut.</li>
+  <li>Makes the model’s reasoning inspectable to the user (you can check intermediate steps).</li>
+</ul>
+
+<p>However:</p>
+
+<ul>
+  <li>CoT may also increase verbosity.</li>
+  <li>Correct-looking reasoning can still be wrong or “hallucinated,” so it must be interpreted carefully.</li>
+</ul>
+
+<hr />
+
+<h2 id="5-reasoning-models">5. Reasoning Models</h2>
+
+<p>The lecture also touches on <strong>reasoning models</strong>, which are architectures and training methods explicitly designed to improve reasoning ability.</p>
+
+<h3 id="51-limitations-of-vanilla-llms">5.1 Limitations of Vanilla LLMs</h3>
+
+<p>Base LLMs:</p>
+
+<ul>
+  <li>Are trained with a simple next-token prediction objective.</li>
+  <li>Have no explicit semantics, task goals, or reward signal.</li>
+</ul>
+
+<p>They can still show surprising reasoning behaviors, but:</p>
+
+<ul>
+  <li>They may be brittle.</li>
+  <li>They can hallucinate plausible-but-wrong chains of thought.</li>
+</ul>
+
+<p>This motivates specialized designs for <strong>structured reasoning</strong>.</p>
+
+<h3 id="52-ideas-behind-reasoning-models">5.2 Ideas Behind Reasoning Models</h3>
+
+<p>Reasoning models often introduce one or more of:</p>
+
+<ul>
+  <li>
+    <p><strong>Decomposition</strong><br />
+Breaking a complex problem into smaller steps or subproblems<br />
+(e.g., “tree of thoughts”, multi-step planning).</p>
+  </li>
+  <li>
+    <p><strong>Tool use</strong><br />
+Allowing the model to call external tools (calculators, search engines, code execution) during reasoning.</p>
+  </li>
+  <li>
+    <p><strong>Verification</strong><br />
+Checking intermediate steps or final answers using verifiable signals<br />
+(tests, constraints, or external systems).</p>
+  </li>
+  <li>
+    <p><strong>Deliberate thinking time</strong><br />
+Allocating more computation to “harder” questions<br />
+(e.g., sampling multiple reasoning paths, then choosing the best).</p>
+  </li>
+</ul>
+
+<p>The general theme: augment LLMs so that reasoning paths become more reliable, interpretable, and verifiable compared to naive next-token prediction.</p>
+
+<figure class="figure">
+  <img src="/assets/img/notes/lecture-24/3.png" />
+  <figcaption><strong>Figure 3.</strong> Illustration of an explicit reasoning language model (RLM) with separate components for data, models, and operators.</figcaption>
+</figure>
+
+<hr />
+
+<h2 id="6-soft-prompting">6. Soft Prompting</h2>
+
+<h3 id="61-from-hard-prompts-to-soft-prompts">6.1 From Hard Prompts to Soft Prompts</h3>
+
+<p>So far, we considered <strong>hard prompts</strong>:</p>
+
+<ul>
+  <li>Human-written text in natural language.</li>
+  <li>Interpretable, but sometimes brittle or suboptimal.</li>
+</ul>
+
+<p><strong>Soft prompting</strong> replaces or augments these with <strong>learned prompt vectors</strong>:</p>
+
+<ul>
+  <li>Instead of writing a textual prefix like <em>“You are a helpful assistant.”</em>, we insert a sequence of trainable embedding vectors before the input tokens.</li>
+  <li>These vectors are optimized via gradient descent on a downstream task, while keeping the main model parameters frozen.</li>
+</ul>
+
+<h3 id="62-how-soft-prompting-works-high-level">6.2 How Soft Prompting Works (High Level)</h3>
+
+<p>Conceptually:</p>
+
+<ol>
+  <li>Take the pre-trained model and freeze its weights.</li>
+  <li>Introduce a new set of parameters: a sequence of (k) prompt embeddings<br />
+({p_1, \dots, p_k}).</li>
+  <li>For each training example, feed the model the concatenation:<br />
+([p_1, \dots, p_k, x_1, x_2, \dots, x_T])<br />
+where (x_i) are the embeddings of the input tokens.</li>
+  <li>Train <strong>only</strong> the prompt embeddings to minimize a task loss<br />
+(e.g., classification or generation objective).</li>
+</ol>
+
+<p>Result:</p>
+
+<ul>
+  <li>The learned prompt acts like a continuous control knob that steers the model’s behavior for that task.</li>
+  <li>We get a small, task-specific parameter set (the prompt) instead of full fine-tuning.</li>
+</ul>
+
+<h3 id="63-benefits-of-soft-prompting">6.3 Benefits of Soft Prompting</h3>
+
+<p>Soft prompting is an example of <strong>parameter-efficient adaptation</strong>:</p>
+
+<ul>
+  <li>
+    <p><strong>Storage-efficient</strong>:<br />
+We can keep one base model plus many small soft prompts for different tasks or users.</p>
+  </li>
+  <li>
+    <p><strong>Computation-efficient</strong>:<br />
+Training is lighter since we only update a small number of parameters.</p>
+  </li>
+  <li>
+    <p><strong>Modular</strong>:<br />
+Task behavior is encapsulated in the prompt; swapping prompts can quickly change model behavior.</p>
+  </li>
+</ul>
+
+<p>Trade-offs:</p>
+
+<ul>
+  <li>Soft prompts are not human-readable (they are dense vectors).</li>
+  <li>They rely on a strong pre-trained backbone; if the base model lacks relevant knowledge, soft prompting alone may not be enough.</li>
+</ul>
+
+<figure class="figure">
+  <img src="/assets/img/notes/lecture-24/4.png" />
+  <figcaption><strong>Figure 4.</strong> Soft prompting: learned prompt embeddings prepended as virtual tokens and optimized while keeping the decoder-only Transformer frozen.</figcaption>
+</figure>
+
+<hr />
+
+<h2 id="7-key-takeaways">7. Key Takeaways</h2>
+
+<ul>
+  <li><strong>Prompting</strong> is the main interface to modern LLMs: we steer behavior by crafting inputs rather than changing weights.</li>
+  <li><strong>Zero-shot and few-shot learning</strong> show that large models can adapt to new tasks from instructions and a handful of examples.</li>
+  <li><strong>In-context learning</strong> lets models “learn” a task inside the context window, using examples as implicit training data.</li>
+  <li><strong>Chain-of-thought prompting</strong> can significantly improve performance on complex reasoning tasks by encouraging the model to show its work.</li>
+  <li><strong>Reasoning models</strong> and related methods seek to formalize and enhance the reasoning abilities of LLMs through decomposition, tool use, and verification.</li>
+  <li><strong>Soft prompting</strong> provides a parameter-efficient way to specialize a frozen LLM using learned prompt embeddings, enabling flexible adaptation and personalization without full fine-tuning.</li>
+</ul>
+
+<hr />
+
+<h2 id="reading-li--liang-2021-prefix-tuning-optimizing-continuous-prompts-for-generation">Reading: Li &amp; Liang (2021), “Prefix-Tuning: Optimizing Continuous Prompts for Generation”</h2>
+
+<ul>
+  <li>
+    <p><strong>Prefix-tuning as continuous prompts:</strong> Instead of learning all model weights, the paper learns a short <em>continuous prefix</em> of activations that every token can attend to, acting like “virtual tokens” at every layer of the Transformer while the base LM stays frozen. This is more expressive than just learning text prompts.</p>
+  </li>
+  <li>
+    <p><strong>Parameter-efficiency vs fine-tuning/adapters:</strong> On table-to-text generation and summarization, prefix-tuning matches or nearly matches full fine-tuning while only training about <strong>0.1–2%</strong> as many parameters, and is more parameter-efficient than adapter-tuning (which usually adds ~2–4%).</p>
+  </li>
+  <li>
+    <p><strong>Low-data and extrapolation benefits:</strong> In very small-data regimes and when evaluating on <strong>unseen topics/domains</strong> (e.g., unseen WebNLG categories or news-to-sports summarization), prefix-tuning often <em>outperforms</em> full fine-tuning, suggesting that freezing the base LM can actually help generalization.</p>
+  </li>
+  <li>
+    <p><strong>Design choices for continuous prompts:</strong> The paper empirically studies several design choices: optimal prefix length (too long overfits), why tuning <em>all layers</em> of the prefix beats tuning only the embedding layer (closer to discrete prompt tuning), and how initializing prefixes with activations of real words like “summarize” or “table-to-text” works better than random initialization.</p>
+  </li>
+  <li>
+    <p><strong>Personalization &amp; multi-user setting:</strong> Because you only store small prefixes, the authors highlight prefix-tuning as attractive for <strong>per-user personalization</strong> and for batching many users’ requests with different prefixes on a single shared LM without cross-contaminating data.</p>
+  </li>
+</ul>
+ </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+    </div>
+
+    <footer class="site-footer">
+  <div class="wrapper">
+    <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Ben Lengerich</li><li>
+            <a class="u-email" href="mailto:TBD@wisc.edu"
+              >TBD@wisc.edu</a
+            >
+          </li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li>
+    <a
+      href="https://github.com/AdaptInfer"
+      target="_blank"
+      ><i class="fab fa-github"></i>
+      <span class="username">AdaptInfer</span></a
+    >
+  </li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>
+          &copy; Copyright 2025 University of Wisconsin.
+          <br />
+          
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  </body>
+
+  <d-bibliography
+    src="/dgm-fall-2025/assets/bibliography/2025-11-26-lecture-24.bib"
+  >
+  </d-bibliography>
+
+  <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/dgm-fall-2025/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link
+  rel="stylesheet"
+  href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css"
+/>
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+<script src="/dgm-fall-2025/assets/js/katex.js"></script>
+ 
+<!-- Load Anchor JS -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+<script>
+  anchors.options.visible = "hover";
+  anchors.add("article h2, article h3, article h4, article h5, article h6");
+</script>
+ 
+<!-- Adjust LaTeX JS -->
+<script src="/dgm-fall-2025/assets/js/latex.js"></script>
+
+
+<!-- Include custom icon fonts -->
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2025/assets/css/fontawesome-all.min.css"
+/>
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2025/assets/css/academicons.min.css"
+/>
+
+<!-- Google Analytics -->
+<script>
+  (function (i, s, o, g, r, a, m) {
+    i["GoogleAnalyticsObject"] = r;
+    ((i[r] =
+      i[r] ||
+      function () {
+        (i[r].q = i[r].q || []).push(arguments);
+      }),
+      (i[r].l = 1 * new Date()));
+    ((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
+    a.async = 1;
+    a.src = g;
+    m.parentNode.insertBefore(a, m);
+  })(
+    window,
+    document,
+    "script",
+    "//www.google-analytics.com/analytics.js",
+    "ga",
+  );
+
+  ga("create", "", "auto");
+  ga("send", "pageview");
+</script>
+
+</html>

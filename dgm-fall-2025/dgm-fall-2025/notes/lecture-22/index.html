@@ -73,6 +73,10 @@
               
               {
                 "editor": "Yufan Cheng"
+              },
+              
+              {
+                "editor": "Sijia Wu"
               }
               
             ],
@@ -156,6 +160,7 @@
       <d-article> <h2 id="11-unsupervised-training-of-llms-overview">1.1 Unsupervised Training of LLMs (Overview)</h2>
 
 <h3 id="goal">Goal</h3>
+
 <p>Train large language models (LLMs) using maximum likelihood estimation (MLE) on raw text—no labels, no supervision, no explicit objectives beyond predicting the next token.</p>
 
 <h3 id="context-from-gpt-1--gpt-4">Context (From GPT-1 → GPT-4)</h3>
@@ -202,6 +207,7 @@ Training now also includes reinforcement learning for alignment after pretrainin
 </blockquote>
 
 <p>For example, to predict the word “is” in “The capital of France ___ Paris.”, the model must:</p>
+
 <ul>
   <li><strong>Resolve subject-verb agreement</strong> (singular subject requires singular verb)</li>
   <li><strong>Recognize a factual structure</strong> (this is a statement about geography)</li>
@@ -274,7 +280,7 @@ Training now also includes reinforcement learning for alignment after pretrainin
 
 <ol>
   <li><strong>In-Context Learning</strong> : Model learns to perform tasks from examples provided in the prompt.</li>
-  <li><strong>Chain-of-Thought Reasoning</strong> :  Model generates intermediate reasoning steps.</li>
+  <li><strong>Chain-of-Thought Reasoning</strong> : Model generates intermediate reasoning steps.</li>
   <li><strong>Factual structure understanding</strong>: To fill in “The capital of France ___ Paris”, model must:
     <ul>
       <li>Track subject-verb agreement;</li>
@@ -299,14 +305,35 @@ Training now also includes reinforcement learning for alignment after pretrainin
 
 <p>At trillion-token scale, filtering toxic, low-quality, or duplicated text becomes extremely difficult.</p>
 
+<p>Filtering stages (example from RefinedWeb):</p>
+
+<ul>
+  <li>URL filtering</li>
+  <li>Text extraction</li>
+  <li>Language identification</li>
+  <li>Repetition removal</li>
+  <li>Document-wise filtering</li>
+  <li>Line-wise corrections</li>
+  <li>Fuzzy deduplication</li>
+  <li>Exact deduplication</li>
+</ul>
+
 <h4 id="parallel-training">Parallel Training</h4>
 
 <p>Training trillion-parameter models requires:</p>
+
 <ul>
   <li>Expert parallelism</li>
   <li>Distributed optimization</li>
   <li>Fault tolerance</li>
   <li>Training pipelines like DeepSpeed / Megatron</li>
+</ul>
+
+<h5 id="types-of-parallel-training">Types of Parallel Training</h5>
+
+<ul>
+  <li><strong>Data Parallel:</strong> replicate parameters across ranks and average gradients before update.</li>
+  <li><strong>Distributed Data Parallel:</strong> gradients are all-reduced across workers; synchronized updates across ranks.</li>
 </ul>
 
 <h4 id="llm360-initiative">LLM360 Initiative</h4>
@@ -381,6 +408,7 @@ H_t
 </ul>
 
 <p>A key design question:</p>
+
 <blockquote>
   <p><em>Do we want the model to be low-entropy or high-entropy in its predictions?</em></p>
 </blockquote>
@@ -505,6 +533,7 @@ low-entropy next-token predictor, but better aligned with human-desired
 behavior.</p>
 
 <h2 id="references">References</h2>
+
 <ul>
   <li><strong>Radford et al. (2018)</strong> — <em>Improving Language Understanding by Generative Pre-Training</em> (GPT-1)</li>
   <li><strong>Brants et al. (2007)</strong> — <em>Large Language Models in Machine Translation</em></li>
@@ -519,7 +548,6 @@ behavior.</p>
 <footer>
 <p>© 2025 University of Wisconsin — STAT 453 Lecture Notes</p>
 </footer>
-
  </d-article>
 
       <d-appendix>
@@ -610,13 +638,13 @@ behavior.</p>
 <script>
   (function (i, s, o, g, r, a, m) {
     i["GoogleAnalyticsObject"] = r;
-    (i[r] =
+    ((i[r] =
       i[r] ||
       function () {
         (i[r].q = i[r].q || []).push(arguments);
       }),
-      (i[r].l = 1 * new Date());
-    (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+      (i[r].l = 1 * new Date()));
+    ((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
     a.async = 1;
     a.src = g;
     m.parentNode.insertBefore(a, m);

@@ -69,6 +69,10 @@
               
               {
                 "editor": "Jeff Zhang"
+              },
+              
+              {
+                "editor": "Bishop Devkota"
               }
               
             ],
@@ -150,6 +154,7 @@
       <d-byline></d-byline>
 
       <d-article> <h2 id="todays-topics">Today’s Topics:</h2>
+
 <ul>
   <li><a href="#1-generative-models">1. Generative Models</a></li>
   <li><a href="#2-generative-and-discriminative-models">2. Generative and Discriminative Models</a></li>
@@ -167,6 +172,7 @@
 <h3 id="deep-generative-models-dgm">Deep Generative Models (DGM)</h3>
 
 <p><strong>Key Characteristics</strong></p>
+
 <ul>
   <li>Previoulsy, we learned about discriminative model that can classify images (e.g., CNN).</li>
   <li>Now, we will learn generative models that not only classify images, but they can also generate them on their own - such as ChatGPT, Gemini or DeepSeek.</li>
@@ -184,7 +190,9 @@
 <h2 id="2-generative-and-discriminative-models">2. Generative and Discriminative Models</h2>
 
 <h3 id="more-detail-about-difference-between-two-models">More detail about difference between two Models</h3>
+
 <p><strong>1. Generative Models</strong></p>
+
 <ul>
   <li>Models focus on learning the underlying distribution of the data</li>
   <li>aim to understand how the data is generated, so allows them to create new data</li>
@@ -192,6 +200,7 @@
 </ul>
 
 <p><strong>2. Descriminative Models</strong></p>
+
 <ul>
   <li>Models focus on modeling and decision boundary between classes</li>
   <li>learn conditional distribution $P(Y \mid X)$ which represents the probability of a class label given the input features</li>
@@ -206,9 +215,18 @@
 <p><br /></p>
 
 <hr />
-<p><strong>3. Two paths to P(Y|X)</strong></p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>**3. Two paths to P(Y</td>
+      <td>X)**</td>
+    </tr>
+  </tbody>
+</table>
 
 <p><strong>Descriminative Models</strong></p>
+
 <ul>
   <li>Direct path</li>
   <li>When you observe X, Y then you directly learn $P(Y \mid X)$ which is the boundary between classes</li>
@@ -217,6 +235,7 @@
 </ul>
 
 <p><strong>Generative Models</strong></p>
+
 <ul>
   <li>Observe (X, Y)</li>
   <li>you first learn:
@@ -248,7 +267,9 @@
 <hr />
 
 <h2 id="3-example-discriminative-modellogistic-regression">3. Example Discriminative Model:Logistic Regression</h2>
+
 <p><strong>Core Characteristic of Discriminative Model:</strong> Parameterization</p>
+
 <ul>
   <li>Parameterization in Logistic Regression
     <ul>
@@ -257,27 +278,29 @@
       <li>“Why do we choose this form of parameterization?”</li>
       <li>Because in logistic regression, we <strong>assume the log-odds of the probability is a linear function of the input</strong></li>
     </ul>
-  </li>
-</ul>
-<figure>
+    <figure>
   <img src="/dgm-fall-2025/assets/img/notes/lecture-15/figure5.png" width="550" />
 </figure>
-<ul>
-  <li>In logistic regression the log odds is a linear combination of the features X</li>
-  <li>Estimate $\hat{\theta}$ form observation:</li>
-</ul>
-<figure>
+    <ul>
+      <li>In logistic regression the log odds is a linear combination of the features X</li>
+      <li>Estimate $\hat{\theta}$ form observation:</li>
+    </ul>
+    <figure>
   <img src="/dgm-fall-2025/assets/img/notes/lecture-15/figure4.png" width="550" />
 </figure>
+  </li>
+</ul>
 
 <p><br /></p>
 
 <hr />
 
 <h2 id="4-example-generative-model-naive-bayes">4. Example Generative Model: Naive Bayes</h2>
+
 <p><strong>Core Characteristic of Generative Model:</strong></p>
 
 <p>We observe X and Y. Then we learn $P(X \mid Y) and P(Y)$ and we use it to derive $P(Y \mid X) = \frac{P(X \mid Y) P(Y)}{P(X)}$, where $P(Y = 1) = \frac{number \hspace{1em} of \hspace{1em} samples \hspace{1em} with \hspace{1em} Y = K}{Total \hspace{1em} samples}$</p>
+
 <ul>
   <li>Parameterize
     <ul>
@@ -286,7 +309,7 @@
     </ul>
   </li>
   <li>Estimate
- <!-- - $\hat{\mu} , \hat{\sigma} = argmax_{\mu , \sigma} P(X \mid Y)$ -->
+<!-- - $\hat{\mu} , \hat{\sigma} = argmax_{\mu , \sigma} P(X \mid Y)$ -->
     <ul>
       <li>$\hat{\mu}, \hat{\sigma} = \arg\max_{\mu, \sigma} P(X \mid Y)$</li>
     </ul>
@@ -300,7 +323,7 @@
 
 <h2 id="map--regularization-note">MAP / Regularization Note:</h2>
 
-<p>Logistic regression: 
+<p>Logistic regression:
 We change our $\hat{\theta}$ estimates from observations by:</p>
 
 <figure>
@@ -319,10 +342,13 @@ We change our $\hat{\theta}$ estimates from observations by:</p>
 $\widehat{\theta_{disc}} = argmax_{\theta} P(Y \mid X; \theta) = argmax_{\theta} \frac{P(X \mid Y ; \theta) P(Y; \theta)}{P(X; \theta)}$</li>
   <li>
     <p>Generative models optimize the joint likelihood:
-<!--$\hat{\theta_{disc}} = argmax_{\theta} P(X, Y; \theta) = argmax_{\theta} P(X \mid Y ; \theta) P(Y; \theta)$-->
-$\widehat{\theta_{disc}} = argmax_{\theta} P(X, Y; \theta) = argmax_{\theta} P(X \mid Y ; \theta) P(Y; \theta)$</p>
+<!--$\hat{\theta_{disc}} = argmax_{\theta} P(X, Y; \theta) = argmax_{\theta} P(X \mid Y ; \theta) P(Y; \theta)$--></p>
 
-    <p>This means they are exactly the same optimization when $P(X; \theta)$ is invariant to $\theta$</p>
+    <p>$\widehat{\theta_{disc}} = argmax_{\theta} P(X, Y; \theta) = argmax_{\theta} P(X \mid Y ; \theta) P(Y; \theta)$</p>
+
+    <p>-This means they are exactly the same optimization when $P(X; \theta)$ is invariant to $\theta$</p>
+
+    <p>-If the margian distribution $P(X)$ depends on $\theta$, then discriminative and generative learning optimize different objectives and do not coincide.</p>
   </li>
 </ul>
 
@@ -333,7 +359,9 @@ $\widehat{\theta_{disc}} = argmax_{\theta} P(X, Y; \theta) = argmax_{\theta} P(X
 <h2 id="6-logistic-regression-vs-naive-bayes">6. Logistic Regression vs Naive Bayes</h2>
 
 <!--### Logistic Regression**-->
+
 <h3 id="logistic-regression">Logistic Regression</h3>
+
 <ul>
   <li><strong>Type</strong> : Discriminative</li>
   <li>It directly models the decision boundary: $P(Y \mid X; \theta)$</li>
@@ -352,6 +380,7 @@ $\widehat{\theta_{lr}} = \arg\max_{\theta} \sum_i \left[Y_i \log \sigma(\theta^{
     <ul>
       <li><strong>Lower asymptotic error</strong> : As the sample size approaches infinity, the learned boundary becomes optimal and the error rate decreases.</li>
       <li><strong>Slower convergence</strong> : Requires more data to achieve stable performance because it learns only from discriminative information.</li>
+      <li><strong>Reason</strong>: Logistic regression learns a more flexible decision boundary with more effective parameters, so it needs more data to estimate them reliably.</li>
     </ul>
   </li>
 </ul>
@@ -361,6 +390,7 @@ $\widehat{\theta_{lr}} = \arg\max_{\theta} \sum_i \left[Y_i \log \sigma(\theta^{
 <hr />
 
 <h3 id="naive-bayes">Naive Bayes</h3>
+
 <ul>
   <li><strong>Type</strong> : Generative
     <ul>
@@ -384,9 +414,10 @@ $\widehat{\theta_{lr}} = \arg\max_{\theta} \sum_i \left[Y_i \log \sigma(\theta^{
 <hr />
 
 <h3 id="discriminative-vs-generative-a-proposition">Discriminative vs Generative: A proposition</h3>
+
 <ul>
   <li><strong>“While discriminative learning has lower asymptotic error, a generative classifier may also approach its (higher) asymptotic error much faster.”</strong></li>
-  <li>This statement compares the <strong>learning efficiency</strong> and <strong>error behavior</strong> of  <strong>discriminative</strong> vs <strong>generative</strong> models</li>
+  <li>This statement compares the <strong>learning efficiency</strong> and <strong>error behavior</strong> of <strong>discriminative</strong> vs <strong>generative</strong> models</li>
   <li>Underlying Assumption :
     <ul>
       <li><strong>Generative models</strong> of the form $P(X, Y; \theta)$ make <strong>more simplifying assumptions</strong> than <strong>discriminative models</strong> of the form $P(Y \mid X; \theta)$</li>
@@ -401,6 +432,7 @@ $\widehat{\theta_{lr}} = \arg\max_{\theta} \sum_i \left[Y_i \log \sigma(\theta^{
 <hr />
 
 <h2 id="7-modern-deep-generative-models-dgms">7. Modern Deep Generative Models (DGMs)</h2>
+
 <ul>
   <li>Goal : To design <strong>generative models</strong> of the form $P(X, Y; \theta)$ that can model complex data distributions <strong>without making overly strong simplifying assumptions</strong>.</li>
   <li>Key Idea : Hidden Structure ( z ): Deep generative models introduce a <strong>latent (hidden) variable ( z )</strong> that captures the underlying structure of high-dimensional observations ( x )
@@ -408,30 +440,11 @@ $\widehat{\theta_{lr}} = \arg\max_{\theta} \sum_i \left[Y_i \log \sigma(\theta^{
       <li>( z ) explains or encodes meaningful patterns in the data</li>
       <li>( x ) is generated from ( z ) through a probabilistic process, e.g. $P_{\theta} (x \mid z)$</li>
       <li>But we <strong>never directly observe</strong> the latent variable (z )</li>
-      <li>Because of this, <strong>two key computations become difficult</strong>:
-        <ul>
-          <li>
-            <ol>
-              <li><strong>Marginal likelihood</strong> : $p_\theta(x) = \int p_\theta(x, z)\,dz$
-We must integrate over all possible latent variables ( z ), which is intractable in high-dimensional space</li>
-            </ol>
-          </li>
-          <li>
-            <ol>
-              <li><strong>Posterior inference</strong> : $p_\theta(z \mid x) \propto p_\theta(x \mid z)\,p(z)$. The posterior distribution of ( z ) given ( x ) is typically complex and cannot be computed analytically.</li>
-            </ol>
-          </li>
-          <li>
-            <ol>
-              <li>Each type of <strong>Deep Generative Model (DGM)</strong> makes a <strong>tradeoff</strong> between: <strong>Expressiveness</strong> (how flexible the model is) and <strong>Computational tractability</strong> (how easy it is to compute or train)</li>
-            </ol>
-          </li>
-        </ul>
-      </li>
+      <li>Because of this, <strong>two key computations become difficult</strong>: - 1. <strong>Marginal likelihood</strong> : $p_\theta(x) = \int p_\theta(x, z)\,dz$
+We must integrate over all possible latent variables ( z ), which is intractable in high-dimensional space - 2. <strong>Posterior inference</strong> : $p_\theta(z \mid x) \propto p_\theta(x \mid z)\,p(z)$. The posterior distribution of ( z ) given ( x ) is typically complex and cannot be computed analytically. - 3. Each type of <strong>Deep Generative Model (DGM)</strong> makes a <strong>tradeoff</strong> between: <strong>Expressiveness</strong> (how flexible the model is) and <strong>Computational tractability</strong> (how easy it is to compute or train)</li>
     </ul>
   </li>
 </ul>
-
  </d-article>
 
       <d-appendix>
@@ -522,13 +535,13 @@ We must integrate over all possible latent variables ( z ), which is intractable
 <script>
   (function (i, s, o, g, r, a, m) {
     i["GoogleAnalyticsObject"] = r;
-    (i[r] =
+    ((i[r] =
       i[r] ||
       function () {
         (i[r].q = i[r].q || []).push(arguments);
       }),
-      (i[r].l = 1 * new Date());
-    (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+      (i[r].l = 1 * new Date()));
+    ((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
     a.async = 1;
     a.src = g;
     m.parentNode.insertBefore(a, m);

@@ -1,0 +1,500 @@
+<!doctype html>
+<html>
+  <head>
+    <head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="content-language" content="en" />
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <title>
+    STAT 453 | Lecture 25
+  </title>
+  <meta name="description" content="STAT 453 - University of Wisconsin-Madison - Fall 2025
+" />
+
+  <link
+    rel="shortcut icon"
+    href="/dgm-fall-2025/assets/img/favicon.ico"
+  />
+
+  <link rel="stylesheet" href="/dgm-fall-2025/assets/css/main.css" />
+  <link
+    rel="canonical"
+    href="/dgm-fall-2025/notes/lecture-25/"
+  />
+
+  
+  <!-- Load Latex JS -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+  
+</head>
+
+    <script src="/dgm-fall-2025/assets/js/distillpub/template.v2.js"></script>
+    <script src="/dgm-fall-2025/assets/js/distillpub/transforms.v2.js"></script>
+  </head>
+
+  <d-front-matter>
+    <script type="text/json">
+      {
+            "title": "Lecture 25",
+            "description": "Alignment, explainability, and open directions in LLM research",
+            "published": "December 8, 2025",
+            "lecturers": [
+              
+              {
+                "lecturer": "Ben Lengerich",
+                "lecturerURL": "https://adaptinfer.org"
+              }
+              
+            ],
+            "authors": [
+              
+              {
+                "author": "Reid Chen",
+                "authorURL": "https://www.deepneural.network"
+              },
+              
+              {
+                "author": "Joel Sawatzky"
+              },
+              
+              {
+                "author": "Shrivats Sriram"
+              },
+              
+              {
+                "author": "Evanie Li"
+              }
+              
+            ],
+            "editors": [
+              
+              {
+                "editor": "Zefan Cai"
+              },
+              
+              {
+                "editor": "Wenjie Hu"
+              },
+              
+              {
+                "editor": "Yufan Cheng"
+              }
+              
+            ],
+            "katex": {
+              "delimiters": [
+                {
+                  "left": "$",
+                  "right": "$",
+                  "display": false
+                },
+                {
+                  "left": "$$",
+                  "right": "$$",
+                  "display": true
+                }
+              ]
+            }
+          }
+    </script>
+  </d-front-matter>
+
+  <body>
+    <header class="site-header">
+  <div class="wrapper">
+    <span class="site-title">
+      <a class="page-link" href="https://adaptinfer.org/dgm-fall-2025/"
+        >STAT 453</a
+      >
+    </span>
+
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path
+              fill="#424242"
+              d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
+            />
+            <path
+              fill="#424242"
+              d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
+            />
+            <path
+              fill="#424242"
+              d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
+            />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger">
+        <a class="page-link" href="/dgm-fall-2025/logistics/"
+          >logistics</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/lectures/"
+          >lectures</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/notes/">notes</a>
+        <a class="page-link" href="/dgm-fall-2025/calendar/"
+          >calendar</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/homework/"
+          >homework</a
+        >
+        <a class="page-link" href="/dgm-fall-2025/project/">project</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+      <d-title>
+        <h1>Lecture 25</h1>
+        <p>Alignment, explainability, and open directions in LLM research</p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article> <h2 id="phases-of-model-training">Phases of Model Training</h2>
+
+<ul>
+  <li><strong>Pre-training</strong>: The model is first trained unsupervised on massive datasets to learn general patterns (e.g., “train on everything available”).</li>
+  <li><strong>Fine-tuning</strong>: The model is then refined for specific goals using supervised learning, reinforcement learning, or instruction-following tasks.</li>
+  <li><strong>In-context learning</strong>: During usage, prompts and examples in the input guide the model to produce outputs adapted to user intent.</li>
+</ul>
+
+<h2 id="why-explainability-matters">Why Explainability Matters</h2>
+
+<ul>
+  <li>Models trained on large data are rarely naturally interpretable to humans.</li>
+  <li>Making models understandable is crucial for safety, trust, debugging, and meeting regulatory or ethical standards.</li>
+</ul>
+
+<h2 id="fairness--sensitive-features">Fairness &amp; Sensitive Features</h2>
+
+<ul>
+  <li>Merely dropping sensitive features like race from data does <strong>not</strong> eliminate their influence—biases can be encoded via correlated variables.</li>
+  <li>Preferred approaches:
+    <ul>
+      <li>Train with sensitive features, then “remove” their effects post-hoc.</li>
+      <li>Use loss functions that explicitly encourage invariance to sensitive features (e.g., penalizing models if predictions vary by race).</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="key-example">Key Example:</h3>
+
+<ul>
+  <li>If a healthcare model is trained after removing race, it may still encode race via other variables (like ZIP code, income), hiding bias rather than eliminating it.</li>
+</ul>
+
+<h2 id="interpretability-approaches">Interpretability Approaches</h2>
+
+<h3 id="1-post-hoc-explanations">1. Post-hoc Explanations</h3>
+
+<ul>
+  <li><strong>LIME</strong> (Locally Interpretable Model-agnostic Explanations): Approximates model behavior with simpler models locally. The optimization objective is:</li>
+</ul>
+
+\[\xi(x) = \arg\min_{g \in G} \mathcal{L}(f, g, \pi_x) + \Omega(g)\]
+
+<p>where $f$ is the original model, $g$ is an interpretable local model, $\pi_x$ is a proximity weight function around sample $x$, and $\Omega(g)$ is a complexity penalty.</p>
+
+<ul>
+  <li><strong>SHAP</strong> (SHapley Additive exPlanations): Uses Shapley values from cooperative game theory to assign contribution scores to features. The Shapley value for feature $i$ is:</li>
+</ul>
+
+\[\phi_i = \sum_{S \subseteq N \setminus \{i\}} \frac{|S|!(|N|-|S|-1)!}{|N|!} [f(S \cup \{i\}) - f(S)]\]
+
+<ul>
+  <li><strong>Integrated Gradients</strong>: An axiomatic attribution method for neural networks. For input $x$ and baseline $x’$:</li>
+</ul>
+
+\[IG_i(x) = (x_i - x'_i) \times \int_{\alpha=0}^{1} \frac{\partial F(x' + \alpha(x - x'))}{\partial x_i} d\alpha\]
+
+<ul>
+  <li>These methods help interpret what influenced a specific prediction, but may not capture global model logic.</li>
+</ul>
+
+<h3 id="2-transparency-by-design">2. Transparency by Design</h3>
+
+<ul>
+  <li>Use inherently interpretable models:
+    <ul>
+      <li><strong>Additive Models / Generalized Additive Models (GAMs)</strong>: Model output is a sum of simple functions of each feature. Easy to visualize and analyze each feature’s impact.</li>
+      <li><strong>Monotonic Nets</strong>: Guarantee certain variables affect predictions only in one direction.</li>
+    </ul>
+  </li>
+  <li>Pros: Clear, component-wise logic.</li>
+  <li>Cons: May underperform compared to black-box models on complex tasks.</li>
+</ul>
+
+<h3 id="3-mechanistic-interpretability">3. Mechanistic Interpretability</h3>
+
+<ul>
+  <li>Analyze what neural network units/layers are “doing” internally (e.g., finding circuits, probing activations).</li>
+  <li>Allows understanding high-level model “motifs.”</li>
+  <li>Still an active research area with many challenges.</li>
+</ul>
+
+<h4 id="caveats">Caveats</h4>
+
+<ul>
+  <li>All interpretability methods make simplifying assumptions; adversarial examples can break explanations.</li>
+  <li>The complexity of modern models means explanations are always partial or approximate.</li>
+</ul>
+
+<h3 id="summary-interpretability-methods-comparison">Summary: Interpretability Methods Comparison</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Method</th>
+      <th>Type</th>
+      <th>Scope</th>
+      <th>Pros</th>
+      <th>Cons</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>LIME</td>
+      <td>Post-hoc</td>
+      <td>Local</td>
+      <td>Model-agnostic, intuitive</td>
+      <td>Instability, sampling dependent</td>
+    </tr>
+    <tr>
+      <td>SHAP</td>
+      <td>Post-hoc</td>
+      <td>Local/Global</td>
+      <td>Theoretically grounded, consistent</td>
+      <td>Computationally expensive</td>
+    </tr>
+    <tr>
+      <td>Integrated Gradients</td>
+      <td>Post-hoc</td>
+      <td>Local</td>
+      <td>Axiomatic, gradient-based</td>
+      <td>Requires differentiable model</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="scaling-laws-vs-interpretability">Scaling Laws vs. Interpretability</h2>
+
+<ul>
+  <li><strong>Scaling Laws</strong>: Increasing model/data size (e.g., as seen in GPT series) linearly improves performance on many tasks.</li>
+  <li><strong>Challenge</strong>: As models scale, their decisions become harder to interpret for humans.</li>
+  <li><strong>System-level Design</strong>: Breaking up AI systems into interpretable modules/components can support both performance and understanding.</li>
+</ul>
+
+<h2 id="information-acquisition">Information Acquisition</h2>
+
+<p>What should we measure?</p>
+
+<ul>
+  <li>Predictive models often take measurements as fixed.</li>
+  <li>In practice, measurement is active and costly.</li>
+  <li>Interpretability can highlight missing but valuable information.</li>
+</ul>
+
+<h2 id="modularity">Modularity</h2>
+
+<p>Swappable, testable Components</p>
+
+<ul>
+  <li>Interpretability connects component-level performance to system-level performance.</li>
+  <li>Each component has a job, new versions can be tested and adopted.</li>
+  <li>Baking in modularity can help understand models better for longer. As models themselves get more complex, components will still be understandable.</li>
+</ul>
+
+<h2 id="value-alignment">Value Alignment</h2>
+
+<p>What did the model learn to optimize?</p>
+
+<ul>
+  <li>Connect probabilistic objectives to value-based objectives.</li>
+  <li><strong>Outer alignment</strong>: Is the objective/loss function well-chosen and reflective of what we truly value?</li>
+  <li><strong>Inner alignment</strong>: Does the model optimize the given objective robustly, including in new or unexpected settings?</li>
+</ul>
+
+<table>
+  <thead>
+    <tr>
+      <th>Concept</th>
+      <th>Definition</th>
+      <th>Key Question</th>
+      <th>Risk if Violated</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Outer Alignment</td>
+      <td>Objective matches human values</td>
+      <td>Is the loss function correct?</td>
+      <td>Optimizing wrong goal</td>
+    </tr>
+    <tr>
+      <td>Inner Alignment</td>
+      <td>Model robustly optimizes objective</td>
+      <td>Does model generalize safely?</td>
+      <td>Unexpected behavior in new settings</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="inner-alignment-in-practice-jagged-performance">Inner Alignment in Practice: Jagged Performance</h3>
+
+<p>Even if a model performs well on average, it may fail catastrophically on specific sub-tasks.
+This “<strong>jagged performance</strong>” is a key sign of poor inner alignment: the model has not truly learned a robust mechanism that generalizes safely.</p>
+
+<p><strong>Examples of jagged performance:</strong></p>
+
+<ul>
+  <li>Excellent benchmark performance but unexpected mistakes on rare or adversarial cases</li>
+  <li>Strong overall accuracy but isolated “holes” where behavior breaks unpredictably</li>
+</ul>
+
+<p>This connects directly to the question of whether the model truly optimizes the intended objective across all conditions.</p>
+
+<h3 id="risks-of-misalignment">Risks of Misalignment</h3>
+
+<ul>
+  <li>Example: Medical models learned that patients who received aggressive kidney failure treatment had better survival, so the model might naively recommend putting all patients into kidney failure—this is accurate but unsafe if used blindly!</li>
+  <li>Different intended uses (risk prediction, benchmarking, treatment) require different notions of alignment.</li>
+  <li>When a specific measurement becomes a target, it ceases to be a good measure.</li>
+</ul>
+
+<h2 id="open-challenges--takeaways">Open Challenges &amp; Takeaways</h2>
+
+<ul>
+  <li><strong>Reinforcement Learning (RL)</strong>: Powerful but hard to keep robust/align, especially as task complexity grows.</li>
+  <li><strong>Emotional Value Functions</strong>: Human emotions serve as values that help guide decisions across contexts. Current AI lacks that as rewards are defined externally. Those rewards change as the problem being solved changes. As a result, what if we can instill emotions that can provide stable rewards across situations without having to retrain and redefine the problem?</li>
+  <li><strong>Continual Learning</strong>: Current paradigm retrains static models, while human-like intelligence involves continuous adaptation.</li>
+  <li><strong>Formalizing Alignment</strong>: Need precise frameworks for aligning models with varying real-world values and use-cases.</li>
+  <li><strong>Ethics &amp; Responsibility</strong>: Decisions made by future AI practitioners will have major, possibly societal-level impacts.</li>
+  <li><strong>Economic &amp; Societal Impact</strong>: Superhuman models will reshape industries and power dynamics; open debate and responsible innovation are essential.</li>
+  <li><strong>Jagged Performance</strong>: Models appear to have a sizable difference in utility based on the task it is executing. We must determine whether this jaggedness is a bug or a feature. If it is the former then we must figure out how to smooth it out. If it is the latter, then alignment is even more important to optimizing the utility of the tasks that we want to accomplish.</li>
+  <li><strong>Optimal Information Collection</strong>: The case study demonstrates the utility of data previously assumed unrelated. This highlights the balance between the low efficiency of gathering as much data as possible about everything, with the high efficiency of only gathering information that is presumed to be pertinent. Finding an optimal solution is key.</li>
+</ul>
+ </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+    </div>
+
+    <footer class="site-footer">
+  <div class="wrapper">
+    <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Ben Lengerich</li><li>
+            <a class="u-email" href="mailto:TBD@wisc.edu"
+              >TBD@wisc.edu</a
+            >
+          </li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li>
+    <a
+      href="https://github.com/AdaptInfer"
+      target="_blank"
+      ><i class="fab fa-github"></i>
+      <span class="username">AdaptInfer</span></a
+    >
+  </li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>
+          &copy; Copyright 2025 University of Wisconsin.
+          <br />
+          
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  </body>
+
+  <d-bibliography
+    src="/dgm-fall-2025/assets/bibliography/2025-12-08-lecture-25.bib"
+  >
+  </d-bibliography>
+
+  <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/dgm-fall-2025/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link
+  rel="stylesheet"
+  href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css"
+/>
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+<script src="/dgm-fall-2025/assets/js/katex.js"></script>
+ 
+<!-- Load Anchor JS -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+<script>
+  anchors.options.visible = "hover";
+  anchors.add("article h2, article h3, article h4, article h5, article h6");
+</script>
+ 
+<!-- Adjust LaTeX JS -->
+<script src="/dgm-fall-2025/assets/js/latex.js"></script>
+
+
+<!-- Include custom icon fonts -->
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2025/assets/css/fontawesome-all.min.css"
+/>
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2025/assets/css/academicons.min.css"
+/>
+
+<!-- Google Analytics -->
+<script>
+  (function (i, s, o, g, r, a, m) {
+    i["GoogleAnalyticsObject"] = r;
+    ((i[r] =
+      i[r] ||
+      function () {
+        (i[r].q = i[r].q || []).push(arguments);
+      }),
+      (i[r].l = 1 * new Date()));
+    ((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
+    a.async = 1;
+    a.src = g;
+    m.parentNode.insertBefore(a, m);
+  })(
+    window,
+    document,
+    "script",
+    "//www.google-analytics.com/analytics.js",
+    "ga",
+  );
+
+  ga("create", "", "auto");
+  ga("send", "pageview");
+</script>
+
+</html>

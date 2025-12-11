@@ -174,11 +174,13 @@
 <hr />
 
 <h2 id="1-perceptrons">1. Perceptrons</h2>
+
 <h3 id="rosenblatts-perceptron">Rosenblatt’s Perceptron</h3>
 
 <p>First, we’ll talk about Rosenblatt’s perceptron, which is seen as the foundation of today’s artificial neural networks.</p>
 
 <p>What Rosenblatt proposed is actually “A learning rule for the computational/mathematical neuron model”. This contains two parts:</p>
+
 <ol>
   <li>A computational/mathematical neuron model,</li>
   <li>A learning rule.</li>
@@ -251,6 +253,7 @@ y = \sigma \left( \sum_{i=1}^{n} w_i x_i + b \right)
 </d-math>
 
 <p>where:</p>
+
 <ul>
   <li>$w_i$ are the weights</li>
   <li>$b$ is the bias term</li>
@@ -319,6 +322,7 @@ z &amp; \text{if } z &gt; 0 \\
 <p><strong>Many Variants of ReLU</strong></p>
 
 <p>Modern deep learning employs numerous ReLU variants:</p>
+
 <ul>
   <li><strong>Leaky ReLU</strong>: $\text{LeakyReLU}(z) = \max(\alpha z, z)$ where $\alpha$ is a small positive constant</li>
   <li><strong>GeLU</strong>: $\text{GeLU}(z) = z \cdot \Phi(z)$ where $\Phi$ is the standard Gaussian CDF</li>
@@ -405,6 +409,7 @@ w_1 x_1 + w_2 x_2 + b = 0
 </d-math>
 
 <p>This is a straight line that separates the input space into two regions:</p>
+
 <ul>
   <li>Points where $w_1 x_1 + w_2 x_2 + b &gt; 0$ are classified as class 1</li>
   <li>Points where $w_1 x_1 + w_2 x_2 + b \leq 0$ are classified as class 0</li>
@@ -454,6 +459,7 @@ b_{\text{new}}=b_{\text{old}}+\eta .
 </ul>
 
 <h3 id="parallel-histories">Parallel Histories</h3>
+
 <ul>
   <li><strong>1838</strong> — Verhulst: introduces the <em>logistic function</em> (population growth).</li>
   <li><strong>1943</strong> — McCulloch &amp; Pitts: logic neurons (no learning).</li>
@@ -595,7 +601,7 @@ W\mathbf{x}=\sum_{i=1}^{n} x_i\,\mathbf{w}_i.
         <span class="nb">super</span><span class="p">(</span><span class="n">Perceptron</span><span class="p">,</span> <span class="bp">self</span><span class="p">).</span><span class="n">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="p">.</span><span class="n">linear</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">input_size</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="p">.</span><span class="n">activation</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Sigmoid</span><span class="p">()</span>  <span class="c1"># or nn.Heaviside for step function
-</span>    
+</span>
     <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">linear</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="p">.</span><span class="n">activation</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
@@ -619,6 +625,7 @@ W\mathbf{x}=\sum_{i=1}^{n} x_i\,\mathbf{w}_i.
 <h2 id="next-steps">Next Steps</h2>
 
 <p>In the next lecture, we will explore:</p>
+
 <ul>
   <li>Multi-layer perceptrons (MLPs)</li>
   <li>How adding hidden layers enables non-linear decision boundaries</li>
@@ -720,13 +727,13 @@ Only basic.</p>
 <script>
   (function (i, s, o, g, r, a, m) {
     i["GoogleAnalyticsObject"] = r;
-    (i[r] =
+    ((i[r] =
       i[r] ||
       function () {
         (i[r].q = i[r].q || []).push(arguments);
       }),
-      (i[r].l = 1 * new Date());
-    (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+      (i[r].l = 1 * new Date()));
+    ((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
     a.async = 1;
     a.src = g;
     m.parentNode.insertBefore(a, m);

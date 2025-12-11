@@ -67,6 +67,14 @@
             ],
             "editors": [
               
+              {
+                "editor": "Zefan Cai"
+              },
+              
+              {
+                "editor": "Wenjie Hu"
+              }
+              
             ],
             "katex": {
               "delimiters": [
@@ -158,16 +166,15 @@
 </ol>
 
 <hr />
+
 <h2 id="1-online-batch-and-minibatch-mode">1. Online, batch, and minibatch mode</h2>
+
 <h3 id="perceptron-recap">Perceptron Recap</h3>
 
-<p style="text-align:center;">
-  <img src="/dgm-fall-2025/assets/img/notes/lecture-05/perceptron_recap.png" style="max-width:35%; max-width:35%;" />
-</p>
-
-<p style="text-align:center;">
-, where
-</p>
+<figure>
+  <img src="/dgm-fall-2025/assets/img/notes/lecture-05/perceptron_recap.png" alt="Perceptron Recap" style="max-width:35%;" />
+  <figcaption><strong>Figure 1.</strong> Perceptron recap diagram, where:</figcaption>
+</figure>
 
 <d-math block="">
 \sigma \!\Bigl( \sum_{i=1}^{m} x_i w_i + b \Bigr)
@@ -189,7 +196,7 @@ b = -\theta
 
 <hr style="border: 1px dashed #999;" />
 
-<p>Let $\mathcal{D} = (\langle \mathbf{x}^{[1]}, y^{[1]} \rangle, \mathbf{x}^{[2]}, y^{[2]} \rangle, \dots, \mathbf{x}^{[n]}, y^{[n]} \rangle) \in (\mathbb{R}^{m} \times {0,1})^{n} $.</p>
+<p>Let $\mathcal{D} = (\langle \mathbf{x}^{[1]}, y^{[1]} \rangle, \langle \mathbf{x}^{[2]}, y^{[2]} \rangle, \dots, \langle \mathbf{x}^{[n]}, y^{[n]} \rangle) \in (\mathbb{R}^{m} \times {0,1})^{n} $.</p>
 
 <ol>
   <li>Initialize $ \mathbf{w} := \mathbf{0} \in \mathbb{R}^{m}, \quad b := 0 $</li>
@@ -197,10 +204,9 @@ b = -\theta
     <p>For every training epoch:</p>
 
     <p>A. For every $ \langle x^{[i]}, y^{[i]} \rangle \in \mathcal{D} $:</p>
-
     <ul>
       <li>
-        <p>(a) Compute output (prediction) $ \hat{y}^{[i]} := \sigma( x^{[i]\top} \mathbf{w} + b \bigr) $</p>
+        <p>(a) Compute output (prediction) $ \hat{y}^{[i]} := \sigma\bigl( x^{[i]\top} \mathbf{w} + b \bigr) $</p>
       </li>
       <li>
         <p>(b) Calculate error $ \mathrm{err} := \bigl( y^{[i]} - \hat{y}^{[i]} \bigr) $</p>
@@ -212,7 +218,7 @@ b = -\theta
   </li>
 </ol>
 
-<h3 id="on-line-mode--sgd-schocastic-gradient-descent">“On-line” mode (= SGD: Schocastic Gradient Descent)</h3>
+<h3 id="on-line-mode--sgd-stochastic-gradient-descent">“On-line” mode (= SGD: Stochastic Gradient Descent)</h3>
 
 <ol>
   <li>Initialize $ \mathbf{w} := \mathbf{0} \in \mathbb{R}^{m}, \quad b := 0 $</li>
@@ -220,7 +226,6 @@ b = -\theta
     <p>For every training epoch:</p>
 
     <p>A. For <strong>every</strong> $ \langle x^{[i]}, y^{[i]} \rangle \in \mathcal{D} $:</p>
-
     <ul>
       <li>(a) Compute output (prediction)</li>
       <li>(b) Calculate error</li>
@@ -242,7 +247,6 @@ b = -\theta
     <p>For every training epoch:</p>
 
     <p>A. <strong>Pick random</strong> $ \langle x^{[i]}, y^{[i]} \rangle \in \mathcal{D} $:</p>
-
     <ul>
       <li>(a) Compute output (prediction)</li>
       <li>(b) Calculate error</li>
@@ -256,13 +260,13 @@ b = -\theta
 </ul>
 
 <h3 id="batch-mode">Batch mode</h3>
+
 <ol>
   <li>Initialize $ \mathbf{w} := \mathbf{0} \in \mathbb{R}^{m}, \quad b := 0 $</li>
   <li>
     <p>For every training epoch:</p>
 
     <p>A. Take <strong>all</strong> training examples from $\mathcal{D} $:</p>
-
     <ul>
       <li>(a) Compute output (prediction)</li>
       <li>(b) Calculate error</li>
@@ -272,7 +276,8 @@ b = -\theta
   </li>
 </ol>
 
-<h3 id="minibach-mode-mix-between-on-line-and-batch">Minibach mode (mix between on-line and batch)</h3>
+<h3 id="minibatch-mode-mix-between-on-line-and-batch">Minibatch mode (mix between on-line and batch)</h3>
+
 <ol>
   <li>Initialize $ \mathbf{w} := \mathbf{0} \in \mathbb{R}^{m}, \quad b := 0 $</li>
   <li>
@@ -281,7 +286,6 @@ b = -\theta
     <p>A. For every <strong>minibatch</strong> of size k, namely</p>
 
     <p>$ (\langle x^{[i]}, y^{[i]} \rangle, \dots, \langle x^{[i+k]}, y^{[i+k]} \rangle) \in \mathcal{D}$</p>
-
     <ul>
       <li>(a) Compute output (prediction)</li>
       <li>(b) Calculate error</li>
@@ -303,13 +307,16 @@ b = -\theta
 <hr />
 
 <h2 id="2-relation-between-perceptron-and-linear-regression">2. Relation between perceptron and linear regression</h2>
+
 <h3 id="perceptron">Perceptron</h3>
+
 <ul>
   <li>activation function is the threshold function</li>
-  <li>output is a binary label $\hat{y} \in ({0,1})$</li>
+  <li>output is a binary label $\hat{y} \in {0,1}$</li>
 </ul>
 
 <h3 id="linear-regression">Linear Regression</h3>
+
 <ul>
   <li>activation function is the identity function $ \sigma(x) = x $</li>
   <li>output is a real number $\hat{y} \in \mathbb{R}$</li>
@@ -333,11 +340,10 @@ b = -\theta
 <h2 id="3-an-iterative-training-algorithm-for-linear-regression">3. An iterative training algorithm for linear regression</h2>
 
 <h3 id="least-squares-linear-regression-1">(Least-Squares) Linear Regression</h3>
+
 <ul>
   <li>A very naive way to fit a linear regression model (and any neural net) is to start with initializing the parameters to 0’s or small random values</li>
-  <li>
-    <p>Then, for k rounds</p>
-
+  <li>Then, for k rounds
     <ol>
       <li>Choose another random set of weights</li>
       <li>If the model performs <strong>better</strong>, <strong>keep</strong> those weights</li>
@@ -348,6 +354,7 @@ b = -\theta
 </ul>
 
 <h3 id="better-way">Better way</h3>
+
 <ul>
   <li>analyze what effect a change of a parameter has on the predictive performance (loss) of a model</li>
   <li>then change the weight a little in the direction that improves the performance (minimizes the loss) the most</li>
@@ -355,14 +362,15 @@ b = -\theta
 </ul>
 
 <h3 id="update-rules-on-line-mode">Update Rules (“on-line” mode)</h3>
+
 <h4 id="perceptron-learning-rule">Perceptron Learning Rule</h4>
+
 <ol>
   <li>Initialize $ \mathbf{w} := \mathbf{0} \in \mathbb{R}^{m}, \quad b := 0 $</li>
   <li>
     <p>For every training epoch:</p>
 
     <p>A. For every $ \langle x^{[i]}, y^{[i]} \rangle \in \mathcal{D} $:</p>
-
     <ul>
       <li>(a) $ \hat{y}^{[i]} := \sigma\bigl(x^{[i]\top}\mathbf{w} + b\bigr) $</li>
       <li>(b) $ err := \bigl(y^{[i]} - \hat{y}^{[i]}\bigr) $</li>
@@ -372,6 +380,7 @@ b = -\theta
 </ol>
 
 <h4 id="stochastic-gradient-descent-vectorized">Stochastic Gradient Descent (Vectorized)</h4>
+
 <ol>
   <li>
     <p>Initialize $ \mathbf{w} := \mathbf{0} \in \mathbb{R}^{m}, \quad b := 0 $</p>
@@ -380,26 +389,26 @@ b = -\theta
     <p>For every training epoch:</p>
 
     <p>A. For every $ \langle x^{[i]}, y^{[i]} \rangle \in \mathcal{D} $:</p>
-
     <ul>
       <li>
         <p>(a) $ \hat{y}^{[i]} := \sigma\bigl(x^{[i]\top}\mathbf{w} + b\bigr) $</p>
       </li>
       <li>
-        <p>(b) $ \nabla_{\mathbf{w}}\mathcal{L} = \bigl(y^{[i]} - \hat{y}^{[i]}\bigr)x^{[i]}, \quad
-        \nabla_{b}\mathcal{L} = \bigl(y^{[i]} - \hat{y}^{[i]}\bigr) $</p>
+        <p>(b) $ \nabla<em>{\mathbf{w}}\mathcal{L} = \bigl(y^{[i]} - \hat{y}^{[i]}\bigr)x^{[i]}, \quad
+\nabla</em>{b}\mathcal{L} = \bigl(y^{[i]} - \hat{y}^{[i]}\bigr) $</p>
       </li>
       <li>
-        <p>(c) $ \mathbf{w} := \mathbf{w} + \eta \times \bigl(-\nabla_{\mathbf{w}}\mathcal{L}\bigr), \quad
-        b := b + \eta \times \bigl(-\nabla_{b}\mathcal{L}\bigr) $</p>
+        <p>(c) $ \mathbf{w} := \mathbf{w} + \eta \times \bigl(-\nabla<em>{\mathbf{w}}\mathcal{L}\bigr), \quad
+b := b + \eta \times \bigl(-\nabla</em>{b}\mathcal{L}\bigr) $</p>
       </li>
     </ul>
 
-    <p>where $\eta$ = learning rate,  $\bigl(-\nabla_{\mathbf{w}}\mathcal{L}\bigr)$ = negative gradient</p>
+    <p>where $\eta$ = learning rate, $\bigl(-\nabla_{\mathbf{w}}\mathcal{L}\bigr)$ = negative gradient</p>
   </li>
 </ol>
 
 <h4 id="stochastic-gradient-descent-for-understanding-only">Stochastic Gradient Descent (For understanding only)</h4>
+
 <ol>
   <li>
     <p>Initialize $ \mathbf{w} := \mathbf{0} \in \mathbb{R}^{m}, \quad b := 0 $</p>
@@ -408,36 +417,38 @@ b = -\theta
     <p>For every training epoch:</p>
 
     <p>A. For every $ \langle x^{[i]}, y^{[i]} \rangle \in \mathcal{D} $:</p>
-
     <ul>
       <li>(a) $ \hat{y}^{[i]} := \sigma\bigl(x^{[i]\top}\mathbf{w} + b\bigr) $</li>
     </ul>
 
     <p><strong>B. For weight</strong> $ \boldsymbol{j \in {1, \ldots, m}} $<strong>:</strong></p>
-
     <ul>
       <li>
-        <p>(b) $ \frac{\partial \mathcal{L}}{\partial w_{j}} =
-             \bigl(y^{[i]} - \hat{y}^{[i]}\bigr)x_{j}^{[i]} $</p>
+        <p>(b) $ \frac{\partial \mathcal{L}}{\partial w<em>{j}} =
+\bigl(y^{[i]} - \hat{y}^{[i]}\bigr)x</em>{j}^{[i]} $</p>
       </li>
       <li>
-        <p>(c) $ w_{j} := w_{j} + \eta \times
-             \Bigl(-\frac{\partial \mathcal{L}}{\partial w_{j}}\Bigr) $</p>
+        <p>(c) $ w<em>{j} := w</em>{j} + \eta \times
+\Bigl(-\frac{\partial \mathcal{L}}{\partial w_{j}}\Bigr) $</p>
       </li>
     </ul>
 
     <p>C. $ \frac{\partial \mathcal{L}}{\partial b} =
-       \bigl(y^{[i]} - \hat{y}^{[i]}\bigr) $, 
-       $ b := b + \eta \times \Bigl(-\frac{\partial \mathcal{L}}{\partial b}\Bigr) $</p>
+\bigl(y^{[i]} - \hat{y}^{[i]}\bigr) $,
+$ b := b + \eta \times \Bigl(-\frac{\partial \mathcal{L}}{\partial b}\Bigr) $</p>
 
     <p>where $\eta \times \Bigl(-\frac{\partial \mathcal{L}}{\partial b}\Bigr)$ coincidentally appears almost to be the same as the perceptron rule, except that the prediction is a <strong>real number</strong>, and we have a <strong>learning rate</strong></p>
   </li>
 </ol>
 
 <h3 id="this-learning-rule-is-called-gradient-descent">This learning rule is called <u>Gradient Descent</u></h3>
+
 <hr />
+
 <h2 id="4-calculus-refresher-i-derivatives">4. Calculus Refresher I: Derivatives</h2>
+
 <h3 id="differential-calculus-refresher">Differential Calculus Refresher</h3>
+
 <ol>
   <li>The derivative of a function $f(x)$ at a <strong>point</strong> $x=a$ is defined as the limit of the difference quotient (if it exists):</li>
 </ol>
@@ -637,12 +648,8 @@ f'(g(x)) \cdot g'(x)=z'
 </d-math>
 
 <ul>
-  <li>
-    <p>Here’s an example of implementing the Chain Rule (using Leibniz notation):</p>
-  </li>
-  <li>
-    <p>$f(x)=\log(\sqrt{x})$:</p>
-  </li>
+  <li>Here’s an example of implementing the Chain Rule (using Leibniz notation):</li>
+  <li>$f(x)=\log(\sqrt{x})$:</li>
 </ul>
 
 <d-math block="">
@@ -674,8 +681,12 @@ f'(g(x)) \cdot g'(x)=z'
   <li>Backpropagation is basically “reverse mode” auto-differentiation. It is cheaper than forward mode if we work with gradients because we would have matrix-vector multiplications instead of matrix-matrix multiplications.</li>
 </ul>
 
+<hr />
+
 <h2 id="5-calculus-refresher-ii-gradients">5. Calculus Refresher II: Gradients</h2>
+
 <h3 id="derivatives-of-multivariable-functions">Derivatives of Multivariable Functions</h3>
+
 <ol>
   <li>For a multivariable function $f(x_1,x_2,x_3,…x_m)$:</li>
 </ol>
@@ -834,11 +845,13 @@ J(\mathbf{x}) = \frac{\partial \mathbf{f}}{\partial \mathbf{x}} =
 
 <h3 id="back-to-linear-regression">Back to Linear Regression</h3>
 
-<p style="text-align:center;">
-  <img src="/dgm-fall-2025/assets/img/notes/lecture-05/Image1.png" style="max-width:40%;" />
-</p>
+<figure>
+  <img src="/dgm-fall-2025/assets/img/notes/lecture-05/Image1.png" alt="Linear Regression Loss Surface" style="max-width:40%;" />
+  <figcaption><strong>Figure 2.</strong> Linear regression loss surface visualization.</figcaption>
+</figure>
 
 <h3 id="gradient-descent">Gradient Descent</h3>
+
 <ul>
   <li>Learning rate and steepness of the gradient determine how much we update</li>
   <li>Steps get smaller as you get toward the minimum</li>
@@ -856,6 +869,7 @@ J(\mathbf{x}) = \frac{\partial \mathbf{f}}{\partial \mathbf{x}} =
 </ul>
 
 <p><strong>Benefits of convexity:</strong></p>
+
 <ul>
   <li>Especially for linear models, it is often not possible to achieve a zero loss even on the training data.</li>
   <li>Theoretical guarantee of convexity: reaching a unique minimizer efficiently.</li>
@@ -863,9 +877,10 @@ J(\mathbf{x}) = \frac{\partial \mathbf{f}}{\partial \mathbf{x}} =
   <li>If the learning rate is too large, we can overshoot, and if the learning rate is too small, convergence is very slow.</li>
 </ul>
 
-<p style="text-align:center;">
-  <img src="/dgm-fall-2025/assets/img/notes/lecture-05/Image2.png" style="max-width:40%;" />
-</p>
+<figure>
+  <img src="/dgm-fall-2025/assets/img/notes/lecture-05/Image2.png" alt="Learning Rate Effects" style="max-width:40%;" />
+  <figcaption><strong>Figure 3.</strong> Effects of learning rate on gradient descent convergence.</figcaption>
+</figure>
 
 <hr />
 
@@ -930,7 +945,7 @@ J(\mathbf{x}) = \frac{\partial \mathbf{f}}{\partial \mathbf{x}} =
 </d-math>
 
 <ul>
-  <li>Where eta is the learning rate  .</li>
+  <li>Where eta is the learning rate .</li>
 </ul>
 
 <hr />
@@ -1013,9 +1028,10 @@ J(\mathbf{x}) = \frac{\partial \mathbf{f}}{\partial \mathbf{x}} =
 
 <p>The following show the loss plot for two weights as a contour plot and flattened into a 2D space. As you can see, updates are perpendicular to contour lines.</p>
 
-<p style="text-align:center;">
-  <img src="/dgm-fall-2025/assets/img/notes/lecture-05/Image6.png" style="max-width:40%;" />
-</p>
+<figure>
+  <img src="/dgm-fall-2025/assets/img/notes/lecture-05/Image6.png" alt="Contour Plot" style="max-width:40%;" />
+  <figcaption><strong>Figure 4.</strong> Contour plot showing gradient descent updates perpendicular to contour lines.</figcaption>
+</figure>
 
 <hr />
 
@@ -1023,9 +1039,10 @@ J(\mathbf{x}) = \frac{\partial \mathbf{f}}{\partial \mathbf{x}} =
 
 <p>Stochastic updates are a bit noisier because each minibatch is an approximation of the overall loss on the training set.</p>
 
-<p style="text-align:center;">
-  <img src="/dgm-fall-2025/assets/img/notes/lecture-05/Image7.png" style="max-width:40%;" />
-</p>
+<figure>
+  <img src="/dgm-fall-2025/assets/img/notes/lecture-05/Image7.png" alt="SGD Surface Plot" style="max-width:40%;" />
+  <figcaption><strong>Figure 5.</strong> Stochastic gradient descent surface plot showing noisy updates.</figcaption>
+</figure>
 
 <ul>
   <li>These figures depict stochastic gradient descent.</li>
@@ -1035,6 +1052,7 @@ J(\mathbf{x}) = \frac{\partial \mathbf{f}}{\partial \mathbf{x}} =
 
 <p><strong>Analogy:</strong><br />
 Imagine you are a scientist who develops a new pharmaceutical drug.</p>
+
 <ul>
   <li>To know its average effectiveness, you’d test it on <strong>all patients in the world</strong> (like batch GD).</li>
   <li>This is expensive and slow.</li>
@@ -1061,13 +1079,15 @@ Imagine you are a scientist who develops a new pharmaceutical drug.</p>
 <h3 id="adaline">ADALINE</h3>
 
 <p>Widrow and Hoff’s ADALINE (1960): A nicely differential neuron model.</p>
+
 <ul>
   <li>Stands for <strong>ADAptive LInear NEuron</strong>.</li>
 </ul>
 
-<p style="text-align:center;">
-  <img src="/dgm-fall-2025/assets/img/notes/lecture-05/Image9.png" style="max-width:40%;" />
-</p>
+<figure>
+  <img src="/dgm-fall-2025/assets/img/notes/lecture-05/Image9.png" alt="ADALINE Architecture" style="max-width:40%;" />
+  <figcaption><strong>Figure 6.</strong> ADALINE (Adaptive Linear Neuron) architecture.</figcaption>
+</figure>
  </d-article>
 
       <d-appendix>
@@ -1158,13 +1178,13 @@ Imagine you are a scientist who develops a new pharmaceutical drug.</p>
 <script>
   (function (i, s, o, g, r, a, m) {
     i["GoogleAnalyticsObject"] = r;
-    (i[r] =
+    ((i[r] =
       i[r] ||
       function () {
         (i[r].q = i[r].q || []).push(arguments);
       }),
-      (i[r].l = 1 * new Date());
-    (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+      (i[r].l = 1 * new Date()));
+    ((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
     a.async = 1;
     a.src = g;
     m.parentNode.insertBefore(a, m);

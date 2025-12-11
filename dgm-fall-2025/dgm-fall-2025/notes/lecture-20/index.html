@@ -65,6 +65,14 @@
               
               {
                 "editor": "Xinyu Pan"
+              },
+              
+              {
+                "editor": "Sijia Wu"
+              },
+              
+              {
+                "editor": "Mohammad Zaidan"
               }
               
             ],
@@ -150,11 +158,15 @@
 <h2 id="the-attention-mechanism">The Attention Mechanism</h2>
 
 <p><strong>Motivation:</strong> Different parts of our input relate to different parts of our output. Sometimes these important relationships can be far apart, like in machine translation. Attention helps us dynamically calculate what is important.</p>
+
 <h3 id="why-attention-was-needed-long-range-dependency-problem">Why Attention Was Needed (Long-Range Dependency Problem)</h3>
+
 <p>RNNs compress an entire input sequence into a <strong>single hidden vector</strong>, which makes capturing long-range dependencies difficult.<br />
 During backpropagation, gradients must pass through many time steps, causing <strong>vanishing/exploding gradients</strong>.</p>
 
 <p>Attention solves this by <strong>directly referencing the entire input sequence</strong> when predicting each output, instead of relying on hidden states to store all information.</p>
+
+<p><em>Key insight:</em> Attention creates a <strong>constant path length</strong> between any two positions, unlike the sequential dependency in RNNs.</p>
 
 <ul>
   <li><strong>Origin:</strong> Originally from Natural Language Processing (NLP) and language translation.</li>
@@ -163,6 +175,7 @@ During backpropagation, gradients must pass through many time steps, causing <st
 </ul>
 
 <h3 id="hard-attention">Hard Attention</h3>
+
 <p>Hard attention makes a binary <strong>0/1 decision</strong> about where to attend. It asks: <em>“Is this input important to this prediction or not?”</em></p>
 
 <ul>
@@ -171,6 +184,7 @@ During backpropagation, gradients must pass through many time steps, causing <st
 </ul>
 
 <h3 id="soft-attention">Soft Attention</h3>
+
 <p>Rather than a binary decision, we assign a continuous weight between <strong>0 and 1</strong> for each input.</p>
 
 <ul>
@@ -182,23 +196,33 @@ During backpropagation, gradients must pass through many time steps, causing <st
 <h4 id="soft-attention-vs-rnn-for-image-captioning">Soft Attention vs. RNN for Image Captioning</h4>
 
 <p><strong>RNNs:</strong></p>
+
 <ul>
   <li>Only look at the image (or the 1-D CNN embedding of the original image) <strong>once</strong> to try to find important features.</li>
   <li>Successively refer back to the <em>same</em> hidden state, which must encode information about both foreground and background.</li>
 </ul>
 
 <p><strong>Soft Attention:</strong></p>
+
 <ul>
   <li>Generates an <strong>attention map</strong>, which refers back to a 2-D CNN embedding at <em>each</em> hidden state.</li>
   <li>Generates a word and an input to the next hidden state.</li>
   <li>Keeps looping back to the input, tying weights to a combination of learnable features. Allows each word in the caption to refer to different parts of the image.</li>
+  <li>The attention weights are computed as:</li>
 </ul>
+
+\[a_{i,j} = \mathrm{softmax}_j(x_i^\top x_j)\]
+
+<p>and the final attention output is:</p>
+
+\[A_i = \sum_j a_{i,j} x_j.\]
 
 <blockquote>
   <p><strong>Aside:</strong> CNNs were an example of <strong>Hard Attention</strong>. As the filter slides over the image, the part of the image inside the filter gets attention weight 1, and the rest gets weight 0.</p>
 </blockquote>
 
 <h3 id="why-attention-reduces-the-need-for-recurrence">Why Attention Reduces the Need for Recurrence</h3>
+
 <ul>
   <li>Attention repeatedly refers back to the input, so the hidden state no longer needs to store all global information.</li>
   <li>This insight led to eliminating recurrence entirely in the Transformer.</li>
@@ -211,7 +235,9 @@ During backpropagation, gradients must pass through many time steps, causing <st
 <p><strong>Motivation:</strong> Can we get rid of the sequential RNN component? Since attention already ties inputs across the sequence, is it necessary to continue to loop over it?</p>
 
 <h3 id="basic-self-attention">Basic Self Attention</h3>
+
 <p><strong>Main procedure:</strong></p>
+
 <ol>
   <li><strong>Derive Attention Weights:</strong> Calculate similarity between each current input and all other inputs.</li>
   <li><strong>Normalize:</strong> Use softmax to normalize weights.</li>
@@ -220,6 +246,7 @@ During backpropagation, gradients must pass through many time steps, causing <st
 
 <p><strong>Computing Weights:</strong>
 We use a dot product when computing attention weights. Dot products are similar to cosine similarity, but are sensitive to vector magnitudes. Since we will be learning weights (not in this basic version, but later), there is no need to normalize in practice.</p>
+
 <ul>
   <li>The self-attention corresponding to the <code class="language-plaintext highlighter-rouge">$i$</code>-th input, <code class="language-plaintext highlighter-rouge">$x_i$</code>, is <code class="language-plaintext highlighter-rouge">$A_i$</code>.</li>
   <li><code class="language-plaintext highlighter-rouge">$A_i$</code> is the weighted sum over all inputs, where the weight for <code class="language-plaintext highlighter-rouge">$x_j$</code> is <code class="language-plaintext highlighter-rouge">$a_{i,j}$</code>.</li>
@@ -229,6 +256,7 @@ We use a dot product when computing attention weights. Dot products are similar 
 <p><img src="/dgm-fall-2025/assets/img/notes/lecture-20/BasicSelfAttention.png" /></p>
 
 <h3 id="learnable-self-attention">Learnable Self Attention</h3>
+
 <p>The basic version has no learnable parameters. To fix this, we add three trainable weight matrices to be multiplied by input sequence embeddings: <strong>Query</strong>, <strong>Key</strong>, and <strong>Value</strong>.</p>
 
 <ol>
@@ -239,6 +267,7 @@ We use a dot product when computing attention weights. Dot products are similar 
 
 <p><strong>The Process:</strong>
 For every token, the model compares its <strong>Query</strong> to the <strong>Keys</strong> of all tokens in the sequence.</p>
+
 <ul>
   <li><strong>High Alignment:</strong> If query/key align well <code class="language-plaintext highlighter-rouge">$\rightarrow$</code> High attention score.</li>
   <li><strong>Low Alignment:</strong> If not <code class="language-plaintext highlighter-rouge">$\rightarrow$</code> Low attention score.</li>
@@ -261,17 +290,32 @@ For every token, the model compares its <strong>Query</strong> to the <strong>Ke
 <p><img src="/dgm-fall-2025/assets/img/notes/lecture-20/TransformerArchitecture.png" /></p>
 
 <ul>
-  <li><strong>Left Stack:</strong> The input stack. This is the only stack used in GPT models.</li>
-  <li><strong>Right Stack:</strong> The output stack.</li>
+  <li><strong>Left Stack:</strong> Encoder (input stack), used in encoder–decoder models like translation.</li>
+  <li><strong>Right Stack:</strong> Decoder (output stack). This is the only stack used in GPT-style models.</li>
+  <li>Encoder layers contain only <strong>self-attention</strong>.</li>
+  <li>Decoder layers contain both <strong>masked self-attention</strong> and <strong>cross-attention</strong> to the encoder output.</li>
 </ul>
 
 <h3 id="components">Components</h3>
+
 <ul>
   <li><strong>Multi-headed Attention:</strong> Applies self-attention multiple times in parallel. <code class="language-plaintext highlighter-rouge">$Q$</code>, <code class="language-plaintext highlighter-rouge">$K$</code>, and <code class="language-plaintext highlighter-rouge">$V$</code> matrices have multiple rows, allowing the model to attend to different parts of the sequence differently simultaneously.</li>
+  <li>Multi-head attention applies several attention heads in parallel:</li>
+</ul>
+
+\[\text{head}_h = \mathrm{Attention}(Q W_h^Q,\; K W_h^K,\; V W_h^V)\]
+
+<p>The final output concatenates all heads:</p>
+
+\[\text{MHA}(Q,K,V)
+= \text{Concat}(\text{head}_1,\dots,\text{head}_H)\, W^O.\]
+
+<ul>
   <li><strong>Skip Connections (Residuals):</strong> We add <code class="language-plaintext highlighter-rouge">Input + (Input passed through attention layer)</code>. This helps manage vanishing gradients.</li>
 </ul>
 
 <h3 id="transformer-tricks-nlp">Transformer Tricks (NLP)</h3>
+
 <ul>
   <li><strong>Self-Attention:</strong> Each layer combines words with others.</li>
   <li><strong>Multi-headed Attention:</strong> 8 attention heads learned independently.</li>
@@ -378,13 +422,13 @@ For every token, the model compares its <strong>Query</strong> to the <strong>Ke
 <script>
   (function (i, s, o, g, r, a, m) {
     i["GoogleAnalyticsObject"] = r;
-    (i[r] =
+    ((i[r] =
       i[r] ||
       function () {
         (i[r].q = i[r].q || []).push(arguments);
       }),
-      (i[r].l = 1 * new Date());
-    (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+      (i[r].l = 1 * new Date()));
+    ((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
     a.async = 1;
     a.src = g;
     m.parentNode.insertBefore(a, m);

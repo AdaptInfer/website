@@ -194,6 +194,7 @@ P(y|x) = a^y*(1-a)^{(i-y)}
 </d-math>
 
 <h4 id="logistic-loss-learning-rule">Logistic loss learning rule</h4>
+
 <p>Loss for one learning example</p>
 
 <d-math block="">
@@ -246,7 +247,9 @@ Logistic regression (like ADALINE and modern neural networks) optimizes based on
 <hr />
 
 <h1 id="4-logits-and-cross-entropy">4. Logits and Cross-Entropy</h1>
+
 <h2 id="about-the-term-logits">About the term “Logits”</h2>
+
 <ul>
   <li>Logits = log-odds unit</li>
   <li>The logit function is:</li>
@@ -264,6 +267,7 @@ Logistic regression (like ADALINE and modern neural networks) optimizes based on
 </ul>
 
 <h2 id="about-the-term-binary-cross-entropy">About the term “Binary Cross Entropy”</h2>
+
 <ul>
   <li>Negative log-likelihood and binary cross entropy are equivalent</li>
   <li>Binary cross-entropy is defined as:</li>
@@ -290,6 +294,7 @@ Logistic regression (like ADALINE and modern neural networks) optimizes based on
 </d-math>
 
 <h1 id="5-logistic-regression-code-example">5. Logistic Regression Code Example</h1>
+
 <ul>
   <li>https://github.com/rasbt/stat453-deep-learning-ss21/blob/master/L08/code/logistic-regression.ipynb</li>
   <li>Implements logistic regression with PyTorch nn.Module</li>
@@ -298,6 +303,7 @@ Logistic regression (like ADALINE and modern neural networks) optimizes based on
 <h1 id="6-generalizing-to-multiple-classes-softmax-regression">6. Generalizing to Multiple Classes: Softmax Regression</h1>
 
 <h2 id="approaches-to-multi-class-classification">Approaches to multi-class classification</h2>
+
 <ul>
   <li>One-vs-all: predict each class label independently then choose the class with the highest confidence score</li>
   <li>All-vs-all: explicitly predict the probability of each competing outcome then choose the class with the highest confidence score</li>
@@ -318,6 +324,7 @@ Logistic regression (like ADALINE and modern neural networks) optimizes based on
 </d-math>
 
 <p>where:</p>
+
 <ul>
   <li>$\mathbf{z} = \mathbf{Wx} + \mathbf{b}$ are the logits (net inputs)</li>
   <li>$K$ is the number of classes</li>
@@ -327,6 +334,7 @@ Logistic regression (like ADALINE and modern neural networks) optimizes based on
 <h3 id="why-softmax">Why “Softmax”?</h3>
 
 <p>Softmax is a <strong>differentiable (soft) version of the max function</strong>:</p>
+
 <ul>
   <li>The argmax function (hard max) outputs 1 for the largest value and 0 for all others</li>
   <li>Softmax outputs probabilities, with the largest logit getting the highest probability</li>
@@ -397,14 +405,14 @@ Logistic regression (like ADALINE and modern neural networks) optimizes based on
 <p><strong>Binary case:</strong></p>
 <d-math block="">
 \[
-\mathcal{L} = -\sum_{i=1}^{n} \left(y^{[i]} \log(a^{[i]}) + (1-y^{[i]}) \log(1-a^{[i]})\right)
+\mathcal{L} = -\sum\_{i=1}^{n} \left(y^{[i]} \log(a^{[i]}) + (1-y^{[i]}) \log(1-a^{[i]})\right)
 \]
 </d-math>
 
 <p><strong>Multi-category case with one-hot encoding:</strong></p>
 <d-math block="">
 \[
-\mathcal{L} = \sum_{i=1}^{n} \sum_{j=1}^{h} -y_j^{[i]} \log(a_j^{[i]})
+\mathcal{L} = \sum*{i=1}^{n} \sum*{j=1}^{h} -y_j^{[i]} \log(a_j^{[i]})
 \]
 </d-math>
 
@@ -419,7 +427,7 @@ Logistic regression (like ADALINE and modern neural networks) optimizes based on
 <p><strong>True labels (one-hot):</strong></p>
 <d-math block="">
 \[
-\mathbf{Y}_{\text{onehot}} = \begin{bmatrix}
+\mathbf{Y}\_{\text{onehot}} = \begin{bmatrix}
 1 &amp; 0 &amp; 0 \\
 0 &amp; 1 &amp; 0 \\
 0 &amp; 0 &amp; 1 \\
@@ -431,7 +439,7 @@ Logistic regression (like ADALINE and modern neural networks) optimizes based on
 <p><strong>Predicted probabilities:</strong></p>
 <d-math block="">
 \[
-\mathbf{A}_{\text{softmax}} = \begin{bmatrix}
+\mathbf{A}\_{\text{softmax}} = \begin{bmatrix}
 0.3792 &amp; 0.3104 &amp; 0.3104 \\
 0.3072 &amp; 0.4147 &amp; 0.2780 \\
 0.4263 &amp; 0.2248 &amp; 0.3490 \\
@@ -441,6 +449,7 @@ Logistic regression (like ADALINE and modern neural networks) optimizes based on
 </d-math>
 
 <p><strong>Loss calculations:</strong></p>
+
 <ul>
   <li>Example 1: <d-math inline="">\(\mathcal{L}^{[1]} = -1 \cdot \log(0.3792) = 0.969692\)</d-math></li>
   <li>Example 2: <d-math inline="">\(\mathcal{L}^{[2]} = -1 \cdot \log(0.4147) = 0.880200\)</d-math></li>
@@ -490,11 +499,12 @@ Logistic regression (like ADALINE and modern neural networks) optimizes based on
 <p><strong>Vectorized form:</strong></p>
 <d-math block="">
 \[
-\nabla_{\mathbf{W}} \mathcal{L} = -(\mathbf{X}^{\top}(\mathbf{Y} - \mathbf{A}))^{\top}
+\nabla\_{\mathbf{W}} \mathcal{L} = -(\mathbf{X}^{\top}(\mathbf{Y} - \mathbf{A}))^{\top}
 \]
 </d-math>
 
 <p>where:</p>
+
 <ul>
   <li>
     <d-math inline="">\(\mathbf{W} \in \mathbb{R}^{h \times m}\)</d-math>
@@ -529,35 +539,36 @@ Logistic regression (like ADALINE and modern neural networks) optimizes based on
 </d-math>
 
 <p><strong>For each training epoch:</strong></p>
+
 <ol>
   <li><strong>Forward pass:</strong>
     <d-math block="">
 \[
-\hat{y}^{[i]} = \sigma_{\text{softmax}}(\mathbf{W}x^{[i]} + \mathbf{b})
+\hat{y}^{[i]} = \sigma\_{\text{softmax}}(\mathbf{W}x^{[i]} + \mathbf{b})
 \]
 </d-math>
   </li>
   <li><strong>Compute gradients:</strong>
     <d-math block="">
 \[
-\nabla_{\mathbf{W}} \mathcal{L} = -(y^{[i]} - \hat{y}^{[i]}) \cdot x^{[i]^{\top}}
+\nabla*{\mathbf{W}} \mathcal{L} = -(y^{[i]} - \hat{y}^{[i]}) \cdot x^{[i]^{\top}}
 \]
 </d-math>
     <d-math block="">
 \[
-\nabla_{\mathbf{b}} \mathcal{L} = -(y^{[i]} - \hat{y}^{[i]})
+\nabla*{\mathbf{b}} \mathcal{L} = -(y^{[i]} - \hat{y}^{[i]})
 \]
 </d-math>
   </li>
   <li><strong>Update parameters:</strong>
     <d-math block="">
 \[
-\mathbf{W} := \mathbf{W} + \eta \times (-\nabla_{\mathbf{W}} \mathcal{L})
+\mathbf{W} := \mathbf{W} + \eta \times (-\nabla*{\mathbf{W}} \mathcal{L})
 \]
 </d-math>
     <d-math block="">
 \[
-\mathbf{b} := \mathbf{b} + \eta \times (-\nabla_{\mathbf{b}} \mathcal{L})
+\mathbf{b} := \mathbf{b} + \eta \times (-\nabla*{\mathbf{b}} \mathcal{L})
 \]
 </d-math>
   </li>
@@ -658,13 +669,13 @@ the error term <d-math inline="">\((y - \hat{y})\)</d-math> multiplied by the in
 <script>
   (function (i, s, o, g, r, a, m) {
     i["GoogleAnalyticsObject"] = r;
-    (i[r] =
+    ((i[r] =
       i[r] ||
       function () {
         (i[r].q = i[r].q || []).push(arguments);
       }),
-      (i[r].l = 1 * new Date());
-    (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+      (i[r].l = 1 * new Date()));
+    ((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
     a.async = 1;
     a.src = g;
     m.parentNode.insertBefore(a, m);

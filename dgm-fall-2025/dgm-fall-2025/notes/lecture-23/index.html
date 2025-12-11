@@ -68,6 +68,19 @@
             ],
             "editors": [
               
+              {
+                "editor": "Sijia Wu"
+              },
+              
+              {
+                "editor": "Chenyi Tong",
+                "editorURL": "https://oldwizard7.github.io/chenyi.github.io//"
+              },
+              
+              {
+                "editor": "Mohammad Zaidan"
+              }
+              
             ],
             "katex": {
               "delimiters": [
@@ -186,15 +199,59 @@
 
 <p>Supervised Fine-Tuning is a direct method to teach a language model how to respond appropriately to various types of prompts. The methodology is characterized as a form of <strong>“Behavior cloning,”</strong> where the model learns to imitate high-quality, human-generated responses from a curated dataset.</p>
 
-<p>The impact of SFT is substantial. The development of <strong>InstructGPT</strong> demonstrated that a 1.3 billion parameter model, after undergoing SFT, could outperform a much larger 175 billion parameter base GPT model, highlighting the efficiency and power of this alignment technique.</p>
+<p>The impact of SFT is substantial. The development of InstructGPT demonstrated that a 1.3 billion parameter model, aligned via supervised fine-tuning and reinforcement learning from human feedback (RLHF), could outperform a much larger 175 billion parameter base GPT model on instruction-following tasks.</p>
 
 <h3 id="22-reinforcement-learning-from-feedback">2.2 Reinforcement Learning from Feedback</h3>
 
 <p>Reinforcement Learning introduces an explicit reward signal, allowing the model to be optimized directly for desired outcomes.</p>
 
+<h4 id="reward-model-training">Reward Model Training</h4>
+
+<p>For each training sample, we have:</p>
+
+<ul>
+  <li>$(x$): the prompt</li>
+  <li>$(y_w$): the preferred (winning) response</li>
+  <li>$(y_l$): the less preferred (losing) response</li>
+</ul>
+
+<p>The reward model $r_{\theta}(x, y)$ outputs scalar scores:</p>
+
+<ul>
+  <li>$s_w = r_{\theta}(x, y_w)$</li>
+  <li>$s_l = r_{\theta}(x, y_l)$</li>
+</ul>
+
+<p>The training objective minimizes $-\log(\sigma(s_w - s_l))$.</p>
+
 <h4 id="reinforcement-learning-with-human-feedback-rlhf">Reinforcement Learning with Human Feedback (RLHF)</h4>
 
 <p>RLHF uses human preferences to train a reward model, which is then used to fine-tune the LLM. The success of this approach is critically dependent on the quality of the input data, with the source noting that <strong>“High-quality data is critical.”</strong> An open question in the field, attributed to John Schulman (2023), is whether human feedback effectively reduces model hallucinations.</p>
+
+<h4 id="rlhf-pipeline">RLHF Pipeline</h4>
+
+<p>The slide presents the overall Reinforcement Learning from Human Feedback (RLHF) pipeline:</p>
+
+<ol>
+  <li>
+    <p><strong>Pre-training</strong><br />
+The base language model is trained on large-scale, low-quality text corpora to learn general language patterns.</p>
+  </li>
+  <li>
+    <p><strong>Supervised Fine-Tuning (SFT)</strong><br />
+The model is fine-tuned on high-quality human demonstrations to align its behavior with desirable responses.</p>
+  </li>
+  <li>
+    <p><strong>Reward Model Training</strong><br />
+Using comparison data, a reward model $r_{\theta}(x, y)$ is trained to assign higher scores to preferred responses.</p>
+  </li>
+  <li>
+    <p><strong>Reinforcement Learning (RL)</strong><br />
+The SFT model is further optimized to maximize the learned reward from the reward model.</p>
+  </li>
+</ol>
+
+<p>Models shown in the slide include: <strong>InstructGPT, ChatGPT, Claude, and StableVicuna</strong>.</p>
 
 <h4 id="reinforcement-learning-with-verifiable-rewards-rlvr">Reinforcement Learning with Verifiable Rewards (RLVR)</h4>
 
@@ -205,6 +262,66 @@
   <li><strong>Math questions:</strong> Is the provided solution mathematically correct?</li>
   <li><strong>Formatting-specifics:</strong> Does the output adhere to all specified formatting requirements?</li>
 </ul>
+
+<h3 id="23-putting-it-together--pipeline-from-base-lm-to-assistant">2.3 Putting it together – Pipeline: From Base LM to Assistant</h3>
+
+<p>In practice, modern assistants are built in several stages:</p>
+
+<ol>
+  <li>
+    <p><strong>Unsupervised pre-training</strong><br />
+Train a large GPT-style model on raw text with MLE to learn general language and world knowledge.</p>
+  </li>
+  <li>
+    <p><strong>Supervised fine-tuning (SFT)</strong><br />
+Collect prompt–response pairs and train the model to imitate high-quality answers (behavior cloning). This turns the base model into an “instruction-following” model.</p>
+  </li>
+  <li>
+    <p><strong>Reinforcement learning from feedback (RLHF or RLVR)</strong><br />
+Use <strong>pairwise preference data</strong> or <strong>verifiable rewards</strong> to train a reward model and further optimize the policy with RL (e.g., PPO-style algorithms) to better match human preferences.</p>
+  </li>
+  <li>
+    <p><strong>Parameter-efficient and retrieval-based adaptation (LoRA / RAG)</strong><br />
+For specific domains or users, we adapt the model either by:</p>
+    <ul>
+      <li>Adding small trainable adapters (LoRA), or</li>
+      <li>Plugging in external knowledge via retrieval (RAG), without retraining all billions of parameters.</li>
+    </ul>
+  </li>
+</ol>
+
+<h4 id="sft-vs-rlhf-vs-rlvr-high-level">SFT vs RLHF vs RLVR (high level)</h4>
+
+<table>
+  <thead>
+    <tr>
+      <th>Method</th>
+      <th>Signal type</th>
+      <th>Pros</th>
+      <th>Cons / challenges</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>SFT</td>
+      <td>Supervised targets (y*)</td>
+      <td>Simple, stable, very data-efficient</td>
+      <td>Limited to what is in demonstrations</td>
+    </tr>
+    <tr>
+      <td>RLHF</td>
+      <td>Human preference rankings</td>
+      <td>Aligns with human judgments on many tasks</td>
+      <td>Expensive labels, subjective, may not reduce hallucinations</td>
+    </tr>
+    <tr>
+      <td>RLVR</td>
+      <td>Verifiable rewards (pass/fail)</td>
+      <td>Objective feedback, good for code/math</td>
+      <td>Only works where truth can be checked</td>
+    </tr>
+  </tbody>
+</table>
 
 <h2 id="3-parameter-efficient-adaptation-and-personalization">3. Parameter-Efficient Adaptation and Personalization</h2>
 
@@ -227,6 +344,14 @@
 <h3 id="33-retrieval-augmented-generation-rag">3.3 Retrieval-Augmented Generation (RAG)</h3>
 
 <p>RAG is another powerful technique for personalization and adaptation. Its core principle is that <strong>“Resource access enables personalization.”</strong> By allowing the model to retrieve information from an external knowledge base (which can include user-specific documents or data), RAG enhances the model’s responses with relevant, up-to-date, and context-aware information without requiring modifications to the model’s weights. The lecture materials also reference a specific advanced implementation, <strong>RAG of Interpretable Models (RAG-IM)</strong>.</p>
+
+<h3 id="34-rag-of-interpretable-models-rag-im">3.4 RAG of Interpretable Models (RAG-IM)</h3>
+
+<p>RAG-IM (Retrieval-Augmented Generation of Interpretable Models) is an approach that constructs an interpretable predictive model by retrieving and combining a set of previously stored “archetype” linear models.</p>
+
+<p>Given a new task or input description, the system retrieves several relevant linear models from a model database. Each retrieved model contributes its own key, query, and value representations. These representations are processed using multi-head cross-attention, which determines how strongly each archetype model should influence the final output.</p>
+
+<p>The attention-weighted combination of these models produces a new linear model that is specifically adapted to the current task while remaining fully interpretable. Because the final output is still a linear model, the prediction can be understood through its coefficients, preserving transparency and explainability.</p>
  </d-article>
 
       <d-appendix>
@@ -317,13 +442,13 @@
 <script>
   (function (i, s, o, g, r, a, m) {
     i["GoogleAnalyticsObject"] = r;
-    (i[r] =
+    ((i[r] =
       i[r] ||
       function () {
         (i[r].q = i[r].q || []).push(arguments);
       }),
-      (i[r].l = 1 * new Date());
-    (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+      (i[r].l = 1 * new Date()));
+    ((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
     a.async = 1;
     a.src = g;
     m.parentNode.insertBefore(a, m);

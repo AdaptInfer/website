@@ -199,9 +199,7 @@
 <h3 id="2-learning-rate-decay">2. Learning Rate Decay:</h3>
 
 <ul>
-  <li>
-    <p>Minibatch Training Recap:</p>
-
+  <li>Minibatch Training Recap:
     <ul>
       <li>
         <p>Minibatch learning is a form of stochastic gradient descent</p>
@@ -210,16 +208,12 @@
         <p>Each minibatch is a sample drawn from the training set and the training set is in turn a sample drawn from the population.
 Model output, loss, and gradient is calculated for each minibatch.</p>
       </li>
-      <li>
-        <p>Minibatch helps minimize computational cost with fullbatch gradient descent, but creates a noiser gradient due to increased oscillation.</p>
-
+      <li>Minibatch helps minimize computational cost with fullbatch gradient descent, but creates a noiser gradient due to increased oscillation.
         <ul>
           <li>Smaller batches creates noisier gradient.</li>
         </ul>
       </li>
-      <li>
-        <p>Noiser gradients are helpful in non-convex landscapes to escape local minima</p>
-      </li>
+      <li>Noiser gradients are helpful in non-convex landscapes to escape local minima</li>
     </ul>
   </li>
   <li>Noise is a double-edged sword:
@@ -228,13 +222,9 @@ Model output, loss, and gradient is calculated for each minibatch.</p>
       <li><strong>Bad:</strong> causes oscillation.</li>
     </ul>
   </li>
-  <li>
-    <p>Minibatch Training: Practical Tip</p>
-
+  <li>Minibatch Training: Practical Tip
     <ul>
-      <li>
-        <p>Typical minibatch sizes: 32, 64, 128, 256, 512, 1024 to correspond with memory bytes</p>
-
+      <li>Typical minibatch sizes: 32, 64, 128, 256, 512, 1024 to correspond with memory bytes
         <ul>
           <li>Pick the largest minibatch that is allowed by GPU memory</li>
         </ul>
@@ -245,9 +235,7 @@ Model output, loss, and gradient is calculated for each minibatch.</p>
       <li>
         <p>Smaller batches → noisier gradients → more loss oscillation but similar final accuracy.</p>
       </li>
-      <li>
-        <p>In Figure 1 below, more loss oscillation with the smaller batches sizes, but the accuracy is similar.</p>
-      </li>
+      <li>In Figure 1 below, more loss oscillation with the smaller batches sizes, but the accuracy is similar.</li>
     </ul>
   </li>
 </ul>
@@ -258,9 +246,7 @@ Model output, loss, and gradient is calculated for each minibatch.</p>
 </figure>
 
 <ul>
-  <li>
-    <p>Learning Rate Decay:</p>
-
+  <li>Learning Rate Decay:
     <ul>
       <li>
         <p>Minibatches are samples of the training set, so loss and gradients from the minibatches are approximations.
@@ -273,16 +259,13 @@ This creates oscillations.</p>
         <p>On a practical note, train model without learning rate decay and then fit the decay to what is observed.
 This avoids decaying too fast and missing the minimum.
 This can also be done through validation set testing.</p>
-
         <ul>
           <li>Follows the idea of deep learning to overfit model and then fix the model. This proves the features can model the data.</li>
         </ul>
       </li>
     </ul>
   </li>
-  <li>
-    <p>Equations of Learning Rate Decay:</p>
-
+  <li>Equations of Learning Rate Decay:
     <ul>
       <li>Exponential Decay:
         <ul>
@@ -314,9 +297,7 @@ This can also be done through validation set testing.</p>
 </figure>
 
 <ul>
-  <li>
-    <p>Learning Rate and Batch Size:</p>
-
+  <li>Learning Rate and Batch Size:
     <ul>
       <li>Can get identical accuracy by increasing batch size rather than decreasing learning rate. However, this goes against the initial problem that learning rate decay solves: GPU and memory costs.</li>
     </ul>
@@ -366,16 +347,12 @@ This can also be done through validation set testing.</p>
   <li>
     <p>[Option 1:]{.underline} Call your own junction at the end of each epoch:</p>
   </li>
-  <li>
-    <p>[Option 2:]{.underline} Use one of the built-in tools in PyTorch.</p>
-
+  <li>[Option 2:]{.underline} Use one of the built-in tools in PyTorch.
     <ol>
       <li>The “torch.optim.lr.scheduler.LambdaLR” is the most common, generic version</li>
     </ol>
   </li>
-  <li>
-    <p>Saving Models in PyTorch:</p>
-
+  <li>Saving Models in PyTorch:
     <ul>
       <li>
         <p>The model, optimizer, and the tearning rate scheduler all have save functionalities in PyTorch.
@@ -409,7 +386,6 @@ This helps skip over local minima by increasing efficiency.</p>
     <p>Gradient $\Delta w_{i,j}(t)$ is the “velocity” $V$:</p>
 
     <p>$\Delta w_{i,j}(t) := \alpha \cdot \Delta w_{i,j}(t-1) + \eta \cdot \frac{\partial l}{\partial w_{i,j}}(t)$</p>
-
     <ul>
       <li>
         <p>$\alpha$ is the momentum parameter, usually a value between 0.9 and 0.99.
@@ -420,33 +396,24 @@ This is like a “friction” or dampening parameter.</p>
       </li>
       <li>
         <p>$\eta \cdot \frac{\partial l}{\partial w_{i,j}}(t)$ familiar, regular gradient update</p>
-
         <ul>
           <li>We “average” this by adding it to the previous update.</li>
         </ul>
       </li>
     </ul>
   </li>
-  <li>
-    <p>In PyTorch:</p>
-
+  <li>In PyTorch:
     <ul>
-      <li>
-        <p>“torch.optim.SGD(params, lr=&lt;required parameter&gt;, <strong>momentum=0</strong>, dampening=0, weight_decay=0), nesterov=False.</p>
-
+      <li>“torch.optim.SGD(params, lr=&lt;required parameter&gt;, <strong>momentum=0</strong>, dampening=0, weight_decay=0), nesterov=False.
         <ul>
           <li>dampening $1-\eta$, how much do you dampen your current minibatch update.</li>
         </ul>
       </li>
     </ul>
   </li>
-  <li>
-    <p>Nesterov: A Better Momentum</p>
-
+  <li>Nesterov: A Better Momentum
     <ul>
-      <li>
-        <p>Given that we know the direction the momentum term will push us (because it was calculated by the previous term), we can skip ahead by applying the previous term’s momentum and then calculating loss with the momentum:</p>
-
+      <li>Given that we know the direction the momentum term will push us (because it was calculated by the previous term), we can skip ahead by applying the previous term’s momentum and then calculating loss with the momentum:
         <ul>
           <li>
             <p>Before: $\Delta w(t) := \alpha \cdot \Delta w_{t-1} + \eta \cdot \Delta _w L (w_t)$</p>
@@ -457,7 +424,6 @@ This is like a “friction” or dampening parameter.</p>
             <p>Nesterov: $\Delta w(t) := \alpha \cdot \Delta w_{t-1} + \eta \cdot \Delta <em>w L (w_t - \alpha \cdot \Delta w</em>{t-1})$</p>
 
             <p>$w_{t+1}:=w_t-\Delta w_t$</p>
-
             <ul>
               <li>applying momentum term first because it was already calculated in the previous iteration.</li>
             </ul>
@@ -478,9 +444,7 @@ This is like a “friction” or dampening parameter.</p>
 <h3 id="5-adam-adaptive-learning-rates">5. ADAM: Adaptive Learning Rates</h3>
 
 <ul>
-  <li>
-    <p>So far: decrease learning if the gradient changes its direction and increase learning if the gradient stays consistent</p>
-
+  <li>So far: decrease learning if the gradient changes its direction and increase learning if the gradient stays consistent
     <ul>
       <li>
         <p><strong>Step 1:</strong> Define a local gain $(g)$ for each weight (initialized with $g=1$):</p>
@@ -489,14 +453,12 @@ This is like a “friction” or dampening parameter.</p>
       </li>
       <li>
         <p><strong>Step 2</strong>:</p>
-
         <ul>
           <li>
             <p>If gradient is consistent: $g_{i,j}(t) := (t-1)+ \beta$</p>
           </li>
           <li>
             <p>Else: $g_{i,j}(t) := (t-1) \cdot (1-\beta)$</p>
-
             <ul>
               <li>We multiply so that $g$ does not go negative, but decreases</li>
             </ul>
@@ -505,9 +467,7 @@ This is like a “friction” or dampening parameter.</p>
       </li>
     </ul>
   </li>
-  <li>
-    <p>RMSProp is an algorithm created by Geoff Hinton that is similar to AdaDelta.</p>
-
+  <li>RMSProp is an algorithm created by Geoff Hinton that is similar to AdaDelta.
     <ul>
       <li>
         <p>RMS is “Root Mean Squared” and divides the learning rate by an exponentially decreasing moving average of the squared gradients.</p>
@@ -517,13 +477,9 @@ This is like a “friction” or dampening parameter.</p>
       </li>
     </ul>
   </li>
-  <li>
-    <p>ADAM:</p>
-
+  <li>ADAM:
     <ul>
-      <li>
-        <p>Most widely used optimization algorithm in DL and combines momentum and RMSProp.</p>
-
+      <li>Most widely used optimization algorithm in DL and combines momentum and RMSProp.
         <ul>
           <li>
             <p>[Momentum-like Term:]{.underline}$\Delta w_{i,j}(t) := \alpha \cdot \Delta w_{i,j}(t-1) + \eta \cdot \frac{\partial l}{\partial w_{i,j}}(t)$</p>
@@ -534,7 +490,6 @@ This is like a “friction” or dampening parameter.</p>
             <p>[RMSProp Term:]{.underline}</p>
 
             <p>$r:= \beta \cdot MeanSquare(w_{i,j},t-1)+(1-\beta)(\frac{\partial L}{\partial w_{i,j}(t)})^2$</p>
-
             <ul>
               <li>$r$ is the size of the gradients (large $r$ is steep)</li>
             </ul>
@@ -560,36 +515,27 @@ This is like a “friction” or dampening parameter.</p>
 <code class="language-plaintext highlighter-rouge">torch.optim.SGD(model.parameters(), lr=0.01, momentum=0.9)</code>
 The momentum term helps smooth the updates so the training process doesn’t shake too much when the gradient changes quickly.</p>
   </li>
-  <li>
-    <p>Another optimizer we use a lot is Adam:
+  <li>Another optimizer we use a lot is Adam:
 <code class="language-plaintext highlighter-rouge">torch.optim.Adam(model.parameters(), lr=0.0001)</code>
-Adam basically combines ideas from Momentum and RMSProp, which is why it usually works well without too much tuning.</p>
-
+Adam basically combines ideas from Momentum and RMSProp, which is why it usually works well without too much tuning.
     <ul>
-      <li>
-        <p>A more complete version looks like:
+      <li>A more complete version looks like:
 <code class="language-plaintext highlighter-rouge">torch.optim.Adam(params, lr=0.001, betas=(0.9, 0.999), eps=1e-08)</code>
-The two values in <code class="language-plaintext highlighter-rouge">betas</code> control how fast the moving averages of the gradients (and squared gradients) decay over time.</p>
-
+The two values in <code class="language-plaintext highlighter-rouge">betas</code> control how fast the moving averages of the gradients (and squared gradients) decay over time.
         <ul>
           <li>Inside the RMSProp-style update in Adam:<br />
 <strong>0.9 corresponds to α</strong>,<br />
 <strong>0.999 corresponds to β</strong>.</li>
         </ul>
       </li>
-      <li>
-        <p>If you are using an optimizer that keeps internal state (like momentum or Adam), remember to <strong>save and load the optimizer state</strong> when you resume training. Otherwise, the optimizer will forget where it left off.</p>
-      </li>
+      <li>If you are using an optimizer that keeps internal state (like momentum or Adam), remember to <strong>save and load the optimizer state</strong> when you resume training. Otherwise, the optimizer will forget where it left off.</li>
     </ul>
   </li>
-  <li>
-    <p>Interesting hypothesis about ADAM, everything in machine learning has been engineered around ADAM because of how convenient it is as an optimizer.
-It may not give the best performance, but defaults give the a reliable, solid performance.</p>
-  </li>
+  <li>Interesting hypothesis about ADAM, everything in machine learning has been engineered around ADAM because of how convenient it is as an optimizer.
+It may not give the best performance, but defaults give the a reliable, solid performance.</li>
 </ul>
 
 <hr />
-
  </d-article>
 
       <d-appendix>
@@ -680,13 +626,13 @@ It may not give the best performance, but defaults give the a reliable, solid pe
 <script>
   (function (i, s, o, g, r, a, m) {
     i["GoogleAnalyticsObject"] = r;
-    (i[r] =
+    ((i[r] =
       i[r] ||
       function () {
         (i[r].q = i[r].q || []).push(arguments);
       }),
-      (i[r].l = 1 * new Date());
-    (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+      (i[r].l = 1 * new Date()));
+    ((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
     a.async = 1;
     a.src = g;
     m.parentNode.insertBefore(a, m);

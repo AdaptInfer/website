@@ -150,6 +150,7 @@
       <d-byline></d-byline>
 
       <d-article> <h2 id="todays-topics">Today’s Topics:</h2>
+
 <ul>
   <li><a href="#todays-topics">Today’s Topics:</a></li>
   <li><a href="#1-tensors-in-deep-learning">1. Tensors in Deep Learning</a></li>
@@ -161,6 +162,7 @@
 </ul>
 
 <h2 id="1-tensors-in-deep-learning">1. Tensors in Deep Learning</h2>
+
 <ul>
   <li>A <strong>tensor</strong> is a multidimensional array</li>
   <li>Dimensionality (order) = number of indices</li>
@@ -171,6 +173,7 @@
 </ul>
 
 <h2 id="2-tensors-and-pytorch">2. Tensors and PyTorch</h2>
+
 <ul>
   <li>NumPy vs PyTorch: They have similar syntax but PyTorch adds:
     <ul>
@@ -180,11 +183,12 @@
     </ul>
   </li>
   <li>Data types: mappings exist (e.g., NumPy <code class="language-plaintext highlighter-rouge">float64</code> → PyTorch <code class="language-plaintext highlighter-rouge">DoubleTensor</code>).</li>
-  <li>Matrix multiplication in Pytorch: <code class="language-plaintext highlighter-rouge">b.matmul(b)</code>, <code class="language-plaintext highlighter-rouge">b.dot(b)</code>, <code class="language-plaintext highlighter-rouge">b @ b</code>  .</li>
+  <li>Matrix multiplication in Pytorch: <code class="language-plaintext highlighter-rouge">b.matmul(b)</code>, <code class="language-plaintext highlighter-rouge">b.dot(b)</code>, <code class="language-plaintext highlighter-rouge">b @ b</code> .</li>
   <li>Check GPU availability in PyTorch and move tensors between CPU and GPU using <code class="language-plaintext highlighter-rouge">b.to(torch.device('cpu'))</code> or <code class="language-plaintext highlighter-rouge">b.to(torch.device('cuda:0'))</code></li>
 </ul>
 
 <h2 id="3-vectors-matrices-and-broadcasting">3. Vectors, Matrices, and Broadcasting</h2>
+
 <ul>
   <li><strong>Notations:</strong>
     <ul>
@@ -202,24 +206,24 @@
       <li>The linear combination (pre-activation value) is written: $z = \mathbf{w}^\top \mathbf{x} + b$, where</li>
       <li>
 \[\mathbf{x} =
-\begin{bmatrix}
-x_1 \\
-x_2 \\
-\vdots \\
-x_m
-\end{bmatrix}
-\in \mathbb{R}^{m \times 1},
-\quad
-\mathbf{w} =
-\begin{bmatrix}
-w_1 \\
-w_2 \\
-\vdots \\
-w_m
-\end{bmatrix}
-\in \mathbb{R}^{m \times 1},
-\quad
-z \in \mathbb{R}\]
+  \begin{bmatrix}
+  x_1 \\
+  x_2 \\
+  \vdots \\
+  x_m
+  \end{bmatrix}
+  \in \mathbb{R}^{m \times 1},
+  \quad
+  \mathbf{w} =
+  \begin{bmatrix}
+  w_1 \\
+  w_2 \\
+  \vdots \\
+  w_m
+  \end{bmatrix}
+  \in \mathbb{R}^{m \times 1},
+  \quad
+  z \in \mathbb{R}\]
       </li>
     </ul>
   </li>
@@ -231,7 +235,7 @@ z \in \mathbb{R}\]
   </li>
 </ul>
 
-<p>\(\mathbf{X} =
+\[\mathbf{X} =
   \begin{bmatrix}
   x^{[1]}_1 &amp; x^{[1]}_2 &amp; \cdots &amp; x^{[1]}_m \\
   x^{[2]}_1 &amp; x^{[2]}_2 &amp; \cdots &amp; x^{[2]}_m \\
@@ -256,7 +260,8 @@ z \in \mathbb{R}\]
   \vdots \\
   z^{[n]}
   \end{bmatrix}
-  \in \mathbb{R}^{n \times 1}\)</p>
+  \in \mathbb{R}^{n \times 1}\]
+
 <ul>
   <li>Time Complexity of N-by-N matrices multiplication by naive algorithms: $O(n^3)$.</li>
   <li><strong>Broadcasting:</strong>
@@ -289,6 +294,7 @@ z \in \mathbb{R}\]
 </ul>
 
 <h2 id="4-probability-basics">4. Probability Basics</h2>
+
 <ul>
   <li><strong>Random Variables and Distributions:</strong>
     <ul>
@@ -303,9 +309,9 @@ $P(X = x) = \theta^x (1-\theta)^{1-x}, \; x \in {0,1}$.
           </li>
         </ul>
       </li>
-      <li><strong>Continuous Random Variables:</strong>  Values from an interval (e.g. a height).
+      <li><strong>Continuous Random Variables:</strong> Values from an interval (e.g. a height).
         <ul>
-          <li>Described by <strong>Probability Density Function (PDF)</strong>:  $f(x)$.</li>
+          <li>Described by <strong>Probability Density Function (PDF)</strong>: $f(x)$.</li>
           <li>Example: <strong>Gaussian (Normal) Distribution</strong>
 $f(x) = \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}$
             <ul>
@@ -404,6 +410,7 @@ $f(x) = \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}$
 </ul>
 
 <h2 id="5-estimation-methods">5. Estimation Methods</h2>
+
 <p>The goal of estimation is to <strong>infer unknown parameters</strong> $\theta$ from observed data.</p>
 
 <ul>
@@ -416,7 +423,6 @@ $f(x) = \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}$
   </li>
   <li>
     <h4 id="maximum-likelihood-estimation-mle">Maximum Likelihood Estimation (MLE)</h4>
-
     <ul>
       <li><strong>Definition:</strong></li>
     </ul>
@@ -455,7 +461,6 @@ Suppose we observe $k$ successes in $n$ Bernoulli trials. Then</li>
   </li>
   <li>
     <h4 id="maximum-a-posteriori-map">Maximum A Posteriori (MAP)</h4>
-
     <ul>
       <li><strong>Definition:</strong></li>
     </ul>
@@ -492,13 +497,14 @@ Suppose we observe $k$ successes in $n$ Bernoulli trials. Then</li>
   \hat{\theta}_{\text{MAP}}\]
 
 <h2 id="6-linear-regression">6. Linear Regression</h2>
+
 <p>Linear regression models the relationship between inputs (features) and outputs (responses).</p>
 
 <ul>
   <li>
     <h4 id="model-definition">Model Definition</h4>
-    <p>\(y = X\beta + \epsilon\)</p>
 
+    <p>\(y = X\beta + \epsilon\)</p>
     <ul>
       <li>$y$: response variable (dependent variable).</li>
       <li>$X$: design matrix (independent variables or features).</li>
@@ -539,7 +545,6 @@ Suppose we observe $k$ successes in $n$ Bernoulli trials. Then</li>
 <ul>
   <li>
     <h4 id="ordinary-least-squares-ols">Ordinary Least Squares (OLS)</h4>
-
     <ul>
       <li><strong>Objective:</strong></li>
     </ul>
@@ -563,7 +568,6 @@ Suppose we observe $k$ successes in $n$ Bernoulli trials. Then</li>
 <ul>
   <li>
     <h4 id="regularization-in-linear-regression">Regularization in Linear Regression</h4>
-
     <ul>
       <li><strong>Ridge Regression (L2):</strong></li>
     </ul>
@@ -583,7 +587,7 @@ Suppose we observe $k$ successes in $n$ Bernoulli trials. Then</li>
    = \arg\min_{\beta} \|y - X\beta\|^2 + \lambda \|\beta\|_1\]
 
 <p>Equivalent MAP interpretation: Laplace prior $\beta \sim \text{Laplace}(0, \frac{\sigma}{\lambda})$.<br />
-  Encourages <strong>sparsity</strong> (many coefficients shrink to 0).</p>
+ Encourages <strong>sparsity</strong> (many coefficients shrink to 0).</p>
  </d-article>
 
       <d-appendix>
@@ -674,13 +678,13 @@ Suppose we observe $k$ successes in $n$ Bernoulli trials. Then</li>
 <script>
   (function (i, s, o, g, r, a, m) {
     i["GoogleAnalyticsObject"] = r;
-    (i[r] =
+    ((i[r] =
       i[r] ||
       function () {
         (i[r].q = i[r].q || []).push(arguments);
       }),
-      (i[r].l = 1 * new Date());
-    (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+      (i[r].l = 1 * new Date()));
+    ((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
     a.async = 1;
     a.src = g;
     m.parentNode.insertBefore(a, m);

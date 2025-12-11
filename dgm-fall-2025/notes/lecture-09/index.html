@@ -151,6 +151,7 @@
       <d-byline></d-byline>
 
       <d-article> <h2 id="todays-topics">Today’s Topics:</h2>
+
 <ul>
   <li><a href="#todays-topics">Today’s Topics:</a></li>
   <li><a href="#1-Multilayer-Perceptron-Architecture">1. Multilayer Perceptron Architecture</a></li>
@@ -194,6 +195,7 @@ In the lecture, the instructor computed the exact number of parameters for a sam
 </ul>
 
 <p>Trainable parameters:</p>
+
 <ul>
   <li><strong>Biases:</strong> 12</li>
   <li><strong>Weights:</strong>
@@ -216,16 +218,19 @@ In the lecture, the instructor computed the exact number of parameters for a sam
 <h4 id="3-from-shallow-to-deep-slide-11">3. From “Shallow” to “Deep” (Slide 11)</h4>
 
 <p>Adding more layers leads to <strong>deep learning</strong>.</p>
+
 <ul>
   <li>Shallow networks can already approximate many functions, but depth enables <strong>hierarchical feature learning</strong>.</li>
-  <li>Early layers capture simple features, while deeper layers build on them to represent complex structures.
-    <h3 id="-1-function-composition">• 1. Function Composition</h3>
-    <p>Deep networks perform <strong>function composition</strong> layer-by-layer.<br />
-Each layer builds a higher-order representation from the previous one, allowing the model to express complex functions <strong>more efficiently</strong> than a single very wide layer.</p>
-  </li>
+  <li>Early layers capture simple features, while deeper layers build on them to represent complex structures.</li>
 </ul>
 
+<h3 id="-1-function-composition">• 1. Function Composition</h3>
+
+<p>Deep networks perform <strong>function composition</strong> layer-by-layer.<br />
+Each layer builds a higher-order representation from the previous one, allowing the model to express complex functions <strong>more efficiently</strong> than a single very wide layer.</p>
+
 <h3 id="-2-expressiveness-width-vs-depth">• 2. Expressiveness: Width vs. Depth</h3>
+
 <p>The instructor highlighted an important rule of thumb:</p>
 
 <ul>
@@ -364,6 +369,7 @@ To break symmetry and ensure effective learning, <strong>random initialization</
 <p><strong>Takeaway:</strong> Nonlinear activations unlock the true power of MLPs. They not only allow non-linear decision boundaries but also shape training dynamics, convergence, and robustness.</p>
 
 <hr />
+
 <h2 id="3-multilayer-perceptron-code-examples">3. Multilayer Perceptron Code Examples</h2>
 
 <h3 id="what-to-check-before-training">What to check before training</h3>
@@ -387,14 +393,17 @@ To break symmetry and ensure effective learning, <strong>random initialization</
 </ul>
 
 <h2 id="4-overfitting-and-underfitting-intro">4. Overfitting and Underfitting (intro)</h2>
+
 <hr />
 
 <h3 id="training-vs-generalization-error">Training vs. Generalization Error</h3>
+
 <figure>
   <img src="/dgm-fall-2025/assets/img/notes/lecture-09/IMG_9271.jpg" width="500" />
 </figure>
 
 <p><strong>Big picture.</strong></p>
+
 <ul>
   <li><strong>Training error (orange)</strong> typically <strong>decreases monotonically</strong> as model capacity increases.</li>
   <li><strong>Generalization (test/validation) error (green)</strong> first <strong>decreases</strong> (model fits signal better), then <strong>increases</strong> when the model starts to fit <strong>noise</strong> → <strong>overfitting</strong>.</li>
@@ -429,6 +438,7 @@ To break symmetry and ensure effective learning, <strong>random initialization</
 <hr />
 
 <h3 id="why-deep-learning-loves-large-datasets">Why Deep Learning Loves Large Datasets</h3>
+
 <figure>
   <img src="/dgm-fall-2025/assets/img/notes/lecture-09/IMG_9272.jpg" width="500" />
 </figure>
@@ -442,6 +452,7 @@ To break symmetry and ensure effective learning, <strong>random initialization</
 <hr />
 
 <h3 id="double-descent-classical-vs-modern-view">Double Descent (classical vs modern view)</h3>
+
 <figure>
   <img src="/dgm-fall-2025/assets/img/notes/lecture-09/IMG_9274.jpg" width="500" />
 </figure>
@@ -454,6 +465,7 @@ Near the point where the model <strong>just fits training data exactly</strong> 
 
 <p><strong>Second descent (overparameterized regime).</strong><br />
 With even more capacity, <strong>test error falls again</strong> because learning dynamics and architecture steer solutions toward <strong>simpler interpolants</strong>:</p>
+
 <ul>
   <li><strong>Implicit regularization of SGD</strong>: among many perfect-fit solutions, training prefers <strong>low-norm/low-complexity</strong> ones.</li>
   <li><strong>Architectural inductive bias</strong>: convolutions/attention/residuals encode structures that <strong>generalize</strong>.</li>
@@ -461,11 +473,11 @@ With even more capacity, <strong>test error falls again</strong> because learnin
 </ul>
 
 <p><strong>Which descent is “better”?</strong></p>
+
 <ul>
   <li><strong>Linear regression (classic)</strong>: often the <strong>first descent</strong> (pre-interpolation, $p&lt;n$) achieves the <strong>lowest</strong> test error; the overparameterized second descent ($p\gg n$) may <strong>not</strong> beat it.</li>
   <li><strong>Deep learning (modern practice)</strong>: typically the <strong>second descent</strong> (massively overparameterized) is <strong>better</strong> <strong>when</strong> there is <strong>enough data</strong>, <strong>SGD’s implicit bias</strong>, and <strong>good architectures/regularization</strong>. That’s why today <strong>larger models</strong> often <strong>generalize better</strong>.</li>
 </ul>
-
  </d-article>
 
       <d-appendix>
@@ -556,13 +568,13 @@ With even more capacity, <strong>test error falls again</strong> because learnin
 <script>
   (function (i, s, o, g, r, a, m) {
     i["GoogleAnalyticsObject"] = r;
-    (i[r] =
+    ((i[r] =
       i[r] ||
       function () {
         (i[r].q = i[r].q || []).push(arguments);
       }),
-      (i[r].l = 1 * new Date());
-    (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+      (i[r].l = 1 * new Date()));
+    ((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
     a.async = 1;
     a.src = g;
     m.parentNode.insertBefore(a, m);
