@@ -69,6 +69,10 @@
               
               {
                 "editor": "Shengdong Yao"
+              },
+              
+              {
+                "editor": "Bishop Devkota"
               }
               
             ],
@@ -175,7 +179,11 @@ P(y|x) = a^y*(1-a)^{(i-y)}
 \]
 </d-math>
 
-<p>Which is the bernoulli distribution</p>
+<p>This is the Bernoulli distribution with parameter $a = \sigma(z)$, where:</p>
+<ul>
+  <li>$P(y=1 \mid x) = a$</li>
+  <li>$P(y=0 \mid x) = 1 - a$</li>
+</ul>
 
 <p>The likelihood function of the bernoulli distribution is</p>
 
@@ -495,6 +503,14 @@ Logistic regression (like ADALINE and modern neural networks) optimizes based on
 \frac{\partial \mathcal{L}}{\partial w_{j,i}} = -(y_j - a_j)x_i
 \]
 </d-math>
+
+<p>Intuition:</p>
+<ul>
+  <li>If the predicted probability for class $j$ is <strong>too low</strong> ($a_j &lt; y_j$), the term $(y_j - a_j)$ is positive, so the gradient update will <strong>increase</strong> the corresponding weights.</li>
+  <li>If the model predicts class $j$ too strongly but it is not the true class, $(y_j - a_j)$ becomes negative, so the update will <strong>decrease</strong> those weights.</li>
+</ul>
+
+<p>So the gradient has the same elegant “error $\times$ input” form as binary logistic regression and ADALINE.</p>
 
 <p><strong>Vectorized form:</strong></p>
 <d-math block="">

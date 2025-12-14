@@ -242,10 +242,7 @@ Useful when labeled data is scarce or costly (e.g., medical imaging).</p>
 <p>Regularization penalizes large weights, encouraging simpler models and preventing overfitting.</p>
 
 <h3 id="41-l1-regularization-lasso">4.1 L1 Regularization (Lasso)</h3>
-
-<d-math block="">
-\mathcal{L}_{L1}=\frac{1}{n}\sum_{i=1}^n L(y^{[i]},\hat{y}^{[i]}) + \frac{\lambda}{n}\sum_j |w_j|
-</d-math>
+<p>\(\mathcal{L}_{L1} = \frac{1}{n}\sum_{i=1}^{n} L(y^{[i]}, \hat{y}^{[i]}) + \frac{\lambda}{n}\sum_{j} |w_j|\)</p>
 
 <p>-L1 Regularization (Lasso) adds the sum of the absolute values of all weights as a penalty term to the loss function, helping to control model complexity.</p>
 
@@ -264,13 +261,10 @@ Useful when labeled data is scarce or costly (e.g., medical imaging).</p>
 
 <h3 id="42-l2-regularization-ridge">4.2 L2 Regularization (Ridge)</h3>
 
-<d-math block="">
-\mathcal{L}_{L2}=\frac{1}{n}\sum_{i=1}^n L(y^{[i]},\hat{y}^{[i]}) + \frac{\lambda}{n}\sum_j w_j^2
-</d-math>
+\[\mathcal{L}_{L2} = \frac{1}{n}\sum_{i=1}^{n} L(y^{[i]}, \hat{y}^{[i]}) + \frac{\lambda}{n}\sum_{j} w_j^2\]
 
-<d-math block="">
-w_{i,j} := w_{i,j} - \eta\!\left(\frac{\partial L}{\partial w_{i,j}} + \frac{2\lambda}{n}w_{i,j}\right)
-</d-math>
+<p>w_{i,j} := w_{i,j} - \eta!\left(\frac{\partial L}{\partial w_{i,j}} + \frac{2\lambda}{n}w_{i,j}\right)
+&lt;/d-math&gt;</p>
 
 <p>-L2 Regularization (Ridge) adds the sum of squared weights as a penalty term to the loss function, discouraging large coefficients.</p>
 

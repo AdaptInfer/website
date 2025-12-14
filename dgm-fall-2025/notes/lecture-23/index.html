@@ -79,6 +79,10 @@
               
               {
                 "editor": "Mohammad Zaidan"
+              },
+              
+              {
+                "editor": "COlby Beliveau"
               }
               
             ],
@@ -167,10 +171,7 @@
 
 <p>Recall in Directed PGM for autoregressive model, the core training objective for GPT models is Maximum Likelihood Estimation (MLE). This probabilistic goal aims to maximize the log-likelihood of observed text sequences by learning to predict the next token given the preceding ones.</p>
 
-<figure>
-  <img src="/dgm-fall-2025/assets/img/notes/lecture-23/obj_of_GPT_MLE.png" style="width:80%; display:block; margin:auto;" />
-  <figcaption><strong>Figure 1.</strong> The objective of Directed PGM is MLE</figcaption>
-</figure>
+<p><img src="../assets/img/notes/lecture-23/PGM.png" alt="Directed PGM" /></p>
 
 <p>The objective is formally expressed as:</p>
 
@@ -194,6 +195,24 @@
 <h2 id="2-core-fine-tuning-methodologies">2. Core Fine-Tuning Methodologies</h2>
 
 <p>To imbue pre-trained LLMs with utility, supervised and reinforcement learning techniques are applied to align model behavior with human intent and task requirements.</p>
+
+<h3 id="why-fine-tuning-is-needed">Why Fine-Tuning Is Needed</h3>
+
+<p>Although pre-training teaches the model to predict the next token and
+captures broad language patterns, the lecture emphasizes that MLE does not
+optimize for usefulness. As shown in the slides (pages 5–6), MLE provides:</p>
+
+<ul>
+  <li>no task goals,</li>
+  <li>no explicit reward,</li>
+  <li>no notion of utility,</li>
+  <li>no guarantee of helpful behavior.</li>
+</ul>
+
+<p>This means a pre-trained model is good at modeling P(X) but not at
+following instructions, being safe, or producing task-oriented responses.
+Fine-tuning is therefore required to align the model with human objectives
+and teach it how to respond appropriately to prompts.</p>
 
 <h3 id="21-supervised-fine-tuning-sft">2.1 Supervised Fine-Tuning (SFT)</h3>
 
@@ -227,6 +246,8 @@
 <h4 id="reinforcement-learning-with-human-feedback-rlhf">Reinforcement Learning with Human Feedback (RLHF)</h4>
 
 <p>RLHF uses human preferences to train a reward model, which is then used to fine-tune the LLM. The success of this approach is critically dependent on the quality of the input data, with the source noting that <strong>“High-quality data is critical.”</strong> An open question in the field, attributed to John Schulman (2023), is whether human feedback effectively reduces model hallucinations.</p>
+
+<p><img src="../assets/img/notes/lecture-23/RLHF.png" alt="Directed PGM" /></p>
 
 <h4 id="rlhf-pipeline">RLHF Pipeline</h4>
 
@@ -333,8 +354,8 @@ For specific domains or users, we adapt the model either by:</p>
 
 <h3 id="32-low-rank-adaptation-lora">3.2 Low-Rank Adaptation (LoRA)</h3>
 
-<p>LoRA is a prominent parameter-efficient fine-tuning technique built on a key insight about model adaptation. The central hypothesis of LoRA is:</p>
-
+<p>LoRA is a prominent parameter-efficient fine-tuning technique built on a key insight about model adaptation. The central hypothesis of LoRA is:
+<img src="../assets/img/notes/lecture-23/LoRA.png" alt="LoRA" /></p>
 <ul>
   <li>The change in weights during model adaptation has a low “intrinsic rank.”</li>
 </ul>
@@ -343,11 +364,11 @@ For specific domains or users, we adapt the model either by:</p>
 
 <h3 id="33-retrieval-augmented-generation-rag">3.3 Retrieval-Augmented Generation (RAG)</h3>
 
-<p>RAG is another powerful technique for personalization and adaptation. Its core principle is that <strong>“Resource access enables personalization.”</strong> By allowing the model to retrieve information from an external knowledge base (which can include user-specific documents or data), RAG enhances the model’s responses with relevant, up-to-date, and context-aware information without requiring modifications to the model’s weights. The lecture materials also reference a specific advanced implementation, <strong>RAG of Interpretable Models (RAG-IM)</strong>.</p>
-
+<p>RAG is another powerful technique for personalization and adaptation. Its core principle is that <strong>“Resource access enables personalization.”</strong> By allowing the model to retrieve information from an external knowledge base (which can include user-specific documents or data), RAG enhances the model’s responses with relevant, up-to-date, and context-aware information without requiring modifications to the model’s weights. The lecture materials also reference a specific advanced implementation, <strong>RAG of Interpretable Models (RAG-IM)</strong>.
+<img src="../assets/img/notes/lecture-23/RAG.png" alt="RAG" /></p>
 <h3 id="34-rag-of-interpretable-models-rag-im">3.4 RAG of Interpretable Models (RAG-IM)</h3>
-
-<p>RAG-IM (Retrieval-Augmented Generation of Interpretable Models) is an approach that constructs an interpretable predictive model by retrieving and combining a set of previously stored “archetype” linear models.</p>
+<p><img src="../assets/img/notes/lecture-23/RAG-IM.png" alt="RAG-IM" />
+RAG-IM (Retrieval-Augmented Generation of Interpretable Models) is an approach that constructs an interpretable predictive model by retrieving and combining a set of previously stored “archetype” linear models.</p>
 
 <p>Given a new task or input description, the system retrieves several relevant linear models from a model database. Each retrieved model contributes its own key, query, and value representations. These representations are processed using multi-head cross-attention, which determines how strongly each archetype model should influence the final output.</p>
 

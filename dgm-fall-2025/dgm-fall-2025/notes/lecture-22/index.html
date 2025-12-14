@@ -190,11 +190,11 @@ Training now also includes reinforcement learning for alignment after pretrainin
 
 <p>LLMs are trained to maximize the log-likelihood of observed sequences:</p>
 
-\[\hat{\theta}_{\text{MLE}} = \arg\max_\theta \mathbb{E}_{x\sim P_{\text{data}}}[\log P_\theta(x)]\]
+<p>$\hat{\theta}<em>{\text{MLE}} = \arg\max</em>\theta \mathbb{E}<em>{x\sim P</em>{\text{data}}}[\log P_\theta(x)]$</p>
 
 <p>They model sequences autoregressively, factorizing the joint probability as:</p>
 
-\[P_\theta(X) = \prod_{i} \prod_{t} P_\theta(X_{i,t} \mid X_{i, &lt; t})\]
+<p>$P_\theta(X) = \prod_{i} \prod_{t} P_\theta(X_{i,t} \mid X_{i, &lt; t})$</p>
 
 <p>where (i) indexes sequences in the dataset and (t) indexes token positions within each sequence.</p>
 
@@ -276,6 +276,26 @@ Training now also includes reinforcement learning for alignment after pretrainin
   </div>
 </figure>
 
+<h3 id="why-does-scale-create-emergent-abilities">Why Does Scale Create Emergent Abilities?</h3>
+
+<p>The lecture emphasizes that while test loss improves smoothly as we scale
+model size, data, and compute (as seen in Kaplan et al. 2021), the actual
+<em>capabilities</em> of the model do not always grow smoothly. Instead, some
+abilities appear suddenly once the model crosses a certain scale.</p>
+
+<p>This happens because:</p>
+<ul>
+  <li>Larger models can represent higher-order dependencies in text.</li>
+  <li>More data exposes the model to more rare reasoning patterns.</li>
+  <li>MLE forces the model to model global structure, not just local token
+frequencies.</li>
+  <li>Transformers act as meta-learners, inferring tasks from context rather
+than explicit supervision.</li>
+</ul>
+
+<p>This contextual bridge matches the lecture slides on scaling and emergence
+(pages 12–17). :contentReference[oaicite:0]{index=0}</p>
+
 <h4 id="examples-of-emergence">Examples of Emergence</h4>
 
 <ol>
@@ -347,16 +367,13 @@ Training now also includes reinforcement learning for alignment after pretrainin
 <p>Maximum likelihood training of a language model is equivalent to
 minimizing the KL divergence from the data distribution to the model:</p>
 
-\[\begin{aligned}
-  heta_{\text{MLE}}
-&amp;= \arg\max_\theta \mathbb{E}_{x \sim P_{\text{data}}}\big[\log P_\theta(x)\big] \\
-&amp;= \arg\min_\theta \mathrm{KL}\big(P_{\text{data}} \,\|\, P_\theta\big)
-\end{aligned}\]
+<p>$\theta_{MLE}$ <br />
+$= argmax_{\theta} E_{x \sim P_{data}} [\log P_{\theta} (x)]$ <br />
+$= argmin_{\theta} KL (P_{data} || P_{\theta})$</p>
 
 <p>because</p>
 
-\[\mathrm{KL}\big(P_{\text{data}} \,\|\, P_\theta\big)
-= \mathbb{E}_{x \sim P_{\text{data}}}\big[-\log P_\theta(x)\big] + \text{const}\]
+<p>$\text{KL}(P_{\text{data}} \mid P_{\theta})= E_{x \sim P_{\text{data}}}[\log P_{\theta}(x)] + \text{const}$</p>
 
 <p><strong>Implications of this KL direction</strong></p>
 
@@ -396,11 +413,8 @@ necessarily aligned with human intents or downstream tasks.</p>
 
 <p>For an autoregressive LM at time step (t), the <strong>token-level entropy</strong> is</p>
 
-\[\begin{aligned}
-H_t
-&amp;= -\sum_v P(x_t = v \mid x_{&lt;t}) \log P(x_t = v \mid x_{&lt;t}) \\
-&amp;= \mathbb{E}_{v}\big[-\log P(x_t = v \mid x_{&lt;t})\big]
-\end{aligned}\]
+<p>$H_{t} = - \sum_v P(x_{t} = v \mid x_{&lt;t}) \log P(x_{t} = v \mid x_{&lt;t})$ <br />
+$= E_{v} [- \log P(x_{t} = v \mid x_{&lt;t})]$</p>
 
 <ul>
   <li><strong>Low entropy</strong> ⇒ the distribution is very peaked ⇒ <strong>high confidence</strong>.</li>
@@ -422,20 +436,12 @@ degenerate text; high entropy improves diversity but can hurt accuracy.</p>
 
 <p>Recall the variational inference decomposition:</p>
 
-\[\begin{aligned}
-\log p(x \mid \theta)
-&amp;= \mathbb{E}_{z \sim q}\big[\log p(x, z \mid \theta)\big] \\
-&amp;\quad + H(q) \\
-&amp;\quad + \mathrm{KL}\big(q(z \mid x) \,\|\, p(z \mid x, \theta)\big)
-\end{aligned}\]
+<p>$\log p(x \mid \theta)$ 
+$= E_{z \sim q} [\log p(x,z \mid \theta)] + H(q) + KL(q(z \mid x) || p(z \mid x, \theta))$</p>
 
 <p>This yields the <strong>Evidence Lower Bound (ELBO)</strong>:</p>
 
-\[\begin{aligned}
-\log p(x \mid \theta)
-&amp;\ge \mathbb{E}_{z \sim q}\big[\log p(x, z \mid \theta)\big] \\
-&amp;\quad + H(q)
-\end{aligned}\]
+<p>$\log p(x \mid \theta) \ge E_{z \sim q}[\log p(x,z \mid \theta)] + H(q)$</p>
 
 <ul>
   <li>Maximizing the ELBO <strong>explicitly rewards higher entropy</strong> (H(q)) of the
@@ -453,15 +459,14 @@ This often drives the model toward <strong>lower-entropy</strong> distributions.
 
 <p>Formally, the MLE objective is</p>
 
-\[\hat{\theta}_{\text{MLE}}
-= \arg\max_\theta \mathbb{E}_{x \sim P_{\text{data}}}\big[\log P_\theta(x)\big]\]
+<p>$\hat{\theta_{MLE}} = argmax_{\theta} E_{x \sim P_{data}} [\log P_{\theta}(x)]$</p>
 
 <p>Properties:</p>
 
 <ul>
   <li>It <strong>optimizes the data likelihood only</strong>, without explicitly controlling the
-entropy of (P_\theta(x)).</li>
-  <li>In practice, this frequently pushes (P_\theta(x)) toward <strong>low-entropy,
+entropy of $P_{\theta}(x)$.</li>
+  <li>In practice, this frequently pushes $P_{\theta}(x)$ toward <strong>low-entropy,
 highly peaked</strong> distributions.</li>
   <li>Consequences:
     <ul>
@@ -485,30 +490,25 @@ optimize log-likelihood.</p>
 
 <p>Add an explicit entropy bonus to the training objective:</p>
 
-\[\hat{\theta}
-=
-\arg\max_{\theta}
-\left[
-  \mathbb{E}_{x \sim P_{\mathrm{data}}} \log P_{\theta}(x)
-  + \lambda \sum_{t} H\!\left(P_{\theta}(x_t \mid x_{&lt;t})\right)
-\right]\]
+<p>$\hat{\theta} = argmax_{\theta} E_{x \sim P_{data}} [\log P_{\theta} (x)]$ 
+$+ \lambda \sum_{t} H[P_{\theta}(x_{t} \mid x_{&lt;t})]$</p>
 
-<p>where (\lambda &gt; 0) controls how strongly we encourage
+<p>where $\lambda &gt; 0$ controls how strongly we encourage
 <strong>higher-entropy token distributions</strong>.</p>
 
 <h4 id="362-label-smoothing">3.6.2 Label Smoothing</h4>
 
 <p>Instead of one-hot targets, use <strong>smoothed labels</strong> for classification:</p>
 
-\[ilde{y}_\varepsilon =
+\[\tilde{y}_{\epsilon}=
 \begin{cases}
-1 - \varepsilon, &amp; y = 1, \\
-\dfrac{\varepsilon}{V - 1}, &amp; y = 0.
+1 - \epsilon, &amp; y = 1 \\
+\displaystyle \frac{\epsilon}{|V| - 1}, &amp; y = 0
 \end{cases}\]
 
 <ul>
-  <li>(V): vocabulary size</li>
-  <li>(\varepsilon): small smoothing constant (e.g. 0.1)</li>
+  <li>$V$: vocabulary size</li>
+  <li>$\epsilon$: small smoothing constant (e.g. 0.1)</li>
 </ul>
 
 <p>Effect: discourages the model from assigning probability 1 to any token,

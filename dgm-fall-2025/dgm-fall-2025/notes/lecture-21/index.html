@@ -77,6 +77,10 @@
               
               {
                 "editor": "Mohammad Zaidan"
+              },
+              
+              {
+                "editor": "Colby Beliveau"
               }
               
             ],
@@ -265,14 +269,14 @@ y^{\langle t \rangle} = g(W_{yh} h^{\langle t \rangle})
 
 <ul>
   <li><strong>Encoder</strong>: Processes the input sequence with bidirectional attention</li>
-  <li><strong>Decoder</strong>: Generates the output sequence with masked (causal) attention and cross-attention to encoder outputs</li>
+  <li><strong>Decoder</strong>: Generates the output sequence with masked (causal) attention and cross-attention to encoder outputs
+<img src="../assets/img/notes/lecture-21/transformer.png" alt="Transformer" />
+—</li>
 </ul>
-
-<hr />
 
 <h3 id="3-self-attention-the-basic-non-learnable-form"><strong>3. Self-Attention: The Basic (Non-Learnable) Form</strong></h3>
 
-<p><em>(Ref: Slide 6)</em></p>
+<p><img src="../assets/img/notes/lecture-21/self-attention.png" alt="Self Attention" /></p>
 
 <p>Before introducing the learnable self-attention used in Transformers, let’s understand the simplest form of self-attention to grasp the core concept.</p>
 
@@ -418,9 +422,9 @@ h_i = \sum_{j=1}^{T} a_{ij} \cdot v_j
 
 <h3 id="6-the-complete-transformer-architecture"><strong>6. The Complete Transformer Architecture</strong></h3>
 
-<p><em>(Ref: Slides 10, 15–16)</em></p>
-
-<p>The original Transformer consists of two main components:</p>
+<p><em>(Ref: Slides 10, 15–16)</em>
+<img src="../assets/img/notes/lecture-21/transformer.png" alt="Transformer" />
+The original Transformer consists of two main components:</p>
 
 <h4 id="a-encoder-stack-left-side"><strong>A. Encoder Stack</strong> (Left side)</h4>
 
@@ -585,6 +589,8 @@ $</p>
 <h4 id="c-directed-probabilistic-graphical-model"><strong>C. Directed Probabilistic Graphical Model</strong></h4>
 
 <p>GPT can be viewed as a directed PGM:</p>
+
+<p><img src="../assets/img/notes/lecture-21/PGM.png" alt="Directed PGM" /></p>
 
 <p>$P_{\theta}(X) = \prod_i \prod_t P_{\theta} (X_{i,t} \mid X_{i,&lt;t})$</p>
 
@@ -911,6 +917,7 @@ $</p>
 <p><em>(Ref: Slides 27–35)</em></p>
 
 <h3 id="1-mixture-of-experts-moe-architecture"><strong>1. Mixture of Experts (MoE): Architecture</strong></h3>
+<p><img src="assets/img/notes/lecture-21/experts.png" alt="Mixture of Experts" /></p>
 
 <p>As models scale (e.g., GPT-4), <strong>Mixture of Experts (MoE)</strong> decouples total model capacity from computational cost, allowing for massive parameter counts without slowing down inference.</p>
 
@@ -919,7 +926,7 @@ $</p>
 <figure>
   <div class="row">
     <div class="col one">
-      <img src="/dgm-fall-2025/assets/img/notes/lecture21/moe_architecture.png" />
+      <img src="/assets/img/notes/lecture21/moe_architecture.png" />
     </div>
   </div>
   <figcaption>
@@ -952,9 +959,9 @@ $</p>
 
 <h4 id="c-moe-in-transformer-decoder"><strong>C. MoE in Transformer Decoder</strong></h4>
 
-<p>The FFNN layer in each Transformer block is replaced with multiple expert FFNNs:</p>
-
-<p><strong>Dense Decoder:</strong></p>
+<p>The FFNN layer in each Transformer block is replaced with multiple expert FFNNs:
+<img src="../assets/img/notes/lecture-21/mixtransformer.png" alt=" MoE in Transformer Decoder" />
+<strong>Dense Decoder:</strong></p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Layer Norm → Masked Self-Attention → Add &amp; Norm →
 Layer Norm → [FFNN] → Add &amp; Norm
@@ -1060,7 +1067,7 @@ P(Y | X) = \sum_{m} g_m(X) \cdot P_m(Y | X)
 <figure>
   <div class="row">
     <div class="col one">
-      <img src="/dgm-fall-2025/assets/img/notes/lecture21/moe_error_analysis.png" />
+      <img src="/assets/img/notes/lecture21/moe_error_analysis.png" />
     </div>
   </div>
   <figcaption>
@@ -1116,18 +1123,8 @@ P(Y | X) = \sum_{m} g_m(X) \cdot P_m(Y | X)
 </ul>
 
 <h4 id="b-serving-implications"><strong>B. Serving Implications</strong></h4>
-
-<figure>
-  <div class="row">
-    <div class="col one">
-      <img src="/dgm-fall-2025/assets/img/notes/lecture21/moe_serving.png" />
-    </div>
-  </div>
-  <figcaption>
-    <strong>MoE Serving Architecture.</strong>
-    Shows the router network selecting experts and the gating mechanism for combining expert outputs.
-  </figcaption>
-</figure>
+<p><img src="../assets/img/notes/lecture-21/expertsLLM.png" alt="Serving Architecture" />
+Shows the router network selecting experts and the gating mechanism for combining expert outputs.</p>
 
 <p><strong>Benefits:</strong></p>
 

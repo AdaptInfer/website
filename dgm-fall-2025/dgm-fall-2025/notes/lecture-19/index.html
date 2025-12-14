@@ -69,6 +69,10 @@
               
               {
                 "editor": "Reid Chen"
+              },
+              
+              {
+                "editor": "Colby Beliveau"
               }
               
             ],
@@ -195,6 +199,8 @@ become identical vectors.</li>
 
 <p>RNNs address sequential dependence using recurrent connections.</p>
 
+<p><img src="../assets/img/notes/lecture-19/MLRNN.png" alt="RNN Diagram" /></p>
+
 <h3 id="the-recurrence-equation">The Recurrence Equation</h3>
 
 \[h^{(t)} = \sigma(W_{hx}x^{(t)} + W_{hh}h^{(t-1)} + b_h)\]
@@ -213,6 +219,8 @@ become identical vectors.</li>
 <p>Unrolling converts an RNN into a deep network with depth equal to sequence length.</p>
 
 <h3 id="rnn-architectures">RNN Architectures</h3>
+
+<p><img src="../assets/img/notes/lecture-19/Sequence_task.png" alt="" /></p>
 
 <ul>
   <li><strong>Many-to-One:</strong> sentiment classification</li>
@@ -277,6 +285,8 @@ become identical vectors.</li>
 <h2 id="long-short-term-memory-lstm">Long Short-Term Memory (LSTM)</h2>
 
 <p>LSTMs solve gradient issues by introducing a <strong>cell state</strong> $c_t$ that acts as a memory highway.</p>
+
+<p><img src="../assets/img/notes/lecture-19/LSTM.png" alt="LSTM Diagram" /></p>
 
 <h3 id="lstm-gate-equations">LSTM Gate Equations</h3>
 
