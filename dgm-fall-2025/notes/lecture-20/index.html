@@ -255,6 +255,21 @@ We use a dot product when computing attention weights. Dot products are similar 
 
 <p><img src="/dgm-fall-2025/assets/img/notes/lecture-20/BasicSelfAttention.png" /></p>
 
+<h3 id="why-do-we-need-q-k-and-v">Why Do We Need Q, K, and V?</h3>
+
+<p>The basic self-attention mechanism does not include any learnable parameters — it only uses raw dot-product similarity between embeddings. This limits what the model can express.<br />
+Transformers fix this by introducing three trainable matrices:</p>
+
+<ul>
+  <li><strong>Query (Q):</strong> What the current token is looking for.</li>
+  <li><strong>Key (K):</strong> What information each token offers.</li>
+  <li><strong>Value (V):</strong> The actual content carried by the token.</li>
+</ul>
+
+<p>By learning Q, K, and V, the model can decide <em>what relationships matter</em> and <em>how information should flow</em> across the sequence.</p>
+
+<p>This matches the explanation in the lecture slides on pages 33–36. :contentReference[oaicite:0]{index=0}</p>
+
 <h3 id="learnable-self-attention">Learnable Self Attention</h3>
 
 <p>The basic version has no learnable parameters. To fix this, we add three trainable weight matrices to be multiplied by input sequence embeddings: <strong>Query</strong>, <strong>Key</strong>, and <strong>Value</strong>.</p>

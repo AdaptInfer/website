@@ -164,91 +164,85 @@
 
       <d-article> <h2 id="phases-of-model-training">Phases of Model Training</h2>
 
+<p>The training pipeline for modern Large Language Models (LLMs) generally follows a progression from broad pattern matching to specific task alignment.</p>
+
 <ul>
-  <li><strong>Pre-training</strong>: The model is first trained unsupervised on massive datasets to learn general patterns (e.g., “train on everything available”).</li>
-  <li><strong>Fine-tuning</strong>: The model is then refined for specific goals using supervised learning, reinforcement learning, or instruction-following tasks.</li>
-  <li><strong>In-context learning</strong>: During usage, prompts and examples in the input guide the model to produce outputs adapted to user intent.</li>
+  <li><strong>Random Model</strong>: The starting point of the architecture.</li>
+  <li><strong>Pre-training</strong>: The model is trained unsupervised on massive datasets (e.g., Common Crawl) to learn general patterns.</li>
+  <li><strong>Fine-tuning</strong>: The pre-trained model is refined using In-Domain Data via Supervised Fine-Tuning (SFT) or Reinforcement Learning from Human Feedback (RLHF).</li>
+  <li><strong>In-context learning</strong>: During usage, prompts and examples in the input guide the model to produce outputs adapted to user intent without updating weights.</li>
 </ul>
 
 <h2 id="why-explainability-matters">Why Explainability Matters</h2>
 
+<p>Models trained on large data are rarely naturally interpretable to humans. Historically, the field has moved through several phases:</p>
 <ul>
-  <li>Models trained on large data are rarely naturally interpretable to humans.</li>
-  <li>Making models understandable is crucial for safety, trust, debugging, and meeting regulatory or ethical standards.</li>
+  <li><strong>2016</strong>: Interpretability is invoked when metrics (like accuracy) are imperfect proxies for the true objective.</li>
+  <li><strong>2017</strong>: Doshi-Velez &amp; Kim defined three modes of evaluation: application-grounded, human-grounded, and functionally-grounded.</li>
+  <li><strong>2017-2020</strong>: Approaches fragmented into Post-Hoc (industry standard), Transparency (niche), and Mechanistic (technically deep).</li>
 </ul>
 
 <h2 id="fairness--sensitive-features">Fairness &amp; Sensitive Features</h2>
 
-<ul>
-  <li>Merely dropping sensitive features like race from data does <strong>not</strong> eliminate their influence—biases can be encoded via correlated variables.</li>
-  <li>Preferred approaches:
-    <ul>
-      <li>Train with sensitive features, then “remove” their effects post-hoc.</li>
-      <li>Use loss functions that explicitly encourage invariance to sensitive features (e.g., penalizing models if predictions vary by race).</li>
-    </ul>
-  </li>
-</ul>
+<p>Merely dropping sensitive features like “race” from training data does <strong>not</strong> ensure the model is invariant to them, as biases can be encoded via correlated variables.</p>
 
-<h3 id="key-example">Key Example:</h3>
-
-<ul>
-  <li>If a healthcare model is trained after removing race, it may still encode race via other variables (like ZIP code, income), hiding bias rather than eliminating it.</li>
-</ul>
+<p><strong>Strategies for Invariance:</strong></p>
+<ol>
+  <li><strong>Remove the feature</strong>: Often insufficient due to correlations.</li>
+  <li><strong>Train then clean</strong>: Train on all features, then attempt to remove the learned component associated with the sensitive feature.</li>
+  <li><strong>Test-time blinding</strong>: Drop the feature only during inference.</li>
+  <li><strong>Modified Loss</strong>: Train with a loss function specifically designed to encourage invariant predictions.</li>
+</ol>
 
 <h2 id="interpretability-approaches">Interpretability Approaches</h2>
 
 <h3 id="1-post-hoc-explanations">1. Post-hoc Explanations</h3>
 
+<p>These methods attempt to explain a black-box model after it has been trained. While tools like LIME, SHAP, and Integrated Gradients became industry standards, they face significant criticism regarding their fidelity.</p>
+
 <ul>
-  <li><strong>LIME</strong> (Locally Interpretable Model-agnostic Explanations): Approximates model behavior with simpler models locally. The optimization objective is:</li>
+  <li>
+    <p><strong>LIME (Locally Interpretable Model-agnostic Explanations)</strong>: Approximates model behavior with simpler models locally.
+\(\xi(x) = \operatorname*{arg\,min}_{g \in G} \mathcal{L}(f, g, \pi_x) + \Omega(g)\)
+<em>Critique</em>: It is easy to fool LIME and SHAP (Slack et al. 2020).</p>
+  </li>
+  <li>
+    <p><strong>SHAP (SHapley Additive exPlanations)</strong>: Uses Shapley values to assign contribution scores.
+\(\phi_i = \sum_{S \subseteq N \setminus \{i\}} \frac{|S|!(|N|-|S|-1)!}{|N|!} [f(S \cup \{i\}) - f(S)]\)</p>
+  </li>
+  <li>
+    <p><strong>Integrated Gradients</strong>: An axiomatic attribution method.
+\(IG_i(x) = (x_i - x'_i) \times \int_{\alpha=0}^{1} \frac{\partial F(x' + \alpha(x - x'))}{\partial x_i} d\alpha\)</p>
+  </li>
 </ul>
 
-\[\xi(x) = \arg\min_{g \in G} \mathcal{L}(f, g, \pi_x) + \Omega(g)\]
-
-<p>where $f$ is the original model, $g$ is an interpretable local model, $\pi_x$ is a proximity weight function around sample $x$, and $\Omega(g)$ is a complexity penalty.</p>
-
+<p><strong>Cracks in Post-Hoc Explanations:</strong></p>
 <ul>
-  <li><strong>SHAP</strong> (SHapley Additive exPlanations): Uses Shapley values from cooperative game theory to assign contribution scores to features. The Shapley value for feature $i$ is:</li>
-</ul>
-
-\[\phi_i = \sum_{S \subseteq N \setminus \{i\}} \frac{|S|!(|N|-|S|-1)!}{|N|!} [f(S \cup \{i\}) - f(S)]\]
-
-<ul>
-  <li><strong>Integrated Gradients</strong>: An axiomatic attribution method for neural networks. For input $x$ and baseline $x’$:</li>
-</ul>
-
-\[IG_i(x) = (x_i - x'_i) \times \int_{\alpha=0}^{1} \frac{\partial F(x' + \alpha(x - x'))}{\partial x_i} d\alpha\]
-
-<ul>
-  <li>These methods help interpret what influenced a specific prediction, but may not capture global model logic.</li>
+  <li><strong>Insensitivity</strong>: Saliency maps can be insensitive to model weights (Adebayo et al. 2018).</li>
+  <li><strong>Plausibility vs. Faithfulness</strong>: There is a gap between an explanation looking reasonable to a human and it actually reflecting the model’s computation (Jacovi &amp; Goldberg 2020).</li>
+  <li><strong>High-Stakes</strong>: Rudin (2019) argues for abandoning post-hoc methods entirely in high-stakes settings.</li>
 </ul>
 
 <h3 id="2-transparency-by-design">2. Transparency by Design</h3>
 
+<p>Instead of explaining a black box, use inherently interpretable models.</p>
+
 <ul>
-  <li>Use inherently interpretable models:
+  <li><strong>Generalized Additive Models (GAMs)</strong>: Decompose complex outcomes into a sum of univariate functions: $F(x) = \beta_0 + f_1(x_1) + … + f_r(x_r)$.
     <ul>
-      <li><strong>Additive Models / Generalized Additive Models (GAMs)</strong>: Model output is a sum of simple functions of each feature. Easy to visualize and analyze each feature’s impact.</li>
-      <li><strong>Monotonic Nets</strong>: Guarantee certain variables affect predictions only in one direction.</li>
+      <li><em>Pros</em>: Components can be individually visualized.</li>
+      <li><em>Cons</em>: Niche application, often used in healthcare/tabular data rather than unstructured data.</li>
     </ul>
   </li>
-  <li>Pros: Clear, component-wise logic.</li>
-  <li>Cons: May underperform compared to black-box models on complex tasks.</li>
+  <li><strong>Monotonic Nets</strong>: Constrain variables to affect predictions in only one direction.</li>
 </ul>
 
 <h3 id="3-mechanistic-interpretability">3. Mechanistic Interpretability</h3>
 
 <ul>
-  <li>Analyze what neural network units/layers are “doing” internally (e.g., finding circuits, probing activations).</li>
-  <li>Allows understanding high-level model “motifs.”</li>
-  <li>Still an active research area with many challenges.</li>
-</ul>
-
-<h4 id="caveats">Caveats</h4>
-
-<ul>
-  <li>All interpretability methods make simplifying assumptions; adversarial examples can break explanations.</li>
-  <li>The complexity of modern models means explanations are always partial or approximate.</li>
+  <li>Focuses on circuits, probing, and feature geometry.</li>
+  <li><strong>Reverse Engineering</strong>: Extracting components from trained models.</li>
+  <li><strong>Concept-Based</strong>: Attempting to incorporate human-understandable concepts from the start of training.</li>
 </ul>
 
 <h3 id="summary-interpretability-methods-comparison">Summary: Interpretability Methods Comparison</h3>
@@ -256,134 +250,100 @@
 <table>
   <thead>
     <tr>
-      <th>Method</th>
-      <th>Type</th>
-      <th>Scope</th>
-      <th>Pros</th>
-      <th>Cons</th>
+      <th style="text-align: left">Method</th>
+      <th style="text-align: left">Type</th>
+      <th style="text-align: left">Scope</th>
+      <th style="text-align: left">Adoption</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td>LIME</td>
-      <td>Post-hoc</td>
-      <td>Local</td>
-      <td>Model-agnostic, intuitive</td>
-      <td>Instability, sampling dependent</td>
+      <td style="text-align: left"><strong>LIME, SHAP, IG</strong></td>
+      <td style="text-align: left">Post-Hoc</td>
+      <td style="text-align: left">Local/Global</td>
+      <td style="text-align: left"><strong>Industry Standard</strong>: Popular, look convincing, but don’t guarantee fidelity.</td>
     </tr>
     <tr>
-      <td>SHAP</td>
-      <td>Post-hoc</td>
-      <td>Local/Global</td>
-      <td>Theoretically grounded, consistent</td>
-      <td>Computationally expensive</td>
+      <td style="text-align: left"><strong>GAMs, Monotonic Nets</strong></td>
+      <td style="text-align: left">Transparency</td>
+      <td style="text-align: left">Global</td>
+      <td style="text-align: left"><strong>Niche</strong>: Primarily used in healthcare and tabular settings.</td>
     </tr>
     <tr>
-      <td>Integrated Gradients</td>
-      <td>Post-hoc</td>
-      <td>Local</td>
-      <td>Axiomatic, gradient-based</td>
-      <td>Requires differentiable model</td>
+      <td style="text-align: left"><strong>Circuits, Probing</strong></td>
+      <td style="text-align: left">Mechanistic</td>
+      <td style="text-align: left">Internal</td>
+      <td style="text-align: left"><strong>Research</strong>: Technically deep, rarely user-facing.</td>
     </tr>
   </tbody>
 </table>
 
 <h2 id="scaling-laws-vs-interpretability">Scaling Laws vs. Interpretability</h2>
 
+<p>“Scale is all you need”? (Kaplan et al. 2021) suggests that language modeling performance improves smoothly according to power laws as we increase three factors:</p>
+<ol>
+  <li><strong>Model Size</strong> (Parameters)</li>
+  <li><strong>Dataset Size</strong> (Tokens)</li>
+  <li><strong>Compute</strong> (PF-days)</li>
+</ol>
+
+<p>Empirical performance follows a power-law relationship: $L(x) = (x/x_0)^{-\alpha}$ provided it is not bottlenecked by the other two factors. However, as models scale, they become less interpretable.</p>
+
+<h2 id="system-design-view-of-interpretability">System Design View of Interpretability</h2>
+
+<p>Interpretability is not just about debugging; it is a system design feature. It allows us to move from <strong>Individual Stats</strong> (like a player’s points per game) to <strong>System Stats</strong> (like a lineup’s net rating), which correlates better with winning.</p>
+
+<p>The three main system design benefits are:</p>
+<ol>
+  <li><strong>Information Acquisition</strong></li>
+  <li><strong>Value Alignment</strong></li>
+  <li><strong>Modularity</strong></li>
+</ol>
+
+<h3 id="1-information-acquisition">1. Information Acquisition</h3>
+<p><em>What should we measure?</em>
+Predictive models often treat measurements as fixed, but in biomedicine and other fields, measurement is active and costly. Interpretability helps identify which measurements are actually driving risk.</p>
+
+<p><strong>Case Study: Severe Maternal Morbidity (SMM)</strong>
+Using a GAM to predict SMM revealed that the <strong>BabySize-MaternalHeight Ratio</strong> was the #1 feature for importance—more critical than preeclampsia.</p>
 <ul>
-  <li><strong>Scaling Laws</strong>: Increasing model/data size (e.g., as seen in GPT series) linearly improves performance on many tasks.</li>
-  <li><strong>Challenge</strong>: As models scale, their decisions become harder to interpret for humans.</li>
-  <li><strong>System-level Design</strong>: Breaking up AI systems into interpretable modules/components can support both performance and understanding.</li>
+  <li><em>Insight</em>: We just happened to have maternal height data available; interpretability forced the question: “What should we actually be measuring clinically?”.</li>
 </ul>
 
-<h2 id="information-acquisition">Information Acquisition</h2>
-
-<p>What should we measure?</p>
-
-<ul>
-  <li>Predictive models often take measurements as fixed.</li>
-  <li>In practice, measurement is active and costly.</li>
-  <li>Interpretability can highlight missing but valuable information.</li>
-</ul>
-
-<h2 id="modularity">Modularity</h2>
-
-<p>Swappable, testable Components</p>
+<h3 id="2-value-alignment">2. Value Alignment</h3>
+<p><em>What did the model learn to optimize?</em>
+We must connect probabilistic objectives (loss functions) to value-based objectives (human goals).</p>
 
 <ul>
-  <li>Interpretability connects component-level performance to system-level performance.</li>
-  <li>Each component has a job, new versions can be tested and adopted.</li>
-  <li>Baking in modularity can help understand models better for longer. As models themselves get more complex, components will still be understandable.</li>
+  <li><strong>Outer Alignment</strong>: Is the loss function we train on actually aligned with human goals?</li>
+  <li><strong>Inner Alignment</strong>: Given that loss, does the trained model’s internal representation faithfully implement that goal, even off-distribution?</li>
 </ul>
 
-<h2 id="value-alignment">Value Alignment</h2>
+<p><strong>Jagged Performance &amp; Misalignment</strong>
+Current AI exhibits a “jagged frontier”: it is unbelievably intelligent in some areas but fails at specific tasks (e.g., coding bugs). This suggests a lack of robust inner alignment.</p>
 
-<p>What did the model learn to optimize?</p>
-
+<p><strong>The “Goodhart’s Law” of Biomarkers</strong>
+“When a biomarker is used to guide treatment decisions, it ceases to predict outcomes”.</p>
 <ul>
-  <li>Connect probabilistic objectives to value-based objectives.</li>
-  <li><strong>Outer alignment</strong>: Is the objective/loss function well-chosen and reflective of what we truly value?</li>
-  <li><strong>Inner alignment</strong>: Does the model optimize the given objective robustly, including in new or unexpected settings?</li>
+  <li><em>Example</em>: In pneumonia patients, high Blood Urea Nitrogen (BUN) predicts mortality. However, Creatinine levels show a “U-shaped” risk curve where low levels (usually healthy) showed higher risk—likely because those patients had low muscle mass (frailty).</li>
+  <li><em>Risk</em>: If a data-driven system learns that kidney failure treatments improve survival, it might learn to “put everyone into kidney failure” to minimize the predicted loss. This is accurate for the loss function, but misaligned with patient health.</li>
 </ul>
 
-<table>
-  <thead>
-    <tr>
-      <th>Concept</th>
-      <th>Definition</th>
-      <th>Key Question</th>
-      <th>Risk if Violated</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Outer Alignment</td>
-      <td>Objective matches human values</td>
-      <td>Is the loss function correct?</td>
-      <td>Optimizing wrong goal</td>
-    </tr>
-    <tr>
-      <td>Inner Alignment</td>
-      <td>Model robustly optimizes objective</td>
-      <td>Does model generalize safely?</td>
-      <td>Unexpected behavior in new settings</td>
-    </tr>
-  </tbody>
-</table>
-
-<h3 id="inner-alignment-in-practice-jagged-performance">Inner Alignment in Practice: Jagged Performance</h3>
-
-<p>Even if a model performs well on average, it may fail catastrophically on specific sub-tasks.
-This “<strong>jagged performance</strong>” is a key sign of poor inner alignment: the model has not truly learned a robust mechanism that generalizes safely.</p>
-
-<p><strong>Examples of jagged performance:</strong></p>
-
-<ul>
-  <li>Excellent benchmark performance but unexpected mistakes on rare or adversarial cases</li>
-  <li>Strong overall accuracy but isolated “holes” where behavior breaks unpredictably</li>
-</ul>
-
-<p>This connects directly to the question of whether the model truly optimizes the intended objective across all conditions.</p>
-
-<h3 id="risks-of-misalignment">Risks of Misalignment</h3>
-
-<ul>
-  <li>Example: Medical models learned that patients who received aggressive kidney failure treatment had better survival, so the model might naively recommend putting all patients into kidney failure—this is accurate but unsafe if used blindly!</li>
-  <li>Different intended uses (risk prediction, benchmarking, treatment) require different notions of alignment.</li>
-  <li>When a specific measurement becomes a target, it ceases to be a good measure.</li>
-</ul>
+<h3 id="3-modularity">3. Modularity</h3>
+<p><em>Swappable, testable components.</em>
+Interpretability allows us to connect component-level performance to system-level performance. If we can reverse-engineer models or build them with concept-based components, we can test and swap individual parts (like “modules”) as better versions become available.</p>
 
 <h2 id="open-challenges--takeaways">Open Challenges &amp; Takeaways</h2>
 
+<p>As Ilya Sutskever noted, “It’s back to the age of research again, just with big computers”.</p>
+
 <ul>
-  <li><strong>Reinforcement Learning (RL)</strong>: Powerful but hard to keep robust/align, especially as task complexity grows.</li>
-  <li><strong>Emotional Value Functions</strong>: Human emotions serve as values that help guide decisions across contexts. Current AI lacks that as rewards are defined externally. Those rewards change as the problem being solved changes. As a result, what if we can instill emotions that can provide stable rewards across situations without having to retrain and redefine the problem?</li>
-  <li><strong>Continual Learning</strong>: Current paradigm retrains static models, while human-like intelligence involves continuous adaptation.</li>
-  <li><strong>Formalizing Alignment</strong>: Need precise frameworks for aligning models with varying real-world values and use-cases.</li>
-  <li><strong>Ethics &amp; Responsibility</strong>: Decisions made by future AI practitioners will have major, possibly societal-level impacts.</li>
-  <li><strong>Economic &amp; Societal Impact</strong>: Superhuman models will reshape industries and power dynamics; open debate and responsible innovation are essential.</li>
-  <li><strong>Jagged Performance</strong>: Models appear to have a sizable difference in utility based on the task it is executing. We must determine whether this jaggedness is a bug or a feature. If it is the former then we must figure out how to smooth it out. If it is the latter, then alignment is even more important to optimizing the utility of the tasks that we want to accomplish.</li>
-  <li><strong>Optimal Information Collection</strong>: The case study demonstrates the utility of data previously assumed unrelated. This highlights the balance between the low efficiency of gathering as much data as possible about everything, with the high efficiency of only gathering information that is presumed to be pertinent. Finding an optimal solution is key.</li>
+  <li><strong>Economic Impact</strong>: Models show impressive eval performance but lack commensurate real-world economic impact.</li>
+  <li><strong>Jaggedness</strong>: Models repeat bugs and have uneven capabilities.</li>
+  <li><strong>Emotional/Value Functions</strong>: Humans use emotions as robust value functions to guide generalization. AI currently lacks this mechanism.</li>
+  <li><strong>Data Walls</strong>: Pre-training scales uniformly but is hitting data limits. RL consumes more compute but needs better efficiency via value functions.</li>
+  <li><strong>Verifiable Rewards</strong>: Scaling RL requires rewards that can be verified at scale.</li>
+  <li><strong>Symbolic Reasoning</strong>: Combining LLMs with symbolic reasoning and graphical models remains an open problem.</li>
 </ul>
  </d-article>
 
