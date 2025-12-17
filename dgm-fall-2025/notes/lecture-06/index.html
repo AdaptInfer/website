@@ -157,7 +157,17 @@
 
       <d-byline></d-byline>
 
-      <d-article> <h2 id="1-introduction">1. Introduction</h2>
+      <d-article> <h2 id="key-takeaways">Key Takeaways</h2>
+
+<ul>
+  <li>Automatic differentiation allows PyTorch to compute gradients <strong>exactly and efficiently</strong>.</li>
+  <li>Computation graphs encode how values depend on each other and enable backpropagation.</li>
+  <li>PyTorch uses <strong>reverse-mode autodiff</strong>, which is efficient for deep learning.</li>
+  <li>Gradients are accumulated in <code class="language-plaintext highlighter-rouge">.grad</code> and must be reset each iteration.</li>
+  <li>Dynamic computation graphs allow flexible model definitions using standard Python code.</li>
+</ul>
+
+<h2 id="1-introduction">1. Introduction</h2>
 
 <p>Training deep neural networks centers on minimizing a scalar loss via gradient-based optimization.<br />
 Two pillars enable this:</p>
@@ -170,6 +180,18 @@ Two pillars enable this:</p>
 <p>Modern frameworks automate derivative calculations through <strong>automatic differentiation (autodiff)</strong>.</p>
 
 <hr />
+
+<h2 id="learning-goals">Learning Goals</h2>
+
+<p>By the end of this lecture, you should be able to:</p>
+
+<ul>
+  <li>Explain what <strong>automatic differentiation</strong> is and why it is used in deep learning.</li>
+  <li>Understand how <strong>computation graphs</strong> represent mathematical expressions.</li>
+  <li>Apply the <strong>chain rule</strong> on computation graphs.</li>
+  <li>Use PyTorch’s <strong>autograd</strong> system to compute gradients.</li>
+  <li>Implement and debug a basic PyTorch training loop.</li>
+</ul>
 
 <h2 id="2-pytorch-resources">2. PyTorch Resources</h2>
 
@@ -187,6 +209,10 @@ Two pillars enable this:</p>
 
 <p>A computation graph is a directed acyclic graph (DAG) representing an expression as simple ops (nodes) with data dependencies (edges).<br />
 It underpins forward evaluation and reverse-mode gradient computation.</p>
+
+<p><strong>Key Connection :</strong><br />
+In PyTorch, computation graphs are <strong>built dynamically during the forward pass (define-by-run)</strong>.<br />
+When <code class="language-plaintext highlighter-rouge">backward()</code> is called, PyTorch traverses this graph in reverse order and applies the chain rule automatically.</p>
 
 <h3 id="chain-rule-on-graphs">Chain Rule on Graphs</h3>
 
@@ -254,7 +280,10 @@ $end:math:display$
 
 <ul>
   <li><strong>Reverse mode (backprop)</strong>: efficient when a scalar loss depends on many parameters (typical in DL).</li>
-  <li><strong>Forward mode</strong>: efficient when #inputs ≪ #outputs (less common in DL).</li>
+  <li><strong>Forward mode</strong>: efficient when #inputs ≪ #outputs (less common in DL).
+<strong>Why Reverse Mode?:</strong><br />
+Deep learning models typically have <strong>millions of parameters</strong> but a <strong>single scalar loss</strong>.<br />
+Reverse-mode autodiff computes gradients with respect to all parameters in one backward pass, making it far more efficient than forward-mode for neural networks.</li>
 </ul>
 
 <h3 id="autograd-workflow">Autograd Workflow</h3>
@@ -337,6 +366,10 @@ $end:math:display$
 </span>    <span class="n">loss</span><span class="p">.</span><span class="n">backward</span><span class="p">()</span>              <span class="c1"># Backward pass: compute dLoss/dW for each parameter
 </span>    <span class="n">optimizer</span><span class="p">.</span><span class="n">step</span><span class="p">()</span>             <span class="c1"># Update parameters: W := W - lr * dLoss/dW
 </span></code></pre></div></div>
+
+<p><strong>Takeaway:</strong><br />
+The forward pass builds the computation graph, and <code class="language-plaintext highlighter-rouge">loss.backward()</code> uses that graph to compute gradients.<br />
+The optimizer then updates parameters, completing one gradient descent step.</p>
 
 <h3 id="good-practices">Good Practices</h3>
 

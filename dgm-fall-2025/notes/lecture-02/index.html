@@ -9,7 +9,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
   <title>
-    STAT 453 | Lecture 02
+    STAT 453 | Lecture 02 — A Brief History of Deep Learning
   </title>
   <meta name="description" content="STAT 453 - University of Wisconsin-Madison - Fall 2025
 " />
@@ -39,8 +39,8 @@
   <d-front-matter>
     <script type="text/json">
       {
-            "title": "Lecture 02",
-            "description": "A Brief History of Deep Learning",
+            "title": "Lecture 02 — A Brief History of Deep Learning",
+            "description": "Improved lecture notes for STAT 453",
             "published": "September 8, 2025",
             "lecturers": [
               
@@ -53,28 +53,11 @@
             "authors": [
               
               {
-                "author": "Aster Bi"
-              },
-              
-              {
-                "author": ""
-              },
-              
-              {
-                "author": "Mridula Geddam"
-              },
-              
-              {
-                "author": ""
+                "author": "Abel Zewdie"
               }
               
             ],
             "editors": [
-              
-              {
-                "editor": "Ben Lengerich",
-                "editorURL": "https://adaptinfer.org"
-              }
               
             ],
             "katex": {
@@ -148,53 +131,71 @@
 
     <div class="page-content">
       <d-title>
-        <h1>Lecture 02</h1>
-        <p>A Brief History of Deep Learning</p>
+        <h1>Lecture 02 — A Brief History of Deep Learning</h1>
+        <p>Improved lecture notes for STAT 453</p>
       </d-title>
 
       <d-byline></d-byline>
 
-      <d-article> <h2 id="reminders">Reminders</h2>
+      <d-article> <blockquote>
+  <p><strong>Course:</strong> STAT 453 — Introduction to Deep Learning and Generative Models<br />
+<strong>Lecture:</strong> 02 — A Brief History of Deep Learning<br />
+<strong>Lecturer:</strong> Ben Lengerich<br />
+<strong>Notes prepared and improved by:</strong> Abel Zewdie</p>
+</blockquote>
+
+<hr />
+
+<h2 id="reminders">Reminders</h2>
 
 <ul>
-  <li>If you intend to scribe for a class lecture, only sign up once.</li>
-  <li>All the recorded lectures are in Kaltura.</li>
-  <li><strong>HW1</strong> is posted on the course website. It is due on <strong>September 19</strong> via Canvas.</li>
-  <li>Assignment: Implement a perceptron in Python (basic one-layer neural network).</li>
+  <li>If you intend to scribe for a class lecture, only sign up <strong>once</strong>.</li>
+  <li>All recorded lectures are available on <strong>Kaltura</strong>.</li>
+  <li><strong>HW1</strong> is posted on the course website.
+    <ul>
+      <li><strong>Due:</strong> September 19 (via Canvas)</li>
+      <li><strong>Assignment:</strong> Implement a perceptron in Python (basic one-layer neural network).</li>
+    </ul>
+  </li>
 </ul>
 
 <hr />
 
-<h2 id="recap">Recap</h2>
+<h2 id="recap-what-is-machine-learning">Recap: What Is Machine Learning?</h2>
 
-<p>Formally, a computer program is said to learn from experience $ℇ$ with respect to some task $𝒯$ and performance measure $𝒫$ if its performance at $𝒯$ as measured by $𝒫$ improves with $ℇ$.</p>
+<p>Formally, a computer program is said to <strong>learn</strong> from experience<br />
+( \mathcal{E} ), with respect to some task ( \mathcal{T} ) and performance
+measure ( \mathcal{P} ), if its performance at ( \mathcal{T} ), as measured
+by ( \mathcal{P} ), improves with ( \mathcal{E} ).</p>
 
 <figure>
-  <img src="../../assets/img/notes/lecture-02/Recap.png" alt="" />
+  <img src="../../assets/img/notes/lecture-02/Recap.png" alt="Definition of machine learning" />
 </figure>
 
 <hr />
 
-<h2 id="structured-data">Structured data</h2>
+<h2 id="data-representation">Data Representation</h2>
+
+<h3 id="structured-data">Structured Data</h3>
 
 <ul>
-  <li>Stacking feature vectors will result in a feature matrix.</li>
-  <li>$n$ indexes = number of samples.</li>
-  <li>$m$ indexes = number of features.</li>
+  <li>Stacking feature vectors results in a <strong>feature (design) matrix</strong></li>
+  <li>( n ): number of samples</li>
+  <li>( m ): number of features</li>
 </ul>
 
-<h2 id="unstructured-data">Unstructured data</h2>
+<h3 id="unstructured-data">Unstructured Data</h3>
 
 <ul>
-  <li>Images (full of pixels that are not labeled).</li>
-  <li><strong>Convolutional Neural Networks</strong>:
+  <li>Images consist of raw pixel values and are not naturally labeled</li>
+  <li><strong>Convolutional Neural Networks (CNNs)</strong> represent image data as:
     <ul>
-      <li>1st entry = number of samples.</li>
-      <li>2nd entry = number of channels (1 = grayscale, 3 = color).</li>
-      <li>3rd and 4th = height and width.</li>
-      <li>NCHW representation.</li>
+      <li>1st dimension: number of samples</li>
+      <li>2nd dimension: number of channels (1 = grayscale, 3 = RGB)</li>
+      <li>3rd and 4th dimensions: height and width</li>
     </ul>
   </li>
+  <li>This format is known as <strong>NCHW representation</strong></li>
 </ul>
 
 <hr />
@@ -202,11 +203,11 @@
 <h2 id="machine-learning-jargon">Machine Learning Jargon</h2>
 
 <ul>
-  <li><strong>Training a model</strong> = fitting a model = parameterizing a model = learning from data.</li>
-  <li><strong>Training example</strong> = record, instance, sample.</li>
-  <li><strong>Feature</strong> = observation, predictor, variable, independent variable, input, attribute, covariate.</li>
-  <li><strong>Target</strong> = outcome, ground truth, output, response variable, dependent variable, label.</li>
-  <li><strong>Output/Prediction</strong> = model’s estimate of the target.</li>
+  <li><strong>Training a model:</strong> fitting / parameterizing a model / learning from data</li>
+  <li><strong>Training example:</strong> record, instance, sample</li>
+  <li><strong>Feature:</strong> observation, predictor, input, independent variable, covariate</li>
+  <li><strong>Target:</strong> outcome, ground truth, output, response variable, label</li>
+  <li><strong>Prediction:</strong> the model’s estimate of the target</li>
 </ul>
 
 <hr />
@@ -214,124 +215,131 @@
 <h2 id="history-of-machine-learning">History of Machine Learning</h2>
 
 <figure>
-  <img src="../../assets/img/notes/lecture-02/lec2-1.png" alt="" />
+  <img src="../../assets/img/notes/lecture-02/lec2-1.png" alt="Timeline of machine learning methods" />
 </figure>
 
 <ul>
-  <li><strong>Perceptrons</strong>: Simple, one-layer network (early optimism).</li>
-  <li><strong>KNN</strong>: With unlimited data, ML systems approach k-nearest neighbors. Key = lookup of most similar sample.</li>
-  <li><strong>Decision tree</strong>: Deterministic, interpretable models.</li>
-  <li><strong>Neural networks</strong>: Comeback after skepticism; concern was too many parameters vs. samples.</li>
-  <li><strong>AI Winter (1990s–2000s)</strong>: Neural nets didn’t perform well, but research continued.</li>
-  <li><strong>Deep neural networks</strong>: Hardware + large datasets allowed training of large models → accuracy improved.</li>
-  <li><strong>Overparameterized models</strong>: Inductive biases guide solutions even without classical guarantees.</li>
+  <li><strong>Perceptrons:</strong> Simple one-layer networks; early optimism</li>
+  <li><strong>k-Nearest Neighbors (kNN):</strong> Learning via similarity-based lookup</li>
+  <li><strong>Decision Trees:</strong> Deterministic and interpretable models</li>
+  <li><strong>Neural Networks:</strong> Renewed interest after early skepticism</li>
+  <li><strong>AI Winter (1990s–2000s):</strong> Neural networks underperformed, but research continued</li>
+  <li><strong>Deep Neural Networks:</strong> Enabled by improved hardware and large datasets</li>
+  <li><strong>Overparameterized Models:</strong> Inductive biases guide learning despite weak classical guarantees</li>
 </ul>
 
 <figure>
-  <img src="../../assets/img/notes/lecture-02/lec2-2.png" alt="" />
+  <img src="../../assets/img/notes/lecture-02/lec2-2.png" alt="Historical trends in neural networks" />
 </figure>
 
 <hr />
 
 <h2 id="artificial-neurons-and-perceptrons">Artificial Neurons and Perceptrons</h2>
 
+<p>Neural computation models were first discussed in <strong>1943</strong> by McCulloch and Pitts.</p>
+
+<figure>
+  <img src="../../assets/img/notes/lecture-02/lec2-2.png" alt="McCulloch-Pitts neuron model" />
+</figure>
+
 <ul>
-  <li>Neural model first discussed in 1943 (McCulloch &amp; Pitts).
-    <figure>
-      <img src="../../assets/img/notes/lecture-02/lec2-2.png" alt="" />
-  </figure>
-    <ul>
-      <li>Mimicked neuroscience behaviors.</li>
-      <li>Inputs with weights (+1, –1) + threshold.</li>
-      <li>Excitatory vs inhibitory signals.</li>
-    </ul>
-  </li>
-  <li><strong>Perceptrons</strong>:
-    <figure>
-      <img src="../../assets/img/notes/lecture-02/lec2-3.png" alt="" />
-  </figure>
-    <ul>
-      <li>Horizontal = input, vertical = output.</li>
-      <li>Apply activation functions (tanh, sigmoid).</li>
-      <li>Consider regression problem $f: X \rightarrow Y$ for scalar $Y$</li>
-      <li>Let $Y \sim \mathcal{N}(f(x), \Sigma^2)$</li>
-      <li>Then $\arg\max_{w} \log \prod_i P(y_i \mid x_i; w) = \arg\min_{w} \sum_i \tfrac{1}{2}(y_i - f(x_i; w))^2$
-        <ul>
-          <li>We can find $\arg\max_{w} \log \prod_i P(y_i \mid x_i; w)$ by iterating:
-\(w_d = w_d + \eta \sum_i (y_i - o_i) \, o_i (1 - o_i) \, x^i_d\)</li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-  <li>Residual = $(y_i - o_i)$.
-    <ul>
-      <li>Function maximized when $o=0.5$: $o_i(1-o_i)$.</li>
-      <li>Residual + uncertainty $\to$ larger update with respect to $x$.</li>
-    </ul>
-  </li>
-  <li><strong>Can a Perceptron represent XOR?</strong></li>
-  <li>Answer: No.</li>
-  <li>If there were, then there would be constants $w_1$ and $w_2$ such that:
-    <ul>
-      <li>When (x_1 = x_2), then (\sigma(w_1 x_1 + w_2 x_2) &lt; \theta)</li>
-      <li>When (x_1 \neq x_2), then (\sigma(w_1 x_1 + w_2 x_2) \geq \theta)</li>
-    </ul>
-  </li>
-  <li>Case 1: $x_1 = 1, x_2 = 0$
-    <ul>
-      <li>Eq. (1): $\sigma(w_1) \geq \theta$</li>
-    </ul>
-  </li>
-  <li>Case 2: $x_1 = 0, x_2 = 1$
-    <ul>
-      <li>Eq. (2): $\sigma(w_2) \geq \theta$</li>
-    </ul>
-  </li>
-  <li>Case 3: $x_1 = 1, x_2 = 1$
-    <ul>
-      <li>Eq. (3): $\sigma(w_1 + w_2) &lt; \theta$</li>
-    </ul>
-  </li>
-  <li>Contradiction: Eq. (1) + Eq. (2) contradicts Eq. (3).</li>
+  <li>Inspired by neuroscience</li>
+  <li>Inputs with fixed weights (+1, −1) and a threshold</li>
+  <li>Distinction between excitatory and inhibitory signals</li>
 </ul>
+
+<h3 id="perceptrons">Perceptrons</h3>
+
+<figure>
+  <img src="../../assets/img/notes/lecture-02/lec2-3.png" alt="Perceptron model" />
+</figure>
+
+<ul>
+  <li>Inputs are linearly combined and passed through an activation function</li>
+  <li>Common activations include <strong>sigmoid</strong> and <strong>tanh</strong></li>
+  <li>Regression view: ( f: X \rightarrow Y ) for scalar ( Y )</li>
+</ul>
+
+<p>Assume:</p>
+
+<p>[
+Y \sim \mathcal{N}(f(x), \Sigma^2)
+]</p>
+
+<p>Then maximizing likelihood is equivalent to minimizing squared error:</p>
+
+<p>[
+\arg\min_w \sum_i \frac{1}{2}(y_i - f(x_i; w))^2
+]</p>
+
+<p>Weight update rule:</p>
+
+<p>[
+w_d = w_d + \eta \sum_i (y_i - o_i)\, o_i(1 - o_i)\, x_d^i
+]</p>
+
+<ul>
+  <li><strong>Residual:</strong> ( y_i - o_i )</li>
+  <li>( o_i(1 - o_i) ) is maximized at ( o_i = 0.5 )</li>
+  <li>Larger residual and uncertainty lead to larger parameter updates</li>
+</ul>
+
+<hr />
+
+<h2 id="can-a-perceptron-represent-xor">Can a Perceptron Represent XOR?</h2>
+
+<p><strong>Answer:</strong> No.</p>
+
+<p>Assume weights ( w_1, w_2 ) exist such that:</p>
+
+<ul>
+  <li>If ( x_1 = x_2 ), then<br />
+( \sigma(w_1 x_1 + w_2 x_2) &lt; \theta )</li>
+  <li>If ( x_1 \neq x_2 ), then<br />
+( \sigma(w_1 x_1 + w_2 x_2) \ge \theta )</li>
+</ul>
+
+<p>This leads to a contradiction when all XOR cases are considered.</p>
+
+<p><strong>Conclusion:</strong> XOR is <strong>not linearly separable</strong>, so a single-layer perceptron cannot represent it.</p>
 
 <hr />
 
 <h2 id="backpropagation">Backpropagation</h2>
 
-<h2 id="neural-networks-as-computation-graphs">Neural networks as computation graphs</h2>
+<h3 id="neural-networks-as-computation-graphs">Neural Networks as Computation Graphs</h3>
 
-<ul>
-  <li>Neural networks are function compositions that can be represented as computation graphs:</li>
-</ul>
+<p>Neural networks can be viewed as compositions of functions represented as computation graphs.</p>
 
 <figure>
-  <img src="../../assets/img/notes/lecture-02/fig-computation-graph.png" alt="Computation graph showing input, intermediate computations, and outputs" />
+  <img src="../../assets/img/notes/lecture-02/fig-computation-graph.png" alt="Computation graph" />
 </figure>
 
-<ul>
-  <li>By applying the chain rule, and working in reverse order, we get:</li>
-</ul>
+<p>Using the chain rule and working backward:</p>
 
-\[\frac{\partial f_n}{\partial x}
-= \sum_{i_1 \in \pi(n)} \frac{\partial f_n}{\partial f_{i_1}} \frac{\partial f_{i_1}}{\partial x}
-= \sum_{i_1 \in \pi(n)} \frac{\partial f_n}{\partial f_{i_1}}
-   \sum_{i_2 \in \pi(i_1)} \frac{\partial f_{i_1}}{\partial f_{i_2}} \frac{\partial f_{i_2}}{\partial x}
-= \dots\]
+<p>[
+\frac{\partial f_n}{\partial x}
+= \sum_{i \in \pi(n)} \frac{\partial f_n}{\partial f_i}
+  \frac{\partial f_i}{\partial x}
+]</p>
 
 <ul>
-  <li>Invented by several groups.</li>
-  <li>Formalized by Rumelhart, Hinton, and Williams (1986).</li>
-  <li>Sparked a new AI wave.</li>
+  <li>Discovered independently by multiple groups</li>
+  <li>Formalized by <strong>Rumelhart, Hinton, and Williams (1986)</strong></li>
+  <li>Sparked renewed progress in neural networks</li>
 </ul>
 
 <hr />
 
-<h2 id="about-the-term-deep-learning">About the term “Deep Learning”</h2>
+<h2 id="about-the-term-deep-learning">About the Term “Deep Learning”</h2>
 
 <blockquote>
-  <p>“Representation learning is a set of methods that allows a machine to be fed with raw data and to automatically discover the representations needed for detection or classification. Deep learning methods are representation-learning methods with multiple levels of representation […]”
-— LeCun, Bengio, &amp; Hinton (2015)</p>
+  <p>“Representation learning is a set of methods that allows a machine to be fed
+with raw data and to automatically discover the representations needed for
+detection or classification. Deep learning methods are representation-learning
+methods with multiple levels of representation.”</p>
+
+  <p>— LeCun, Bengio, &amp; Hinton (2015)</p>
 </blockquote>
 
 <hr />
@@ -339,13 +347,13 @@
 <h2 id="activation-functions">Activation Functions</h2>
 
 <figure>
-  <img src="../../assets/img/notes/lecture-02/lec2-7.png" alt="" />
+  <img src="../../assets/img/notes/lecture-02/lec2-7.png" alt="Activation functions" />
 </figure>
 
 <ul>
-  <li>If all layers are linear → the model is still linear.</li>
-  <li><strong>ReLU (Rectified Linear Unit):</strong> most common.</li>
-  <li><strong>Sigmoid:</strong> bounded between 0 and 1, interpretable as probability.</li>
+  <li>If all layers are linear, the entire model is linear</li>
+  <li><strong>ReLU:</strong> most commonly used in modern deep learning</li>
+  <li><strong>Sigmoid:</strong> bounded between 0 and 1 and interpretable as a probability</li>
 </ul>
 
 <hr />
@@ -353,47 +361,39 @@
 <h2 id="hardware">Hardware</h2>
 
 <figure>
-  <img src="../../assets/img/notes/lecture-02/lec2-8.png" alt="" />
+  <img src="../../assets/img/notes/lecture-02/lec2-8.png" alt="CPU vs GPU" />
 </figure>
 
+<h3 id="cpu">CPU</h3>
 <ul>
-  <li><strong>CPU:</strong>
-    <ul>
-      <li>Cache is local memory.</li>
-      <li>Control is centralized, instructions pass through the core.</li>
-    </ul>
-  </li>
-  <li><strong>GPU:</strong>
-    <ul>
-      <li>Optimized for matrix multiplication.</li>
-      <li>Cores share cache + control.</li>
-      <li>Fast parallel computation, optimized for one path.</li>
-      <li>Data transfer at high speed.</li>
-    </ul>
-  </li>
+  <li>Centralized control</li>
+  <li>Local cache memory</li>
+</ul>
+
+<h3 id="gpu">GPU</h3>
+<ul>
+  <li>Optimized for matrix multiplication</li>
+  <li>Shared control and cache across cores</li>
+  <li>Highly parallel and fast data transfer</li>
 </ul>
 
 <hr />
 
 <h2 id="large-scale-unsupervised-learning">Large-Scale Unsupervised Learning</h2>
 
-<p><strong>From GPT-1 (2018) to GPT-4:</strong></p>
+<p><strong>From GPT-1 (2018) to GPT-4):</strong></p>
 
 <ul>
-  <li><strong>Architecture / Scale:</strong>
-    <ul>
-      <li>Parameters: 1.5B → &gt;1T</li>
-      <li>Layers: 12 → &gt;96</li>
-      <li>Attention heads: 12 → &gt;96</li>
-      <li>Embedding dimension: 768 → &gt;12,288</li>
-      <li>Context length: 512 → 128k</li>
-      <li>Vocabulary: 40k → &gt;50k tokens</li>
-    </ul>
-  </li>
-  <li><strong>Tokenizer:</strong> Multimodal (includes image patches).</li>
-  <li><strong>Mixture-of-Experts</strong> architecture.</li>
-  <li><strong>Training data:</strong> 5GB (BookCorpus) → ~50TB (13T tokens).</li>
-  <li><strong>Reinforcement Learning for alignment.</strong></li>
+  <li>Parameters: 1.5B → &gt;1T</li>
+  <li>Layers: 12 → &gt;96</li>
+  <li>Attention heads: 12 → &gt;96</li>
+  <li>Embedding dimension: 768 → &gt;12,288</li>
+  <li>Context length: 512 → 128k</li>
+  <li>Vocabulary: 40k → &gt;50k tokens</li>
+  <li>Multimodal tokenization (e.g., image patches)</li>
+  <li>Mixture-of-Experts architectures</li>
+  <li>Training data: ~5GB → ~50TB</li>
+  <li>Reinforcement learning for alignment</li>
 </ul>
 
 <hr />
@@ -401,12 +401,12 @@
 <h2 id="open-directions">Open Directions</h2>
 
 <ul>
-  <li>Verifiable rewards (code/math correctness).</li>
-  <li>Vision-language multimodal models.</li>
-  <li>Large-scale reinforcement learning.</li>
-  <li>Model uncertainty and hallucinations.</li>
-  <li>Model editing and interpretability.</li>
-  <li>Model synthesis and communication.</li>
+  <li>Verifiable rewards (e.g., code and math correctness)</li>
+  <li>Vision–language multimodal models</li>
+  <li>Large-scale reinforcement learning</li>
+  <li>Model uncertainty and hallucinations</li>
+  <li>Model editing and interpretability</li>
+  <li>Model synthesis and communication</li>
 </ul>
  </d-article>
 
