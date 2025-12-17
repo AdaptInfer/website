@@ -69,6 +69,10 @@
               
               {
                 "editor": "Yi Zhang"
+              },
+              
+              {
+                "editor": "Yifei Wu"
               }
               
             ],
@@ -150,8 +154,8 @@
       <d-byline></d-byline>
 
       <d-article> <h2 id="todays-topics">Today’s Topics:</h2>
-
 <ul>
+  <li><a href="#0-from-last-lecture-kaggle-cats--dogs--dataloader">0. From last lecture: Kaggle Cats &amp; Dogs + DataLoader</a></li>
   <li><a href="#1-improving-generalization">1. Improving Generalization</a></li>
   <li><a href="#2-data-augmentation">2. Data Augmentation</a></li>
   <li><a href="#3-early-stopping">3. Early Stopping</a></li>
@@ -160,6 +164,50 @@
 </ul>
 
 <hr />
+<h2 id="0-from-last-lecture-kaggle-cats--dogs--dataloader">0. From last lecture: Kaggle Cats &amp; Dogs + DataLoader</h2>
+
+<p><strong>Kaggle</strong> is a platform for hosting datasets and machine learning competitions.
+Organizations (companies, research groups, or nonprofits) upload datasets and define
+an evaluation metric. Participants train models and submit predictions; the best-performing
+models appear at the top of the leaderboard and may receive prizes.</p>
+
+<p>Reference notebook (VGG16 on Cats vs. Dogs):</p>
+<ul>
+  <li>https://github.com/rasbt/deeplearning-models/blob/master/pytorch_ipynb/cnn/cnn-vgg16-cats-dogs.ipynb</li>
+</ul>
+
+<h3 id="why-pytorch-dataset-and-dataloader-are-needed">Why PyTorch <code class="language-plaintext highlighter-rouge">Dataset</code> and <code class="language-plaintext highlighter-rouge">DataLoader</code> are needed</h3>
+<p>Real-world datasets (especially images) are often <strong>too large to load into memory at once</strong>.
+PyTorch separates data handling into two components:</p>
+
+<ul>
+  <li><strong><code class="language-plaintext highlighter-rouge">Dataset</code></strong>
+    <ul>
+      <li>Defines how to retrieve a <em>single</em> example.</li>
+      <li>Maps an index <code class="language-plaintext highlighter-rouge">i</code> → <code class="language-plaintext highlighter-rouge">(x_i, y_i)</code> (e.g., load image from disk, apply transforms, return label).</li>
+    </ul>
+  </li>
+  <li><strong><code class="language-plaintext highlighter-rouge">DataLoader</code></strong>
+    <ul>
+      <li>Wraps a Dataset and provides an <strong>iterator over mini-batches</strong>.</li>
+      <li>Handles:
+        <ul>
+          <li>batching (<code class="language-plaintext highlighter-rouge">batch_size</code>)</li>
+          <li>shuffling (<code class="language-plaintext highlighter-rouge">shuffle=True</code> for training)</li>
+          <li>parallel data loading (<code class="language-plaintext highlighter-rouge">num_workers</code>)</li>
+          <li>efficient memory transfer (<code class="language-plaintext highlighter-rouge">pin_memory=True</code> when using GPUs)</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<p>This design enables <strong>efficient, scalable training</strong> by streaming data batch-by-batch
+instead of loading the full dataset at once.
+Custom DataLoader example notebook:</p>
+<ul>
+  <li>https://github.com/rasbt/stat453-deep-learning-ss20/blob/master/L08-mlp/code/custom-dataloader/custom-dataloader-example.ipynb</li>
+</ul>
 
 <h2 id="1-improving-generalization">1. Improving Generalization</h2>
 
@@ -215,7 +263,23 @@ Useful when labeled data is scarce or costly (e.g., medical imaging).</p>
 <hr />
 
 <h2 id="3-early-stopping">3. Early Stopping</h2>
+<h2 id="reducing-model-capacity">Reducing Model Capacity</h2>
 
+<p>Another way to improve generalization is to reduce the effective capacity of the model.</p>
+
+<p>Common approaches include:</p>
+<ul>
+  <li>Using smaller architectures (fewer layers or hidden units)</li>
+  <li>Applying L1 or L2 regularization to penalize large weights</li>
+  <li>Using dropout to randomly disable neurons during training</li>
+  <li>Freezing most parameters in large pretrained models and fine-tuning only a small subset</li>
+</ul>
+
+<p>In modern deep learning, it is common to start with a large pretrained model
+and control capacity through regularization and selective fine-tuning rather
+than training small models from scratch.</p>
+
+<h2 id="early-stopping">Early Stopping</h2>
 <p>Early stopping halts training when validation performance stops improving — preventing overfitting.</p>
 
 <p><strong>Procedure</strong></p>
@@ -239,7 +303,7 @@ Useful when labeled data is scarce or costly (e.g., medical imaging).</p>
 
 <h2 id="4-l1-and-l2-regularization">4. L1 and L2 Regularization</h2>
 
-<p>Regularization penalizes large weights, encouraging simpler models and preventing overfitting.</p>
+<p>Regularization penalizes large weights, encouraging simpler models and preventing overfitting.L1 regularization corresponds to <strong>LASSO</strong>, while L2 regularization corresponds to <strong>Ridge regression</strong></p>
 
 <h3 id="41-l1-regularization-lasso">4.1 L1 Regularization (Lasso)</h3>
 <p>\(\mathcal{L}_{L1} = \frac{1}{n}\sum_{i=1}^{n} L(y^{[i]}, \hat{y}^{[i]}) + \frac{\lambda}{n}\sum_{j} |w_j|\)</p>

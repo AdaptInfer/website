@@ -76,6 +76,10 @@
               
               {
                 "editor": ""
+              },
+              
+              {
+                "editor": ""
               }
               
             ],
@@ -246,7 +250,7 @@ $</p>
   <li>Maps a noise vector $z \sim p(z)$ (often Normal(0, I)) to a data-space sample $x = G_\theta(z)$.</li>
   <li>Goal: produce samples indistinguishable from real data $x \sim p_{data}$.</li>
   <li>Fool the discriminator (increase $D(G(z))$)</li>
-  <li>Trained via gradient descent to maximize $D(G(z))$.</li>
+  <li>Trained via gradient descent to minimize $-\log D(G(z))$.</li>
 </ul>
 
 <figure>
@@ -257,9 +261,15 @@ $</p>
 <h3 id="discriminator-d_phi">Discriminator ($D_\phi$)</h3>
 
 <ul>
-  <li>Binary classifier outputting $D_\phi(x)\in[0,1]$, - Trained via gradient ascent to maximize $\log D(x)$ for real data
-and minimize $\log (1 - D(G(z)))$ for fake data.</li>
-  <li>Gradient update: Gradient <em>ascent</em></li>
+  <li>Binary classifier outputting $D_\phi(x)\in(0,1)$, interpreted as $P(\text{real}\mid x)$.</li>
+  <li>Trained to assign high probability to real data and low probability to generated data.</li>
+  <li>Discriminator loss (binary cross-entropy form):</li>
+</ul>
+
+\[\mathcal{L}_D = -\mathbb{E}_{x\sim p_{\text{data}}}[\log D_\phi(x)] - \mathbb{E}_{z\sim p(z)}[\log(1-D_\phi(G_\theta(z)))]\]
+
+<ul>
+  <li>Updated by gradient <strong>descent</strong> on $\mathcal{L}_D$.</li>
 </ul>
 
 <figure>
@@ -268,6 +278,19 @@ and minimize $\log (1 - D(G(z)))$ for fake data.</li>
 </figure>
 
 <h3 id="minimax-objective">Minimax Objective</h3>
+
+<h3 id="max-and-min-objective">“max” and “min” Objective</h3>
+<p>The discriminator outputs a probability $D_\phi(x)\in(0,1)$ interpreted as $P(\text{real}\mid x)$.
+The GAN game is:</p>
+
+\[\min_\theta \max_\phi \; \mathbb{E}_{x\sim p_{\text{data}}}[\log D_\phi(x)] + \mathbb{E}_{z\sim p(z)}[\log(1-D_\phi(G_\theta(z)))]\]
+
+<ul>
+  <li><strong>Discriminator step ($\max_\phi$):</strong> increase $\log D_\phi(x)$ for real $x$ and increase $\log(1-D_\phi(G_\theta(z)))$ for fake samples. This pushes $D(x)\to 1$ and $D(G(z))\to 0$.</li>
+  <li><strong>Generator step ($\min_\theta$):</strong> make generated samples look real, i.e., push $D(G(z))$ upward (toward 1). In practice, we use the non-saturating generator loss for stronger gradients:</li>
+</ul>
+
+\[\mathcal{L}_G = -\mathbb{E}_{z\sim p(z)}[\log D_\phi(G_\theta(z))]\]
 
 <p>The generator minimizes this value by making its outputs hard to distinguish,
 while the discriminator maximizes it by improving classification.</p>

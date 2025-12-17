@@ -199,20 +199,20 @@ b = -\theta
 <p>Let $\mathcal{D} = (\langle \mathbf{x}^{[1]}, y^{[1]} \rangle, \langle \mathbf{x}^{[2]}, y^{[2]} \rangle, \dots, \langle \mathbf{x}^{[n]}, y^{[n]} \rangle) \in (\mathbb{R}^{m} \times {0,1})^{n} $.</p>
 
 <ol>
-  <li>Initialize $ \mathbf{w} := \mathbf{0} \in \mathbb{R}^{m}, \quad b := 0 $</li>
+  <li>Initialize \(\mathbf{w} := \mathbf{0} \in \mathbb{R}^{m}, \quad b := 0\)</li>
   <li>
     <p>For every training epoch:</p>
 
-    <p>A. For every $ \langle x^{[i]}, y^{[i]} \rangle \in \mathcal{D} $:</p>
+    <p>A. For every \(\langle \mathbf{x}^{[i]}, y^{[i]} \rangle \in \mathcal{D}\):</p>
     <ul>
       <li>
-        <p>(a) Compute output (prediction) $ \hat{y}^{[i]} := \sigma\bigl( x^{[i]\top} \mathbf{w} + b \bigr) $</p>
+        <p>(a) Compute output (prediction) \(\hat{y}^{[i]} := \sigma\bigl( (\mathbf{x}^{[i]})^{\top} \mathbf{w} + b \bigr)\)</p>
       </li>
       <li>
-        <p>(b) Calculate error $ \mathrm{err} := \bigl( y^{[i]} - \hat{y}^{[i]} \bigr) $</p>
+        <p>(b) Calculate error \(\hat{y}^{[i]} := \sigma\bigl( (\mathbf{x}^{[i]})^{\top} \mathbf{w} + b \bigr)\)</p>
       </li>
       <li>
-        <p>(c) Update parameters $ \mathbf{w} := \mathbf{w} + \mathrm{err} \times x^{[i]}, \quad b := b + \mathrm{err} $</p>
+        <p>(c) Update parameters \(\mathbf{w} := \mathbf{w} + \mathrm{err} \times \mathbf{x}^{[i]}, \quad b := b + \mathrm{err}\)</p>
       </li>
     </ul>
   </li>
