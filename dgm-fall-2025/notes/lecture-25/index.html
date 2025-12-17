@@ -40,8 +40,8 @@
     <script type="text/json">
       {
             "title": "Lecture 25",
-            "description": "Alignment, explainability, and open directions in LLM research",
-            "published": "December 8, 2025",
+            "description": "Alignment, explainability, and open research directions in modern machine learning, with a focus on large language models and system-level reliability.",
+            "published": "December 1, 2025",
             "lecturers": [
               
               {
@@ -53,8 +53,11 @@
             "authors": [
               
               {
-                "author": "Reid Chen",
-                "authorURL": "https://www.deepneural.network"
+                "author": "Rishit Malpani"
+              },
+              
+              {
+                "author": "Reid Chen"
               },
               
               {
@@ -157,42 +160,173 @@
     <div class="page-content">
       <d-title>
         <h1>Lecture 25</h1>
-        <p>Alignment, explainability, and open directions in LLM research</p>
+        <p>Alignment, explainability, and open research directions in modern machine learning, with a focus on large language models and system-level reliability.</p>
       </d-title>
 
       <d-byline></d-byline>
 
-      <d-article> <h2 id="phases-of-model-training">Phases of Model Training</h2>
-
-<p>The training pipeline for modern Large Language Models (LLMs) generally follows a progression from broad pattern matching to specific task alignment.</p>
+      <d-article> <h2 id="key-takeaways">Key Takeaways</h2>
 
 <ul>
-  <li><strong>Random Model</strong>: The starting point of the architecture.</li>
-  <li><strong>Pre-training</strong>: The model is trained unsupervised on massive datasets (e.g., Common Crawl) to learn general patterns.</li>
-  <li><strong>Fine-tuning</strong>: The pre-trained model is refined using In-Domain Data via Supervised Fine-Tuning (SFT) or Reinforcement Learning from Human Feedback (RLHF).</li>
-  <li><strong>In-context learning</strong>: During usage, prompts and examples in the input guide the model to produce outputs adapted to user intent without updating weights.</li>
+  <li>Modern AI research is shifting from raw performance to <strong>alignment, interpretability, and system-level reliability</strong>.</li>
+  <li>Post-hoc explainability tools are widely used but have serious <strong>fidelity and robustness limitations</strong>.</li>
+  <li>Scaling laws explain why larger models work better, but they do <strong>not guarantee safety or alignment</strong>.</li>
+  <li>Interpretability benefits not only users, but also <strong>system designers</strong>, by improving measurement, modularity, and value alignment.</li>
+  <li>Many core challenges (alignment, reasoning, data limits, economic impact) remain <strong>open research problems</strong>.</li>
 </ul>
+
+<h2 id="logistics">Logistics</h2>
+
+<ul>
+  <li><strong>Project Final Report:</strong> Due Friday, December 12th. Submit via Canvas.</li>
+  <li><strong>Final Exam:</strong> December 17th, 5:05–7:05 PM in Science 180. A study guide has been released.</li>
+</ul>
+
+<hr />
+
+<h2 id="learning-goals">Learning Goals</h2>
+
+<p>By the end of this lecture, you should be able to:</p>
+
+<ul>
+  <li>Explain why <strong>alignment</strong> and <strong>explainability</strong> are central problems in modern AI.</li>
+  <li>Distinguish between <strong>post-hoc</strong>, <strong>transparent</strong>, and <strong>mechanistic</strong> interpretability.</li>
+  <li>Describe the difference between <strong>outer alignment</strong> and <strong>inner alignment</strong>.</li>
+  <li>Understand how <strong>system design</strong> interacts with interpretability.</li>
+  <li>Identify major <strong>open research problems</strong> in alignment and interpretability.</li>
+</ul>
+
+<hr />
+
+<h2 id="the-llm-training-and-usage-pipeline">The LLM Training and Usage Pipeline</h2>
+
+<p>Modern Large Language Models (LLMs) progress through distinct stages, from broad pattern learning to task-specific adaptation:</p>
+
+<ol>
+  <li><strong>Random Model</strong>: The initialized architecture before training.</li>
+  <li><strong>Pre-Training</strong>: Unsupervised training on massive datasets (e.g., Common Crawl) to learn general patterns.</li>
+  <li><strong>Fine-Tuning</strong>: Alignment using in-domain data via Supervised Fine-Tuning (SFT) or Reinforcement Learning from Human Feedback (RLHF).</li>
+  <li><strong>In-Context Learning</strong>: At inference time, prompts and examples guide behavior without updating weights.</li>
+</ol>
+
+<p><strong>Key Observation:</strong><br />
+The same trained model can behave very differently depending on context. Pre-training, fine-tuning, and in-context learning primarily change <strong>how the model is used</strong>, not just its parameters.</p>
+
+<hr />
 
 <h2 id="why-explainability-matters">Why Explainability Matters</h2>
 
-<p>Models trained on large data are rarely naturally interpretable to humans. Historically, the field has moved through several phases:</p>
+<p>Models trained on large-scale data are rarely naturally interpretable to humans. Explainability is critical for:</p>
+
 <ul>
-  <li><strong>2016</strong>: Interpretability is invoked when metrics (like accuracy) are imperfect proxies for the true objective.</li>
-  <li><strong>2017</strong>: Doshi-Velez &amp; Kim defined three modes of evaluation: application-grounded, human-grounded, and functionally-grounded.</li>
-  <li><strong>2017-2020</strong>: Approaches fragmented into Post-Hoc (industry standard), Transparency (niche), and Mechanistic (technically deep).</li>
+  <li>Safety and trust</li>
+  <li>Debugging and model validation</li>
+  <li>Regulatory and ethical compliance</li>
+  <li>Understanding system-level behavior beyond accuracy</li>
 </ul>
 
-<h2 id="fairness--sensitive-features">Fairness &amp; Sensitive Features</h2>
+<h3 id="common-confusions">Common Confusions</h3>
 
-<p>Merely dropping sensitive features like “race” from training data does <strong>not</strong> ensure the model is invariant to them, as biases can be encoded via correlated variables.</p>
+<ul>
+  <li><strong>Explainability ≠ Accuracy</strong>: A highly accurate model can still be unsafe or untrustworthy.</li>
+  <li><strong>Post-hoc explanations ≠ true understanding</strong>: Plausible explanations may not reflect the model’s actual computation.</li>
+  <li><strong>Dropping sensitive features ≠ fairness</strong>: Bias can persist through correlated variables.</li>
+</ul>
+
+<hr />
+
+<h2 id="fairness-and-sensitive-features">Fairness and Sensitive Features</h2>
+
+<p>Removing sensitive attributes like race or gender from training data does <strong>not</strong> ensure invariance.</p>
 
 <p><strong>Strategies for Invariance:</strong></p>
+
 <ol>
   <li><strong>Remove the feature</strong>: Often insufficient due to correlations.</li>
-  <li><strong>Train then clean</strong>: Train on all features, then attempt to remove the learned component associated with the sensitive feature.</li>
+  <li><strong>Train then clean</strong>: Train with all features, then remove learned components post-hoc.</li>
   <li><strong>Test-time blinding</strong>: Drop the feature only during inference.</li>
-  <li><strong>Modified Loss</strong>: Train with a loss function specifically designed to encourage invariant predictions.</li>
+  <li><strong>Modified loss functions</strong>: Penalize prediction dependence on sensitive attributes.</li>
 </ol>
+
+<hr />
+
+<h2 id="the-history-of-interpretability">The History of Interpretability</h2>
+
+<h3 id="interpretability-categories">Interpretability Categories</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Core Idea</th>
+      <th>Main Limitation</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Post-hoc</td>
+      <td>Explain predictions after training</td>
+      <td>Often lacks fidelity</td>
+    </tr>
+    <tr>
+      <td>Transparent</td>
+      <td>Interpretable by design</td>
+      <td>Limited flexibility</td>
+    </tr>
+    <tr>
+      <td>Mechanistic</td>
+      <td>Reverse-engineer internals</td>
+      <td>Hard to scale</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="2016-setting-the-stage">2016: Setting the Stage</h3>
+
+<ul>
+  <li><strong>The Mythos</strong>: Interpretability invoked when metrics are imperfect proxies for objectives (Lipton, 2016).</li>
+  <li><strong>Evaluation Modes</strong>: Application-grounded, human-grounded, and functionally-grounded (Doshi-Velez &amp; Kim, 2017).</li>
+</ul>
+
+<h3 id="20172020-fragmentation">2017–2020: Fragmentation</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Methodology</th>
+      <th>Examples</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Post-hoc</td>
+      <td>LIME, SHAP, Integrated Gradients</td>
+      <td>Industry standard; explain after training</td>
+    </tr>
+    <tr>
+      <td>Transparency</td>
+      <td>GAMs, Monotonic Nets</td>
+      <td>Niche, common in healthcare/tabular data</td>
+    </tr>
+    <tr>
+      <td>Mechanistic</td>
+      <td>Circuits, probing</td>
+      <td>Technically deep, rarely user-facing</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="cracks-in-post-hoc-explanations">Cracks in Post-Hoc Explanations</h3>
+
+<ul>
+  <li><strong>Insensitivity</strong>: Saliency maps may remain unchanged under weight randomization (Adebayo et al., 2018).</li>
+  <li><strong>Vulnerability</strong>: LIME and SHAP can be easily fooled (Slack et al., 2020).</li>
+  <li><strong>Plausibility vs. Faithfulness</strong>: Explanations may look reasonable but misrepresent computation (Jacovi &amp; Goldberg, 2020).</li>
+  <li><strong>High-Stakes Critique</strong>: In safety-critical settings, post-hoc methods may be insufficient (Rudin, 2019).</li>
+</ul>
+
+<hr />
 
 <h2 id="interpretability-approaches">Interpretability Approaches</h2>
 
@@ -289,11 +423,14 @@
 
 <p>Empirical performance follows a power-law relationship: $L(x) = (x/x_0)^{-\alpha}$ provided it is not bottlenecked by the other two factors. However, as models scale, they become less interpretable.</p>
 
-<h2 id="system-design-view-of-interpretability">System Design View of Interpretability</h2>
+<hr />
 
-<p>Interpretability is not just about debugging; it is a system design feature. It allows us to move from <strong>Individual Stats</strong> (like a player’s points per game) to <strong>System Stats</strong> (like a lineup’s net rating), which correlates better with winning.</p>
+<h2 id="a-system-design-view-of-interpretability">A System Design View of Interpretability</h2>
 
-<p>The three main system design benefits are:</p>
+<p>Interpretability is a system-level property, not just a debugging tool. Like moving from individual player stats to lineup net rating, interpretability helps optimize the <strong>human–AI system</strong>.</p>
+
+<p>The three main benefits are:</p>
+
 <ol>
   <li><strong>Information Acquisition</strong></li>
   <li><strong>Value Alignment</strong></li>
@@ -345,6 +482,11 @@ Interpretability allows us to connect component-level performance to system-leve
   <li><strong>Verifiable Rewards</strong>: Scaling RL requires rewards that can be verified at scale.</li>
   <li><strong>Symbolic Reasoning</strong>: Combining LLMs with symbolic reasoning and graphical models remains an open problem.</li>
 </ul>
+
+<hr />
+
+<p><strong>Final Takeaway:</strong><br />
+Scaling delivers performance, but interpretability, alignment, and system-level thinking determine whether AI systems are safe, useful, and beneficial in the real world.</p>
  </d-article>
 
       <d-appendix>
@@ -391,7 +533,7 @@ Interpretability allows us to connect component-level performance to system-leve
   </body>
 
   <d-bibliography
-    src="/dgm-fall-2025/assets/bibliography/2025-12-08-lecture-25.bib"
+    src="/dgm-fall-2025/assets/bibliography/2025-12-01-lecture-25.bib"
   >
   </d-bibliography>
 
