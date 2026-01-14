@@ -23,7 +23,7 @@ profiles:
     image_circular: false # crops the image to make it circular
 
   - align: left
-    image: profiles/tbd.jpg
+    image: profiles/baiheng.png
     content: people/chen.md
     image_circular: false
 ---
