@@ -3,7 +3,7 @@ set -e
 
 # CONFIG
 SITE_DIR="_site"
-TARGET_DIR="../../../Shared/website/fm-spring-2026"
+TARGET_DIR="../../../Shared/Web_Presence/website/fm-spring-2026"
 
 # Step 1: Build the site with correct baseurl
 echo "🔧 Building site..."
