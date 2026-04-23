@@ -2,35 +2,28 @@
 <html>
   <head>
     <head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="content-language" content="en" />
-  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-  <meta name="viewport" content="width=device-width initial-scale=1.0" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+      <meta charset="UTF-8" />
+      <meta http-equiv="content-language" content="en" />
+      <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+      <meta name="viewport" content="width=device-width initial-scale=1.0" />
+      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-  <title>
-    STAT 453 | Lecture 03
-  </title>
-  <meta name="description" content="STAT 453 - University of Wisconsin-Madison - Fall 2025
-" />
+      <title>STAT 453 | Lecture 03</title>
+      <meta
+        name="description"
+        content="STAT 453 - University of Wisconsin-Madison - Fall 2025
+"
+      />
 
-  <link
-    rel="shortcut icon"
-    href="/dgm-fall-2025/assets/img/favicon.ico"
-  />
+      <link rel="shortcut icon" href="/dgm-fall-2025/assets/img/favicon.ico" />
 
-  <link rel="stylesheet" href="/dgm-fall-2025/assets/css/main.css" />
-  <link
-    rel="canonical"
-    href="/dgm-fall-2025/notes/lecture-03/"
-  />
+      <link rel="stylesheet" href="/dgm-fall-2025/assets/css/main.css" />
+      <link rel="canonical" href="/dgm-fall-2025/notes/lecture-03/" />
 
-  
-  <!-- Load Latex JS -->
-  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
-  
-</head>
+      <!-- Load Latex JS -->
+      <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+    </head>
 
     <script src="/dgm-fall-2025/assets/js/distillpub/template.v2.js"></script>
     <script src="/dgm-fall-2025/assets/js/distillpub/transforms.v2.js"></script>
@@ -39,107 +32,90 @@
   <d-front-matter>
     <script type="text/json">
       {
-            "title": "Lecture 03",
-            "description": "Statistics / linear algebra / calculus review",
-            "published": "September 10, 2025",
-            "lecturers": [
-              
-              {
-                "lecturer": "Ben Lengerich",
-                "lecturerURL": "https://adaptinfer.org"
-              }
-              
-            ],
-            "authors": [
-              
-              {
-                "author": "Jeff Zhang"
-              },
-              
-              {
-                "author": "Youngwoo Kim"
-              },
-              
-              {
-                "author": "Yongqi Zhang"
-              }
-              
-            ],
-            "editors": [
-              
-              {
-                "editor": "Eva Song"
-              }
-              
-            ],
-            "katex": {
-              "delimiters": [
-                {
-                  "left": "$",
-                  "right": "$",
-                  "display": false
-                },
-                {
-                  "left": "$$",
-                  "right": "$$",
-                  "display": true
-                }
-              ]
-            }
+        "title": "Lecture 03",
+        "description": "Statistics / linear algebra / calculus review",
+        "published": "September 10, 2025",
+        "lecturers": [
+          {
+            "lecturer": "Ben Lengerich",
+            "lecturerURL": "https://adaptinfer.org"
           }
+        ],
+        "authors": [
+          {
+            "author": "Jeff Zhang"
+          },
+
+          {
+            "author": "Youngwoo Kim"
+          },
+
+          {
+            "author": "Yongqi Zhang"
+          }
+        ],
+        "editors": [
+          {
+            "editor": "Eva Song"
+          }
+        ],
+        "katex": {
+          "delimiters": [
+            {
+              "left": "$",
+              "right": "$",
+              "display": false
+            },
+            {
+              "left": "$$",
+              "right": "$$",
+              "display": true
+            }
+          ]
+        }
+      }
     </script>
   </d-front-matter>
 
   <body>
     <header class="site-header">
-  <div class="wrapper">
-    <span class="site-title">
-      <a class="page-link" href="https://adaptinfer.org/dgm-fall-2025/"
-        >STAT 453</a
-      >
-    </span>
-
-    <nav class="site-nav">
-      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
-      <label for="nav-trigger">
-        <span class="menu-icon">
-          <svg viewBox="0 0 18 15" width="18px" height="15px">
-            <path
-              fill="#424242"
-              d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
-            />
-            <path
-              fill="#424242"
-              d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
-            />
-            <path
-              fill="#424242"
-              d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
-            />
-          </svg>
+      <div class="wrapper">
+        <span class="site-title">
+          <a class="page-link" href="https://adaptinfer.org/dgm-fall-2025/">STAT 453</a>
         </span>
-      </label>
 
-      <div class="trigger">
-        <a class="page-link" href="/dgm-fall-2025/logistics/"
-          >logistics</a
-        >
-        <a class="page-link" href="/dgm-fall-2025/lectures/"
-          >lectures</a
-        >
-        <a class="page-link" href="/dgm-fall-2025/notes/">notes</a>
-        <a class="page-link" href="/dgm-fall-2025/calendar/"
-          >calendar</a
-        >
-        <a class="page-link" href="/dgm-fall-2025/homework/"
-          >homework</a
-        >
-        <a class="page-link" href="/dgm-fall-2025/project/">project</a>
+        <nav class="site-nav">
+          <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+          <label for="nav-trigger">
+            <span class="menu-icon">
+              <svg viewBox="0 0 18 15" width="18px" height="15px">
+                <path
+                  fill="#424242"
+                  d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
+                />
+                <path
+                  fill="#424242"
+                  d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
+                />
+                <path
+                  fill="#424242"
+                  d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
+                />
+              </svg>
+            </span>
+          </label>
+
+          <div class="trigger">
+            <a class="page-link" href="/dgm-fall-2025/logistics/">logistics</a>
+            <a class="page-link" href="/dgm-fall-2025/lectures/">lectures</a>
+            <a class="page-link" href="/dgm-fall-2025/notes/">notes</a>
+            <a class="page-link" href="/dgm-fall-2025/calendar/">calendar</a>
+            <a class="page-link" href="/dgm-fall-2025/homework/">homework</a>
+            <a class="page-link" href="/dgm-fall-2025/project/">project</a>
+          </div>
+        </nav>
       </div>
-    </nav>
-  </div>
-</header>
-
+    </header>
 
     <div class="page-content">
       <d-title>
@@ -149,446 +125,463 @@
 
       <d-byline></d-byline>
 
-      <d-article> <h2 id="todays-topics">Today’s Topics:</h2>
+      <d-article>
+        <h2 id="todays-topics">Today’s Topics:</h2>
 
-<ul>
-  <li><a href="#todays-topics">Today’s Topics:</a></li>
-  <li><a href="#1-tensors-in-deep-learning">1. Tensors in Deep Learning</a></li>
-  <li><a href="#2-tensors-and-pytorch">2. Tensors and PyTorch</a></li>
-  <li><a href="#3-vectors-matrices-and-broadcasting">3. Vectors, Matrices, and Broadcasting</a></li>
-  <li><a href="#4-probability-basics">4. Probability Basics</a></li>
-  <li><a href="#5-estimation-methods">5. Estimation Methods</a></li>
-  <li><a href="#6-linear-regression">6. Linear Regression</a></li>
-</ul>
+        <ul>
+          <li><a href="#todays-topics">Today’s Topics:</a></li>
+          <li><a href="#1-tensors-in-deep-learning">1. Tensors in Deep Learning</a></li>
+          <li><a href="#2-tensors-and-pytorch">2. Tensors and PyTorch</a></li>
+          <li><a href="#3-vectors-matrices-and-broadcasting">3. Vectors, Matrices, and Broadcasting</a></li>
+          <li><a href="#4-probability-basics">4. Probability Basics</a></li>
+          <li><a href="#5-estimation-methods">5. Estimation Methods</a></li>
+          <li><a href="#6-linear-regression">6. Linear Regression</a></li>
+        </ul>
 
-<h2 id="1-tensors-in-deep-learning">1. Tensors in Deep Learning</h2>
+        <h2 id="1-tensors-in-deep-learning">1. Tensors in Deep Learning</h2>
 
-<ul>
-  <li>A <strong>tensor</strong> is a multidimensional array</li>
-  <li>Dimensionality (order) = number of indices</li>
-  <li>It is generalization of scalars(order-0 tensor), vectors(order-1 tensor), matrices(order-2 tensor).</li>
-  <li>Images are common examples of tensor used as input in deep learning.</li>
-  <li>3D tensor : a single color image (height, width, channels)</li>
-  <li>4D tensor : a batch of images (batch_size, height, width, channels)</li>
-</ul>
+        <ul>
+          <li>A <strong>tensor</strong> is a multidimensional array</li>
+          <li>Dimensionality (order) = number of indices</li>
+          <li>It is generalization of scalars(order-0 tensor), vectors(order-1 tensor), matrices(order-2 tensor).</li>
+          <li>Images are common examples of tensor used as input in deep learning.</li>
+          <li>3D tensor : a single color image (height, width, channels)</li>
+          <li>4D tensor : a batch of images (batch_size, height, width, channels)</li>
+        </ul>
 
-<h2 id="2-tensors-and-pytorch">2. Tensors and PyTorch</h2>
+        <h2 id="2-tensors-and-pytorch">2. Tensors and PyTorch</h2>
 
-<ul>
-  <li>NumPy vs PyTorch: They have similar syntax but PyTorch adds:
-    <ul>
-      <li>GPU support,</li>
-      <li>automatic differentiation,</li>
-      <li>deep learning convenience functions.</li>
-    </ul>
-  </li>
-  <li>Data types: mappings exist (e.g., NumPy <code class="language-plaintext highlighter-rouge">float64</code> → PyTorch <code class="language-plaintext highlighter-rouge">DoubleTensor</code>).</li>
-  <li>Matrix multiplication in Pytorch: <code class="language-plaintext highlighter-rouge">b.matmul(b)</code>, <code class="language-plaintext highlighter-rouge">b.dot(b)</code>, <code class="language-plaintext highlighter-rouge">b @ b</code> .</li>
-  <li>Check GPU availability in PyTorch and move tensors between CPU and GPU using <code class="language-plaintext highlighter-rouge">b.to(torch.device('cpu'))</code> or <code class="language-plaintext highlighter-rouge">b.to(torch.device('cuda:0'))</code></li>
-</ul>
-
-<h2 id="3-vectors-matrices-and-broadcasting">3. Vectors, Matrices, and Broadcasting</h2>
-
-<ul>
-  <li><strong>Notations:</strong>
-    <ul>
-      <li>x (lower case): vector</li>
-      <li>X (upper case): matrix</li>
-      <li>w: weights <strong>(also a vector)</strong></li>
-      <li>b: bias <strong>(a constant)</strong></li>
-      <li>z: pre-activation value</li>
-    </ul>
-  </li>
-  <li><strong>Vectors:</strong>
-    <ul>
-      <li>A vector is an <strong>n-by-1</strong> matrix, where <strong>n</strong> is the number of <strong>row</strong>, and <strong>1</strong> is the number of <strong>column</strong>.</li>
-      <li>In deep learning, we often represent vectors as <strong>column vectors</strong>.</li>
-      <li>The linear combination (pre-activation value) is written: $z = \mathbf{w}^\top \mathbf{x} + b$, where</li>
-      <li>
-\[\mathbf{x} =
-  \begin{bmatrix}
-  x_1 \\
-  x_2 \\
-  \vdots \\
-  x_m
-  \end{bmatrix}
-  \in \mathbb{R}^{m \times 1},
-  \quad
-  \mathbf{w} =
-  \begin{bmatrix}
-  w_1 \\
-  w_2 \\
-  \vdots \\
-  w_m
-  \end{bmatrix}
-  \in \mathbb{R}^{m \times 1},
-  \quad
-  z \in \mathbb{R}\]
-      </li>
-    </ul>
-  </li>
-  <li><strong>Matrices:</strong>
-    <ul>
-      <li>A matrix is an <strong>n-by-m arrays</strong> of numbers, where <strong>n</strong> is the number of <strong>row</strong>, and <strong>m</strong> is the number of <strong>column</strong>.</li>
-      <li>The linear combination is written: $\mathbf{z} = \mathbf{Xw} + b$, where</li>
-    </ul>
-  </li>
-</ul>
-
-\[\mathbf{X} =
-  \begin{bmatrix}
-  x^{[1]}_1 &amp; x^{[1]}_2 &amp; \cdots &amp; x^{[1]}_m \\
-  x^{[2]}_1 &amp; x^{[2]}_2 &amp; \cdots &amp; x^{[2]}_m \\
-  \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
-  x^{[n]}_1 &amp; x^{[n]}_2 &amp; \cdots &amp; x^{[n]}_m
-  \end{bmatrix}
-  \in \mathbb{R}^{n \times m},
-  \quad
-  \mathbf{w} =
-  \begin{bmatrix}
-  w_1 \\
-  w_2 \\
-  \vdots \\
-  w_m
-  \end{bmatrix}
-  \in \mathbb{R}^{m \times 1},
-  \quad
-  \mathbf{z} =
-  \begin{bmatrix}
-  z^{[1]} \\
-  z^{[2]} \\
-  \vdots \\
-  z^{[n]}
-  \end{bmatrix}
-  \in \mathbb{R}^{n \times 1}\]
-
-<ul>
-  <li>Time Complexity of N-by-N matrices multiplication by naive algorithms: $O(n^3)$.</li>
-  <li><strong>Broadcasting:</strong>
-    <ul>
-      <li>The rigorous math formula of linear combination is: $\mathbf{z} = \mathbf{Xw} + \mathbf{1}_n b$.</li>
-      <li>Using NumPy / PyTorch / TensorFlow, <strong>broadcasting</strong> helps to automatically expands the scalar $b$ into an $n \times 1$ vector.</li>
-      <li>Thus, in deep learning notation, we usually drop $\mathbf{1}_n$ and simply write $\mathbf{z} = \mathbf{Xw} + b$.</li>
-    </ul>
-  </li>
-  <li><strong>Broadcasting Usage:</strong>
-    <ul>
-      <li>Be cautious when debugging, since <strong>broadcasting expands tensors automatically</strong>.</li>
-      <li>Example:
         <ul>
           <li>
-            <p><code class="language-plaintext highlighter-rouge"># 1 is broadcast to [1, 1, 1] to match the vector</code><br />
-<code class="language-plaintext highlighter-rouge">torch.tensor([1, 2, 3]) + 1</code><br />
-→ <code class="language-plaintext highlighter-rouge">tensor([2, 3, 4])</code></p>
+            NumPy vs PyTorch: They have similar syntax but PyTorch adds:
+            <ul>
+              <li>GPU support,</li>
+              <li>automatic differentiation,</li>
+              <li>deep learning convenience functions.</li>
+            </ul>
           </li>
           <li>
-            <p><code class="language-plaintext highlighter-rouge"># [1, 2, 3] is broadcast to [[ 1,  2,  3], [ 1, 2, 3]] to match the matrix</code><br />
-<code class="language-plaintext highlighter-rouge">t = torch.tensor([[4, 5, 6], [7, 8, 9]])</code><br />
-<code class="language-plaintext highlighter-rouge">t + torch.tensor([1, 2, 3])</code><br />
-→ <code class="language-plaintext highlighter-rouge">tensor([[ 5,  7,  9], [ 8, 10, 12]])</code></p>
+            Data types: mappings exist (e.g., NumPy <code class="language-plaintext highlighter-rouge">float64</code> → PyTorch
+            <code class="language-plaintext highlighter-rouge">DoubleTensor</code>).
+          </li>
+          <li>
+            Matrix multiplication in Pytorch: <code class="language-plaintext highlighter-rouge">b.matmul(b)</code>,
+            <code class="language-plaintext highlighter-rouge">b.dot(b)</code>, <code class="language-plaintext highlighter-rouge">b @ b</code> .
+          </li>
+          <li>
+            Check GPU availability in PyTorch and move tensors between CPU and GPU using
+            <code class="language-plaintext highlighter-rouge">b.to(torch.device('cpu'))</code> or
+            <code class="language-plaintext highlighter-rouge">b.to(torch.device('cuda:0'))</code>
           </li>
         </ul>
-      </li>
-    </ul>
-  </li>
-</ul>
 
-<h2 id="4-probability-basics">4. Probability Basics</h2>
+        <h2 id="3-vectors-matrices-and-broadcasting">3. Vectors, Matrices, and Broadcasting</h2>
 
-<ul>
-  <li><strong>Random Variables and Distributions:</strong>
-    <ul>
-      <li><strong>Discrete Random Variables:</strong> Values from a <strong>countable</strong> set (e.g. coin flip).
         <ul>
-          <li>Described by: <strong>Probability Mass Function (PMF)</strong>: $P(X = x)$.</li>
-          <li>Example: <strong>Bernoulli Distribution</strong>
-$P(X = x) = \theta^x (1-\theta)^{1-x}, \; x \in {0,1}$.
+          <li>
+            <strong>Notations:</strong>
             <ul>
-              <li>Example: fair coin flip ($\theta = 0.5$).</li>
+              <li>x (lower case): vector</li>
+              <li>X (upper case): matrix</li>
+              <li>w: weights <strong>(also a vector)</strong></li>
+              <li>b: bias <strong>(a constant)</strong></li>
+              <li>z: pre-activation value</li>
+            </ul>
+          </li>
+          <li>
+            <strong>Vectors:</strong>
+            <ul>
+              <li>
+                A vector is an <strong>n-by-1</strong> matrix, where <strong>n</strong> is the number of <strong>row</strong>, and
+                <strong>1</strong> is the number of <strong>column</strong>.
+              </li>
+              <li>In deep learning, we often represent vectors as <strong>column vectors</strong>.</li>
+              <li>The linear combination (pre-activation value) is written: $z = \mathbf{w}^\top \mathbf{x} + b$, where</li>
+              <li>
+                \[\mathbf{x} = \begin{bmatrix} x_1 \\ x_2 \\ \vdots \\ x_m \end{bmatrix} \in \mathbb{R}^{m \times 1}, \quad \mathbf{w} =
+                \begin{bmatrix} w_1 \\ w_2 \\ \vdots \\ w_m \end{bmatrix} \in \mathbb{R}^{m \times 1}, \quad z \in \mathbb{R}\]
+              </li>
+            </ul>
+          </li>
+          <li>
+            <strong>Matrices:</strong>
+            <ul>
+              <li>
+                A matrix is an <strong>n-by-m arrays</strong> of numbers, where <strong>n</strong> is the number of <strong>row</strong>, and
+                <strong>m</strong> is the number of <strong>column</strong>.
+              </li>
+              <li>The linear combination is written: $\mathbf{z} = \mathbf{Xw} + b$, where</li>
             </ul>
           </li>
         </ul>
-      </li>
-      <li><strong>Continuous Random Variables:</strong> Values from an interval (e.g. a height).
+
+        \[\mathbf{X} = \begin{bmatrix} x^{[1]}_1 &amp; x^{[1]}_2 &amp; \cdots &amp; x^{[1]}_m \\ x^{[2]}_1 &amp; x^{[2]}_2 &amp; \cdots &amp;
+        x^{[2]}_m \\ \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\ x^{[n]}_1 &amp; x^{[n]}_2 &amp; \cdots &amp; x^{[n]}_m \end{bmatrix} \in
+        \mathbb{R}^{n \times m}, \quad \mathbf{w} = \begin{bmatrix} w_1 \\ w_2 \\ \vdots \\ w_m \end{bmatrix} \in \mathbb{R}^{m \times 1}, \quad
+        \mathbf{z} = \begin{bmatrix} z^{[1]} \\ z^{[2]} \\ \vdots \\ z^{[n]} \end{bmatrix} \in \mathbb{R}^{n \times 1}\]
+
         <ul>
-          <li>Described by <strong>Probability Density Function (PDF)</strong>: $f(x)$.</li>
-          <li>Example: <strong>Gaussian (Normal) Distribution</strong>
-$f(x) = \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}$
+          <li>Time Complexity of N-by-N matrices multiplication by naive algorithms: $O(n^3)$.</li>
+          <li>
+            <strong>Broadcasting:</strong>
             <ul>
-              <li>Called <strong>“Normal”</strong> because of the <strong>Central Limit Theorem</strong>.</li>
-              <li><strong>Standard Normal:</strong> when $\mu= 0, \sigma= 1$.</li>
+              <li>The rigorous math formula of linear combination is: $\mathbf{z} = \mathbf{Xw} + \mathbf{1}_n b$.</li>
+              <li>
+                Using NumPy / PyTorch / TensorFlow, <strong>broadcasting</strong> helps to automatically expands the scalar $b$ into an $n \times 1$
+                vector.
+              </li>
+              <li>Thus, in deep learning notation, we usually drop $\mathbf{1}_n$ and simply write $\mathbf{z} = \mathbf{Xw} + b$.</li>
+            </ul>
+          </li>
+          <li>
+            <strong>Broadcasting Usage:</strong>
+            <ul>
+              <li>Be cautious when debugging, since <strong>broadcasting expands tensors automatically</strong>.</li>
+              <li>
+                Example:
+                <ul>
+                  <li>
+                    <p>
+                      <code class="language-plaintext highlighter-rouge"># 1 is broadcast to [1, 1, 1] to match the vector</code><br />
+                      <code class="language-plaintext highlighter-rouge">torch.tensor([1, 2, 3]) + 1</code><br />
+                      → <code class="language-plaintext highlighter-rouge">tensor([2, 3, 4])</code>
+                    </p>
+                  </li>
+                  <li>
+                    <p>
+                      <code class="language-plaintext highlighter-rouge"
+                        ># [1, 2, 3] is broadcast to [[ 1, 2, 3], [ 1, 2, 3]] to match the matrix</code
+                      ><br />
+                      <code class="language-plaintext highlighter-rouge">t = torch.tensor([[4, 5, 6], [7, 8, 9]])</code><br />
+                      <code class="language-plaintext highlighter-rouge">t + torch.tensor([1, 2, 3])</code><br />
+                      → <code class="language-plaintext highlighter-rouge">tensor([[ 5, 7, 9], [ 8, 10, 12]])</code>
+                    </p>
+                  </li>
+                </ul>
+              </li>
             </ul>
           </li>
         </ul>
-      </li>
-    </ul>
-  </li>
-  <li><strong>Central Limit Theorem (CLT):</strong>
-    <ul>
-      <li>Let $X_1, X_2, \ldots, X_n$ be independent and identically distributed (i.i.d.) random variables with mean $\mu$ and finite variance $\sigma^2$.</li>
-      <li>Define the <strong>sample mean</strong>: $\bar{X}_n = \frac{1}{n}(X_1 + X_2 + \cdots + X_n)$</li>
-      <li>Then we have: $\frac{\bar{X}_n - \mu}{\frac{\sigma}{\sqrt{n}}} \to N(0,1)$ as $n \to \infty$</li>
-    </ul>
-  </li>
-  <li><strong>Joint, Marginal, and Conditional Probabilities:</strong>
-    <ul>
-      <li><strong>Joint</strong>: $P(A,B)$, probability of two events occurring together.</li>
-      <li><strong>Marginal</strong>: $P(A) = \sum_B P(A, B)$, sum of joint probabilities over one variable.</li>
-      <li><strong>Conditional</strong>: $P(A \mid B) = \frac{P(A, B)}{P(B)}$, probability of A given B.</li>
-    </ul>
-  </li>
-  <li><strong>Expectation:</strong>
-    <ul>
-      <li>Formula:
+
+        <h2 id="4-probability-basics">4. Probability Basics</h2>
+
         <ul>
-          <li>Discrete: $E[X] = \sum_x x P(X = x)$</li>
-          <li>Continuous: $E[X] = \int_{-\infty}^{\infty} x f(x)\, dx$</li>
-        </ul>
-      </li>
-      <li>Linearity:
-        <ul>
-          <li>$E[aX + b] = aE[X] + b$</li>
-          <li>$E[X_1 + X_2] = E[X_1] + E[X_2]$</li>
-        </ul>
-      </li>
-      <li>Expectation of Functions:
-        <ul>
-          <li><strong>Discrete:</strong>
+          <li>
+            <strong>Random Variables and Distributions:</strong>
             <ul>
-              <li>$E[g(X)] = \sum_x g(x) P(X = x)$</li>
-              <li>Example: $X \sim \text{Bernoulli}(\theta), g(X) = X^2$, then $E[g(X)] = 1^2 \theta + 0^2 (1-\theta) = \theta$</li>
+              <li>
+                <strong>Discrete Random Variables:</strong> Values from a <strong>countable</strong> set (e.g. coin flip).
+                <ul>
+                  <li>Described by: <strong>Probability Mass Function (PMF)</strong>: $P(X = x)$.</li>
+                  <li>
+                    Example: <strong>Bernoulli Distribution</strong>
+                    $P(X = x) = \theta^x (1-\theta)^{1-x}, \; x \in {0,1}$.
+                    <ul>
+                      <li>Example: fair coin flip ($\theta = 0.5$).</li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <strong>Continuous Random Variables:</strong> Values from an interval (e.g. a height).
+                <ul>
+                  <li>Described by <strong>Probability Density Function (PDF)</strong>: $f(x)$.</li>
+                  <li>
+                    Example: <strong>Gaussian (Normal) Distribution</strong>
+                    $f(x) = \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}$
+                    <ul>
+                      <li>Called <strong>“Normal”</strong> because of the <strong>Central Limit Theorem</strong>.</li>
+                      <li><strong>Standard Normal:</strong> when $\mu= 0, \sigma= 1$.</li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
             </ul>
           </li>
-          <li><strong>Continuous:</strong>
+          <li>
+            <strong>Central Limit Theorem (CLT):</strong>
             <ul>
-              <li>$E[g(X)] = \int_x g(x) f(x)\, dx$</li>
-              <li>Example: $X \sim \text{Uniform}(0,1), \, g(X) = X^2$, then $E[g(X)] = \int_0^1 x^2 dx = \tfrac{1}{3}$</li>
+              <li>
+                Let $X_1, X_2, \ldots, X_n$ be independent and identically distributed (i.i.d.) random variables with mean $\mu$ and finite variance
+                $\sigma^2$.
+              </li>
+              <li>Define the <strong>sample mean</strong>: $\bar{X}_n = \frac{1}{n}(X_1 + X_2 + \cdots + X_n)$</li>
+              <li>Then we have: $\frac{\bar{X}_n - \mu}{\frac{\sigma}{\sqrt{n}}} \to N(0,1)$ as $n \to \infty$</li>
+            </ul>
+          </li>
+          <li>
+            <strong>Joint, Marginal, and Conditional Probabilities:</strong>
+            <ul>
+              <li><strong>Joint</strong>: $P(A,B)$, probability of two events occurring together.</li>
+              <li><strong>Marginal</strong>: $P(A) = \sum_B P(A, B)$, sum of joint probabilities over one variable.</li>
+              <li><strong>Conditional</strong>: $P(A \mid B) = \frac{P(A, B)}{P(B)}$, probability of A given B.</li>
+            </ul>
+          </li>
+          <li>
+            <strong>Expectation:</strong>
+            <ul>
+              <li>
+                Formula:
+                <ul>
+                  <li>Discrete: $E[X] = \sum_x x P(X = x)$</li>
+                  <li>Continuous: $E[X] = \int_{-\infty}^{\infty} x f(x)\, dx$</li>
+                </ul>
+              </li>
+              <li>
+                Linearity:
+                <ul>
+                  <li>$E[aX + b] = aE[X] + b$</li>
+                  <li>$E[X_1 + X_2] = E[X_1] + E[X_2]$</li>
+                </ul>
+              </li>
+              <li>
+                Expectation of Functions:
+                <ul>
+                  <li>
+                    <strong>Discrete:</strong>
+                    <ul>
+                      <li>$E[g(X)] = \sum_x g(x) P(X = x)$</li>
+                      <li>Example: $X \sim \text{Bernoulli}(\theta), g(X) = X^2$, then $E[g(X)] = 1^2 \theta + 0^2 (1-\theta) = \theta$</li>
+                    </ul>
+                  </li>
+                  <li>
+                    <strong>Continuous:</strong>
+                    <ul>
+                      <li>$E[g(X)] = \int_x g(x) f(x)\, dx$</li>
+                      <li>Example: $X \sim \text{Uniform}(0,1), \, g(X) = X^2$, then $E[g(X)] = \int_0^1 x^2 dx = \tfrac{1}{3}$</li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <strong>Variance:</strong>
+            <ul>
+              <li>Formula: $Var(X) = E[(X - E[X])^2] \equiv E[X^2] - (E[X])^2$</li>
+              <li>Variance of Functions: $Var(g(X)) = E[(g(X) - E[g(X)])^2] \equiv E[g(X)^2] - E[g(X)]^2$</li>
+            </ul>
+          </li>
+          <li>
+            <strong>Covariance:</strong>
+            <ul>
+              <li>$Cov(X,Y) = E[(X - E[X])(Y - E[Y])]$</li>
+              <li>If $X, Y$ are independent, then $Cov(X,Y) = 0$</li>
+              <li>$Cov(X,X) = Var(X)$</li>
+            </ul>
+          </li>
+          <li>
+            <strong>Correlation:</strong>
+            <ul>
+              <li>
+                $\rho(X, Y) = \dfrac{\mathrm{Cov}(X,Y)}{\sqrt{Var(X)Var(Y)}}$
+                <ul>
+                  <li>$\rho = 1$: Perfect positive linear relationship.</li>
+                  <li>$\rho = 0$: No linear relationship.</li>
+                  <li>$\rho = -1$: Perfect negative linear relationship.</li>
+                  <li>Always in the range $[-1, 1]$.</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <strong>Bayes’Rule:</strong>
+            <ul>
+              <li>
+                <p>$P(A \mid B) = \frac{P(B \mid A) P(A)}{P(B)}$</p>
+              </li>
+              <li>
+                <p>Example: Medical Test:</p>
+                <ul>
+                  <li>
+                    $P(\text{disease} \mid \text{positive test}) = \frac{P(\text{positive test} \mid \text{disease}) \, P(\text{disease})}
+                    {P(\text{positive test})} $
+                  </li>
+                </ul>
+              </li>
             </ul>
           </li>
         </ul>
-      </li>
-    </ul>
-  </li>
-  <li><strong>Variance:</strong>
-    <ul>
-      <li>Formula: $Var(X) = E[(X - E[X])^2] \equiv E[X^2] - (E[X])^2$</li>
-      <li>Variance of Functions: $Var(g(X)) = E[(g(X) - E[g(X)])^2] \equiv E[g(X)^2] - E[g(X)]^2$</li>
-    </ul>
-  </li>
-  <li><strong>Covariance:</strong>
-    <ul>
-      <li>$Cov(X,Y) = E[(X - E[X])(Y - E[Y])]$</li>
-      <li>If $X, Y$ are independent, then $Cov(X,Y) = 0$</li>
-      <li>$Cov(X,X) = Var(X)$</li>
-    </ul>
-  </li>
-  <li><strong>Correlation:</strong>
-    <ul>
-      <li>$\rho(X, Y) = \dfrac{\mathrm{Cov}(X,Y)}{\sqrt{Var(X)Var(Y)}}$
+
+        <h2 id="5-estimation-methods">5. Estimation Methods</h2>
+
+        <p>The goal of estimation is to <strong>infer unknown parameters</strong> $\theta$ from observed data.</p>
+
         <ul>
-          <li>$\rho = 1$: Perfect positive linear relationship.</li>
-          <li>$\rho = 0$: No linear relationship.</li>
-          <li>$\rho = -1$: Perfect negative linear relationship.</li>
-          <li>Always in the range $[-1, 1]$.</li>
+          <li>
+            <h4 id="types-of-estimation">Types of Estimation</h4>
+            <ul>
+              <li><strong>Point Estimation</strong>: Provides a single best guess of the parameter.</li>
+              <li>
+                <strong>Interval Estimation</strong>: Provides a range of plausible values (e.g., confidence intervals, Bayesian credible intervals).
+              </li>
+            </ul>
+          </li>
+          <li>
+            <h4 id="maximum-likelihood-estimation-mle">Maximum Likelihood Estimation (MLE)</h4>
+            <ul>
+              <li><strong>Definition:</strong></li>
+            </ul>
+          </li>
         </ul>
-      </li>
-    </ul>
-  </li>
-  <li><strong>Bayes’Rule:</strong>
-    <ul>
-      <li>
-        <p>$P(A \mid B) = \frac{P(B \mid A) P(A)}{P(B)}$</p>
-      </li>
-      <li>
-        <p>Example: Medical Test:</p>
+
+        \[\hat{\theta}_{\text{MAP}} = \arg\max_{\theta} P(\theta \mid \text{data}) = \arg\max_{\theta} \big[ P(\text{data} \mid \theta)\, P(\theta)
+        \big].\]
+
         <ul>
-          <li>$P(\text{disease} \mid \text{positive test}) = \frac{P(\text{positive test} \mid \text{disease}) \, P(\text{disease})} {P(\text{positive test})} $</li>
+          <li>
+            <strong>Interpretation:</strong><br />
+            MLE chooses $\theta$ that makes the observed data most “likely.”
+          </li>
+          <li><strong>Log-likelihood:</strong></li>
         </ul>
-      </li>
-    </ul>
-  </li>
-</ul>
 
-<h2 id="5-estimation-methods">5. Estimation Methods</h2>
+        \[\ell(\theta) = \log L(\theta) = \sum_i \Big[ x_i \log \theta + (1-x_i)\log(1-\theta) \Big]. &lt;/d-math&gt;\]
 
-<p>The goal of estimation is to <strong>infer unknown parameters</strong> $\theta$ from observed data.</p>
-
-<ul>
-  <li>
-    <h4 id="types-of-estimation">Types of Estimation</h4>
-    <ul>
-      <li><strong>Point Estimation</strong>: Provides a single best guess of the parameter.</li>
-      <li><strong>Interval Estimation</strong>: Provides a range of plausible values (e.g., confidence intervals, Bayesian credible intervals).</li>
-    </ul>
-  </li>
-  <li>
-    <h4 id="maximum-likelihood-estimation-mle">Maximum Likelihood Estimation (MLE)</h4>
-    <ul>
-      <li><strong>Definition:</strong></li>
-    </ul>
-  </li>
-</ul>
-
-\[\hat{\theta}_{\text{MAP}}
-= \arg\max_{\theta} P(\theta \mid \text{data})
-= \arg\max_{\theta} \big[ P(\text{data} \mid \theta)\, P(\theta) \big].\]
-
-<ul>
-  <li><strong>Interpretation:</strong><br />
-MLE chooses $\theta$ that makes the observed data most “likely.”</li>
-  <li><strong>Log-likelihood:</strong></li>
-</ul>
-
-\[\ell(\theta)
-   = \log L(\theta)
-   = \sum_i \Big[ x_i \log \theta + (1-x_i)\log(1-\theta) \Big].
-   &lt;/d-math&gt;\]
-
-<ul>
-  <li><strong>Example (Bernoulli):</strong><br />
-Suppose we observe $k$ successes in $n$ Bernoulli trials. Then</li>
-</ul>
-
-\[\hat{\theta}_{\text{MLE}} = \frac{k}{n}.\]
-
-<ul>
-  <li><strong>Notes:</strong>
-    <ul>
-      <li>MLE does not always exist.</li>
-      <li>MLE may not be unique.</li>
-      <li>MLE may not always be admissible.</li>
-    </ul>
-  </li>
-  <li>
-    <h4 id="maximum-a-posteriori-map">Maximum A Posteriori (MAP)</h4>
-    <ul>
-      <li><strong>Definition:</strong></li>
-    </ul>
-  </li>
-</ul>
-
-\[\hat{\theta}{\text{MAP}}
-  = \arg\max{\theta} P(\theta \mid \text{data})
-  = \arg\max_{\theta} P(\text{data} \mid \theta),P(\theta).\]
-
-<ul>
-  <li>MAP incorporates a <strong>prior distribution</strong> $P(\theta)$.</li>
-  <li>
-    <p>MLE ignores the prior.</p>
-  </li>
-  <li>
-    <h4 id="regularization-as-map">Regularization as MAP</h4>
-    <ul>
-      <li>Adding a regularization term to MLE is equivalent to doing MAP estimation with a prior:
         <ul>
-          <li><strong>L2 penalty (ridge regression):</strong> corresponds to a Gaussian prior on parameters.</li>
-          <li><strong>L1 penalty (lasso regression):</strong> corresponds to a Laplace prior on parameters.</li>
+          <li>
+            <strong>Example (Bernoulli):</strong><br />
+            Suppose we observe $k$ successes in $n$ Bernoulli trials. Then
+          </li>
         </ul>
-      </li>
-    </ul>
-  </li>
-</ul>
 
-<p>Formally:</p>
+        \[\hat{\theta}_{\text{MLE}} = \frac{k}{n}.\]
 
-\[\hat{\theta}_{\text{reg}}
-  = \arg\max_{\theta} \Big[ \log L(\theta) - \lambda R(\theta) \Big]
-  \quad\Longleftrightarrow\quad
-  \hat{\theta}_{\text{MAP}}\]
+        <ul>
+          <li>
+            <strong>Notes:</strong>
+            <ul>
+              <li>MLE does not always exist.</li>
+              <li>MLE may not be unique.</li>
+              <li>MLE may not always be admissible.</li>
+            </ul>
+          </li>
+          <li>
+            <h4 id="maximum-a-posteriori-map">Maximum A Posteriori (MAP)</h4>
+            <ul>
+              <li><strong>Definition:</strong></li>
+            </ul>
+          </li>
+        </ul>
 
-<h2 id="6-linear-regression">6. Linear Regression</h2>
+        \[\hat{\theta}{\text{MAP}} = \arg\max{\theta} P(\theta \mid \text{data}) = \arg\max_{\theta} P(\text{data} \mid \theta),P(\theta).\]
 
-<p>Linear regression models the relationship between inputs (features) and outputs (responses).</p>
+        <ul>
+          <li>MAP incorporates a <strong>prior distribution</strong> $P(\theta)$.</li>
+          <li>
+            <p>MLE ignores the prior.</p>
+          </li>
+          <li>
+            <h4 id="regularization-as-map">Regularization as MAP</h4>
+            <ul>
+              <li>
+                Adding a regularization term to MLE is equivalent to doing MAP estimation with a prior:
+                <ul>
+                  <li><strong>L2 penalty (ridge regression):</strong> corresponds to a Gaussian prior on parameters.</li>
+                  <li><strong>L1 penalty (lasso regression):</strong> corresponds to a Laplace prior on parameters.</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
 
-<ul>
-  <li>
-    <h4 id="model-definition">Model Definition</h4>
+        <p>Formally:</p>
 
-    <p>\(y = X\beta + \epsilon\)</p>
-    <ul>
-      <li>$y$: response variable (dependent variable).</li>
-      <li>$X$: design matrix (independent variables or features).</li>
-      <li>$\beta$: coefficients (parameters to estimate).</li>
-      <li>
-        <p>$\epsilon$: error term, often assumed $\epsilon \sim N(0, \sigma^2)$.</p>
-      </li>
-      <li><strong>Goal:</strong> Estimate $\beta$.</li>
-    </ul>
-  </li>
-  <li>
-    <h4 id="evaluation-metrics">Evaluation Metrics</h4>
-    <ul>
-      <li><strong>Coefficient of Determination ($R^2$):</strong></li>
-    </ul>
-  </li>
-</ul>
+        \[\hat{\theta}_{\text{reg}} = \arg\max_{\theta} \Big[ \log L(\theta) - \lambda R(\theta) \Big] \quad\Longleftrightarrow\quad
+        \hat{\theta}_{\text{MAP}}\]
 
-\[R^2 = 1 - \frac{SS_{\text{res}}}{SS_{\text{tot}}}\]
+        <h2 id="6-linear-regression">6. Linear Regression</h2>
 
-<ul>
-  <li>
-    <p>Measures the proportion of variance in $y$ explained by the model.</p>
-  </li>
-  <li>
-    <p><strong>Mean Squared Error (MSE):</strong></p>
-  </li>
-</ul>
+        <p>Linear regression models the relationship between inputs (features) and outputs (responses).</p>
 
-\[MSE = \frac{1}{n} \sum_i (y_i - \hat{y}_i)^2\]
+        <ul>
+          <li>
+            <h4 id="model-definition">Model Definition</h4>
 
-<ul>
-  <li><strong>Mean Absolute Error (MAE):</strong></li>
-</ul>
+            <p>\(y = X\beta + \epsilon\)</p>
+            <ul>
+              <li>$y$: response variable (dependent variable).</li>
+              <li>$X$: design matrix (independent variables or features).</li>
+              <li>$\beta$: coefficients (parameters to estimate).</li>
+              <li>
+                <p>$\epsilon$: error term, often assumed $\epsilon \sim N(0, \sigma^2)$.</p>
+              </li>
+              <li><strong>Goal:</strong> Estimate $\beta$.</li>
+            </ul>
+          </li>
+          <li>
+            <h4 id="evaluation-metrics">Evaluation Metrics</h4>
+            <ul>
+              <li><strong>Coefficient of Determination ($R^2$):</strong></li>
+            </ul>
+          </li>
+        </ul>
 
-\[MAE = \frac{1}{n} \sum_i |y_i - \hat{y}_i|\]
+        \[R^2 = 1 - \frac{SS_{\text{res}}}{SS_{\text{tot}}}\]
 
-<ul>
-  <li>
-    <h4 id="ordinary-least-squares-ols">Ordinary Least Squares (OLS)</h4>
-    <ul>
-      <li><strong>Objective:</strong></li>
-    </ul>
-  </li>
-</ul>
+        <ul>
+          <li>
+            <p>Measures the proportion of variance in $y$ explained by the model.</p>
+          </li>
+          <li>
+            <p><strong>Mean Squared Error (MSE):</strong></p>
+          </li>
+        </ul>
 
-\[\hat{\beta}_{\text{OLS}}
-  = \arg\min_{\beta} \|y - X\beta\|^2\]
+        \[MSE = \frac{1}{n} \sum_i (y_i - \hat{y}_i)^2\]
 
-<ul>
-  <li>
-    <p><strong>Residuals:</strong> $e_i = y_i - \hat{y}_i$.</p>
-  </li>
-  <li>
-    <p><strong>Closed-form solution:</strong></p>
-  </li>
-</ul>
+        <ul>
+          <li><strong>Mean Absolute Error (MAE):</strong></li>
+        </ul>
 
-\[\hat{\beta}_{\text{OLS}} = (X^TX)^{-1}X^Ty\]
+        \[MAE = \frac{1}{n} \sum_i |y_i - \hat{y}_i|\]
 
-<ul>
-  <li>
-    <h4 id="regularization-in-linear-regression">Regularization in Linear Regression</h4>
-    <ul>
-      <li><strong>Ridge Regression (L2):</strong></li>
-    </ul>
-  </li>
-</ul>
+        <ul>
+          <li>
+            <h4 id="ordinary-least-squares-ols">Ordinary Least Squares (OLS)</h4>
+            <ul>
+              <li><strong>Objective:</strong></li>
+            </ul>
+          </li>
+        </ul>
 
-\[\hat{\beta}_{\text{ridge}}
-  = \arg\min_{\beta} \|y - X\beta\|^2 + \lambda \|\beta\|_2^2\]
+        \[\hat{\beta}_{\text{OLS}} = \arg\min_{\beta} \|y - X\beta\|^2\]
 
-<p>Equivalent MAP interpretation: Gaussian prior $\beta \sim N(0,  \frac{\sigma^2}{\lambda})$.</p>
+        <ul>
+          <li>
+            <p><strong>Residuals:</strong> $e_i = y_i - \hat{y}_i$.</p>
+          </li>
+          <li>
+            <p><strong>Closed-form solution:</strong></p>
+          </li>
+        </ul>
 
-<ul>
-  <li><strong>Lasso Regression (L1):</strong></li>
-</ul>
+        \[\hat{\beta}_{\text{OLS}} = (X^TX)^{-1}X^Ty\]
 
-\[\hat{\beta}_{\text{lasso}}
-   = \arg\min_{\beta} \|y - X\beta\|^2 + \lambda \|\beta\|_1\]
+        <ul>
+          <li>
+            <h4 id="regularization-in-linear-regression">Regularization in Linear Regression</h4>
+            <ul>
+              <li><strong>Ridge Regression (L2):</strong></li>
+            </ul>
+          </li>
+        </ul>
 
-<p>Equivalent MAP interpretation: Laplace prior $\beta \sim \text{Laplace}(0, \frac{\sigma}{\lambda})$.<br />
- Encourages <strong>sparsity</strong> (many coefficients shrink to 0).</p>
- </d-article>
+        \[\hat{\beta}_{\text{ridge}} = \arg\min_{\beta} \|y - X\beta\|^2 + \lambda \|\beta\|_2^2\]
+
+        <p>Equivalent MAP interpretation: Gaussian prior $\beta \sim N(0, \frac{\sigma^2}{\lambda})$.</p>
+
+        <ul>
+          <li><strong>Lasso Regression (L1):</strong></li>
+        </ul>
+
+        \[\hat{\beta}_{\text{lasso}} = \arg\min_{\beta} \|y - X\beta\|^2 + \lambda \|\beta\|_1\]
+
+        <p>
+          Equivalent MAP interpretation: Laplace prior $\beta \sim \text{Laplace}(0, \frac{\sigma}{\lambda})$.<br />
+          Encourages <strong>sparsity</strong> (many coefficients shrink to 0).
+        </p>
+      </d-article>
 
       <d-appendix>
         <d-footnote-list></d-footnote-list>
@@ -597,107 +590,82 @@ Suppose we observe $k$ successes in $n$ Bernoulli trials. Then</li>
     </div>
 
     <footer class="site-footer">
-  <div class="wrapper">
-    <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
+      <div class="wrapper">
+        <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
 
-    <div class="footer-col-wrapper">
-      <div class="footer-col footer-col-1">
-        <ul class="contact-list">
-          <li class="p-name">Ben Lengerich</li><li>
-            <a class="u-email" href="mailto:TBD@wisc.edu"
-              >TBD@wisc.edu</a
-            >
-          </li></ul>
+        <div class="footer-col-wrapper">
+          <div class="footer-col footer-col-1">
+            <ul class="contact-list">
+              <li class="p-name">Ben Lengerich</li>
+              <li>
+                <a class="u-email" href="mailto:TBD@wisc.edu">TBD@wisc.edu</a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="footer-col footer-col-2">
+            <ul class="social-media-list">
+              <li>
+                <a href="https://github.com/AdaptInfer" target="_blank"><i class="fab fa-github"></i> <span class="username">AdaptInfer</span></a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="footer-col footer-col-3">
+            <p>
+              &copy; Copyright 2025 University of Wisconsin.
+              <br />
+            </p>
+          </div>
+        </div>
       </div>
-
-      <div class="footer-col footer-col-2"><ul class="social-media-list"><li>
-    <a
-      href="https://github.com/AdaptInfer"
-      target="_blank"
-      ><i class="fab fa-github"></i>
-      <span class="username">AdaptInfer</span></a
-    >
-  </li></ul>
-</div>
-
-      <div class="footer-col footer-col-3">
-        <p>
-          &copy; Copyright 2025 University of Wisconsin.
-          <br />
-          
-        </p>
-      </div>
-    </div>
-  </div>
-</footer>
-
+    </footer>
   </body>
 
-  <d-bibliography
-    src="/dgm-fall-2025/assets/bibliography/2025-09-10-lecture-03.bib"
-  >
-  </d-bibliography>
+  <d-bibliography src="/dgm-fall-2025/assets/bibliography/2025-09-10-lecture-03.bib"> </d-bibliography>
 
   <!-- Load jQuery -->
-<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
 
-<!-- Load Common JS -->
-<script src="/dgm-fall-2025/assets/js/common.js"></script>
+  <!-- Load Common JS -->
+  <script src="/dgm-fall-2025/assets/js/common.js"></script>
 
+  <!-- Load KaTeX -->
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css" />
+  <script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+  <script src="/dgm-fall-2025/assets/js/katex.js"></script>
 
-<!-- Load KaTeX -->
-<link
-  rel="stylesheet"
-  href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css"
-/>
-<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
-<script src="/dgm-fall-2025/assets/js/katex.js"></script>
- 
-<!-- Load Anchor JS -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
-<script>
-  anchors.options.visible = "hover";
-  anchors.add("article h2, article h3, article h4, article h5, article h6");
-</script>
- 
-<!-- Adjust LaTeX JS -->
-<script src="/dgm-fall-2025/assets/js/latex.js"></script>
+  <!-- Load Anchor JS -->
+  <script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+  <script>
+    anchors.options.visible = "hover";
+    anchors.add("article h2, article h3, article h4, article h5, article h6");
+  </script>
 
+  <!-- Adjust LaTeX JS -->
+  <script src="/dgm-fall-2025/assets/js/latex.js"></script>
 
-<!-- Include custom icon fonts -->
-<link
-  rel="stylesheet"
-  href="/dgm-fall-2025/assets/css/fontawesome-all.min.css"
-/>
-<link
-  rel="stylesheet"
-  href="/dgm-fall-2025/assets/css/academicons.min.css"
-/>
+  <!-- Include custom icon fonts -->
+  <link rel="stylesheet" href="/dgm-fall-2025/assets/css/fontawesome-all.min.css" />
+  <link rel="stylesheet" href="/dgm-fall-2025/assets/css/academicons.min.css" />
 
-<!-- Google Analytics -->
-<script>
-  (function (i, s, o, g, r, a, m) {
-    i["GoogleAnalyticsObject"] = r;
-    ((i[r] =
-      i[r] ||
-      function () {
-        (i[r].q = i[r].q || []).push(arguments);
-      }),
-      (i[r].l = 1 * new Date()));
-    ((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
-    a.async = 1;
-    a.src = g;
-    m.parentNode.insertBefore(a, m);
-  })(
-    window,
-    document,
-    "script",
-    "//www.google-analytics.com/analytics.js",
-    "ga",
-  );
+  <!-- Google Analytics -->
+  <script>
+    (function (i, s, o, g, r, a, m) {
+      i["GoogleAnalyticsObject"] = r;
+      (i[r] =
+        i[r] ||
+        function () {
+          (i[r].q = i[r].q || []).push(arguments);
+        }),
+        (i[r].l = 1 * new Date());
+      (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+      a.async = 1;
+      a.src = g;
+      m.parentNode.insertBefore(a, m);
+    })(window, document, "script", "//www.google-analytics.com/analytics.js", "ga");
 
-  ga("create", "", "auto");
-  ga("send", "pageview");
-</script>
-
+    ga("create", "", "auto");
+    ga("send", "pageview");
+  </script>
 </html>

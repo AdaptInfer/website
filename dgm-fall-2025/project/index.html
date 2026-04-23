@@ -1,390 +1,402 @@
 <!doctype html>
 <html>
   <head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="content-language" content="en" />
-  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-  <meta name="viewport" content="width=device-width initial-scale=1.0" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta charset="UTF-8" />
+    <meta http-equiv="content-language" content="en" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-  <title>
-    STAT 453 | Course Project
-  </title>
-  <meta name="description" content="STAT 453 - University of Wisconsin-Madison - Fall 2025
-" />
+    <title>STAT 453 | Course Project</title>
+    <meta
+      name="description"
+      content="STAT 453 - University of Wisconsin-Madison - Fall 2025
+"
+    />
 
-  <link
-    rel="shortcut icon"
-    href="/dgm-fall-2025/assets/img/favicon.ico"
-  />
+    <link rel="shortcut icon" href="/dgm-fall-2025/assets/img/favicon.ico" />
 
-  <link rel="stylesheet" href="/dgm-fall-2025/assets/css/main.css" />
-  <link
-    rel="canonical"
-    href="/dgm-fall-2025/project/"
-  />
+    <link rel="stylesheet" href="/dgm-fall-2025/assets/css/main.css" />
+    <link rel="canonical" href="/dgm-fall-2025/project/" />
 
-  
-  <!-- Load Latex JS -->
-  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
-  
-</head>
-
+    <!-- Load Latex JS -->
+    <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+  </head>
 
   <body>
     <header class="site-header">
-  <div class="wrapper">
-    <span class="site-title">
-      <a class="page-link" href="https://adaptinfer.org/dgm-fall-2025/"
-        >STAT 453</a
-      >
-    </span>
-
-    <nav class="site-nav">
-      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
-      <label for="nav-trigger">
-        <span class="menu-icon">
-          <svg viewBox="0 0 18 15" width="18px" height="15px">
-            <path
-              fill="#424242"
-              d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
-            />
-            <path
-              fill="#424242"
-              d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
-            />
-            <path
-              fill="#424242"
-              d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
-            />
-          </svg>
+      <div class="wrapper">
+        <span class="site-title">
+          <a class="page-link" href="https://adaptinfer.org/dgm-fall-2025/">STAT 453</a>
         </span>
-      </label>
 
-      <div class="trigger">
-        <a class="page-link" href="/dgm-fall-2025/logistics/"
-          >logistics</a
-        >
-        <a class="page-link" href="/dgm-fall-2025/lectures/"
-          >lectures</a
-        >
-        <a class="page-link" href="/dgm-fall-2025/notes/">notes</a>
-        <a class="page-link" href="/dgm-fall-2025/calendar/"
-          >calendar</a
-        >
-        <a class="page-link" href="/dgm-fall-2025/homework/"
-          >homework</a
-        >
-        <a class="page-link" href="/dgm-fall-2025/project/">project</a>
+        <nav class="site-nav">
+          <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+          <label for="nav-trigger">
+            <span class="menu-icon">
+              <svg viewBox="0 0 18 15" width="18px" height="15px">
+                <path
+                  fill="#424242"
+                  d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
+                />
+                <path
+                  fill="#424242"
+                  d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
+                />
+                <path
+                  fill="#424242"
+                  d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
+                />
+              </svg>
+            </span>
+          </label>
+
+          <div class="trigger">
+            <a class="page-link" href="/dgm-fall-2025/logistics/">logistics</a>
+            <a class="page-link" href="/dgm-fall-2025/lectures/">lectures</a>
+            <a class="page-link" href="/dgm-fall-2025/notes/">notes</a>
+            <a class="page-link" href="/dgm-fall-2025/calendar/">calendar</a>
+            <a class="page-link" href="/dgm-fall-2025/homework/">homework</a>
+            <a class="page-link" href="/dgm-fall-2025/project/">project</a>
+          </div>
+        </nav>
       </div>
-    </nav>
-  </div>
-</header>
-
+    </header>
 
     <div class="page-content">
-      <div class="wrapper"><div class="post">
-  <header class="post-header">
-    <h1 class="post-title">Course Project</h1>
-    <h2 class="post-description">Guidelines and deliverables for course projects</h2>
-  </header>
+      <div class="wrapper">
+        <div class="post">
+          <header class="post-header">
+            <h1 class="post-title">Course Project</h1>
+            <h2 class="post-description">Guidelines and deliverables for course projects</h2>
+          </header>
 
-  <article class="post-content Course Project clearfix"><p>Your class project offers an opportunity to apply deep learning / generative models to real-world problems. Projects will be completed in <strong>teams of 2-4 students</strong> and are worth <strong>30% of your final grade</strong>, consisting of the following deliverables:</p>
+          <article class="post-content Course Project clearfix">
+            <p>
+              Your class project offers an opportunity to apply deep learning / generative models to real-world problems. Projects will be completed
+              in <strong>teams of 2-4 students</strong> and are worth <strong>30% of your final grade</strong>, consisting of the following
+              deliverables:
+            </p>
 
-<ol>
-  <li><strong>Proposal</strong> (5%): 2 pages, excluding references.</li>
-  <li><strong>Midway Report</strong> (5%): 4 pages, excluding references.</li>
-  <li><strong>Presentation</strong> (5%): In-class presentation.</li>
-  <li><strong>Final Report</strong> (15%): 8 pages, excluding references.</li>
-</ol>
+            <ol>
+              <li><strong>Proposal</strong> (5%): 2 pages, excluding references.</li>
+              <li><strong>Midway Report</strong> (5%): 4 pages, excluding references.</li>
+              <li><strong>Presentation</strong> (5%): In-class presentation.</li>
+              <li><strong>Final Report</strong> (15%): 8 pages, excluding references.</li>
+            </ol>
 
-<p>All submissions must adhere to the <a href="https://www.overleaf.com/latex/templates/icml2025-template/dhxrkcgkvnkt">ICML style template</a>.</p>
+            <p>
+              All submissions must adhere to the
+              <a href="https://www.overleaf.com/latex/templates/icml2025-template/dhxrkcgkvnkt">ICML style template</a>.
+            </p>
 
-<hr />
+            <hr />
 
-<h2 id="team-formation">Team Formation</h2>
+            <h2 id="team-formation">Team Formation</h2>
 
-<p>Teams of 3-4 students are strongly encouraged. Once your team is formed, email the instructor with the names of all members. If assistance is needed, contact the instructor to help find project partners.</p>
+            <p>
+              Teams of 3-4 students are strongly encouraged. Once your team is formed, email the instructor with the names of all members. If
+              assistance is needed, contact the instructor to help find project partners.
+            </p>
 
-<hr />
+            <hr />
 
-<h2 id="deliverables-and-deadlines">Deliverables and Deadlines</h2>
+            <h2 id="deliverables-and-deadlines">Deliverables and Deadlines</h2>
 
-<h3 id="proposal"><strong>Proposal</strong></h3>
+            <h3 id="proposal"><strong>Proposal</strong></h3>
 
-<p><strong>Due:</strong> Friday, October 17, 2025, at 11:59 PM via Canvas.</p>
+            <p><strong>Due:</strong> Friday, October 17, 2025, at 11:59 PM via Canvas.</p>
 
-<ul>
-  <li><strong>Content</strong>:
-    <ul>
-      <li>Project title and team member list.</li>
-      <li>Problem statement and motivation (½ page).</li>
-      <li>Literature review of at least four relevant papers (~1 page).</li>
-      <li>Description of dataset(s) and planned activities.</li>
-    </ul>
-  </li>
-  <li><strong>Grading</strong>:
-    <ul>
-      <li>40%: Clear and concise description of the project.</li>
-      <li>40%: Quality of literature survey.</li>
-      <li>10%: Feasibility and detail of activity plan.</li>
-      <li>10%: Writing quality.</li>
-    </ul>
-  </li>
-</ul>
-
-<hr />
-
-<h3 id="midway-report"><strong>Midway Report</strong></h3>
-
-<p><strong>Due:</strong> Friday, November 7, 2025, at 11:59 PM via Canvas.</p>
-
-<ul>
-  <li>
-    <p><strong>Purpose</strong>:
-This report ensures you’ve made <strong>real progress</strong> on your project. Basically, your job in the midway report is to convince us that you will finish your project by the final due date. It’s ok if your plans have changed from the proposal, but you should know that by now. It’s also okay if your plans have failed or run into challenges, but you should have some indication of that by now.</p>
-
-    <p>By now, you should have:</p>
-    <ul>
-      <li>Implemented an initial version of your model or experiments.</li>
-      <li>Run at least some tests—even if they didn’t work.</li>
-      <li>Identified challenges and next steps.
-This is not just a plan—it must reflect <strong>actual work done</strong> so far.</li>
-    </ul>
-  </li>
-  <li><strong>Format &amp; Length</strong>:
-    <ul>
-      <li><strong>4 full pages</strong>, excluding references. May <strong>slightly spill onto a fifth page</strong>, but be concise.</li>
-      <li>Use the <strong>ICML template</strong> again.</li>
-      <li>Put references must be on a separate page (<strong><code class="language-plaintext highlighter-rouge">\clearpage</code></strong> before).</li>
-      <li><strong>Figures &amp; Tables</strong>
-        <ul>
-          <li>Use <strong><code class="language-plaintext highlighter-rouge">figure</code></strong> for single-column figures, <strong><code class="language-plaintext highlighter-rouge">figure*</code></strong> for full-width figures. Figure sizes (including using <strong><code class="language-plaintext highlighter-rouge">\width=</code></strong> commands) will significantly change your report length, so size them properly.</li>
-          <li>Ensure figures are <strong>numbered, referenced, and captioned</strong> properly.</li>
-        </ul>
-      </li>
-      <li><strong>Required Sections</strong> (length of each sections will vary by project focus)
-        <ul>
-          <li><strong>Abstract (~150-200 words)</strong>
             <ul>
-              <li>Summary of the problem, approach, progress, key challenges, and next steps.</li>
+              <li>
+                <strong>Content</strong>:
+                <ul>
+                  <li>Project title and team member list.</li>
+                  <li>Problem statement and motivation (½ page).</li>
+                  <li>Literature review of at least four relevant papers (~1 page).</li>
+                  <li>Description of dataset(s) and planned activities.</li>
+                </ul>
+              </li>
+              <li>
+                <strong>Grading</strong>:
+                <ul>
+                  <li>40%: Clear and concise description of the project.</li>
+                  <li>40%: Quality of literature survey.</li>
+                  <li>10%: Feasibility and detail of activity plan.</li>
+                  <li>10%: Writing quality.</li>
+                </ul>
+              </li>
             </ul>
-          </li>
-          <li><strong>Introduction (½ - 1 page)</strong>
+
+            <hr />
+
+            <h3 id="midway-report"><strong>Midway Report</strong></h3>
+
+            <p><strong>Due:</strong> Friday, November 7, 2025, at 11:59 PM via Canvas.</p>
+
             <ul>
-              <li>Problem statement and motivation.</li>
-              <li>Role of <strong>deep learning</strong> and/or <strong>generative models</strong> (PGMs).</li>
+              <li>
+                <p>
+                  <strong>Purpose</strong>: This report ensures you’ve made <strong>real progress</strong> on your project. Basically, your job in the
+                  midway report is to convince us that you will finish your project by the final due date. It’s ok if your plans have changed from the
+                  proposal, but you should know that by now. It’s also okay if your plans have failed or run into challenges, but you should have some
+                  indication of that by now.
+                </p>
+
+                <p>By now, you should have:</p>
+                <ul>
+                  <li>Implemented an initial version of your model or experiments.</li>
+                  <li>Run at least some tests—even if they didn’t work.</li>
+                  <li>Identified challenges and next steps. This is not just a plan—it must reflect <strong>actual work done</strong> so far.</li>
+                </ul>
+              </li>
+              <li>
+                <strong>Format &amp; Length</strong>:
+                <ul>
+                  <li><strong>4 full pages</strong>, excluding references. May <strong>slightly spill onto a fifth page</strong>, but be concise.</li>
+                  <li>Use the <strong>ICML template</strong> again.</li>
+                  <li>
+                    Put references must be on a separate page (<strong><code class="language-plaintext highlighter-rouge">\clearpage</code></strong>
+                    before).
+                  </li>
+                  <li>
+                    <strong>Figures &amp; Tables</strong>
+                    <ul>
+                      <li>
+                        Use <strong><code class="language-plaintext highlighter-rouge">figure</code></strong> for single-column figures,
+                        <strong><code class="language-plaintext highlighter-rouge">figure*</code></strong> for full-width figures. Figure sizes
+                        (including using <strong><code class="language-plaintext highlighter-rouge">\width=</code></strong> commands) will
+                        significantly change your report length, so size them properly.
+                      </li>
+                      <li>Ensure figures are <strong>numbered, referenced, and captioned</strong> properly.</li>
+                    </ul>
+                  </li>
+                  <li>
+                    <strong>Required Sections</strong> (length of each sections will vary by project focus)
+                    <ul>
+                      <li>
+                        <strong>Abstract (~150-200 words)</strong>
+                        <ul>
+                          <li>Summary of the problem, approach, progress, key challenges, and next steps.</li>
+                        </ul>
+                      </li>
+                      <li>
+                        <strong>Introduction (½ - 1 page)</strong>
+                        <ul>
+                          <li>Problem statement and motivation.</li>
+                          <li>Role of <strong>deep learning</strong> and/or <strong>generative models</strong> (PGMs).</li>
+                        </ul>
+                      </li>
+                      <li>
+                        <strong>Related Work (~½ page)</strong>
+                        <ul>
+                          <li>Summary of at least <strong>four relevant papers</strong> and how they relate to your work.</li>
+                          <li>
+                            Don’t just give a list of related papers. Instead, synthesize the related works into a narrative of where the field is and
+                            why your project is interesting.
+                          </li>
+                        </ul>
+                      </li>
+                      <li>
+                        <strong>Methods (~1 page)</strong>
+                        <ul>
+                          <li>Implemented work so far (not just plans).</li>
+                          <li>Model structure, key assumptions, modifications.</li>
+                          <li>Challenges encountered and adjustments made.</li>
+                        </ul>
+                      </li>
+                      <li>
+                        <strong>Experiments (~1 page)</strong>
+                        <ul>
+                          <li>Dataset(s) and experimental setup.</li>
+                          <li>Preliminary results, even if unsuccessful.</li>
+                        </ul>
+                      </li>
+                      <li>
+                        <strong>Conclusion &amp; Updated Plan (~½ page)</strong>
+                        <ul>
+                          <li>Summary of progress, challenges, and next steps.</li>
+                          <li>Timeline for final report.</li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <strong>Grading</strong>
+                <ul>
+                  <li><strong>20%: Abstract, Introduction &amp; Related Work</strong> (Clarity, relevance, citations)</li>
+                  <li><strong>30%: Methods &amp; Implementation</strong> (Actual work done, challenges, technical clarity)</li>
+                  <li><strong>30%: Experiments &amp; Preliminary Results</strong> (Progress, results, adjustments)</li>
+                  <li><strong>10%: Next Steps &amp; Timeline</strong> (Realistic plan, addressing issues)</li>
+                  <li><strong>10%: Writing &amp; Organization</strong> (Clarity, structure, proper citations &amp; figures)</li>
+                </ul>
+              </li>
             </ul>
-          </li>
-          <li><strong>Related Work (~½ page)</strong>
+
+            <hr />
+
+            <h3 id="in-class-presentation"><strong>In-Class Presentation</strong></h3>
+
+            <p><strong>Date:</strong> Monday, December 8 and Wednesday, December 10.</p>
+
             <ul>
-              <li>Summary of at least <strong>four relevant papers</strong> and how they relate to your work.</li>
-              <li>Don’t just give a list of related papers. Instead, synthesize the related works into a narrative of where the field is and why your project is interesting.</li>
+              <li>
+                <p>
+                  <strong>Format</strong>: Each team will deliver a <strong>4-minute presentation</strong> in class, summarizing their project.
+                  Presentations will include a brief introduction, methods overview, key findings, and future directions. This is the only portion of
+                  the project that will have individual (per-person) grades, so make sure every group member contributes to the presentation.
+                </p>
+              </li>
+              <li>
+                <p>
+                  <strong>Recommended Content</strong> (but please adapt to fit your project): Title slide; Executive summary; Problem; State of the
+                  Field; Method; Results; Limitations / Next Steps; Takeaway
+                </p>
+              </li>
+              <li>
+                <p>
+                  <strong>Presenting</strong> We will use Prof. Lengerich’s laptop to present slides in our classroom.
+                  <strong>Submit your slides in presentation format (PPTX, Keynote, or PDF) 24 hours before your scheduled presentation.</strong>
+                </p>
+              </li>
+              <li>
+                <p><strong>Grading</strong>:</p>
+                <ul>
+                  <li>30%: Clarity and engagement of presentation.</li>
+                  <li>40%: Depth and quality of content.</li>
+                  <li>30%: Use of visuals and adherence to time limits (3-5 minutes so we can fit all groups in the lecture time).</li>
+                </ul>
+              </li>
             </ul>
-          </li>
-          <li><strong>Methods (~1 page)</strong>
+
+            <hr />
+
+            <h3 id="final-report"><strong>Final Report</strong></h3>
+
+            <p><strong>Due:</strong> Friday, December 12, 2025, at 11:59 PM via Canvas.</p>
+
             <ul>
-              <li>Implemented work so far (not just plans).</li>
-              <li>Model structure, key assumptions, modifications.</li>
-              <li>Challenges encountered and adjustments made.</li>
+              <li>
+                <strong>Content</strong>:
+                <ul>
+                  <li>ICML-style paper (8 pages).</li>
+                  <li>
+                    Sections:
+                    <ul>
+                      <li>Abstract</li>
+                      <li>Introduction</li>
+                      <li>Background &amp; Related Work (synthesize the related works into a narrative that places your work in context)</li>
+                      <li>Methods</li>
+                      <li>Experiments</li>
+                      <li>Discussion (limitations, broader impact, etc.)</li>
+                      <li>Conclusions</li>
+                      <li>Reference (separate page using <code class="language-plaintext highlighter-rouge">\clearpage</code>)</li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <strong>Experimental expectations</strong>:
+                <ul>
+                  <li>At least one reasonable baseline.</li>
+                  <li>At least one ablation / diagnostic (e.g. remove a term from your loss function, swap encoder, reduce data, etc).</li>
+                  <li>Error / qualitative analysis (failure cases, calibration, representative samples, etc).</li>
+                  <li>Report uncertainty where applicable (e.g., variance over training runs).</li>
+                </ul>
+              </li>
+              <li>
+                <strong>Grading</strong>:
+                <ul>
+                  <li>10%: Problem definition and literature review.</li>
+                  <li>30%: Methodology (soundness and originality).</li>
+                  <li>30%: Experiments and results.</li>
+                  <li>10%: Analysis and discussion.</li>
+                  <li>20%: Writing quality.</li>
+                </ul>
+              </li>
             </ul>
-          </li>
-          <li><strong>Experiments (~1 page)</strong>
-            <ul>
-              <li>Dataset(s) and experimental setup.</li>
-              <li>Preliminary results, even if unsuccessful.</li>
-            </ul>
-          </li>
-          <li><strong>Conclusion &amp; Updated Plan (~½ page)</strong>
-            <ul>
-              <li>Summary of progress, challenges, and next steps.</li>
-              <li>Timeline for final report.</li>
-            </ul>
-          </li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-  <li><strong>Grading</strong>
-    <ul>
-      <li><strong>20%: Abstract, Introduction &amp; Related Work</strong> (Clarity, relevance, citations)</li>
-      <li><strong>30%: Methods &amp; Implementation</strong> (Actual work done, challenges, technical clarity)</li>
-      <li><strong>30%: Experiments &amp; Preliminary Results</strong> (Progress, results, adjustments)</li>
-      <li><strong>10%: Next Steps &amp; Timeline</strong> (Realistic plan, addressing issues)</li>
-      <li><strong>10%: Writing &amp; Organization</strong> (Clarity, structure, proper citations &amp; figures)</li>
-    </ul>
-  </li>
-</ul>
-
-<hr />
-
-<h3 id="in-class-presentation"><strong>In-Class Presentation</strong></h3>
-
-<p><strong>Date:</strong> Monday, December 8 and Wednesday, December 10.</p>
-
-<ul>
-  <li>
-    <p><strong>Format</strong>: Each team will deliver a <strong>4-minute presentation</strong> in class, summarizing their project. Presentations will include a brief introduction, methods overview, key findings, and future directions. This is the only portion of the project that will have individual (per-person) grades, so make sure every group member contributes to the presentation.</p>
-  </li>
-  <li>
-    <p><strong>Recommended Content</strong> (but please adapt to fit your project): Title slide; Executive summary; Problem; State of the Field; Method; Results; Limitations / Next Steps; Takeaway</p>
-  </li>
-  <li>
-    <p><strong>Presenting</strong> We will use Prof. Lengerich’s laptop to present slides in our classroom. <strong>Submit your slides in presentation format (PPTX, Keynote, or PDF) 24 hours before your scheduled presentation.</strong></p>
-  </li>
-  <li>
-    <p><strong>Grading</strong>:</p>
-    <ul>
-      <li>30%: Clarity and engagement of presentation.</li>
-      <li>40%: Depth and quality of content.</li>
-      <li>30%: Use of visuals and adherence to time limits (3-5 minutes so we can fit all groups in the lecture time).</li>
-    </ul>
-  </li>
-</ul>
-
-<hr />
-
-<h3 id="final-report"><strong>Final Report</strong></h3>
-
-<p><strong>Due:</strong> Friday, December 12, 2025, at 11:59 PM via Canvas.</p>
-
-<ul>
-  <li><strong>Content</strong>:
-    <ul>
-      <li>ICML-style paper (8 pages).</li>
-      <li>Sections:
-        <ul>
-          <li>Abstract</li>
-          <li>Introduction</li>
-          <li>Background &amp; Related Work (synthesize the related works into a narrative that places your work in context)</li>
-          <li>Methods</li>
-          <li>Experiments</li>
-          <li>Discussion (limitations, broader impact, etc.)</li>
-          <li>Conclusions</li>
-          <li>Reference (separate page using <code class="language-plaintext highlighter-rouge">\clearpage</code>)</li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-  <li><strong>Experimental expectations</strong>:
-    <ul>
-      <li>At least one reasonable baseline.</li>
-      <li>At least one ablation / diagnostic (e.g. remove a term from your loss function, swap encoder, reduce data, etc).</li>
-      <li>Error / qualitative analysis (failure cases, calibration, representative samples, etc).</li>
-      <li>Report uncertainty where applicable (e.g., variance over training runs).</li>
-    </ul>
-  </li>
-  <li><strong>Grading</strong>:
-    <ul>
-      <li>10%: Problem definition and literature review.</li>
-      <li>30%: Methodology (soundness and originality).</li>
-      <li>30%: Experiments and results.</li>
-      <li>10%: Analysis and discussion.</li>
-      <li>20%: Writing quality.</li>
-    </ul>
-  </li>
-</ul>
-</article>
-</div>
-</div>
+          </article>
+        </div>
+      </div>
     </div>
 
     <footer class="site-footer">
-  <div class="wrapper">
-    <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
+      <div class="wrapper">
+        <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
 
-    <div class="footer-col-wrapper">
-      <div class="footer-col footer-col-1">
-        <ul class="contact-list">
-          <li class="p-name">Ben Lengerich</li><li>
-            <a class="u-email" href="mailto:TBD@wisc.edu"
-              >TBD@wisc.edu</a
-            >
-          </li></ul>
+        <div class="footer-col-wrapper">
+          <div class="footer-col footer-col-1">
+            <ul class="contact-list">
+              <li class="p-name">Ben Lengerich</li>
+              <li>
+                <a class="u-email" href="mailto:TBD@wisc.edu">TBD@wisc.edu</a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="footer-col footer-col-2">
+            <ul class="social-media-list">
+              <li>
+                <a href="https://github.com/AdaptInfer" target="_blank"><i class="fab fa-github"></i> <span class="username">AdaptInfer</span></a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="footer-col footer-col-3">
+            <p>
+              &copy; Copyright 2025 University of Wisconsin.
+              <br />
+            </p>
+          </div>
+        </div>
       </div>
+    </footer>
+    <!-- Load jQuery -->
+    <script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
 
-      <div class="footer-col footer-col-2"><ul class="social-media-list"><li>
-    <a
-      href="https://github.com/AdaptInfer"
-      target="_blank"
-      ><i class="fab fa-github"></i>
-      <span class="username">AdaptInfer</span></a
-    >
-  </li></ul>
-</div>
+    <!-- Load Common JS -->
+    <script src="/dgm-fall-2025/assets/js/common.js"></script>
 
-      <div class="footer-col footer-col-3">
-        <p>
-          &copy; Copyright 2025 University of Wisconsin.
-          <br />
-          
-        </p>
-      </div>
-    </div>
-  </div>
-</footer>
- <!-- Load jQuery -->
-<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+    <!-- Load KaTeX -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css" />
+    <script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+    <script src="/dgm-fall-2025/assets/js/katex.js"></script>
 
-<!-- Load Common JS -->
-<script src="/dgm-fall-2025/assets/js/common.js"></script>
+    <!-- Load Anchor JS -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+    <script>
+      anchors.options.visible = "hover";
+      anchors.add("article h2, article h3, article h4, article h5, article h6");
+    </script>
 
+    <!-- Adjust LaTeX JS -->
+    <script src="/dgm-fall-2025/assets/js/latex.js"></script>
 
-<!-- Load KaTeX -->
-<link
-  rel="stylesheet"
-  href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css"
-/>
-<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
-<script src="/dgm-fall-2025/assets/js/katex.js"></script>
- 
-<!-- Load Anchor JS -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
-<script>
-  anchors.options.visible = "hover";
-  anchors.add("article h2, article h3, article h4, article h5, article h6");
-</script>
- 
-<!-- Adjust LaTeX JS -->
-<script src="/dgm-fall-2025/assets/js/latex.js"></script>
+    <!-- Include custom icon fonts -->
+    <link rel="stylesheet" href="/dgm-fall-2025/assets/css/fontawesome-all.min.css" />
+    <link rel="stylesheet" href="/dgm-fall-2025/assets/css/academicons.min.css" />
 
+    <!-- Google Analytics -->
+    <script>
+      (function (i, s, o, g, r, a, m) {
+        i["GoogleAnalyticsObject"] = r;
+        (i[r] =
+          i[r] ||
+          function () {
+            (i[r].q = i[r].q || []).push(arguments);
+          }),
+          (i[r].l = 1 * new Date());
+        (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+        a.async = 1;
+        a.src = g;
+        m.parentNode.insertBefore(a, m);
+      })(window, document, "script", "//www.google-analytics.com/analytics.js", "ga");
 
-<!-- Include custom icon fonts -->
-<link
-  rel="stylesheet"
-  href="/dgm-fall-2025/assets/css/fontawesome-all.min.css"
-/>
-<link
-  rel="stylesheet"
-  href="/dgm-fall-2025/assets/css/academicons.min.css"
-/>
-
-<!-- Google Analytics -->
-<script>
-  (function (i, s, o, g, r, a, m) {
-    i["GoogleAnalyticsObject"] = r;
-    ((i[r] =
-      i[r] ||
-      function () {
-        (i[r].q = i[r].q || []).push(arguments);
-      }),
-      (i[r].l = 1 * new Date()));
-    ((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
-    a.async = 1;
-    a.src = g;
-    m.parentNode.insertBefore(a, m);
-  })(
-    window,
-    document,
-    "script",
-    "//www.google-analytics.com/analytics.js",
-    "ga",
-  );
-
-  ga("create", "", "auto");
-  ga("send", "pageview");
-</script>
-
+      ga("create", "", "auto");
+      ga("send", "pageview");
+    </script>
   </body>
 </html>

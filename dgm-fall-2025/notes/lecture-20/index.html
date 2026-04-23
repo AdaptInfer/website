@@ -2,35 +2,28 @@
 <html>
   <head>
     <head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="content-language" content="en" />
-  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-  <meta name="viewport" content="width=device-width initial-scale=1.0" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+      <meta charset="UTF-8" />
+      <meta http-equiv="content-language" content="en" />
+      <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+      <meta name="viewport" content="width=device-width initial-scale=1.0" />
+      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-  <title>
-    STAT 453 | Lecture 20
-  </title>
-  <meta name="description" content="STAT 453 - University of Wisconsin-Madison - Fall 2025
-" />
+      <title>STAT 453 | Lecture 20</title>
+      <meta
+        name="description"
+        content="STAT 453 - University of Wisconsin-Madison - Fall 2025
+"
+      />
 
-  <link
-    rel="shortcut icon"
-    href="/dgm-fall-2025/assets/img/favicon.ico"
-  />
+      <link rel="shortcut icon" href="/dgm-fall-2025/assets/img/favicon.ico" />
 
-  <link rel="stylesheet" href="/dgm-fall-2025/assets/css/main.css" />
-  <link
-    rel="canonical"
-    href="/dgm-fall-2025/notes/lecture-20/"
-  />
+      <link rel="stylesheet" href="/dgm-fall-2025/assets/css/main.css" />
+      <link rel="canonical" href="/dgm-fall-2025/notes/lecture-20/" />
 
-  
-  <!-- Load Latex JS -->
-  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
-  
-</head>
+      <!-- Load Latex JS -->
+      <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+    </head>
 
     <script src="/dgm-fall-2025/assets/js/distillpub/template.v2.js"></script>
     <script src="/dgm-fall-2025/assets/js/distillpub/transforms.v2.js"></script>
@@ -39,111 +32,94 @@
   <d-front-matter>
     <script type="text/json">
       {
-            "title": "Lecture 20",
-            "description": "Attention and Transformers",
-            "published": "November 12, 2025",
-            "lecturers": [
-              
-              {
-                "lecturer": "Ben Lengerich",
-                "lecturerURL": "https://adaptinfer.org"
-              }
-              
-            ],
-            "authors": [
-              
-              {
-                "author": "Greg Adler"
-              },
-              
-              {
-                "author": "Kunal Singh"
-              }
-              
-            ],
-            "editors": [
-              
-              {
-                "editor": "Xinyu Pan"
-              },
-              
-              {
-                "editor": "Sijia Wu"
-              },
-              
-              {
-                "editor": "Mohammad Zaidan"
-              }
-              
-            ],
-            "katex": {
-              "delimiters": [
-                {
-                  "left": "$",
-                  "right": "$",
-                  "display": false
-                },
-                {
-                  "left": "$$",
-                  "right": "$$",
-                  "display": true
-                }
-              ]
-            }
+        "title": "Lecture 20",
+        "description": "Attention and Transformers",
+        "published": "November 12, 2025",
+        "lecturers": [
+          {
+            "lecturer": "Ben Lengerich",
+            "lecturerURL": "https://adaptinfer.org"
           }
+        ],
+        "authors": [
+          {
+            "author": "Greg Adler"
+          },
+
+          {
+            "author": "Kunal Singh"
+          }
+        ],
+        "editors": [
+          {
+            "editor": "Xinyu Pan"
+          },
+
+          {
+            "editor": "Sijia Wu"
+          },
+
+          {
+            "editor": "Mohammad Zaidan"
+          }
+        ],
+        "katex": {
+          "delimiters": [
+            {
+              "left": "$",
+              "right": "$",
+              "display": false
+            },
+            {
+              "left": "$$",
+              "right": "$$",
+              "display": true
+            }
+          ]
+        }
+      }
     </script>
   </d-front-matter>
 
   <body>
     <header class="site-header">
-  <div class="wrapper">
-    <span class="site-title">
-      <a class="page-link" href="https://adaptinfer.org/dgm-fall-2025/"
-        >STAT 453</a
-      >
-    </span>
-
-    <nav class="site-nav">
-      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
-      <label for="nav-trigger">
-        <span class="menu-icon">
-          <svg viewBox="0 0 18 15" width="18px" height="15px">
-            <path
-              fill="#424242"
-              d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
-            />
-            <path
-              fill="#424242"
-              d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
-            />
-            <path
-              fill="#424242"
-              d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
-            />
-          </svg>
+      <div class="wrapper">
+        <span class="site-title">
+          <a class="page-link" href="https://adaptinfer.org/dgm-fall-2025/">STAT 453</a>
         </span>
-      </label>
 
-      <div class="trigger">
-        <a class="page-link" href="/dgm-fall-2025/logistics/"
-          >logistics</a
-        >
-        <a class="page-link" href="/dgm-fall-2025/lectures/"
-          >lectures</a
-        >
-        <a class="page-link" href="/dgm-fall-2025/notes/">notes</a>
-        <a class="page-link" href="/dgm-fall-2025/calendar/"
-          >calendar</a
-        >
-        <a class="page-link" href="/dgm-fall-2025/homework/"
-          >homework</a
-        >
-        <a class="page-link" href="/dgm-fall-2025/project/">project</a>
+        <nav class="site-nav">
+          <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+          <label for="nav-trigger">
+            <span class="menu-icon">
+              <svg viewBox="0 0 18 15" width="18px" height="15px">
+                <path
+                  fill="#424242"
+                  d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
+                />
+                <path
+                  fill="#424242"
+                  d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
+                />
+                <path
+                  fill="#424242"
+                  d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
+                />
+              </svg>
+            </span>
+          </label>
+
+          <div class="trigger">
+            <a class="page-link" href="/dgm-fall-2025/logistics/">logistics</a>
+            <a class="page-link" href="/dgm-fall-2025/lectures/">lectures</a>
+            <a class="page-link" href="/dgm-fall-2025/notes/">notes</a>
+            <a class="page-link" href="/dgm-fall-2025/calendar/">calendar</a>
+            <a class="page-link" href="/dgm-fall-2025/homework/">homework</a>
+            <a class="page-link" href="/dgm-fall-2025/project/">project</a>
+          </div>
+        </nav>
       </div>
-    </nav>
-  </div>
-</header>
-
+    </header>
 
     <div class="page-content">
       <d-title>
@@ -153,201 +129,294 @@
 
       <d-byline></d-byline>
 
-      <d-article> <h1 id="attention-and-transformer-architecture">Attention and Transformer Architecture</h1>
+      <d-article>
+        <h1 id="attention-and-transformer-architecture">Attention and Transformer Architecture</h1>
 
-<h2 id="the-attention-mechanism">The Attention Mechanism</h2>
+        <h2 id="the-attention-mechanism">The Attention Mechanism</h2>
 
-<p><strong>Motivation:</strong> Different parts of our input relate to different parts of our output. Sometimes these important relationships can be far apart, like in machine translation. Attention helps us dynamically calculate what is important.</p>
+        <p>
+          <strong>Motivation:</strong> Different parts of our input relate to different parts of our output. Sometimes these important relationships
+          can be far apart, like in machine translation. Attention helps us dynamically calculate what is important.
+        </p>
 
-<h3 id="why-attention-was-needed-long-range-dependency-problem">Why Attention Was Needed (Long-Range Dependency Problem)</h3>
+        <h3 id="why-attention-was-needed-long-range-dependency-problem">Why Attention Was Needed (Long-Range Dependency Problem)</h3>
 
-<p>RNNs compress an entire input sequence into a <strong>single hidden vector</strong>, which makes capturing long-range dependencies difficult.<br />
-During backpropagation, gradients must pass through many time steps, causing <strong>vanishing/exploding gradients</strong>.</p>
+        <p>
+          RNNs compress an entire input sequence into a <strong>single hidden vector</strong>, which makes capturing long-range dependencies
+          difficult.<br />
+          During backpropagation, gradients must pass through many time steps, causing <strong>vanishing/exploding gradients</strong>.
+        </p>
 
-<p>Attention solves this by <strong>directly referencing the entire input sequence</strong> when predicting each output, instead of relying on hidden states to store all information.</p>
+        <p>
+          Attention solves this by <strong>directly referencing the entire input sequence</strong> when predicting each output, instead of relying on
+          hidden states to store all information.
+        </p>
 
-<p><em>Key insight:</em> Attention creates a <strong>constant path length</strong> between any two positions, unlike the sequential dependency in RNNs.</p>
+        <p>
+          <em>Key insight:</em> Attention creates a <strong>constant path length</strong> between any two positions, unlike the sequential dependency
+          in RNNs.
+        </p>
 
-<ul>
-  <li><strong>Origin:</strong> Originally from Natural Language Processing (NLP) and language translation.</li>
-  <li><strong>Core Idea:</strong> Assign an attention weight to each word to signal how much we should “attend” to that word.</li>
-  <li><strong>Evolution:</strong> We later learned that attention and recurrence are not both necessary, popularized by the paper <em>“Attention is all you need”</em>. <d-cite key="attentionIsAllYouNeed"></d-cite></li>
-</ul>
+        <ul>
+          <li><strong>Origin:</strong> Originally from Natural Language Processing (NLP) and language translation.</li>
+          <li><strong>Core Idea:</strong> Assign an attention weight to each word to signal how much we should “attend” to that word.</li>
+          <li>
+            <strong>Evolution:</strong> We later learned that attention and recurrence are not both necessary, popularized by the paper
+            <em>“Attention is all you need”</em>. <d-cite key="attentionIsAllYouNeed"></d-cite>
+          </li>
+        </ul>
 
-<h3 id="hard-attention">Hard Attention</h3>
+        <h3 id="hard-attention">Hard Attention</h3>
 
-<p>Hard attention makes a binary <strong>0/1 decision</strong> about where to attend. It asks: <em>“Is this input important to this prediction or not?”</em></p>
+        <p>
+          Hard attention makes a binary <strong>0/1 decision</strong> about where to attend. It asks:
+          <em>“Is this input important to this prediction or not?”</em>
+        </p>
 
-<ul>
-  <li><strong>Pros:</strong> Easy to interpret.</li>
-  <li><strong>Cons:</strong> Difficult to train; requires reinforcement learning. It is rarely used in practice.</li>
-</ul>
+        <ul>
+          <li><strong>Pros:</strong> Easy to interpret.</li>
+          <li><strong>Cons:</strong> Difficult to train; requires reinforcement learning. It is rarely used in practice.</li>
+        </ul>
 
-<h3 id="soft-attention">Soft Attention</h3>
+        <h3 id="soft-attention">Soft Attention</h3>
 
-<p>Rather than a binary decision, we assign a continuous weight between <strong>0 and 1</strong> for each input.</p>
+        <p>Rather than a binary decision, we assign a continuous weight between <strong>0 and 1</strong> for each input.</p>
 
-<ul>
-  <li><strong>Mechanism:</strong> A softmax function is used to compute weights, ensuring they are real values between 0 and 1 and that the sum of all weights equals 1.</li>
-  <li><strong>Interpretation:</strong> Each weight represents the proportion of influence that input has on the current prediction.</li>
-  <li><strong>Visualization:</strong> in Machine Translation, visualizing the influence of inputs on outputs usually shows a strong diagonal (token-to-token), except where word order differs (e.g., French vs. English nouns).</li>
-</ul>
+        <ul>
+          <li>
+            <strong>Mechanism:</strong> A softmax function is used to compute weights, ensuring they are real values between 0 and 1 and that the sum
+            of all weights equals 1.
+          </li>
+          <li><strong>Interpretation:</strong> Each weight represents the proportion of influence that input has on the current prediction.</li>
+          <li>
+            <strong>Visualization:</strong> in Machine Translation, visualizing the influence of inputs on outputs usually shows a strong diagonal
+            (token-to-token), except where word order differs (e.g., French vs. English nouns).
+          </li>
+        </ul>
 
-<h4 id="soft-attention-vs-rnn-for-image-captioning">Soft Attention vs. RNN for Image Captioning</h4>
+        <h4 id="soft-attention-vs-rnn-for-image-captioning">Soft Attention vs. RNN for Image Captioning</h4>
 
-<p><strong>RNNs:</strong></p>
+        <p><strong>RNNs:</strong></p>
 
-<ul>
-  <li>Only look at the image (or the 1-D CNN embedding of the original image) <strong>once</strong> to try to find important features.</li>
-  <li>Successively refer back to the <em>same</em> hidden state, which must encode information about both foreground and background.</li>
-</ul>
+        <ul>
+          <li>Only look at the image (or the 1-D CNN embedding of the original image) <strong>once</strong> to try to find important features.</li>
+          <li>Successively refer back to the <em>same</em> hidden state, which must encode information about both foreground and background.</li>
+        </ul>
 
-<p><strong>Soft Attention:</strong></p>
+        <p><strong>Soft Attention:</strong></p>
 
-<ul>
-  <li>Generates an <strong>attention map</strong>, which refers back to a 2-D CNN embedding at <em>each</em> hidden state.</li>
-  <li>Generates a word and an input to the next hidden state.</li>
-  <li>Keeps looping back to the input, tying weights to a combination of learnable features. Allows each word in the caption to refer to different parts of the image.</li>
-  <li>The attention weights are computed as:</li>
-</ul>
+        <ul>
+          <li>Generates an <strong>attention map</strong>, which refers back to a 2-D CNN embedding at <em>each</em> hidden state.</li>
+          <li>Generates a word and an input to the next hidden state.</li>
+          <li>
+            Keeps looping back to the input, tying weights to a combination of learnable features. Allows each word in the caption to refer to
+            different parts of the image.
+          </li>
+          <li>The attention weights are computed as:</li>
+        </ul>
 
-\[a_{i,j} = \mathrm{softmax}_j(x_i^\top x_j)\]
+        \[a_{i,j} = \mathrm{softmax}_j(x_i^\top x_j)\]
 
-<p>and the final attention output is:</p>
+        <p>and the final attention output is:</p>
 
-\[A_i = \sum_j a_{i,j} x_j.\]
+        \[A_i = \sum_j a_{i,j} x_j.\]
 
-<blockquote>
-  <p><strong>Aside:</strong> CNNs were an example of <strong>Hard Attention</strong>. As the filter slides over the image, the part of the image inside the filter gets attention weight 1, and the rest gets weight 0.</p>
-</blockquote>
+        <blockquote>
+          <p>
+            <strong>Aside:</strong> CNNs were an example of <strong>Hard Attention</strong>. As the filter slides over the image, the part of the
+            image inside the filter gets attention weight 1, and the rest gets weight 0.
+          </p>
+        </blockquote>
 
-<h3 id="why-attention-reduces-the-need-for-recurrence">Why Attention Reduces the Need for Recurrence</h3>
+        <h3 id="why-attention-reduces-the-need-for-recurrence">Why Attention Reduces the Need for Recurrence</h3>
 
-<ul>
-  <li>Attention repeatedly refers back to the input, so the hidden state no longer needs to store all global information.</li>
-  <li>This insight led to eliminating recurrence entirely in the Transformer.</li>
-</ul>
+        <ul>
+          <li>Attention repeatedly refers back to the input, so the hidden state no longer needs to store all global information.</li>
+          <li>This insight led to eliminating recurrence entirely in the Transformer.</li>
+        </ul>
 
-<hr />
+        <hr />
 
-<h2 id="self-attention">Self Attention</h2>
+        <h2 id="self-attention">Self Attention</h2>
 
-<p><strong>Motivation:</strong> Can we get rid of the sequential RNN component? Since attention already ties inputs across the sequence, is it necessary to continue to loop over it?</p>
+        <p>
+          <strong>Motivation:</strong> Can we get rid of the sequential RNN component? Since attention already ties inputs across the sequence, is it
+          necessary to continue to loop over it?
+        </p>
 
-<h3 id="basic-self-attention">Basic Self Attention</h3>
+        <h3 id="basic-self-attention">Basic Self Attention</h3>
 
-<p><strong>Main procedure:</strong></p>
+        <p><strong>Main procedure:</strong></p>
 
-<ol>
-  <li><strong>Derive Attention Weights:</strong> Calculate similarity between each current input and all other inputs.</li>
-  <li><strong>Normalize:</strong> Use softmax to normalize weights.</li>
-  <li><strong>Compute:</strong> Calculate attention from normalized weights and corresponding inputs.</li>
-</ol>
+        <ol>
+          <li><strong>Derive Attention Weights:</strong> Calculate similarity between each current input and all other inputs.</li>
+          <li><strong>Normalize:</strong> Use softmax to normalize weights.</li>
+          <li><strong>Compute:</strong> Calculate attention from normalized weights and corresponding inputs.</li>
+        </ol>
 
-<p><strong>Computing Weights:</strong>
-We use a dot product when computing attention weights. Dot products are similar to cosine similarity, but are sensitive to vector magnitudes. Since we will be learning weights (not in this basic version, but later), there is no need to normalize in practice.</p>
+        <p>
+          <strong>Computing Weights:</strong> We use a dot product when computing attention weights. Dot products are similar to cosine similarity,
+          but are sensitive to vector magnitudes. Since we will be learning weights (not in this basic version, but later), there is no need to
+          normalize in practice.
+        </p>
 
-<ul>
-  <li>The self-attention corresponding to the <code class="language-plaintext highlighter-rouge">$i$</code>-th input, <code class="language-plaintext highlighter-rouge">$x_i$</code>, is <code class="language-plaintext highlighter-rouge">$A_i$</code>.</li>
-  <li><code class="language-plaintext highlighter-rouge">$A_i$</code> is the weighted sum over all inputs, where the weight for <code class="language-plaintext highlighter-rouge">$x_j$</code> is <code class="language-plaintext highlighter-rouge">$a_{i,j}$</code>.</li>
-  <li><code class="language-plaintext highlighter-rouge">$a_{i,j}$</code> is the softmax output for the dot product between <code class="language-plaintext highlighter-rouge">$x_i$</code> and <code class="language-plaintext highlighter-rouge">$x_j$</code>.</li>
-</ul>
+        <ul>
+          <li>
+            The self-attention corresponding to the <code class="language-plaintext highlighter-rouge">$i$</code>-th input,
+            <code class="language-plaintext highlighter-rouge">$x_i$</code>, is <code class="language-plaintext highlighter-rouge">$A_i$</code>.
+          </li>
+          <li>
+            <code class="language-plaintext highlighter-rouge">$A_i$</code> is the weighted sum over all inputs, where the weight for
+            <code class="language-plaintext highlighter-rouge">$x_j$</code> is <code class="language-plaintext highlighter-rouge">$a_{i,j}$</code>.
+          </li>
+          <li>
+            <code class="language-plaintext highlighter-rouge">$a_{i,j}$</code> is the softmax output for the dot product between
+            <code class="language-plaintext highlighter-rouge">$x_i$</code> and <code class="language-plaintext highlighter-rouge">$x_j$</code>.
+          </li>
+        </ul>
 
-<p><img src="/dgm-fall-2025/assets/img/notes/lecture-20/BasicSelfAttention.png" /></p>
+        <p><img src="/dgm-fall-2025/assets/img/notes/lecture-20/BasicSelfAttention.png" /></p>
 
-<h3 id="why-do-we-need-q-k-and-v">Why Do We Need Q, K, and V?</h3>
+        <h3 id="why-do-we-need-q-k-and-v">Why Do We Need Q, K, and V?</h3>
 
-<p>The basic self-attention mechanism does not include any learnable parameters — it only uses raw dot-product similarity between embeddings. This limits what the model can express.<br />
-Transformers fix this by introducing three trainable matrices:</p>
+        <p>
+          The basic self-attention mechanism does not include any learnable parameters — it only uses raw dot-product similarity between embeddings.
+          This limits what the model can express.<br />
+          Transformers fix this by introducing three trainable matrices:
+        </p>
 
-<ul>
-  <li><strong>Query (Q):</strong> What the current token is looking for.</li>
-  <li><strong>Key (K):</strong> What information each token offers.</li>
-  <li><strong>Value (V):</strong> The actual content carried by the token.</li>
-</ul>
+        <ul>
+          <li><strong>Query (Q):</strong> What the current token is looking for.</li>
+          <li><strong>Key (K):</strong> What information each token offers.</li>
+          <li><strong>Value (V):</strong> The actual content carried by the token.</li>
+        </ul>
 
-<p>By learning Q, K, and V, the model can decide <em>what relationships matter</em> and <em>how information should flow</em> across the sequence.</p>
+        <p>
+          By learning Q, K, and V, the model can decide <em>what relationships matter</em> and <em>how information should flow</em> across the
+          sequence.
+        </p>
 
-<p>This matches the explanation in the lecture slides on pages 33–36. :contentReference[oaicite:0]{index=0}</p>
+        <p>This matches the explanation in the lecture slides on pages 33–36. :contentReference[oaicite:0]{index=0}</p>
 
-<h3 id="learnable-self-attention">Learnable Self Attention</h3>
+        <h3 id="learnable-self-attention">Learnable Self Attention</h3>
 
-<p>The basic version has no learnable parameters. To fix this, we add three trainable weight matrices to be multiplied by input sequence embeddings: <strong>Query</strong>, <strong>Key</strong>, and <strong>Value</strong>.</p>
+        <p>
+          The basic version has no learnable parameters. To fix this, we add three trainable weight matrices to be multiplied by input sequence
+          embeddings: <strong>Query</strong>, <strong>Key</strong>, and <strong>Value</strong>.
+        </p>
 
-<ol>
-  <li><strong>Query (<code class="language-plaintext highlighter-rouge">$Q$</code>):</strong> Represents what the token is “asking” the rest of the sequence.</li>
-  <li><strong>Key (<code class="language-plaintext highlighter-rouge">$K$</code>):</strong> Describes how the token “advertises” the information it holds.</li>
-  <li><strong>Value (<code class="language-plaintext highlighter-rouge">$V$</code>):</strong> The actual content shared if other tokens pay attention to it.</li>
-</ol>
+        <ol>
+          <li>
+            <strong>Query (<code class="language-plaintext highlighter-rouge">$Q$</code>):</strong> Represents what the token is “asking” the rest of
+            the sequence.
+          </li>
+          <li>
+            <strong>Key (<code class="language-plaintext highlighter-rouge">$K$</code>):</strong> Describes how the token “advertises” the information
+            it holds.
+          </li>
+          <li>
+            <strong>Value (<code class="language-plaintext highlighter-rouge">$V$</code>):</strong> The actual content shared if other tokens pay
+            attention to it.
+          </li>
+        </ol>
 
-<p><strong>The Process:</strong>
-For every token, the model compares its <strong>Query</strong> to the <strong>Keys</strong> of all tokens in the sequence.</p>
+        <p>
+          <strong>The Process:</strong> For every token, the model compares its <strong>Query</strong> to the <strong>Keys</strong> of all tokens in
+          the sequence.
+        </p>
 
-<ul>
-  <li><strong>High Alignment:</strong> If query/key align well <code class="language-plaintext highlighter-rouge">$\rightarrow$</code> High attention score.</li>
-  <li><strong>Low Alignment:</strong> If not <code class="language-plaintext highlighter-rouge">$\rightarrow$</code> Low attention score.</li>
-</ul>
+        <ul>
+          <li>
+            <strong>High Alignment:</strong> If query/key align well <code class="language-plaintext highlighter-rouge">$\rightarrow$</code> High
+            attention score.
+          </li>
+          <li><strong>Low Alignment:</strong> If not <code class="language-plaintext highlighter-rouge">$\rightarrow$</code> Low attention score.</li>
+        </ul>
 
-<p>These scores are normalized to act as weights. Each token builds a new representation by taking a weighted blend of the <strong>Value</strong> vectors from all tokens. Every position becomes a learned mixture of information pulled from everywhere else, with the mixing proportions determined by how relevant the model thinks each other token is.</p>
+        <p>
+          These scores are normalized to act as weights. Each token builds a new representation by taking a weighted blend of the
+          <strong>Value</strong> vectors from all tokens. Every position becomes a learned mixture of information pulled from everywhere else, with
+          the mixing proportions determined by how relevant the model thinks each other token is.
+        </p>
 
-<p><img src="/dgm-fall-2025/assets/img/notes/lecture-20/LearnableSelfAttention.png" /></p>
+        <p><img src="/dgm-fall-2025/assets/img/notes/lecture-20/LearnableSelfAttention.png" /></p>
 
-<blockquote>
-  <p><strong>Why this works:</strong> Because <code class="language-plaintext highlighter-rouge">$Q$</code>, <code class="language-plaintext highlighter-rouge">$K$</code>, and <code class="language-plaintext highlighter-rouge">$V$</code> are trainable, the model learns its own notion of “relevant context.” Early layers may focus on nearby words; deeper layers may learn to link pronouns to nouns or relate the start/end of sentences. This structure emerges from adjusting those weight matrices to reduce training loss, turning self-attention into a flexible, learned mechanism for combining information across a sequence.</p>
-</blockquote>
+        <blockquote>
+          <p>
+            <strong>Why this works:</strong> Because <code class="language-plaintext highlighter-rouge">$Q$</code>,
+            <code class="language-plaintext highlighter-rouge">$K$</code>, and <code class="language-plaintext highlighter-rouge">$V$</code> are
+            trainable, the model learns its own notion of “relevant context.” Early layers may focus on nearby words; deeper layers may learn to link
+            pronouns to nouns or relate the start/end of sentences. This structure emerges from adjusting those weight matrices to reduce training
+            loss, turning self-attention into a flexible, learned mechanism for combining information across a sequence.
+          </p>
+        </blockquote>
 
-<hr />
+        <hr />
 
-<h2 id="the-transformer">The Transformer</h2>
+        <h2 id="the-transformer">The Transformer</h2>
 
-<p>Originally proposed for machine translation. It consists of two stacks side-by-side, each replicated <code class="language-plaintext highlighter-rouge">$N$</code> times.</p>
+        <p>
+          Originally proposed for machine translation. It consists of two stacks side-by-side, each replicated
+          <code class="language-plaintext highlighter-rouge">$N$</code> times.
+        </p>
 
-<p><img src="/dgm-fall-2025/assets/img/notes/lecture-20/TransformerArchitecture.png" /></p>
+        <p><img src="/dgm-fall-2025/assets/img/notes/lecture-20/TransformerArchitecture.png" /></p>
 
-<ul>
-  <li><strong>Left Stack:</strong> Encoder (input stack), used in encoder–decoder models like translation.</li>
-  <li><strong>Right Stack:</strong> Decoder (output stack). This is the only stack used in GPT-style models.</li>
-  <li>Encoder layers contain only <strong>self-attention</strong>.</li>
-  <li>Decoder layers contain both <strong>masked self-attention</strong> and <strong>cross-attention</strong> to the encoder output.</li>
-</ul>
+        <ul>
+          <li><strong>Left Stack:</strong> Encoder (input stack), used in encoder–decoder models like translation.</li>
+          <li><strong>Right Stack:</strong> Decoder (output stack). This is the only stack used in GPT-style models.</li>
+          <li>Encoder layers contain only <strong>self-attention</strong>.</li>
+          <li>Decoder layers contain both <strong>masked self-attention</strong> and <strong>cross-attention</strong> to the encoder output.</li>
+        </ul>
 
-<h3 id="components">Components</h3>
+        <h3 id="components">Components</h3>
 
-<ul>
-  <li><strong>Multi-headed Attention:</strong> Applies self-attention multiple times in parallel. <code class="language-plaintext highlighter-rouge">$Q$</code>, <code class="language-plaintext highlighter-rouge">$K$</code>, and <code class="language-plaintext highlighter-rouge">$V$</code> matrices have multiple rows, allowing the model to attend to different parts of the sequence differently simultaneously.</li>
-  <li>Multi-head attention applies several attention heads in parallel:</li>
-</ul>
+        <ul>
+          <li>
+            <strong>Multi-headed Attention:</strong> Applies self-attention multiple times in parallel.
+            <code class="language-plaintext highlighter-rouge">$Q$</code>, <code class="language-plaintext highlighter-rouge">$K$</code>, and
+            <code class="language-plaintext highlighter-rouge">$V$</code> matrices have multiple rows, allowing the model to attend to different parts
+            of the sequence differently simultaneously.
+          </li>
+          <li>Multi-head attention applies several attention heads in parallel:</li>
+        </ul>
 
-\[\text{head}_h = \mathrm{Attention}(Q W_h^Q,\; K W_h^K,\; V W_h^V)\]
+        \[\text{head}_h = \mathrm{Attention}(Q W_h^Q,\; K W_h^K,\; V W_h^V)\]
 
-<p>The final output concatenates all heads:</p>
+        <p>The final output concatenates all heads:</p>
 
-\[\text{MHA}(Q,K,V)
-= \text{Concat}(\text{head}_1,\dots,\text{head}_H)\, W^O.\]
+        \[\text{MHA}(Q,K,V) = \text{Concat}(\text{head}_1,\dots,\text{head}_H)\, W^O.\]
 
-<ul>
-  <li><strong>Skip Connections (Residuals):</strong> We add <code class="language-plaintext highlighter-rouge">Input + (Input passed through attention layer)</code>. This helps manage vanishing gradients.</li>
-</ul>
+        <ul>
+          <li>
+            <strong>Skip Connections (Residuals):</strong> We add
+            <code class="language-plaintext highlighter-rouge">Input + (Input passed through attention layer)</code>. This helps manage vanishing
+            gradients.
+          </li>
+        </ul>
 
-<h3 id="transformer-tricks-nlp">Transformer Tricks (NLP)</h3>
+        <h3 id="transformer-tricks-nlp">Transformer Tricks (NLP)</h3>
 
-<ul>
-  <li><strong>Self-Attention:</strong> Each layer combines words with others.</li>
-  <li><strong>Multi-headed Attention:</strong> 8 attention heads learned independently.</li>
-  <li><strong>Normalized Dot-Product Attention:</strong> Removes bias in the dot product when using large networks.</li>
-  <li><strong>Positional Encodings:</strong> Ensures that even without an RNN, the model can distinguish positions.
-    <ul>
-      <li><em>Note: This may not matter as much as thought, as the attention mechanism can generate position-specific encodings itself.</em></li>
-    </ul>
-  </li>
-</ul>
+        <ul>
+          <li><strong>Self-Attention:</strong> Each layer combines words with others.</li>
+          <li><strong>Multi-headed Attention:</strong> 8 attention heads learned independently.</li>
+          <li><strong>Normalized Dot-Product Attention:</strong> Removes bias in the dot product when using large networks.</li>
+          <li>
+            <strong>Positional Encodings:</strong> Ensures that even without an RNN, the model can distinguish positions.
+            <ul>
+              <li>
+                <em>Note: This may not matter as much as thought, as the attention mechanism can generate position-specific encodings itself.</em>
+              </li>
+            </ul>
+          </li>
+        </ul>
 
-<hr />
+        <hr />
 
-<footer>
-<p>© 2025 University of Wisconsin — STAT 453 Lecture Notes</p>
-</footer>
- </d-article>
+        <footer>
+          <p>© 2025 University of Wisconsin — STAT 453 Lecture Notes</p>
+        </footer>
+      </d-article>
 
       <d-appendix>
         <d-footnote-list></d-footnote-list>
@@ -356,107 +425,82 @@ For every token, the model compares its <strong>Query</strong> to the <strong>Ke
     </div>
 
     <footer class="site-footer">
-  <div class="wrapper">
-    <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
+      <div class="wrapper">
+        <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
 
-    <div class="footer-col-wrapper">
-      <div class="footer-col footer-col-1">
-        <ul class="contact-list">
-          <li class="p-name">Ben Lengerich</li><li>
-            <a class="u-email" href="mailto:TBD@wisc.edu"
-              >TBD@wisc.edu</a
-            >
-          </li></ul>
+        <div class="footer-col-wrapper">
+          <div class="footer-col footer-col-1">
+            <ul class="contact-list">
+              <li class="p-name">Ben Lengerich</li>
+              <li>
+                <a class="u-email" href="mailto:TBD@wisc.edu">TBD@wisc.edu</a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="footer-col footer-col-2">
+            <ul class="social-media-list">
+              <li>
+                <a href="https://github.com/AdaptInfer" target="_blank"><i class="fab fa-github"></i> <span class="username">AdaptInfer</span></a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="footer-col footer-col-3">
+            <p>
+              &copy; Copyright 2025 University of Wisconsin.
+              <br />
+            </p>
+          </div>
+        </div>
       </div>
-
-      <div class="footer-col footer-col-2"><ul class="social-media-list"><li>
-    <a
-      href="https://github.com/AdaptInfer"
-      target="_blank"
-      ><i class="fab fa-github"></i>
-      <span class="username">AdaptInfer</span></a
-    >
-  </li></ul>
-</div>
-
-      <div class="footer-col footer-col-3">
-        <p>
-          &copy; Copyright 2025 University of Wisconsin.
-          <br />
-          
-        </p>
-      </div>
-    </div>
-  </div>
-</footer>
-
+    </footer>
   </body>
 
-  <d-bibliography
-    src="/dgm-fall-2025/assets/bibliography/2025-11-12-lecture-20.bib"
-  >
-  </d-bibliography>
+  <d-bibliography src="/dgm-fall-2025/assets/bibliography/2025-11-12-lecture-20.bib"> </d-bibliography>
 
   <!-- Load jQuery -->
-<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
 
-<!-- Load Common JS -->
-<script src="/dgm-fall-2025/assets/js/common.js"></script>
+  <!-- Load Common JS -->
+  <script src="/dgm-fall-2025/assets/js/common.js"></script>
 
+  <!-- Load KaTeX -->
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css" />
+  <script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+  <script src="/dgm-fall-2025/assets/js/katex.js"></script>
 
-<!-- Load KaTeX -->
-<link
-  rel="stylesheet"
-  href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css"
-/>
-<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
-<script src="/dgm-fall-2025/assets/js/katex.js"></script>
- 
-<!-- Load Anchor JS -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
-<script>
-  anchors.options.visible = "hover";
-  anchors.add("article h2, article h3, article h4, article h5, article h6");
-</script>
- 
-<!-- Adjust LaTeX JS -->
-<script src="/dgm-fall-2025/assets/js/latex.js"></script>
+  <!-- Load Anchor JS -->
+  <script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+  <script>
+    anchors.options.visible = "hover";
+    anchors.add("article h2, article h3, article h4, article h5, article h6");
+  </script>
 
+  <!-- Adjust LaTeX JS -->
+  <script src="/dgm-fall-2025/assets/js/latex.js"></script>
 
-<!-- Include custom icon fonts -->
-<link
-  rel="stylesheet"
-  href="/dgm-fall-2025/assets/css/fontawesome-all.min.css"
-/>
-<link
-  rel="stylesheet"
-  href="/dgm-fall-2025/assets/css/academicons.min.css"
-/>
+  <!-- Include custom icon fonts -->
+  <link rel="stylesheet" href="/dgm-fall-2025/assets/css/fontawesome-all.min.css" />
+  <link rel="stylesheet" href="/dgm-fall-2025/assets/css/academicons.min.css" />
 
-<!-- Google Analytics -->
-<script>
-  (function (i, s, o, g, r, a, m) {
-    i["GoogleAnalyticsObject"] = r;
-    ((i[r] =
-      i[r] ||
-      function () {
-        (i[r].q = i[r].q || []).push(arguments);
-      }),
-      (i[r].l = 1 * new Date()));
-    ((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
-    a.async = 1;
-    a.src = g;
-    m.parentNode.insertBefore(a, m);
-  })(
-    window,
-    document,
-    "script",
-    "//www.google-analytics.com/analytics.js",
-    "ga",
-  );
+  <!-- Google Analytics -->
+  <script>
+    (function (i, s, o, g, r, a, m) {
+      i["GoogleAnalyticsObject"] = r;
+      (i[r] =
+        i[r] ||
+        function () {
+          (i[r].q = i[r].q || []).push(arguments);
+        }),
+        (i[r].l = 1 * new Date());
+      (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+      a.async = 1;
+      a.src = g;
+      m.parentNode.insertBefore(a, m);
+    })(window, document, "script", "//www.google-analytics.com/analytics.js", "ga");
 
-  ga("create", "", "auto");
-  ga("send", "pageview");
-</script>
-
+    ga("create", "", "auto");
+    ga("send", "pageview");
+  </script>
 </html>
