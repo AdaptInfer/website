@@ -2,35 +2,28 @@
 <html>
   <head>
     <head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="content-language" content="en" />
-  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-  <meta name="viewport" content="width=device-width initial-scale=1.0" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+      <meta charset="UTF-8" />
+      <meta http-equiv="content-language" content="en" />
+      <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+      <meta name="viewport" content="width=device-width initial-scale=1.0" />
+      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-  <title>
-    STAT 453 | Lecture 12
-  </title>
-  <meta name="description" content="STAT 453 - University of Wisconsin-Madison - Fall 2025
-" />
+      <title>STAT 453 | Lecture 12</title>
+      <meta
+        name="description"
+        content="STAT 453 - University of Wisconsin-Madison - Fall 2025
+"
+      />
 
-  <link
-    rel="shortcut icon"
-    href="/dgm-fall-2025/assets/img/favicon.ico"
-  />
+      <link rel="shortcut icon" href="/dgm-fall-2025/assets/img/favicon.ico" />
 
-  <link rel="stylesheet" href="/dgm-fall-2025/assets/css/main.css" />
-  <link
-    rel="canonical"
-    href="/dgm-fall-2025/notes/lecture-12/"
-  />
+      <link rel="stylesheet" href="/dgm-fall-2025/assets/css/main.css" />
+      <link rel="canonical" href="/dgm-fall-2025/notes/lecture-12/" />
 
-  
-  <!-- Load Latex JS -->
-  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
-  
-</head>
+      <!-- Load Latex JS -->
+      <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+    </head>
 
     <script src="/dgm-fall-2025/assets/js/distillpub/template.v2.js"></script>
     <script src="/dgm-fall-2025/assets/js/distillpub/transforms.v2.js"></script>
@@ -39,112 +32,95 @@
   <d-front-matter>
     <script type="text/json">
       {
-            "title": "Lecture 12",
-            "description": "Improving Optimization",
-            "published": "October 13, 2025",
-            "lecturers": [
-              
-              {
-                "lecturer": "Ben Lengerich",
-                "lecturerURL": "https://adaptinfer.org"
-              }
-              
-            ],
-            "authors": [
-              
-              {
-                "author": "Annelies Quinton"
-              },
-              
-              {
-                "author": "Hongrui Song",
-                "authorURL": "https://github.com/hoooriiin/dgm-fall-2025"
-              },
-              
-              {
-                "author": "Author 3"
-              }
-              
-            ],
-            "editors": [
-              
-              {
-                "editor": "Shengdong Yao"
-              },
-              
-              {
-                "editor": "Yi Zhang"
-              }
-              
-            ],
-            "katex": {
-              "delimiters": [
-                {
-                  "left": "$",
-                  "right": "$",
-                  "display": false
-                },
-                {
-                  "left": "$$",
-                  "right": "$$",
-                  "display": true
-                }
-              ]
-            }
+        "title": "Lecture 12",
+        "description": "Improving Optimization",
+        "published": "October 13, 2025",
+        "lecturers": [
+          {
+            "lecturer": "Ben Lengerich",
+            "lecturerURL": "https://adaptinfer.org"
           }
+        ],
+        "authors": [
+          {
+            "author": "Annelies Quinton"
+          },
+
+          {
+            "author": "Hongrui Song",
+            "authorURL": "https://github.com/hoooriiin/dgm-fall-2025"
+          },
+
+          {
+            "author": "Author 3"
+          }
+        ],
+        "editors": [
+          {
+            "editor": "Shengdong Yao"
+          },
+
+          {
+            "editor": "Yi Zhang"
+          }
+        ],
+        "katex": {
+          "delimiters": [
+            {
+              "left": "$",
+              "right": "$",
+              "display": false
+            },
+            {
+              "left": "$$",
+              "right": "$$",
+              "display": true
+            }
+          ]
+        }
+      }
     </script>
   </d-front-matter>
 
   <body>
     <header class="site-header">
-  <div class="wrapper">
-    <span class="site-title">
-      <a class="page-link" href="https://adaptinfer.org/dgm-fall-2025/"
-        >STAT 453</a
-      >
-    </span>
-
-    <nav class="site-nav">
-      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
-      <label for="nav-trigger">
-        <span class="menu-icon">
-          <svg viewBox="0 0 18 15" width="18px" height="15px">
-            <path
-              fill="#424242"
-              d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
-            />
-            <path
-              fill="#424242"
-              d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
-            />
-            <path
-              fill="#424242"
-              d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
-            />
-          </svg>
+      <div class="wrapper">
+        <span class="site-title">
+          <a class="page-link" href="https://adaptinfer.org/dgm-fall-2025/">STAT 453</a>
         </span>
-      </label>
 
-      <div class="trigger">
-        <a class="page-link" href="/dgm-fall-2025/logistics/"
-          >logistics</a
-        >
-        <a class="page-link" href="/dgm-fall-2025/lectures/"
-          >lectures</a
-        >
-        <a class="page-link" href="/dgm-fall-2025/notes/">notes</a>
-        <a class="page-link" href="/dgm-fall-2025/calendar/"
-          >calendar</a
-        >
-        <a class="page-link" href="/dgm-fall-2025/homework/"
-          >homework</a
-        >
-        <a class="page-link" href="/dgm-fall-2025/project/">project</a>
+        <nav class="site-nav">
+          <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+          <label for="nav-trigger">
+            <span class="menu-icon">
+              <svg viewBox="0 0 18 15" width="18px" height="15px">
+                <path
+                  fill="#424242"
+                  d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
+                />
+                <path
+                  fill="#424242"
+                  d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
+                />
+                <path
+                  fill="#424242"
+                  d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
+                />
+              </svg>
+            </span>
+          </label>
+
+          <div class="trigger">
+            <a class="page-link" href="/dgm-fall-2025/logistics/">logistics</a>
+            <a class="page-link" href="/dgm-fall-2025/lectures/">lectures</a>
+            <a class="page-link" href="/dgm-fall-2025/notes/">notes</a>
+            <a class="page-link" href="/dgm-fall-2025/calendar/">calendar</a>
+            <a class="page-link" href="/dgm-fall-2025/homework/">homework</a>
+            <a class="page-link" href="/dgm-fall-2025/project/">project</a>
+          </div>
+        </nav>
       </div>
-    </nav>
-  </div>
-</header>
-
+    </header>
 
     <div class="page-content">
       <d-title>
@@ -154,389 +130,447 @@
 
       <d-byline></d-byline>
 
-      <d-article> <h2 id="todays-topics">Today’s Topics:</h2>
+      <d-article>
+        <h2 id="todays-topics">Today’s Topics:</h2>
 
-<p>[1. Midterm]</p>
+        <p>[1. Midterm]</p>
 
-<p>[2. Learning Rate Decay:]</p>
+        <p>[2. Learning Rate Decay:]</p>
 
-<p>[3. Learning Rate Schedulers in PyTorch:]</p>
+        <p>[3. Learning Rate Schedulers in PyTorch:]</p>
 
-<p>[4. Training with “Momentum”:]</p>
+        <p>[4. Training with “Momentum”:]</p>
 
-<p>[5. ADAM: Adaptive Learning Rates]</p>
+        <p>[5. ADAM: Adaptive Learning Rates]</p>
 
-<p>[6. Optimization Algorithms in PyTorch]</p>
+        <p>[6. Optimization Algorithms in PyTorch]</p>
 
-<hr />
+        <hr />
 
-<h3 id="1-midterm">1. Midterm</h3>
+        <h3 id="1-midterm">1. Midterm</h3>
 
-<ul>
-  <li>In-class on Wednesday, 10/22</li>
-  <li>Open-note, no electronics/AI</li>
-  <li>Review Session on 10/20; study guide released 10/13</li>
-  <li>Types of Questions:
-    <ul>
-      <li>True/False</li>
-      <li>Multiple Choice</li>
-      <li>Derivation</li>
-      <li>Matching algorithms to property</li>
-      <li>Interpreting Python code blocks</li>
-    </ul>
-  </li>
-</ul>
-
-<p>Content:</p>
-
-<ul>
-  <li>Lecture materials</li>
-  <li>Readings are designed to support learning, but will not be tested directly on midterm</li>
-</ul>
-
-<hr />
-
-<h3 id="2-learning-rate-decay">2. Learning Rate Decay:</h3>
-
-<ul>
-  <li>Minibatch Training Recap:
-    <ul>
-      <li>
-        <p>Minibatch learning is a form of stochastic gradient descent</p>
-      </li>
-      <li>
-        <p>Each minibatch is a sample drawn from the training set and the training set is in turn a sample drawn from the population.
-Model output, loss, and gradient is calculated for each minibatch.</p>
-      </li>
-      <li>Minibatch helps minimize computational cost with fullbatch gradient descent, but creates a noiser gradient due to increased oscillation.
         <ul>
-          <li>Smaller batches creates noisier gradient.</li>
+          <li>In-class on Wednesday, 10/22</li>
+          <li>Open-note, no electronics/AI</li>
+          <li>Review Session on 10/20; study guide released 10/13</li>
+          <li>
+            Types of Questions:
+            <ul>
+              <li>True/False</li>
+              <li>Multiple Choice</li>
+              <li>Derivation</li>
+              <li>Matching algorithms to property</li>
+              <li>Interpreting Python code blocks</li>
+            </ul>
+          </li>
         </ul>
-      </li>
-      <li>Noiser gradients are helpful in non-convex landscapes to escape local minima</li>
-    </ul>
-  </li>
-  <li>Noise is a double-edged sword:
-    <ul>
-      <li><strong>Good:</strong> helps escape local minima.</li>
-      <li><strong>Bad:</strong> causes oscillation.</li>
-    </ul>
-  </li>
-  <li>Minibatch Training: Practical Tip
-    <ul>
-      <li>Typical minibatch sizes: 32, 64, 128, 256, 512, 1024 to correspond with memory bytes
-        <ul>
-          <li>Pick the largest minibatch that is allowed by GPU memory</li>
-        </ul>
-      </li>
-      <li>
-        <p>Nice to match the batch size to the number of class sizes in the dataset because want to have the minibatches perserve the distribution of labels from the population in the minibatch sample.</p>
-      </li>
-      <li>
-        <p>Smaller batches → noisier gradients → more loss oscillation but similar final accuracy.</p>
-      </li>
-      <li>In Figure 1 below, more loss oscillation with the smaller batches sizes, but the accuracy is similar.</li>
-    </ul>
-  </li>
-</ul>
 
-<figure style="text-align:center;">
-  <img src="/dgm-fall-2025/assets/img/notes/lecture-12/1.jpg" width="70%" alt="Figure 1" />
-  <figcaption><em>Figure 1. Visualization shown during Lecture 12.</em></figcaption>
-</figure>
+        <p>Content:</p>
 
-<ul>
-  <li>Learning Rate Decay:
-    <ul>
-      <li>
-        <p>Minibatches are samples of the training set, so loss and gradients from the minibatches are approximations.
-This creates oscillations.</p>
-      </li>
-      <li>
-        <p>To decrease oscillations, we can decay the learning rate to prevent missing the true minimum.</p>
-      </li>
-      <li>
-        <p>On a practical note, train model without learning rate decay and then fit the decay to what is observed.
-This avoids decaying too fast and missing the minimum.
-This can also be done through validation set testing.</p>
         <ul>
-          <li>Follows the idea of deep learning to overfit model and then fix the model. This proves the features can model the data.</li>
+          <li>Lecture materials</li>
+          <li>Readings are designed to support learning, but will not be tested directly on midterm</li>
         </ul>
-      </li>
-    </ul>
-  </li>
-  <li>Equations of Learning Rate Decay:
-    <ul>
-      <li>Exponential Decay:
+
+        <hr />
+
+        <h3 id="2-learning-rate-decay">2. Learning Rate Decay:</h3>
+
         <ul>
-          <li>$\eta_t=\eta_0 e^{-k\cdot t}$
+          <li>
+            Minibatch Training Recap:
             <ul>
               <li>
-                <p>$\eta$ is the learning rate</p>
+                <p>Minibatch learning is a form of stochastic gradient descent</p>
               </li>
               <li>
-                <p>$k$ is the hyperparameter of the decay</p>
+                <p>
+                  Each minibatch is a sample drawn from the training set and the training set is in turn a sample drawn from the population. Model
+                  output, loss, and gradient is calculated for each minibatch.
+                </p>
               </li>
               <li>
-                <p>$t$ is the epochs</p>
+                Minibatch helps minimize computational cost with fullbatch gradient descent, but creates a noiser gradient due to increased
+                oscillation.
+                <ul>
+                  <li>Smaller batches creates noisier gradient.</li>
+                </ul>
+              </li>
+              <li>Noiser gradients are helpful in non-convex landscapes to escape local minima</li>
+            </ul>
+          </li>
+          <li>
+            Noise is a double-edged sword:
+            <ul>
+              <li><strong>Good:</strong> helps escape local minima.</li>
+              <li><strong>Bad:</strong> causes oscillation.</li>
+            </ul>
+          </li>
+          <li>
+            Minibatch Training: Practical Tip
+            <ul>
+              <li>
+                Typical minibatch sizes: 32, 64, 128, 256, 512, 1024 to correspond with memory bytes
+                <ul>
+                  <li>Pick the largest minibatch that is allowed by GPU memory</li>
+                </ul>
               </li>
               <li>
-                <p>Figure 2 shows that by 100 epochs the learning is drastically different between orange and green/blue:</p>
+                <p>
+                  Nice to match the batch size to the number of class sizes in the dataset because want to have the minibatches perserve the
+                  distribution of labels from the population in the minibatch sample.
+                </p>
+              </li>
+              <li>
+                <p>Smaller batches → noisier gradients → more loss oscillation but similar final accuracy.</p>
+              </li>
+              <li>In Figure 1 below, more loss oscillation with the smaller batches sizes, but the accuracy is similar.</li>
+            </ul>
+          </li>
+        </ul>
+
+        <figure style="text-align: center">
+          <img src="/dgm-fall-2025/assets/img/notes/lecture-12/1.jpg" width="70%" alt="Figure 1" />
+          <figcaption><em>Figure 1. Visualization shown during Lecture 12.</em></figcaption>
+        </figure>
+
+        <ul>
+          <li>
+            Learning Rate Decay:
+            <ul>
+              <li>
+                <p>
+                  Minibatches are samples of the training set, so loss and gradients from the minibatches are approximations. This creates
+                  oscillations.
+                </p>
+              </li>
+              <li>
+                <p>To decrease oscillations, we can decay the learning rate to prevent missing the true minimum.</p>
+              </li>
+              <li>
+                <p>
+                  On a practical note, train model without learning rate decay and then fit the decay to what is observed. This avoids decaying too
+                  fast and missing the minimum. This can also be done through validation set testing.
+                </p>
+                <ul>
+                  <li>Follows the idea of deep learning to overfit model and then fix the model. This proves the features can model the data.</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li>
+            Equations of Learning Rate Decay:
+            <ul>
+              <li>
+                Exponential Decay:
+                <ul>
+                  <li>
+                    $\eta_t=\eta_0 e^{-k\cdot t}$
+                    <ul>
+                      <li>
+                        <p>$\eta$ is the learning rate</p>
+                      </li>
+                      <li>
+                        <p>$k$ is the hyperparameter of the decay</p>
+                      </li>
+                      <li>
+                        <p>$t$ is the epochs</p>
+                      </li>
+                      <li>
+                        <p>Figure 2 shows that by 100 epochs the learning is drastically different between orange and green/blue:</p>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
               </li>
             </ul>
           </li>
         </ul>
-      </li>
-    </ul>
-  </li>
-</ul>
 
-<figure style="text-align:center;">
-  <img src="/dgm-fall-2025/assets/img/notes/lecture-12/2.jpg" width="70%" alt="Figure 1" />
-  <figcaption><em>Figure 1. Visualization shown during Lecture 12.</em></figcaption>
-</figure>
+        <figure style="text-align: center">
+          <img src="/dgm-fall-2025/assets/img/notes/lecture-12/2.jpg" width="70%" alt="Figure 1" />
+          <figcaption><em>Figure 1. Visualization shown during Lecture 12.</em></figcaption>
+        </figure>
 
-<ul>
-  <li>Learning Rate and Batch Size:
-    <ul>
-      <li>Can get identical accuracy by increasing batch size rather than decreasing learning rate. However, this goes against the initial problem that learning rate decay solves: GPU and memory costs.</li>
-    </ul>
-  </li>
-</ul>
-
-<p>Common Forms of Learning Rate Decay</p>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: left">Type</th>
-      <th style="text-align: left">Formula</th>
-      <th style="text-align: left">Notes</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: left"><strong>Exponential Decay</strong></td>
-      <td style="text-align: left">$\eta_t = \eta_0 e^{-k t}$</td>
-      <td style="text-align: left">Smooth continuous decay; $k$ is rate hyperparameter</td>
-    </tr>
-    <tr>
-      <td style="text-align: left"><strong>Step (Halving)</strong></td>
-      <td style="text-align: left">$\eta_t = \eta_{t-1}/2$ every $T_0$ epochs</td>
-      <td style="text-align: left">Simple, common in classification</td>
-    </tr>
-    <tr>
-      <td style="text-align: left"><strong>Inverse Decay</strong></td>
-      <td style="text-align: left">$\eta_t = \frac{\eta_0}{1 + k t}$</td>
-      <td style="text-align: left">Slower decay, often more stable</td>
-    </tr>
-  </tbody>
-</table>
-
-<blockquote>
-  <p>⚖️ <strong>Key idea:</strong> Decay reduces update magnitude so the model “settles” near the minimum instead of bouncing around.</p>
-</blockquote>
-
-<hr />
-
-<hr />
-
-<h3 id="3-learning-rate-schedulers-in-pytorch">3. Learning Rate Schedulers in PyTorch:</h3>
-
-<ul>
-  <li>
-    <p>[Option 1:]{.underline} Call your own junction at the end of each epoch:</p>
-  </li>
-  <li>[Option 2:]{.underline} Use one of the built-in tools in PyTorch.
-    <ol>
-      <li>The “torch.optim.lr.scheduler.LambdaLR” is the most common, generic version</li>
-    </ol>
-  </li>
-  <li>Saving Models in PyTorch:
-    <ul>
-      <li>
-        <p>The model, optimizer, and the tearning rate scheduler all have save functionalities in PyTorch.
-This is essential for reuse and reproducability.</p>
-      </li>
-      <li>
-        <p>torch.save(model.state_dict(), “…”)</p>
-      </li>
-      <li>
-        <p>torch.save(optimizer.state_dict(), “…”)</p>
-      </li>
-      <li>
-        <p>torch.save(scheduler.state_dict(), “…”)</p>
-      </li>
-    </ul>
-  </li>
-</ul>
-
-<hr />
-
-<h3 id="4-training-with-momentum">4. Training with “Momentum”:</h3>
-
-<ul>
-  <li>
-    <p>The main idea of momentum is to dampen oscillations by using “velocity” which is the speed of the “movement” from previous updates.
-This helps skip over local minima by increasing efficiency.</p>
-  </li>
-  <li>
-    <p>Key take-away: not only move in the direction of the gradient, but also move in the “weighted averaged” direction of the last few updates.</p>
-
-    <p>Gradient $\Delta w_{i,j}(t)$ is the “velocity” $V$:</p>
-
-    <p>$\Delta w_{i,j}(t) := \alpha \cdot \Delta w_{i,j}(t-1) + \eta \cdot \frac{\partial l}{\partial w_{i,j}}(t)$</p>
-    <ul>
-      <li>
-        <p>$\alpha$ is the momentum parameter, usually a value between 0.9 and 0.99.
-This is like a “friction” or dampening parameter.</p>
-      </li>
-      <li>
-        <p>$\Delta w_{i,j}(t-1)$ update at the previous step</p>
-      </li>
-      <li>
-        <p>$\eta \cdot \frac{\partial l}{\partial w_{i,j}}(t)$ familiar, regular gradient update</p>
-        <ul>
-          <li>We “average” this by adding it to the previous update.</li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-  <li>In PyTorch:
-    <ul>
-      <li>“torch.optim.SGD(params, lr=&lt;required parameter&gt;, <strong>momentum=0</strong>, dampening=0, weight_decay=0), nesterov=False.
-        <ul>
-          <li>dampening $1-\eta$, how much do you dampen your current minibatch update.</li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-  <li>Nesterov: A Better Momentum
-    <ul>
-      <li>Given that we know the direction the momentum term will push us (because it was calculated by the previous term), we can skip ahead by applying the previous term’s momentum and then calculating loss with the momentum:
         <ul>
           <li>
-            <p>Before: $\Delta w(t) := \alpha \cdot \Delta w_{t-1} + \eta \cdot \Delta _w L (w_t)$</p>
-
-            <p>$w_{t+1}:=w_t-\Delta w_t$</p>
-          </li>
-          <li>
-            <p>Nesterov: $\Delta w(t) := \alpha \cdot \Delta w_{t-1} + \eta \cdot \Delta <em>w L (w_t - \alpha \cdot \Delta w</em>{t-1})$</p>
-
-            <p>$w_{t+1}:=w_t-\Delta w_t$</p>
+            Learning Rate and Batch Size:
             <ul>
-              <li>applying momentum term first because it was already calculated in the previous iteration.</li>
+              <li>
+                Can get identical accuracy by increasing batch size rather than decreasing learning rate. However, this goes against the initial
+                problem that learning rate decay solves: GPU and memory costs.
+              </li>
             </ul>
           </li>
         </ul>
-      </li>
-    </ul>
-  </li>
-</ul>
 
-<figure style="text-align:center;">
-  <img src="/dgm-fall-2025/assets/img/notes/lecture-12/1.jpg" width="70%" alt="Figure 1" />
-  <figcaption><em>Figure 1. Visualization shown during Lecture 12.</em></figcaption>
-</figure>
+        <p>Common Forms of Learning Rate Decay</p>
 
-<hr />
+        <table>
+          <thead>
+            <tr>
+              <th style="text-align: left">Type</th>
+              <th style="text-align: left">Formula</th>
+              <th style="text-align: left">Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="text-align: left"><strong>Exponential Decay</strong></td>
+              <td style="text-align: left">$\eta_t = \eta_0 e^{-k t}$</td>
+              <td style="text-align: left">Smooth continuous decay; $k$ is rate hyperparameter</td>
+            </tr>
+            <tr>
+              <td style="text-align: left"><strong>Step (Halving)</strong></td>
+              <td style="text-align: left">$\eta_t = \eta_{t-1}/2$ every $T_0$ epochs</td>
+              <td style="text-align: left">Simple, common in classification</td>
+            </tr>
+            <tr>
+              <td style="text-align: left"><strong>Inverse Decay</strong></td>
+              <td style="text-align: left">$\eta_t = \frac{\eta_0}{1 + k t}$</td>
+              <td style="text-align: left">Slower decay, often more stable</td>
+            </tr>
+          </tbody>
+        </table>
 
-<h3 id="5-adam-adaptive-learning-rates">5. ADAM: Adaptive Learning Rates</h3>
+        <blockquote>
+          <p>⚖️ <strong>Key idea:</strong> Decay reduces update magnitude so the model “settles” near the minimum instead of bouncing around.</p>
+        </blockquote>
 
-<ul>
-  <li>So far: decrease learning if the gradient changes its direction and increase learning if the gradient stays consistent
-    <ul>
-      <li>
-        <p><strong>Step 1:</strong> Define a local gain $(g)$ for each weight (initialized with $g=1$):</p>
+        <hr />
 
-        <p>$\Delta w_{i,j}:=\eta\cdot g_{i,j}\cdot\frac{\partial L}{\partial w_{i,j}}$</p>
-      </li>
-      <li>
-        <p><strong>Step 2</strong>:</p>
+        <hr />
+
+        <h3 id="3-learning-rate-schedulers-in-pytorch">3. Learning Rate Schedulers in PyTorch:</h3>
+
         <ul>
           <li>
-            <p>If gradient is consistent: $g_{i,j}(t) := (t-1)+ \beta$</p>
+            <p>[Option 1:]{.underline} Call your own junction at the end of each epoch:</p>
           </li>
           <li>
-            <p>Else: $g_{i,j}(t) := (t-1) \cdot (1-\beta)$</p>
+            [Option 2:]{.underline} Use one of the built-in tools in PyTorch.
+            <ol>
+              <li>The “torch.optim.lr.scheduler.LambdaLR” is the most common, generic version</li>
+            </ol>
+          </li>
+          <li>
+            Saving Models in PyTorch:
             <ul>
-              <li>We multiply so that $g$ does not go negative, but decreases</li>
+              <li>
+                <p>
+                  The model, optimizer, and the tearning rate scheduler all have save functionalities in PyTorch. This is essential for reuse and
+                  reproducability.
+                </p>
+              </li>
+              <li>
+                <p>torch.save(model.state_dict(), “…”)</p>
+              </li>
+              <li>
+                <p>torch.save(optimizer.state_dict(), “…”)</p>
+              </li>
+              <li>
+                <p>torch.save(scheduler.state_dict(), “…”)</p>
+              </li>
             </ul>
           </li>
         </ul>
-      </li>
-    </ul>
-  </li>
-  <li>RMSProp is an algorithm created by Geoff Hinton that is similar to AdaDelta.
-    <ul>
-      <li>
-        <p>RMS is “Root Mean Squared” and divides the learning rate by an exponentially decreasing moving average of the squared gradients.</p>
-      </li>
-      <li>
-        <p>It takes into account that gradients can vary widely in magnitude and damps oscillations like momentum</p>
-      </li>
-    </ul>
-  </li>
-  <li>ADAM:
-    <ul>
-      <li>Most widely used optimization algorithm in DL and combines momentum and RMSProp.
+
+        <hr />
+
+        <h3 id="4-training-with-momentum">4. Training with “Momentum”:</h3>
+
         <ul>
           <li>
-            <p>[Momentum-like Term:]{.underline}$\Delta w_{i,j}(t) := \alpha \cdot \Delta w_{i,j}(t-1) + \eta \cdot \frac{\partial l}{\partial w_{i,j}}(t)$</p>
-
-            <p>This is written as:$m_t := \alpha \cdot m_{t-1}+(1-\alpha) \cdot \frac{\partial l}{\partial w_{i,j}}(t)$</p>
+            <p>
+              The main idea of momentum is to dampen oscillations by using “velocity” which is the speed of the “movement” from previous updates. This
+              helps skip over local minima by increasing efficiency.
+            </p>
           </li>
           <li>
-            <p>[RMSProp Term:]{.underline}</p>
+            <p>
+              Key take-away: not only move in the direction of the gradient, but also move in the “weighted averaged” direction of the last few
+              updates.
+            </p>
 
-            <p>$r:= \beta \cdot MeanSquare(w_{i,j},t-1)+(1-\beta)(\frac{\partial L}{\partial w_{i,j}(t)})^2$</p>
+            <p>Gradient $\Delta w_{i,j}(t)$ is the “velocity” $V$:</p>
+
+            <p>$\Delta w_{i,j}(t) := \alpha \cdot \Delta w_{i,j}(t-1) + \eta \cdot \frac{\partial l}{\partial w_{i,j}}(t)$</p>
             <ul>
-              <li>$r$ is the size of the gradients (large $r$ is steep)</li>
+              <li>
+                <p>$\alpha$ is the momentum parameter, usually a value between 0.9 and 0.99. This is like a “friction” or dampening parameter.</p>
+              </li>
+              <li>
+                <p>$\Delta w_{i,j}(t-1)$ update at the previous step</p>
+              </li>
+              <li>
+                <p>$\eta \cdot \frac{\partial l}{\partial w_{i,j}}(t)$ familiar, regular gradient update</p>
+                <ul>
+                  <li>We “average” this by adding it to the previous update.</li>
+                </ul>
+              </li>
             </ul>
           </li>
           <li>
-            <p>[ADAM Update:]{.underline}</p>
+            In PyTorch:
+            <ul>
+              <li>
+                “torch.optim.SGD(params, lr=&lt;required parameter&gt;, <strong>momentum=0</strong>, dampening=0, weight_decay=0), nesterov=False.
+                <ul>
+                  <li>dampening $1-\eta$, how much do you dampen your current minibatch update.</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li>
+            Nesterov: A Better Momentum
+            <ul>
+              <li>
+                Given that we know the direction the momentum term will push us (because it was calculated by the previous term), we can skip ahead by
+                applying the previous term’s momentum and then calculating loss with the momentum:
+                <ul>
+                  <li>
+                    <p>Before: $\Delta w(t) := \alpha \cdot \Delta w_{t-1} + \eta \cdot \Delta _w L (w_t)$</p>
 
-            <p>$w_{i,j} := w_i,j - \eta \frac{m_t}{\sqrt{r} + \epsilon}$</p>
+                    <p>$w_{t+1}:=w_t-\Delta w_t$</p>
+                  </li>
+                  <li>
+                    <p>Nesterov: $\Delta w(t) := \alpha \cdot \Delta w_{t-1} + \eta \cdot \Delta <em>w L (w_t - \alpha \cdot \Delta w</em>{t-1})$</p>
+
+                    <p>$w_{t+1}:=w_t-\Delta w_t$</p>
+                    <ul>
+                      <li>applying momentum term first because it was already calculated in the previous iteration.</li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
           </li>
         </ul>
-      </li>
-    </ul>
-  </li>
-</ul>
 
-<hr />
+        <figure style="text-align: center">
+          <img src="/dgm-fall-2025/assets/img/notes/lecture-12/1.jpg" width="70%" alt="Figure 1" />
+          <figcaption><em>Figure 1. Visualization shown during Lecture 12.</em></figcaption>
+        </figure>
 
-<h3 id="6-optimization-algorithms-in-pytorch">6. Optimization Algorithms in PyTorch</h3>
+        <hr />
 
-<ul>
-  <li>
-    <p>One of the simplest optimizers is SGD. For example:
-<code class="language-plaintext highlighter-rouge">torch.optim.SGD(model.parameters(), lr=0.01, momentum=0.9)</code>
-The momentum term helps smooth the updates so the training process doesn’t shake too much when the gradient changes quickly.</p>
-  </li>
-  <li>Another optimizer we use a lot is Adam:
-<code class="language-plaintext highlighter-rouge">torch.optim.Adam(model.parameters(), lr=0.0001)</code>
-Adam basically combines ideas from Momentum and RMSProp, which is why it usually works well without too much tuning.
-    <ul>
-      <li>A more complete version looks like:
-<code class="language-plaintext highlighter-rouge">torch.optim.Adam(params, lr=0.001, betas=(0.9, 0.999), eps=1e-08)</code>
-The two values in <code class="language-plaintext highlighter-rouge">betas</code> control how fast the moving averages of the gradients (and squared gradients) decay over time.
+        <h3 id="5-adam-adaptive-learning-rates">5. ADAM: Adaptive Learning Rates</h3>
+
         <ul>
-          <li>Inside the RMSProp-style update in Adam:<br />
-<strong>0.9 corresponds to α</strong>,<br />
-<strong>0.999 corresponds to β</strong>.</li>
-        </ul>
-      </li>
-      <li>If you are using an optimizer that keeps internal state (like momentum or Adam), remember to <strong>save and load the optimizer state</strong> when you resume training. Otherwise, the optimizer will forget where it left off.</li>
-    </ul>
-  </li>
-  <li>Interesting hypothesis about ADAM, everything in machine learning has been engineered around ADAM because of how convenient it is as an optimizer.
-It may not give the best performance, but defaults give the a reliable, solid performance.</li>
-</ul>
+          <li>
+            So far: decrease learning if the gradient changes its direction and increase learning if the gradient stays consistent
+            <ul>
+              <li>
+                <p><strong>Step 1:</strong> Define a local gain $(g)$ for each weight (initialized with $g=1$):</p>
 
-<hr />
- </d-article>
+                <p>$\Delta w_{i,j}:=\eta\cdot g_{i,j}\cdot\frac{\partial L}{\partial w_{i,j}}$</p>
+              </li>
+              <li>
+                <p><strong>Step 2</strong>:</p>
+                <ul>
+                  <li>
+                    <p>If gradient is consistent: $g_{i,j}(t) := (t-1)+ \beta$</p>
+                  </li>
+                  <li>
+                    <p>Else: $g_{i,j}(t) := (t-1) \cdot (1-\beta)$</p>
+                    <ul>
+                      <li>We multiply so that $g$ does not go negative, but decreases</li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li>
+            RMSProp is an algorithm created by Geoff Hinton that is similar to AdaDelta.
+            <ul>
+              <li>
+                <p>
+                  RMS is “Root Mean Squared” and divides the learning rate by an exponentially decreasing moving average of the squared gradients.
+                </p>
+              </li>
+              <li>
+                <p>It takes into account that gradients can vary widely in magnitude and damps oscillations like momentum</p>
+              </li>
+            </ul>
+          </li>
+          <li>
+            ADAM:
+            <ul>
+              <li>
+                Most widely used optimization algorithm in DL and combines momentum and RMSProp.
+                <ul>
+                  <li>
+                    <p>
+                      [Momentum-like Term:]{.underline}$\Delta w_{i,j}(t) := \alpha \cdot \Delta w_{i,j}(t-1) + \eta \cdot \frac{\partial l}{\partial
+                      w_{i,j}}(t)$
+                    </p>
+
+                    <p>This is written as:$m_t := \alpha \cdot m_{t-1}+(1-\alpha) \cdot \frac{\partial l}{\partial w_{i,j}}(t)$</p>
+                  </li>
+                  <li>
+                    <p>[RMSProp Term:]{.underline}</p>
+
+                    <p>$r:= \beta \cdot MeanSquare(w_{i,j},t-1)+(1-\beta)(\frac{\partial L}{\partial w_{i,j}(t)})^2$</p>
+                    <ul>
+                      <li>$r$ is the size of the gradients (large $r$ is steep)</li>
+                    </ul>
+                  </li>
+                  <li>
+                    <p>[ADAM Update:]{.underline}</p>
+
+                    <p>$w_{i,j} := w_i,j - \eta \frac{m_t}{\sqrt{r} + \epsilon}$</p>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+
+        <hr />
+
+        <h3 id="6-optimization-algorithms-in-pytorch">6. Optimization Algorithms in PyTorch</h3>
+
+        <ul>
+          <li>
+            <p>
+              One of the simplest optimizers is SGD. For example:
+              <code class="language-plaintext highlighter-rouge">torch.optim.SGD(model.parameters(), lr=0.01, momentum=0.9)</code>
+              The momentum term helps smooth the updates so the training process doesn’t shake too much when the gradient changes quickly.
+            </p>
+          </li>
+          <li>
+            Another optimizer we use a lot is Adam:
+            <code class="language-plaintext highlighter-rouge">torch.optim.Adam(model.parameters(), lr=0.0001)</code>
+            Adam basically combines ideas from Momentum and RMSProp, which is why it usually works well without too much tuning.
+            <ul>
+              <li>
+                A more complete version looks like:
+                <code class="language-plaintext highlighter-rouge">torch.optim.Adam(params, lr=0.001, betas=(0.9, 0.999), eps=1e-08)</code>
+                The two values in <code class="language-plaintext highlighter-rouge">betas</code> control how fast the moving averages of the
+                gradients (and squared gradients) decay over time.
+                <ul>
+                  <li>
+                    Inside the RMSProp-style update in Adam:<br />
+                    <strong>0.9 corresponds to α</strong>,<br />
+                    <strong>0.999 corresponds to β</strong>.
+                  </li>
+                </ul>
+              </li>
+              <li>
+                If you are using an optimizer that keeps internal state (like momentum or Adam), remember to
+                <strong>save and load the optimizer state</strong> when you resume training. Otherwise, the optimizer will forget where it left off.
+              </li>
+            </ul>
+          </li>
+          <li>
+            Interesting hypothesis about ADAM, everything in machine learning has been engineered around ADAM because of how convenient it is as an
+            optimizer. It may not give the best performance, but defaults give the a reliable, solid performance.
+          </li>
+        </ul>
+
+        <hr />
+      </d-article>
 
       <d-appendix>
         <d-footnote-list></d-footnote-list>
@@ -545,107 +579,82 @@ It may not give the best performance, but defaults give the a reliable, solid pe
     </div>
 
     <footer class="site-footer">
-  <div class="wrapper">
-    <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
+      <div class="wrapper">
+        <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
 
-    <div class="footer-col-wrapper">
-      <div class="footer-col footer-col-1">
-        <ul class="contact-list">
-          <li class="p-name">Ben Lengerich</li><li>
-            <a class="u-email" href="mailto:TBD@wisc.edu"
-              >TBD@wisc.edu</a
-            >
-          </li></ul>
+        <div class="footer-col-wrapper">
+          <div class="footer-col footer-col-1">
+            <ul class="contact-list">
+              <li class="p-name">Ben Lengerich</li>
+              <li>
+                <a class="u-email" href="mailto:TBD@wisc.edu">TBD@wisc.edu</a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="footer-col footer-col-2">
+            <ul class="social-media-list">
+              <li>
+                <a href="https://github.com/AdaptInfer" target="_blank"><i class="fab fa-github"></i> <span class="username">AdaptInfer</span></a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="footer-col footer-col-3">
+            <p>
+              &copy; Copyright 2025 University of Wisconsin.
+              <br />
+            </p>
+          </div>
+        </div>
       </div>
-
-      <div class="footer-col footer-col-2"><ul class="social-media-list"><li>
-    <a
-      href="https://github.com/AdaptInfer"
-      target="_blank"
-      ><i class="fab fa-github"></i>
-      <span class="username">AdaptInfer</span></a
-    >
-  </li></ul>
-</div>
-
-      <div class="footer-col footer-col-3">
-        <p>
-          &copy; Copyright 2025 University of Wisconsin.
-          <br />
-          
-        </p>
-      </div>
-    </div>
-  </div>
-</footer>
-
+    </footer>
   </body>
 
-  <d-bibliography
-    src="/dgm-fall-2025/assets/bibliography/2025-10-13-lecture-12.bib"
-  >
-  </d-bibliography>
+  <d-bibliography src="/dgm-fall-2025/assets/bibliography/2025-10-13-lecture-12.bib"> </d-bibliography>
 
   <!-- Load jQuery -->
-<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
 
-<!-- Load Common JS -->
-<script src="/dgm-fall-2025/assets/js/common.js"></script>
+  <!-- Load Common JS -->
+  <script src="/dgm-fall-2025/assets/js/common.js"></script>
 
+  <!-- Load KaTeX -->
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css" />
+  <script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+  <script src="/dgm-fall-2025/assets/js/katex.js"></script>
 
-<!-- Load KaTeX -->
-<link
-  rel="stylesheet"
-  href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css"
-/>
-<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
-<script src="/dgm-fall-2025/assets/js/katex.js"></script>
- 
-<!-- Load Anchor JS -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
-<script>
-  anchors.options.visible = "hover";
-  anchors.add("article h2, article h3, article h4, article h5, article h6");
-</script>
- 
-<!-- Adjust LaTeX JS -->
-<script src="/dgm-fall-2025/assets/js/latex.js"></script>
+  <!-- Load Anchor JS -->
+  <script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+  <script>
+    anchors.options.visible = "hover";
+    anchors.add("article h2, article h3, article h4, article h5, article h6");
+  </script>
 
+  <!-- Adjust LaTeX JS -->
+  <script src="/dgm-fall-2025/assets/js/latex.js"></script>
 
-<!-- Include custom icon fonts -->
-<link
-  rel="stylesheet"
-  href="/dgm-fall-2025/assets/css/fontawesome-all.min.css"
-/>
-<link
-  rel="stylesheet"
-  href="/dgm-fall-2025/assets/css/academicons.min.css"
-/>
+  <!-- Include custom icon fonts -->
+  <link rel="stylesheet" href="/dgm-fall-2025/assets/css/fontawesome-all.min.css" />
+  <link rel="stylesheet" href="/dgm-fall-2025/assets/css/academicons.min.css" />
 
-<!-- Google Analytics -->
-<script>
-  (function (i, s, o, g, r, a, m) {
-    i["GoogleAnalyticsObject"] = r;
-    ((i[r] =
-      i[r] ||
-      function () {
-        (i[r].q = i[r].q || []).push(arguments);
-      }),
-      (i[r].l = 1 * new Date()));
-    ((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
-    a.async = 1;
-    a.src = g;
-    m.parentNode.insertBefore(a, m);
-  })(
-    window,
-    document,
-    "script",
-    "//www.google-analytics.com/analytics.js",
-    "ga",
-  );
+  <!-- Google Analytics -->
+  <script>
+    (function (i, s, o, g, r, a, m) {
+      i["GoogleAnalyticsObject"] = r;
+      (i[r] =
+        i[r] ||
+        function () {
+          (i[r].q = i[r].q || []).push(arguments);
+        }),
+        (i[r].l = 1 * new Date());
+      (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+      a.async = 1;
+      a.src = g;
+      m.parentNode.insertBefore(a, m);
+    })(window, document, "script", "//www.google-analytics.com/analytics.js", "ga");
 
-  ga("create", "", "auto");
-  ga("send", "pageview");
-</script>
-
+    ga("create", "", "auto");
+    ga("send", "pageview");
+  </script>
 </html>

@@ -2,35 +2,28 @@
 <html>
   <head>
     <head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="content-language" content="en" />
-  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-  <meta name="viewport" content="width=device-width initial-scale=1.0" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+      <meta charset="UTF-8" />
+      <meta http-equiv="content-language" content="en" />
+      <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+      <meta name="viewport" content="width=device-width initial-scale=1.0" />
+      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-  <title>
-    STAT 453 | Lecture 06
-  </title>
-  <meta name="description" content="STAT 453 - University of Wisconsin-Madison - Fall 2025
-" />
+      <title>STAT 453 | Lecture 06</title>
+      <meta
+        name="description"
+        content="STAT 453 - University of Wisconsin-Madison - Fall 2025
+"
+      />
 
-  <link
-    rel="shortcut icon"
-    href="/dgm-fall-2025/assets/img/favicon.ico"
-  />
+      <link rel="shortcut icon" href="/dgm-fall-2025/assets/img/favicon.ico" />
 
-  <link rel="stylesheet" href="/dgm-fall-2025/assets/css/main.css" />
-  <link
-    rel="canonical"
-    href="/dgm-fall-2025/notes/lecture-06/"
-  />
+      <link rel="stylesheet" href="/dgm-fall-2025/assets/css/main.css" />
+      <link rel="canonical" href="/dgm-fall-2025/notes/lecture-06/" />
 
-  
-  <!-- Load Latex JS -->
-  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
-  
-</head>
+      <!-- Load Latex JS -->
+      <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+    </head>
 
     <script src="/dgm-fall-2025/assets/js/distillpub/template.v2.js"></script>
     <script src="/dgm-fall-2025/assets/js/distillpub/transforms.v2.js"></script>
@@ -39,115 +32,98 @@
   <d-front-matter>
     <script type="text/json">
       {
-            "title": "Lecture 06",
-            "description": "Automatic Differentiation with PyTorch",
-            "published": "September 22, 2025",
-            "lecturers": [
-              
-              {
-                "lecturer": "Ben Lengerich",
-                "lecturerURL": "https://adaptinfer.org"
-              }
-              
-            ],
-            "authors": [
-              
-              {
-                "author": "Austin Kuo"
-              },
-              
-              {
-                "author": "Jesse Schmolze"
-              },
-              
-              {
-                "author": "Anushka Pradhan"
-              },
-              
-              {
-                "author": "Ben Lengerich"
-              }
-              
-            ],
-            "editors": [
-              
-              {
-                "editor": "Zefan Cai"
-              },
-              
-              {
-                "editor": "Wenjie Hu"
-              }
-              
-            ],
-            "katex": {
-              "delimiters": [
-                {
-                  "left": "$",
-                  "right": "$",
-                  "display": false
-                },
-                {
-                  "left": "$$",
-                  "right": "$$",
-                  "display": true
-                }
-              ]
-            }
+        "title": "Lecture 06",
+        "description": "Automatic Differentiation with PyTorch",
+        "published": "September 22, 2025",
+        "lecturers": [
+          {
+            "lecturer": "Ben Lengerich",
+            "lecturerURL": "https://adaptinfer.org"
           }
+        ],
+        "authors": [
+          {
+            "author": "Austin Kuo"
+          },
+
+          {
+            "author": "Jesse Schmolze"
+          },
+
+          {
+            "author": "Anushka Pradhan"
+          },
+
+          {
+            "author": "Ben Lengerich"
+          }
+        ],
+        "editors": [
+          {
+            "editor": "Zefan Cai"
+          },
+
+          {
+            "editor": "Wenjie Hu"
+          }
+        ],
+        "katex": {
+          "delimiters": [
+            {
+              "left": "$",
+              "right": "$",
+              "display": false
+            },
+            {
+              "left": "$$",
+              "right": "$$",
+              "display": true
+            }
+          ]
+        }
+      }
     </script>
   </d-front-matter>
 
   <body>
     <header class="site-header">
-  <div class="wrapper">
-    <span class="site-title">
-      <a class="page-link" href="https://adaptinfer.org/dgm-fall-2025/"
-        >STAT 453</a
-      >
-    </span>
-
-    <nav class="site-nav">
-      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
-      <label for="nav-trigger">
-        <span class="menu-icon">
-          <svg viewBox="0 0 18 15" width="18px" height="15px">
-            <path
-              fill="#424242"
-              d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
-            />
-            <path
-              fill="#424242"
-              d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
-            />
-            <path
-              fill="#424242"
-              d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
-            />
-          </svg>
+      <div class="wrapper">
+        <span class="site-title">
+          <a class="page-link" href="https://adaptinfer.org/dgm-fall-2025/">STAT 453</a>
         </span>
-      </label>
 
-      <div class="trigger">
-        <a class="page-link" href="/dgm-fall-2025/logistics/"
-          >logistics</a
-        >
-        <a class="page-link" href="/dgm-fall-2025/lectures/"
-          >lectures</a
-        >
-        <a class="page-link" href="/dgm-fall-2025/notes/">notes</a>
-        <a class="page-link" href="/dgm-fall-2025/calendar/"
-          >calendar</a
-        >
-        <a class="page-link" href="/dgm-fall-2025/homework/"
-          >homework</a
-        >
-        <a class="page-link" href="/dgm-fall-2025/project/">project</a>
+        <nav class="site-nav">
+          <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+          <label for="nav-trigger">
+            <span class="menu-icon">
+              <svg viewBox="0 0 18 15" width="18px" height="15px">
+                <path
+                  fill="#424242"
+                  d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
+                />
+                <path
+                  fill="#424242"
+                  d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
+                />
+                <path
+                  fill="#424242"
+                  d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
+                />
+              </svg>
+            </span>
+          </label>
+
+          <div class="trigger">
+            <a class="page-link" href="/dgm-fall-2025/logistics/">logistics</a>
+            <a class="page-link" href="/dgm-fall-2025/lectures/">lectures</a>
+            <a class="page-link" href="/dgm-fall-2025/notes/">notes</a>
+            <a class="page-link" href="/dgm-fall-2025/calendar/">calendar</a>
+            <a class="page-link" href="/dgm-fall-2025/homework/">homework</a>
+            <a class="page-link" href="/dgm-fall-2025/project/">project</a>
+          </div>
+        </nav>
       </div>
-    </nav>
-  </div>
-</header>
-
+    </header>
 
     <div class="page-content">
       <d-title>
@@ -157,149 +133,149 @@
 
       <d-byline></d-byline>
 
-      <d-article> <h2 id="key-takeaways">Key Takeaways</h2>
+      <d-article>
+        <h2 id="key-takeaways">Key Takeaways</h2>
 
-<ul>
-  <li>Automatic differentiation allows PyTorch to compute gradients <strong>exactly and efficiently</strong>.</li>
-  <li>Computation graphs encode how values depend on each other and enable backpropagation.</li>
-  <li>PyTorch uses <strong>reverse-mode autodiff</strong>, which is efficient for deep learning.</li>
-  <li>Gradients are accumulated in <code class="language-plaintext highlighter-rouge">.grad</code> and must be reset each iteration.</li>
-  <li>Dynamic computation graphs allow flexible model definitions using standard Python code.</li>
-</ul>
+        <ul>
+          <li>Automatic differentiation allows PyTorch to compute gradients <strong>exactly and efficiently</strong>.</li>
+          <li>Computation graphs encode how values depend on each other and enable backpropagation.</li>
+          <li>PyTorch uses <strong>reverse-mode autodiff</strong>, which is efficient for deep learning.</li>
+          <li>Gradients are accumulated in <code class="language-plaintext highlighter-rouge">.grad</code> and must be reset each iteration.</li>
+          <li>Dynamic computation graphs allow flexible model definitions using standard Python code.</li>
+        </ul>
 
-<h2 id="1-introduction">1. Introduction</h2>
+        <h2 id="1-introduction">1. Introduction</h2>
 
-<p>Training deep neural networks centers on minimizing a scalar loss via gradient-based optimization.<br />
-Two pillars enable this:</p>
+        <p>
+          Training deep neural networks centers on minimizing a scalar loss via gradient-based optimization.<br />
+          Two pillars enable this:
+        </p>
 
-<ul>
-  <li><strong>Backpropagation</strong> efficiently computes $\nabla_{\theta} L$ (gradients of the loss w.r.t. parameters).</li>
-  <li><strong>Gradient Descent (GD)</strong> (and variants like SGD/Adam) update the parameters using these gradients.</li>
-</ul>
+        <ul>
+          <li><strong>Backpropagation</strong> efficiently computes $\nabla_{\theta} L$ (gradients of the loss w.r.t. parameters).</li>
+          <li><strong>Gradient Descent (GD)</strong> (and variants like SGD/Adam) update the parameters using these gradients.</li>
+        </ul>
 
-<p>Modern frameworks automate derivative calculations through <strong>automatic differentiation (autodiff)</strong>.</p>
+        <p>Modern frameworks automate derivative calculations through <strong>automatic differentiation (autodiff)</strong>.</p>
 
-<hr />
+        <hr />
 
-<h2 id="learning-goals">Learning Goals</h2>
+        <h2 id="learning-goals">Learning Goals</h2>
 
-<p>By the end of this lecture, you should be able to:</p>
+        <p>By the end of this lecture, you should be able to:</p>
 
-<ul>
-  <li>Explain what <strong>automatic differentiation</strong> is and why it is used in deep learning.</li>
-  <li>Understand how <strong>computation graphs</strong> represent mathematical expressions.</li>
-  <li>Apply the <strong>chain rule</strong> on computation graphs.</li>
-  <li>Use PyTorch’s <strong>autograd</strong> system to compute gradients.</li>
-  <li>Implement and debug a basic PyTorch training loop.</li>
-</ul>
+        <ul>
+          <li>Explain what <strong>automatic differentiation</strong> is and why it is used in deep learning.</li>
+          <li>Understand how <strong>computation graphs</strong> represent mathematical expressions.</li>
+          <li>Apply the <strong>chain rule</strong> on computation graphs.</li>
+          <li>Use PyTorch’s <strong>autograd</strong> system to compute gradients.</li>
+          <li>Implement and debug a basic PyTorch training loop.</li>
+        </ul>
 
-<h2 id="2-pytorch-resources">2. PyTorch Resources</h2>
+        <h2 id="2-pytorch-resources">2. PyTorch Resources</h2>
 
-<p>PyTorch is a Python-first deep learning library with tensor operations, GPU acceleration, and dynamic computation graphs.</p>
+        <p>PyTorch is a Python-first deep learning library with tensor operations, GPU acceleration, and dynamic computation graphs.</p>
 
-<ul>
-  <li>Install via pip or conda at <a href="https://pytorch.org">pytorch.org</a></li>
-  <li>Tutorials: <a href="https://pytorch.org/tutorials">pytorch.org/tutorials</a></li>
-  <li>Community forum: <a href="https://discuss.pytorch.org">discuss.pytorch.org</a></li>
-</ul>
+        <ul>
+          <li>Install via pip or conda at <a href="https://pytorch.org">pytorch.org</a></li>
+          <li>Tutorials: <a href="https://pytorch.org/tutorials">pytorch.org/tutorials</a></li>
+          <li>Community forum: <a href="https://discuss.pytorch.org">discuss.pytorch.org</a></li>
+        </ul>
 
-<hr />
+        <hr />
 
-<h2 id="3-computation-graphs">3. Computation Graphs</h2>
+        <h2 id="3-computation-graphs">3. Computation Graphs</h2>
 
-<p>A computation graph is a directed acyclic graph (DAG) representing an expression as simple ops (nodes) with data dependencies (edges).<br />
-It underpins forward evaluation and reverse-mode gradient computation.</p>
+        <p>
+          A computation graph is a directed acyclic graph (DAG) representing an expression as simple ops (nodes) with data dependencies (edges).<br />
+          It underpins forward evaluation and reverse-mode gradient computation.
+        </p>
 
-<p><strong>Key Connection :</strong><br />
-In PyTorch, computation graphs are <strong>built dynamically during the forward pass (define-by-run)</strong>.<br />
-When <code class="language-plaintext highlighter-rouge">backward()</code> is called, PyTorch traverses this graph in reverse order and applies the chain rule automatically.</p>
+        <p>
+          <strong>Key Connection :</strong><br />
+          In PyTorch, computation graphs are <strong>built dynamically during the forward pass (define-by-run)</strong>.<br />
+          When <code class="language-plaintext highlighter-rouge">backward()</code> is called, PyTorch traverses this graph in reverse order and
+          applies the chain rule automatically.
+        </p>
 
-<h3 id="chain-rule-on-graphs">Chain Rule on Graphs</h3>
+        <h3 id="chain-rule-on-graphs">Chain Rule on Graphs</h3>
 
-<p>For a scalar loss $begin:math:text$L$end:math:text$ depending on parameters $begin:math:text$\theta$end:math:text$ through intermediate variables:</p>
+        <p>
+          For a scalar loss $begin:math:text$L$end:math:text$ depending on parameters $begin:math:text$\theta$end:math:text$ through intermediate
+          variables:
+        </p>
 
-<d-math block="">
-$begin:math:display$
-x = f(\\theta), \\quad y = g(x), \\quad L = h(y)
-$end:math:display$
-</d-math>
+        <d-math block=""> $begin:math:display$ x = f(\\theta), \\quad y = g(x), \\quad L = h(y) $end:math:display$ </d-math>
 
-<p>Reverse-mode autodiff applies the chain rule backward:</p>
+        <p>Reverse-mode autodiff applies the chain rule backward:</p>
 
-<d-math block="">
-$begin:math:display$
-\\frac{\\partial L}{\\partial \\theta} =
-\\frac{\\partial L}{\\partial y}
-\\cdot
-\\frac{\\partial y}{\\partial x}
-\\cdot
-\\frac{\\partial x}{\\partial \\theta}
-$end:math:display$
-</d-math>
+        <d-math block="">
+          $begin:math:display$ \\frac{\\partial L}{\\partial \\theta} = \\frac{\\partial L}{\\partial y} \\cdot \\frac{\\partial y}{\\partial x}
+          \\cdot \\frac{\\partial x}{\\partial \\theta} $end:math:display$
+        </d-math>
 
-<hr />
+        <hr />
 
-<h3 id="example-relu">Example: ReLU</h3>
+        <h3 id="example-relu">Example: ReLU</h3>
 
-<p>The Rectified Linear Unit is:</p>
+        <p>The Rectified Linear Unit is:</p>
 
-<d-math block="">
-$begin:math:display$
-\\text{ReLU}(z) = \\max(0, z), \\quad
-\\frac{d}{dz} \\text{ReLU}(z) =
-\\begin{cases}
-1, &amp; z &gt; 0,\\\\
-0, &amp; z \\leq 0
-\\end{cases}
-$end:math:display$
-</d-math>
+        <d-math block="">
+          $begin:math:display$ \\text{ReLU}(z) = \\max(0, z), \\quad \\frac{d}{dz} \\text{ReLU}(z) = \\begin{cases} 1, &amp; z &gt; 0,\\\\ 0, &amp; z
+          \\leq 0 \\end{cases} $end:math:display$
+        </d-math>
 
-<p>A single-neuron computation can be decomposed as:</p>
+        <p>A single-neuron computation can be decomposed as:</p>
 
-<d-math block="">
-$begin:math:display$
-u = w \\cdot x, \\quad v = u + b, \\quad a = \\text{ReLU}(v)
-$end:math:display$
-</d-math>
+        <d-math block=""> $begin:math:display$ u = w \\cdot x, \\quad v = u + b, \\quad a = \\text{ReLU}(v) $end:math:display$ </d-math>
 
-<p>Gradients flow only through the active branch ($begin:math:text$v &gt; 0$end:math:text$), helping mitigate vanishing gradients and enabling efficient layer stacking.</p>
+        <p>
+          Gradients flow only through the active branch ($begin:math:text$v &gt; 0$end:math:text$), helping mitigate vanishing gradients and enabling
+          efficient layer stacking.
+        </p>
 
-<p><strong>Common Graph Structures</strong></p>
+        <p><strong>Common Graph Structures</strong></p>
 
-<ul>
-  <li>Single-path chains: univariate chain rule applies node-by-node.</li>
-  <li>Weight sharing: parameters reused across paths (CNNs/RNNs); partials accumulate.</li>
-  <li>Fully connected layer: $y = \sigma(Wx + b)$ with multivariate chain rule.</li>
-</ul>
+        <ul>
+          <li>Single-path chains: univariate chain rule applies node-by-node.</li>
+          <li>Weight sharing: parameters reused across paths (CNNs/RNNs); partials accumulate.</li>
+          <li>Fully connected layer: $y = \sigma(Wx + b)$ with multivariate chain rule.</li>
+        </ul>
 
-<hr />
+        <hr />
 
-<h2 id="4-automatic-differentiation-in-pytorch">4. Automatic Differentiation in PyTorch</h2>
+        <h2 id="4-automatic-differentiation-in-pytorch">4. Automatic Differentiation in PyTorch</h2>
 
-<h3 id="reverse-vs-forward-mode">Reverse vs. Forward Mode</h3>
+        <h3 id="reverse-vs-forward-mode">Reverse vs. Forward Mode</h3>
 
-<ul>
-  <li><strong>Reverse mode (backprop)</strong>: efficient when a scalar loss depends on many parameters (typical in DL).</li>
-  <li><strong>Forward mode</strong>: efficient when #inputs ≪ #outputs (less common in DL).
-<strong>Why Reverse Mode?:</strong><br />
-Deep learning models typically have <strong>millions of parameters</strong> but a <strong>single scalar loss</strong>.<br />
-Reverse-mode autodiff computes gradients with respect to all parameters in one backward pass, making it far more efficient than forward-mode for neural networks.</li>
-</ul>
+        <ul>
+          <li><strong>Reverse mode (backprop)</strong>: efficient when a scalar loss depends on many parameters (typical in DL).</li>
+          <li>
+            <strong>Forward mode</strong>: efficient when #inputs ≪ #outputs (less common in DL). <strong>Why Reverse Mode?:</strong><br />
+            Deep learning models typically have <strong>millions of parameters</strong> but a <strong>single scalar loss</strong>.<br />
+            Reverse-mode autodiff computes gradients with respect to all parameters in one backward pass, making it far more efficient than
+            forward-mode for neural networks.
+          </li>
+        </ul>
 
-<h3 id="autograd-workflow">Autograd Workflow</h3>
+        <h3 id="autograd-workflow">Autograd Workflow</h3>
 
-<ol>
-  <li>Track tensors: create tensors with <code class="language-plaintext highlighter-rouge">requires_grad=True</code>.</li>
-  <li>Build graph: run forward pass (PyTorch records ops dynamically).</li>
-  <li>Backward pass: call <code class="language-plaintext highlighter-rouge">loss.backward()</code> to compute gradients.</li>
-  <li>Access/use grads: read <code class="language-plaintext highlighter-rouge">param.grad</code>; update with optimizer; zero grads next step.</li>
-</ol>
+        <ol>
+          <li>Track tensors: create tensors with <code class="language-plaintext highlighter-rouge">requires_grad=True</code>.</li>
+          <li>Build graph: run forward pass (PyTorch records ops dynamically).</li>
+          <li>Backward pass: call <code class="language-plaintext highlighter-rouge">loss.backward()</code> to compute gradients.</li>
+          <li>
+            Access/use grads: read <code class="language-plaintext highlighter-rouge">param.grad</code>; update with optimizer; zero grads next step.
+          </li>
+        </ol>
 
-<hr />
+        <hr />
 
-<h3 id="minimal-example-step-by-step-annotated">Minimal example (step-by-step annotated):</h3>
+        <h3 id="minimal-example-step-by-step-annotated">Minimal example (step-by-step annotated):</h3>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">torch</span>
+        <div class="language-python highlighter-rouge">
+          <div class="highlight">
+            <pre class="highlight"><code><span class="kn">import</span> <span class="nn">torch</span>
 
 <span class="c1"># Step 1: Create a tensor with gradient tracking enabled
 # requires_grad=True tells PyTorch to record all operations on this tensor
@@ -327,15 +303,21 @@ Reverse-mode autodiff computes gradients with respect to all parameters in one b
 # - PyTorch dynamically builds a graph as ops execute
 # - During backward(), it walks that graph in reverse, accumulating grads
 # - After backward, the graph is freed unless retain_graph=True is passed
-</span></code></pre></div></div>
+</span></code></pre>
+          </div>
+        </div>
 
-<hr />
+        <hr />
 
-<h2 id="5-pytorch-api-model--training-loop">5. PyTorch API: Model &amp; Training Loop</h2>
+        <h2 id="5-pytorch-api-model--training-loop">5. PyTorch API: Model &amp; Training Loop</h2>
 
-<h3 id="define-a-model-nnmodule">Define a Model (nn.Module)</h3>
+        <h3 id="define-a-model-nnmodule">Define a Model (nn.Module)</h3>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="n">nn</span>
+        <div class="language-python highlighter-rouge">
+          <div class="highlight">
+            <pre
+              class="highlight"
+            ><code><span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="n">nn</span>
 
 <span class="c1"># This defines a fully connected linear layer with ReLU activation
 # nn.Module is a base class that lets PyTorch track all parameters automatically.
@@ -348,112 +330,144 @@ Reverse-mode autodiff computes gradients with respect to all parameters in one b
         <span class="c1"># The forward() method defines how data flows through layers
 </span>        <span class="c1"># Here, x is multiplied by W, adds b, then applies ReLU activation.
 </span>        <span class="k">return</span> <span class="n">torch</span><span class="p">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">fc</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
-</code></pre></div></div>
+</code></pre>
+          </div>
+        </div>
 
-<h3 id="create-components">Create Components</h3>
+        <h3 id="create-components">Create Components</h3>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">model</span> <span class="o">=</span> <span class="n">Net</span><span class="p">()</span>  <span class="c1"># Create an instance of the network
+        <div class="language-python highlighter-rouge">
+          <div class="highlight">
+            <pre
+              class="highlight"
+            ><code><span class="n">model</span> <span class="o">=</span> <span class="n">Net</span><span class="p">()</span>  <span class="c1"># Create an instance of the network
 </span><span class="n">criterion</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">nn</span><span class="p">.</span><span class="n">MSELoss</span><span class="p">()</span>  <span class="c1"># Mean Squared Error loss
 </span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">optim</span><span class="p">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">model</span><span class="p">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">)</span>  <span class="c1"># Stochastic Gradient Descent
-</span></code></pre></div></div>
+</span></code></pre>
+          </div>
+        </div>
 
-<h3 id="training-loop-skeleton">Training Loop Skeleton</h3>
+        <h3 id="training-loop-skeleton">Training Loop Skeleton</h3>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_epochs</span><span class="p">):</span>
+        <div class="language-python highlighter-rouge">
+          <div class="highlight">
+            <pre
+              class="highlight"
+            ><code><span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_epochs</span><span class="p">):</span>
     <span class="n">optimizer</span><span class="p">.</span><span class="n">zero_grad</span><span class="p">()</span>        <span class="c1"># Clear old gradients from previous iteration
 </span>    <span class="n">outputs</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>      <span class="c1"># Forward pass: compute predictions via model(x)
 </span>    <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">targets</span><span class="p">)</span>  <span class="c1"># Compute loss value
 </span>    <span class="n">loss</span><span class="p">.</span><span class="n">backward</span><span class="p">()</span>              <span class="c1"># Backward pass: compute dLoss/dW for each parameter
 </span>    <span class="n">optimizer</span><span class="p">.</span><span class="n">step</span><span class="p">()</span>             <span class="c1"># Update parameters: W := W - lr * dLoss/dW
-</span></code></pre></div></div>
+</span></code></pre>
+          </div>
+        </div>
 
-<p><strong>Takeaway:</strong><br />
-The forward pass builds the computation graph, and <code class="language-plaintext highlighter-rouge">loss.backward()</code> uses that graph to compute gradients.<br />
-The optimizer then updates parameters, completing one gradient descent step.</p>
+        <p>
+          <strong>Takeaway:</strong><br />
+          The forward pass builds the computation graph, and <code class="language-plaintext highlighter-rouge">loss.backward()</code> uses that graph
+          to compute gradients.<br />
+          The optimizer then updates parameters, completing one gradient descent step.
+        </p>
 
-<h3 id="good-practices">Good Practices</h3>
+        <h3 id="good-practices">Good Practices</h3>
 
-<ul>
-  <li>Call <code class="language-plaintext highlighter-rouge">optimizer.zero_grad()</code> every iteration to prevent gradient accumulation.</li>
-  <li>Use <code class="language-plaintext highlighter-rouge">model.eval()</code> and <code class="language-plaintext highlighter-rouge">torch.no_grad()</code> for evaluation/inference.</li>
-  <li>Move tensors to the same device (CPU/GPU) via <code class="language-plaintext highlighter-rouge">.to(device)</code>.</li>
-</ul>
+        <ul>
+          <li>
+            Call <code class="language-plaintext highlighter-rouge">optimizer.zero_grad()</code> every iteration to prevent gradient accumulation.
+          </li>
+          <li>
+            Use <code class="language-plaintext highlighter-rouge">model.eval()</code> and
+            <code class="language-plaintext highlighter-rouge">torch.no_grad()</code> for evaluation/inference.
+          </li>
+          <li>Move tensors to the same device (CPU/GPU) via <code class="language-plaintext highlighter-rouge">.to(device)</code>.</li>
+        </ul>
 
-<hr />
+        <hr />
 
-<h2 id="6-debugging--practical-notes">6. Debugging &amp; Practical Notes</h2>
+        <h2 id="6-debugging--practical-notes">6. Debugging &amp; Practical Notes</h2>
 
-<ul>
-  <li>Inspect tensor shapes/values and <code class="language-plaintext highlighter-rouge">.grad</code> to diagnose issues.</li>
-  <li>Visualize graphs when helpful (e.g., external tools like torchviz).</li>
-  <li>Check learning rate, initialization, and data normalization if loss diverges.</li>
-</ul>
+        <ul>
+          <li>Inspect tensor shapes/values and <code class="language-plaintext highlighter-rouge">.grad</code> to diagnose issues.</li>
+          <li>Visualize graphs when helpful (e.g., external tools like torchviz).</li>
+          <li>Check learning rate, initialization, and data normalization if loss diverges.</li>
+        </ul>
 
-<hr />
+        <hr />
 
-<h2 id="7-worked-scalar-example-relu-neuron">7. Worked Scalar Example: ReLU Neuron</h2>
+        <h2 id="7-worked-scalar-example-relu-neuron">7. Worked Scalar Example: ReLU Neuron</h2>
 
-<p>Take $x = 3, w = 2, b = 1$.</p>
+        <p>Take $x = 3, w = 2, b = 1$.</p>
 
-<p><strong>Forward:</strong></p>
+        <p><strong>Forward:</strong></p>
 
-<d-math block="">
-$begin:math:display$
-u = wx = 6, \\quad v = u + b = 7, \\quad a = \\text{ReLU}(v) = 7
-$end:math:display$
-</d-math>
+        <d-math block=""> $begin:math:display$ u = wx = 6, \\quad v = u + b = 7, \\quad a = \\text{ReLU}(v) = 7 $end:math:display$ </d-math>
 
-<p><strong>Backward:</strong></p>
+        <p><strong>Backward:</strong></p>
 
-<d-math block="">
-$begin:math:display$
-\\frac{\\partial a}{\\partial v} = \\mathbb{1}[v &gt; 0] = 1, \\quad
-\\frac{\\partial v}{\\partial u} = 1, \\quad
-\\frac{\\partial u}{\\partial w} = x, \\quad
-\\frac{\\partial u}{\\partial x} = w, \\quad
-\\frac{\\partial v}{\\partial b} = 1
-$end:math:display$
-</d-math>
+        <d-math block="">
+          $begin:math:display$ \\frac{\\partial a}{\\partial v} = \\mathbb{1}[v &gt; 0] = 1, \\quad \\frac{\\partial v}{\\partial u} = 1, \\quad
+          \\frac{\\partial u}{\\partial w} = x, \\quad \\frac{\\partial u}{\\partial x} = w, \\quad \\frac{\\partial v}{\\partial b} = 1
+          $end:math:display$
+        </d-math>
 
-<hr />
+        <hr />
 
-<h2 id="8-dynamic-computation-graphs-define-by-run">8. Dynamic Computation Graphs (Define-by-Run)</h2>
+        <h2 id="8-dynamic-computation-graphs-define-by-run">8. Dynamic Computation Graphs (Define-by-Run)</h2>
 
-<p>PyTorch uses a <strong>dynamic computation graph</strong> approach, also called define-by-run. The graph is built on-the-fly during the forward pass, meaning you can use standard Python control flow (loops, conditionals) and the graph structure can change every iteration.</p>
+        <p>
+          PyTorch uses a <strong>dynamic computation graph</strong> approach, also called define-by-run. The graph is built on-the-fly during the
+          forward pass, meaning you can use standard Python control flow (loops, conditionals) and the graph structure can change every iteration.
+        </p>
 
-<p><strong>Key advantages:</strong></p>
+        <p><strong>Key advantages:</strong></p>
 
-<ul>
-  <li><strong>Flexibility</strong>: Different graph structures for different inputs (e.g., variable-length sequences, conditional branching)</li>
-  <li><strong>Debugging</strong>: Easier to debug with standard Python tools since execution is immediate</li>
-  <li><strong>Intuitive</strong>: Code reads like normal Python rather than symbolic graph construction</li>
-</ul>
+        <ul>
+          <li>
+            <strong>Flexibility</strong>: Different graph structures for different inputs (e.g., variable-length sequences, conditional branching)
+          </li>
+          <li><strong>Debugging</strong>: Easier to debug with standard Python tools since execution is immediate</li>
+          <li><strong>Intuitive</strong>: Code reads like normal Python rather than symbolic graph construction</li>
+        </ul>
 
-<p><strong>Contrast with static graphs</strong>
-(e.g., TensorFlow 1.x): Static frameworks require defining the entire graph upfront, then running it repeatedly. This can be more efficient for production but less flexible for research and prototyping.</p>
+        <p>
+          <strong>Contrast with static graphs</strong> (e.g., TensorFlow 1.x): Static frameworks require defining the entire graph upfront, then
+          running it repeatedly. This can be more efficient for production but less flexible for research and prototyping.
+        </p>
 
-<hr />
+        <hr />
 
-<h2 id="9-common-pytorch-pitfalls">9. Common PyTorch Pitfalls</h2>
+        <h2 id="9-common-pytorch-pitfalls">9. Common PyTorch Pitfalls</h2>
 
-<h3 id="pitfall-1-forgetting-to-zero-gradients">Pitfall 1: Forgetting to Zero Gradients</h3>
+        <h3 id="pitfall-1-forgetting-to-zero-gradients">Pitfall 1: Forgetting to Zero Gradients</h3>
 
-<p>Gradients accumulate by default in PyTorch. If you don’t call <code class="language-plaintext highlighter-rouge">optimizer.zero_grad()</code> before each backward pass, gradients from previous iterations will keep adding up, corrupting your parameter updates and causing training to diverge.</p>
+        <p>
+          Gradients accumulate by default in PyTorch. If you don’t call
+          <code class="language-plaintext highlighter-rouge">optimizer.zero_grad()</code> before each backward pass, gradients from previous
+          iterations will keep adding up, corrupting your parameter updates and causing training to diverge.
+        </p>
 
-<h3 id="pitfall-2-missing-torchno_grad-during-inference">Pitfall 2: Missing <code class="language-plaintext highlighter-rouge">torch.no_grad()</code> During Inference</h3>
+        <h3 id="pitfall-2-missing-torchno_grad-during-inference">
+          Pitfall 2: Missing <code class="language-plaintext highlighter-rouge">torch.no_grad()</code> During Inference
+        </h3>
 
-<p>During evaluation or inference, PyTorch still builds the computation graph by default, wasting memory and slowing down predictions by 2-3x. Always wrap inference code with <code class="language-plaintext highlighter-rouge">torch.no_grad()</code> to disable gradient tracking. Also remember to call <code class="language-plaintext highlighter-rouge">model.eval()</code> to switch dropout and batch normalization to evaluation mode.</p>
+        <p>
+          During evaluation or inference, PyTorch still builds the computation graph by default, wasting memory and slowing down predictions by 2-3x.
+          Always wrap inference code with <code class="language-plaintext highlighter-rouge">torch.no_grad()</code> to disable gradient tracking. Also
+          remember to call <code class="language-plaintext highlighter-rouge">model.eval()</code> to switch dropout and batch normalization to
+          evaluation mode.
+        </p>
 
-<hr />
+        <hr />
 
-<h2 id="10-summary">10. Summary</h2>
+        <h2 id="10-summary">10. Summary</h2>
 
-<ul>
-  <li>Computation graphs formalize dependencies and enable systematic application of the chain rule.</li>
-  <li>PyTorch builds these graphs dynamically and uses reverse-mode autodiff for efficient training.</li>
-  <li>Typical workflow: define model → forward pass → compute loss → backward → optimizer step.</li>
-</ul>
- </d-article>
+        <ul>
+          <li>Computation graphs formalize dependencies and enable systematic application of the chain rule.</li>
+          <li>PyTorch builds these graphs dynamically and uses reverse-mode autodiff for efficient training.</li>
+          <li>Typical workflow: define model → forward pass → compute loss → backward → optimizer step.</li>
+        </ul>
+      </d-article>
 
       <d-appendix>
         <d-footnote-list></d-footnote-list>
@@ -462,107 +476,82 @@ $end:math:display$
     </div>
 
     <footer class="site-footer">
-  <div class="wrapper">
-    <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
+      <div class="wrapper">
+        <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
 
-    <div class="footer-col-wrapper">
-      <div class="footer-col footer-col-1">
-        <ul class="contact-list">
-          <li class="p-name">Ben Lengerich</li><li>
-            <a class="u-email" href="mailto:TBD@wisc.edu"
-              >TBD@wisc.edu</a
-            >
-          </li></ul>
+        <div class="footer-col-wrapper">
+          <div class="footer-col footer-col-1">
+            <ul class="contact-list">
+              <li class="p-name">Ben Lengerich</li>
+              <li>
+                <a class="u-email" href="mailto:TBD@wisc.edu">TBD@wisc.edu</a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="footer-col footer-col-2">
+            <ul class="social-media-list">
+              <li>
+                <a href="https://github.com/AdaptInfer" target="_blank"><i class="fab fa-github"></i> <span class="username">AdaptInfer</span></a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="footer-col footer-col-3">
+            <p>
+              &copy; Copyright 2025 University of Wisconsin.
+              <br />
+            </p>
+          </div>
+        </div>
       </div>
-
-      <div class="footer-col footer-col-2"><ul class="social-media-list"><li>
-    <a
-      href="https://github.com/AdaptInfer"
-      target="_blank"
-      ><i class="fab fa-github"></i>
-      <span class="username">AdaptInfer</span></a
-    >
-  </li></ul>
-</div>
-
-      <div class="footer-col footer-col-3">
-        <p>
-          &copy; Copyright 2025 University of Wisconsin.
-          <br />
-          
-        </p>
-      </div>
-    </div>
-  </div>
-</footer>
-
+    </footer>
   </body>
 
-  <d-bibliography
-    src="/dgm-fall-2025/assets/bibliography/2025-09-22-lecture-06.bib"
-  >
-  </d-bibliography>
+  <d-bibliography src="/dgm-fall-2025/assets/bibliography/2025-09-22-lecture-06.bib"> </d-bibliography>
 
   <!-- Load jQuery -->
-<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
 
-<!-- Load Common JS -->
-<script src="/dgm-fall-2025/assets/js/common.js"></script>
+  <!-- Load Common JS -->
+  <script src="/dgm-fall-2025/assets/js/common.js"></script>
 
+  <!-- Load KaTeX -->
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css" />
+  <script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+  <script src="/dgm-fall-2025/assets/js/katex.js"></script>
 
-<!-- Load KaTeX -->
-<link
-  rel="stylesheet"
-  href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css"
-/>
-<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
-<script src="/dgm-fall-2025/assets/js/katex.js"></script>
- 
-<!-- Load Anchor JS -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
-<script>
-  anchors.options.visible = "hover";
-  anchors.add("article h2, article h3, article h4, article h5, article h6");
-</script>
- 
-<!-- Adjust LaTeX JS -->
-<script src="/dgm-fall-2025/assets/js/latex.js"></script>
+  <!-- Load Anchor JS -->
+  <script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+  <script>
+    anchors.options.visible = "hover";
+    anchors.add("article h2, article h3, article h4, article h5, article h6");
+  </script>
 
+  <!-- Adjust LaTeX JS -->
+  <script src="/dgm-fall-2025/assets/js/latex.js"></script>
 
-<!-- Include custom icon fonts -->
-<link
-  rel="stylesheet"
-  href="/dgm-fall-2025/assets/css/fontawesome-all.min.css"
-/>
-<link
-  rel="stylesheet"
-  href="/dgm-fall-2025/assets/css/academicons.min.css"
-/>
+  <!-- Include custom icon fonts -->
+  <link rel="stylesheet" href="/dgm-fall-2025/assets/css/fontawesome-all.min.css" />
+  <link rel="stylesheet" href="/dgm-fall-2025/assets/css/academicons.min.css" />
 
-<!-- Google Analytics -->
-<script>
-  (function (i, s, o, g, r, a, m) {
-    i["GoogleAnalyticsObject"] = r;
-    ((i[r] =
-      i[r] ||
-      function () {
-        (i[r].q = i[r].q || []).push(arguments);
-      }),
-      (i[r].l = 1 * new Date()));
-    ((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
-    a.async = 1;
-    a.src = g;
-    m.parentNode.insertBefore(a, m);
-  })(
-    window,
-    document,
-    "script",
-    "//www.google-analytics.com/analytics.js",
-    "ga",
-  );
+  <!-- Google Analytics -->
+  <script>
+    (function (i, s, o, g, r, a, m) {
+      i["GoogleAnalyticsObject"] = r;
+      (i[r] =
+        i[r] ||
+        function () {
+          (i[r].q = i[r].q || []).push(arguments);
+        }),
+        (i[r].l = 1 * new Date());
+      (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+      a.async = 1;
+      a.src = g;
+      m.parentNode.insertBefore(a, m);
+    })(window, document, "script", "//www.google-analytics.com/analytics.js", "ga");
 
-  ga("create", "", "auto");
-  ga("send", "pageview");
-</script>
-
+    ga("create", "", "auto");
+    ga("send", "pageview");
+  </script>
 </html>

@@ -2,35 +2,28 @@
 <html>
   <head>
     <head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="content-language" content="en" />
-  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-  <meta name="viewport" content="width=device-width initial-scale=1.0" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+      <meta charset="UTF-8" />
+      <meta http-equiv="content-language" content="en" />
+      <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+      <meta name="viewport" content="width=device-width initial-scale=1.0" />
+      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-  <title>
-    STAT 453 | Lecture 02
-  </title>
-  <meta name="description" content="STAT 453 - University of Wisconsin-Madison - Fall 2025
-" />
+      <title>STAT 453 | Lecture 02</title>
+      <meta
+        name="description"
+        content="STAT 453 - University of Wisconsin-Madison - Fall 2025
+"
+      />
 
-  <link
-    rel="shortcut icon"
-    href="/dgm-fall-2025/assets/img/favicon.ico"
-  />
+      <link rel="shortcut icon" href="/dgm-fall-2025/assets/img/favicon.ico" />
 
-  <link rel="stylesheet" href="/dgm-fall-2025/assets/css/main.css" />
-  <link
-    rel="canonical"
-    href="/dgm-fall-2025/notes/lecture-02/"
-  />
+      <link rel="stylesheet" href="/dgm-fall-2025/assets/css/main.css" />
+      <link rel="canonical" href="/dgm-fall-2025/notes/lecture-02/" />
 
-  
-  <!-- Load Latex JS -->
-  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
-  
-</head>
+      <!-- Load Latex JS -->
+      <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+    </head>
 
     <script src="/dgm-fall-2025/assets/js/distillpub/template.v2.js"></script>
     <script src="/dgm-fall-2025/assets/js/distillpub/transforms.v2.js"></script>
@@ -39,111 +32,94 @@
   <d-front-matter>
     <script type="text/json">
       {
-            "title": "Lecture 02",
-            "description": "A Brief History of Deep Learning",
-            "published": "September 8, 2025",
-            "lecturers": [
-              
-              {
-                "lecturer": "Ben Lengerich",
-                "lecturerURL": "https://adaptinfer.org/"
-              }
-              
-            ],
-            "authors": [
-              
-              {
-                "author": "Aster Bi"
-              },
-              
-              {
-                "author": ""
-              },
-              
-              {
-                "author": "Mridula Geddam"
-              },
-              
-              {
-                "author": ""
-              }
-              
-            ],
-            "editors": [
-              
-              {
-                "editor": "Abel Zewdie"
-              }
-              
-            ],
-            "katex": {
-              "delimiters": [
-                {
-                  "left": "$",
-                  "right": "$",
-                  "display": false
-                },
-                {
-                  "left": "$$",
-                  "right": "$$",
-                  "display": true
-                }
-              ]
-            }
+        "title": "Lecture 02",
+        "description": "A Brief History of Deep Learning",
+        "published": "September 8, 2025",
+        "lecturers": [
+          {
+            "lecturer": "Ben Lengerich",
+            "lecturerURL": "https://adaptinfer.org/"
           }
+        ],
+        "authors": [
+          {
+            "author": "Aster Bi"
+          },
+
+          {
+            "author": ""
+          },
+
+          {
+            "author": "Mridula Geddam"
+          },
+
+          {
+            "author": ""
+          }
+        ],
+        "editors": [
+          {
+            "editor": "Abel Zewdie"
+          }
+        ],
+        "katex": {
+          "delimiters": [
+            {
+              "left": "$",
+              "right": "$",
+              "display": false
+            },
+            {
+              "left": "$$",
+              "right": "$$",
+              "display": true
+            }
+          ]
+        }
+      }
     </script>
   </d-front-matter>
 
   <body>
     <header class="site-header">
-  <div class="wrapper">
-    <span class="site-title">
-      <a class="page-link" href="https://adaptinfer.org/dgm-fall-2025/"
-        >STAT 453</a
-      >
-    </span>
-
-    <nav class="site-nav">
-      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
-      <label for="nav-trigger">
-        <span class="menu-icon">
-          <svg viewBox="0 0 18 15" width="18px" height="15px">
-            <path
-              fill="#424242"
-              d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
-            />
-            <path
-              fill="#424242"
-              d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
-            />
-            <path
-              fill="#424242"
-              d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
-            />
-          </svg>
+      <div class="wrapper">
+        <span class="site-title">
+          <a class="page-link" href="https://adaptinfer.org/dgm-fall-2025/">STAT 453</a>
         </span>
-      </label>
 
-      <div class="trigger">
-        <a class="page-link" href="/dgm-fall-2025/logistics/"
-          >logistics</a
-        >
-        <a class="page-link" href="/dgm-fall-2025/lectures/"
-          >lectures</a
-        >
-        <a class="page-link" href="/dgm-fall-2025/notes/">notes</a>
-        <a class="page-link" href="/dgm-fall-2025/calendar/"
-          >calendar</a
-        >
-        <a class="page-link" href="/dgm-fall-2025/homework/"
-          >homework</a
-        >
-        <a class="page-link" href="/dgm-fall-2025/project/">project</a>
+        <nav class="site-nav">
+          <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+          <label for="nav-trigger">
+            <span class="menu-icon">
+              <svg viewBox="0 0 18 15" width="18px" height="15px">
+                <path
+                  fill="#424242"
+                  d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
+                />
+                <path
+                  fill="#424242"
+                  d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
+                />
+                <path
+                  fill="#424242"
+                  d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
+                />
+              </svg>
+            </span>
+          </label>
+
+          <div class="trigger">
+            <a class="page-link" href="/dgm-fall-2025/logistics/">logistics</a>
+            <a class="page-link" href="/dgm-fall-2025/lectures/">lectures</a>
+            <a class="page-link" href="/dgm-fall-2025/notes/">notes</a>
+            <a class="page-link" href="/dgm-fall-2025/calendar/">calendar</a>
+            <a class="page-link" href="/dgm-fall-2025/homework/">homework</a>
+            <a class="page-link" href="/dgm-fall-2025/project/">project</a>
+          </div>
+        </nav>
       </div>
-    </nav>
-  </div>
-</header>
-
+    </header>
 
     <div class="page-content">
       <d-title>
@@ -153,278 +129,279 @@
 
       <d-byline></d-byline>
 
-      <d-article> <blockquote>
-  <p><strong>Course:</strong> STAT 453 — Introduction to Deep Learning and Generative Models<br />
-<strong>Lecture:</strong> 02 — A Brief History of Deep Learning<br />
-<strong>Lecturer:</strong> Ben Lengerich<br />
-<strong>Notes prepared and improved by:</strong> Abel Zewdie</p>
-</blockquote>
-
-<hr />
-
-<h2 id="reminders">Reminders</h2>
-
-<ul>
-  <li>If you intend to scribe for a class lecture, only sign up <strong>once</strong>.</li>
-  <li>All recorded lectures are available on <strong>Kaltura</strong>.</li>
-  <li><strong>HW1</strong> is posted on the course website.
-    <ul>
-      <li><strong>Due:</strong> September 19 (via Canvas)</li>
-      <li><strong>Assignment:</strong> Implement a perceptron in Python (basic one-layer neural network).</li>
-    </ul>
-  </li>
-</ul>
-
-<hr />
-
-<h2 id="recap-what-is-machine-learning">Recap: What Is Machine Learning?</h2>
-
-<p>Formally, a computer program is said to <strong>learn</strong> from experience<br />
-( \mathcal{E} ), with respect to some task ( \mathcal{T} ) and performance
-measure ( \mathcal{P} ), if its performance at ( \mathcal{T} ), as measured
-by ( \mathcal{P} ), improves with ( \mathcal{E} ).</p>
-
-<figure>
-  <img src="../../assets/img/notes/lecture-02/Recap.png" alt="Definition of machine learning" />
-</figure>
-
-<hr />
+      <d-article>
+        <blockquote>
+          <p>
+            <strong>Course:</strong> STAT 453 — Introduction to Deep Learning and Generative Models<br />
+            <strong>Lecture:</strong> 02 — A Brief History of Deep Learning<br />
+            <strong>Lecturer:</strong> Ben Lengerich<br />
+            <strong>Notes prepared and improved by:</strong> Abel Zewdie
+          </p>
+        </blockquote>
+
+        <hr />
+
+        <h2 id="reminders">Reminders</h2>
+
+        <ul>
+          <li>If you intend to scribe for a class lecture, only sign up <strong>once</strong>.</li>
+          <li>All recorded lectures are available on <strong>Kaltura</strong>.</li>
+          <li>
+            <strong>HW1</strong> is posted on the course website.
+            <ul>
+              <li><strong>Due:</strong> September 19 (via Canvas)</li>
+              <li><strong>Assignment:</strong> Implement a perceptron in Python (basic one-layer neural network).</li>
+            </ul>
+          </li>
+        </ul>
+
+        <hr />
+
+        <h2 id="recap-what-is-machine-learning">Recap: What Is Machine Learning?</h2>
+
+        <p>
+          Formally, a computer program is said to <strong>learn</strong> from experience<br />
+          ( \mathcal{E} ), with respect to some task ( \mathcal{T} ) and performance measure ( \mathcal{P} ), if its performance at ( \mathcal{T} ),
+          as measured by ( \mathcal{P} ), improves with ( \mathcal{E} ).
+        </p>
+
+        <figure>
+          <img src="../../assets/img/notes/lecture-02/Recap.png" alt="Definition of machine learning" />
+        </figure>
 
-<h2 id="data-representation">Data Representation</h2>
+        <hr />
 
-<h3 id="structured-data">Structured Data</h3>
+        <h2 id="data-representation">Data Representation</h2>
 
-<ul>
-  <li>Stacking feature vectors results in a <strong>feature (design) matrix</strong></li>
-  <li>( n ): number of samples</li>
-  <li>( m ): number of features</li>
-</ul>
-
-<h3 id="unstructured-data">Unstructured Data</h3>
+        <h3 id="structured-data">Structured Data</h3>
+
+        <ul>
+          <li>Stacking feature vectors results in a <strong>feature (design) matrix</strong></li>
+          <li>( n ): number of samples</li>
+          <li>( m ): number of features</li>
+        </ul>
 
-<ul>
-  <li>Images consist of raw pixel values and are not naturally labeled</li>
-  <li><strong>Convolutional Neural Networks (CNNs)</strong> represent image data as:
-    <ul>
-      <li>1st dimension: number of samples</li>
-      <li>2nd dimension: number of channels (1 = grayscale, 3 = RGB)</li>
-      <li>3rd and 4th dimensions: height and width</li>
-    </ul>
-  </li>
-  <li>This format is known as <strong>NCHW representation</strong></li>
-</ul>
+        <h3 id="unstructured-data">Unstructured Data</h3>
 
-<hr />
+        <ul>
+          <li>Images consist of raw pixel values and are not naturally labeled</li>
+          <li>
+            <strong>Convolutional Neural Networks (CNNs)</strong> represent image data as:
+            <ul>
+              <li>1st dimension: number of samples</li>
+              <li>2nd dimension: number of channels (1 = grayscale, 3 = RGB)</li>
+              <li>3rd and 4th dimensions: height and width</li>
+            </ul>
+          </li>
+          <li>This format is known as <strong>NCHW representation</strong></li>
+        </ul>
 
-<h2 id="machine-learning-jargon">Machine Learning Jargon</h2>
+        <hr />
 
-<ul>
-  <li><strong>Training a model:</strong> fitting / parameterizing a model / learning from data</li>
-  <li><strong>Training example:</strong> record, instance, sample</li>
-  <li><strong>Feature:</strong> observation, predictor, input, independent variable, covariate</li>
-  <li><strong>Target:</strong> outcome, ground truth, output, response variable, label</li>
-  <li><strong>Prediction:</strong> the model’s estimate of the target</li>
-</ul>
+        <h2 id="machine-learning-jargon">Machine Learning Jargon</h2>
 
-<hr />
+        <ul>
+          <li><strong>Training a model:</strong> fitting / parameterizing a model / learning from data</li>
+          <li><strong>Training example:</strong> record, instance, sample</li>
+          <li><strong>Feature:</strong> observation, predictor, input, independent variable, covariate</li>
+          <li><strong>Target:</strong> outcome, ground truth, output, response variable, label</li>
+          <li><strong>Prediction:</strong> the model’s estimate of the target</li>
+        </ul>
 
-<h2 id="history-of-machine-learning">History of Machine Learning</h2>
+        <hr />
 
-<figure>
-  <img src="../../assets/img/notes/lecture-02/lec2-1.png" alt="Timeline of machine learning methods" />
-</figure>
+        <h2 id="history-of-machine-learning">History of Machine Learning</h2>
 
-<ul>
-  <li><strong>Perceptrons:</strong> Simple one-layer networks; early optimism</li>
-  <li><strong>k-Nearest Neighbors (kNN):</strong> Learning via similarity-based lookup</li>
-  <li><strong>Decision Trees:</strong> Deterministic and interpretable models</li>
-  <li><strong>Neural Networks:</strong> Renewed interest after early skepticism</li>
-  <li><strong>AI Winter (1990s–2000s):</strong> Neural networks underperformed, but research continued</li>
-  <li><strong>Deep Neural Networks:</strong> Enabled by improved hardware and large datasets</li>
-  <li><strong>Overparameterized Models:</strong> Inductive biases guide learning despite weak classical guarantees</li>
-</ul>
+        <figure>
+          <img src="../../assets/img/notes/lecture-02/lec2-1.png" alt="Timeline of machine learning methods" />
+        </figure>
 
-<figure>
-  <img src="../../assets/img/notes/lecture-02/lec2-2.png" alt="Historical trends in neural networks" />
-</figure>
+        <ul>
+          <li><strong>Perceptrons:</strong> Simple one-layer networks; early optimism</li>
+          <li><strong>k-Nearest Neighbors (kNN):</strong> Learning via similarity-based lookup</li>
+          <li><strong>Decision Trees:</strong> Deterministic and interpretable models</li>
+          <li><strong>Neural Networks:</strong> Renewed interest after early skepticism</li>
+          <li><strong>AI Winter (1990s–2000s):</strong> Neural networks underperformed, but research continued</li>
+          <li><strong>Deep Neural Networks:</strong> Enabled by improved hardware and large datasets</li>
+          <li><strong>Overparameterized Models:</strong> Inductive biases guide learning despite weak classical guarantees</li>
+        </ul>
 
-<hr />
+        <figure>
+          <img src="../../assets/img/notes/lecture-02/lec2-2.png" alt="Historical trends in neural networks" />
+        </figure>
 
-<h2 id="artificial-neurons-and-perceptrons">Artificial Neurons and Perceptrons</h2>
+        <hr />
 
-<p>Neural computation models were first discussed in <strong>1943</strong> by McCulloch and Pitts.</p>
+        <h2 id="artificial-neurons-and-perceptrons">Artificial Neurons and Perceptrons</h2>
 
-<figure>
-  <img src="../../assets/img/notes/lecture-02/lec2-2.png" alt="McCulloch-Pitts neuron model" />
-</figure>
+        <p>Neural computation models were first discussed in <strong>1943</strong> by McCulloch and Pitts.</p>
 
-<ul>
-  <li>Inspired by neuroscience</li>
-  <li>Inputs with fixed weights (+1, −1) and a threshold</li>
-  <li>Distinction between excitatory and inhibitory signals</li>
-</ul>
+        <figure>
+          <img src="../../assets/img/notes/lecture-02/lec2-2.png" alt="McCulloch-Pitts neuron model" />
+        </figure>
 
-<h3 id="perceptrons">Perceptrons</h3>
+        <ul>
+          <li>Inspired by neuroscience</li>
+          <li>Inputs with fixed weights (+1, −1) and a threshold</li>
+          <li>Distinction between excitatory and inhibitory signals</li>
+        </ul>
 
-<figure>
-  <img src="../../assets/img/notes/lecture-02/lec2-3.png" alt="Perceptron model" />
-</figure>
+        <h3 id="perceptrons">Perceptrons</h3>
 
-<ul>
-  <li>Inputs are linearly combined and passed through an activation function</li>
-  <li>Common activations include <strong>sigmoid</strong> and <strong>tanh</strong></li>
-  <li>Regression view: ( f: X \rightarrow Y ) for scalar ( Y )</li>
-</ul>
+        <figure>
+          <img src="../../assets/img/notes/lecture-02/lec2-3.png" alt="Perceptron model" />
+        </figure>
 
-<p>Assume:</p>
+        <ul>
+          <li>Inputs are linearly combined and passed through an activation function</li>
+          <li>Common activations include <strong>sigmoid</strong> and <strong>tanh</strong></li>
+          <li>Regression view: ( f: X \rightarrow Y ) for scalar ( Y )</li>
+        </ul>
 
-<p>[
-Y \sim \mathcal{N}(f(x), \Sigma^2)
-]</p>
+        <p>Assume:</p>
 
-<p>Then maximizing likelihood is equivalent to minimizing squared error:</p>
+        <p>[ Y \sim \mathcal{N}(f(x), \Sigma^2) ]</p>
 
-<p>[
-\arg\min_w \sum_i \frac{1}{2}(y_i - f(x_i; w))^2
-]</p>
+        <p>Then maximizing likelihood is equivalent to minimizing squared error:</p>
 
-<p>Weight update rule:</p>
+        <p>[ \arg\min_w \sum_i \frac{1}{2}(y_i - f(x_i; w))^2 ]</p>
 
-<p>[
-w_d = w_d + \eta \sum_i (y_i - o_i)\, o_i(1 - o_i)\, x_d^i
-]</p>
+        <p>Weight update rule:</p>
 
-<ul>
-  <li><strong>Residual:</strong> ( y_i - o_i )</li>
-  <li>( o_i(1 - o_i) ) is maximized at ( o_i = 0.5 )</li>
-  <li>Larger residual and uncertainty lead to larger parameter updates</li>
-</ul>
+        <p>[ w_d = w_d + \eta \sum_i (y_i - o_i)\, o_i(1 - o_i)\, x_d^i ]</p>
 
-<hr />
+        <ul>
+          <li><strong>Residual:</strong> ( y_i - o_i )</li>
+          <li>( o_i(1 - o_i) ) is maximized at ( o_i = 0.5 )</li>
+          <li>Larger residual and uncertainty lead to larger parameter updates</li>
+        </ul>
 
-<h2 id="can-a-perceptron-represent-xor">Can a Perceptron Represent XOR?</h2>
+        <hr />
 
-<p><strong>Answer:</strong> No.</p>
+        <h2 id="can-a-perceptron-represent-xor">Can a Perceptron Represent XOR?</h2>
 
-<p>Assume weights ( w_1, w_2 ) exist such that:</p>
+        <p><strong>Answer:</strong> No.</p>
 
-<ul>
-  <li>If ( x_1 = x_2 ), then<br />
-( \sigma(w_1 x_1 + w_2 x_2) &lt; \theta )</li>
-  <li>If ( x_1 \neq x_2 ), then<br />
-( \sigma(w_1 x_1 + w_2 x_2) \ge \theta )</li>
-</ul>
+        <p>Assume weights ( w_1, w_2 ) exist such that:</p>
 
-<p>This leads to a contradiction when all XOR cases are considered.</p>
+        <ul>
+          <li>
+            If ( x_1 = x_2 ), then<br />
+            ( \sigma(w_1 x_1 + w_2 x_2) &lt; \theta )
+          </li>
+          <li>
+            If ( x_1 \neq x_2 ), then<br />
+            ( \sigma(w_1 x_1 + w_2 x_2) \ge \theta )
+          </li>
+        </ul>
 
-<p><strong>Conclusion:</strong> XOR is <strong>not linearly separable</strong>, so a single-layer perceptron cannot represent it.</p>
+        <p>This leads to a contradiction when all XOR cases are considered.</p>
 
-<hr />
+        <p><strong>Conclusion:</strong> XOR is <strong>not linearly separable</strong>, so a single-layer perceptron cannot represent it.</p>
 
-<h2 id="backpropagation">Backpropagation</h2>
+        <hr />
 
-<h3 id="neural-networks-as-computation-graphs">Neural Networks as Computation Graphs</h3>
+        <h2 id="backpropagation">Backpropagation</h2>
 
-<p>Neural networks can be viewed as compositions of functions represented as computation graphs.</p>
+        <h3 id="neural-networks-as-computation-graphs">Neural Networks as Computation Graphs</h3>
 
-<figure>
-  <img src="../../assets/img/notes/lecture-02/fig-computation-graph.png" alt="Computation graph" />
-</figure>
+        <p>Neural networks can be viewed as compositions of functions represented as computation graphs.</p>
 
-<p>Using the chain rule and working backward:</p>
+        <figure>
+          <img src="../../assets/img/notes/lecture-02/fig-computation-graph.png" alt="Computation graph" />
+        </figure>
 
-<p>[
-\frac{\partial f_n}{\partial x}
-= \sum_{i \in \pi(n)} \frac{\partial f_n}{\partial f_i}
-  \frac{\partial f_i}{\partial x}
-]</p>
+        <p>Using the chain rule and working backward:</p>
 
-<ul>
-  <li>Discovered independently by multiple groups</li>
-  <li>Formalized by <strong>Rumelhart, Hinton, and Williams (1986)</strong></li>
-  <li>Sparked renewed progress in neural networks</li>
-</ul>
+        <p>[ \frac{\partial f_n}{\partial x} = \sum_{i \in \pi(n)} \frac{\partial f_n}{\partial f_i} \frac{\partial f_i}{\partial x} ]</p>
 
-<hr />
+        <ul>
+          <li>Discovered independently by multiple groups</li>
+          <li>Formalized by <strong>Rumelhart, Hinton, and Williams (1986)</strong></li>
+          <li>Sparked renewed progress in neural networks</li>
+        </ul>
 
-<h2 id="about-the-term-deep-learning">About the Term “Deep Learning”</h2>
+        <hr />
 
-<blockquote>
-  <p>“Representation learning is a set of methods that allows a machine to be fed
-with raw data and to automatically discover the representations needed for
-detection or classification. Deep learning methods are representation-learning
-methods with multiple levels of representation.”</p>
+        <h2 id="about-the-term-deep-learning">About the Term “Deep Learning”</h2>
 
-  <p>— LeCun, Bengio, &amp; Hinton (2015)</p>
-</blockquote>
+        <blockquote>
+          <p>
+            “Representation learning is a set of methods that allows a machine to be fed with raw data and to automatically discover the
+            representations needed for detection or classification. Deep learning methods are representation-learning methods with multiple levels of
+            representation.”
+          </p>
 
-<hr />
+          <p>— LeCun, Bengio, &amp; Hinton (2015)</p>
+        </blockquote>
 
-<h2 id="activation-functions">Activation Functions</h2>
+        <hr />
 
-<figure>
-  <img src="../../assets/img/notes/lecture-02/lec2-7.png" alt="Activation functions" />
-</figure>
+        <h2 id="activation-functions">Activation Functions</h2>
 
-<ul>
-  <li>If all layers are linear, the entire model is linear</li>
-  <li><strong>ReLU:</strong> most commonly used in modern deep learning</li>
-  <li><strong>Sigmoid:</strong> bounded between 0 and 1 and interpretable as a probability</li>
-</ul>
+        <figure>
+          <img src="../../assets/img/notes/lecture-02/lec2-7.png" alt="Activation functions" />
+        </figure>
 
-<hr />
+        <ul>
+          <li>If all layers are linear, the entire model is linear</li>
+          <li><strong>ReLU:</strong> most commonly used in modern deep learning</li>
+          <li><strong>Sigmoid:</strong> bounded between 0 and 1 and interpretable as a probability</li>
+        </ul>
 
-<h2 id="hardware">Hardware</h2>
+        <hr />
 
-<figure>
-  <img src="../../assets/img/notes/lecture-02/lec2-8.png" alt="CPU vs GPU" />
-</figure>
+        <h2 id="hardware">Hardware</h2>
 
-<h3 id="cpu">CPU</h3>
-<ul>
-  <li>Centralized control</li>
-  <li>Local cache memory</li>
-</ul>
+        <figure>
+          <img src="../../assets/img/notes/lecture-02/lec2-8.png" alt="CPU vs GPU" />
+        </figure>
 
-<h3 id="gpu">GPU</h3>
-<ul>
-  <li>Optimized for matrix multiplication</li>
-  <li>Shared control and cache across cores</li>
-  <li>Highly parallel and fast data transfer</li>
-</ul>
+        <h3 id="cpu">CPU</h3>
+        <ul>
+          <li>Centralized control</li>
+          <li>Local cache memory</li>
+        </ul>
 
-<hr />
+        <h3 id="gpu">GPU</h3>
+        <ul>
+          <li>Optimized for matrix multiplication</li>
+          <li>Shared control and cache across cores</li>
+          <li>Highly parallel and fast data transfer</li>
+        </ul>
 
-<h2 id="large-scale-unsupervised-learning">Large-Scale Unsupervised Learning</h2>
+        <hr />
 
-<p><strong>From GPT-1 (2018) to GPT-4):</strong></p>
+        <h2 id="large-scale-unsupervised-learning">Large-Scale Unsupervised Learning</h2>
 
-<ul>
-  <li>Parameters: 1.5B → &gt;1T</li>
-  <li>Layers: 12 → &gt;96</li>
-  <li>Attention heads: 12 → &gt;96</li>
-  <li>Embedding dimension: 768 → &gt;12,288</li>
-  <li>Context length: 512 → 128k</li>
-  <li>Vocabulary: 40k → &gt;50k tokens</li>
-  <li>Multimodal tokenization (e.g., image patches)</li>
-  <li>Mixture-of-Experts architectures</li>
-  <li>Training data: ~5GB → ~50TB</li>
-  <li>Reinforcement learning for alignment</li>
-</ul>
+        <p><strong>From GPT-1 (2018) to GPT-4):</strong></p>
 
-<hr />
+        <ul>
+          <li>Parameters: 1.5B → &gt;1T</li>
+          <li>Layers: 12 → &gt;96</li>
+          <li>Attention heads: 12 → &gt;96</li>
+          <li>Embedding dimension: 768 → &gt;12,288</li>
+          <li>Context length: 512 → 128k</li>
+          <li>Vocabulary: 40k → &gt;50k tokens</li>
+          <li>Multimodal tokenization (e.g., image patches)</li>
+          <li>Mixture-of-Experts architectures</li>
+          <li>Training data: ~5GB → ~50TB</li>
+          <li>Reinforcement learning for alignment</li>
+        </ul>
 
-<h2 id="open-directions">Open Directions</h2>
+        <hr />
 
-<ul>
-  <li>Verifiable rewards (e.g., code and math correctness)</li>
-  <li>Vision–language multimodal models</li>
-  <li>Large-scale reinforcement learning</li>
-  <li>Model uncertainty and hallucinations</li>
-  <li>Model editing and interpretability</li>
-  <li>Model synthesis and communication</li>
-</ul>
- </d-article>
+        <h2 id="open-directions">Open Directions</h2>
+
+        <ul>
+          <li>Verifiable rewards (e.g., code and math correctness)</li>
+          <li>Vision–language multimodal models</li>
+          <li>Large-scale reinforcement learning</li>
+          <li>Model uncertainty and hallucinations</li>
+          <li>Model editing and interpretability</li>
+          <li>Model synthesis and communication</li>
+        </ul>
+      </d-article>
 
       <d-appendix>
         <d-footnote-list></d-footnote-list>
@@ -433,107 +410,82 @@ methods with multiple levels of representation.”</p>
     </div>
 
     <footer class="site-footer">
-  <div class="wrapper">
-    <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
+      <div class="wrapper">
+        <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
 
-    <div class="footer-col-wrapper">
-      <div class="footer-col footer-col-1">
-        <ul class="contact-list">
-          <li class="p-name">Ben Lengerich</li><li>
-            <a class="u-email" href="mailto:TBD@wisc.edu"
-              >TBD@wisc.edu</a
-            >
-          </li></ul>
+        <div class="footer-col-wrapper">
+          <div class="footer-col footer-col-1">
+            <ul class="contact-list">
+              <li class="p-name">Ben Lengerich</li>
+              <li>
+                <a class="u-email" href="mailto:TBD@wisc.edu">TBD@wisc.edu</a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="footer-col footer-col-2">
+            <ul class="social-media-list">
+              <li>
+                <a href="https://github.com/AdaptInfer" target="_blank"><i class="fab fa-github"></i> <span class="username">AdaptInfer</span></a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="footer-col footer-col-3">
+            <p>
+              &copy; Copyright 2025 University of Wisconsin.
+              <br />
+            </p>
+          </div>
+        </div>
       </div>
-
-      <div class="footer-col footer-col-2"><ul class="social-media-list"><li>
-    <a
-      href="https://github.com/AdaptInfer"
-      target="_blank"
-      ><i class="fab fa-github"></i>
-      <span class="username">AdaptInfer</span></a
-    >
-  </li></ul>
-</div>
-
-      <div class="footer-col footer-col-3">
-        <p>
-          &copy; Copyright 2025 University of Wisconsin.
-          <br />
-          
-        </p>
-      </div>
-    </div>
-  </div>
-</footer>
-
+    </footer>
   </body>
 
-  <d-bibliography
-    src="/dgm-fall-2025/assets/bibliography/2025-09-08-lecture-02.bib"
-  >
-  </d-bibliography>
+  <d-bibliography src="/dgm-fall-2025/assets/bibliography/2025-09-08-lecture-02.bib"> </d-bibliography>
 
   <!-- Load jQuery -->
-<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
 
-<!-- Load Common JS -->
-<script src="/dgm-fall-2025/assets/js/common.js"></script>
+  <!-- Load Common JS -->
+  <script src="/dgm-fall-2025/assets/js/common.js"></script>
 
+  <!-- Load KaTeX -->
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css" />
+  <script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+  <script src="/dgm-fall-2025/assets/js/katex.js"></script>
 
-<!-- Load KaTeX -->
-<link
-  rel="stylesheet"
-  href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css"
-/>
-<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
-<script src="/dgm-fall-2025/assets/js/katex.js"></script>
- 
-<!-- Load Anchor JS -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
-<script>
-  anchors.options.visible = "hover";
-  anchors.add("article h2, article h3, article h4, article h5, article h6");
-</script>
- 
-<!-- Adjust LaTeX JS -->
-<script src="/dgm-fall-2025/assets/js/latex.js"></script>
+  <!-- Load Anchor JS -->
+  <script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+  <script>
+    anchors.options.visible = "hover";
+    anchors.add("article h2, article h3, article h4, article h5, article h6");
+  </script>
 
+  <!-- Adjust LaTeX JS -->
+  <script src="/dgm-fall-2025/assets/js/latex.js"></script>
 
-<!-- Include custom icon fonts -->
-<link
-  rel="stylesheet"
-  href="/dgm-fall-2025/assets/css/fontawesome-all.min.css"
-/>
-<link
-  rel="stylesheet"
-  href="/dgm-fall-2025/assets/css/academicons.min.css"
-/>
+  <!-- Include custom icon fonts -->
+  <link rel="stylesheet" href="/dgm-fall-2025/assets/css/fontawesome-all.min.css" />
+  <link rel="stylesheet" href="/dgm-fall-2025/assets/css/academicons.min.css" />
 
-<!-- Google Analytics -->
-<script>
-  (function (i, s, o, g, r, a, m) {
-    i["GoogleAnalyticsObject"] = r;
-    ((i[r] =
-      i[r] ||
-      function () {
-        (i[r].q = i[r].q || []).push(arguments);
-      }),
-      (i[r].l = 1 * new Date()));
-    ((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
-    a.async = 1;
-    a.src = g;
-    m.parentNode.insertBefore(a, m);
-  })(
-    window,
-    document,
-    "script",
-    "//www.google-analytics.com/analytics.js",
-    "ga",
-  );
+  <!-- Google Analytics -->
+  <script>
+    (function (i, s, o, g, r, a, m) {
+      i["GoogleAnalyticsObject"] = r;
+      (i[r] =
+        i[r] ||
+        function () {
+          (i[r].q = i[r].q || []).push(arguments);
+        }),
+        (i[r].l = 1 * new Date());
+      (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+      a.async = 1;
+      a.src = g;
+      m.parentNode.insertBefore(a, m);
+    })(window, document, "script", "//www.google-analytics.com/analytics.js", "ga");
 
-  ga("create", "", "auto");
-  ga("send", "pageview");
-</script>
-
+    ga("create", "", "auto");
+    ga("send", "pageview");
+  </script>
 </html>

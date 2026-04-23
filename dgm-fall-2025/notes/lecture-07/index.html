@@ -2,35 +2,28 @@
 <html>
   <head>
     <head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="content-language" content="en" />
-  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-  <meta name="viewport" content="width=device-width initial-scale=1.0" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+      <meta charset="UTF-8" />
+      <meta http-equiv="content-language" content="en" />
+      <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+      <meta name="viewport" content="width=device-width initial-scale=1.0" />
+      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-  <title>
-    STAT 453 | Lecture 07
-  </title>
-  <meta name="description" content="STAT 453 - University of Wisconsin-Madison - Fall 2025
-" />
+      <title>STAT 453 | Lecture 07</title>
+      <meta
+        name="description"
+        content="STAT 453 - University of Wisconsin-Madison - Fall 2025
+"
+      />
 
-  <link
-    rel="shortcut icon"
-    href="/dgm-fall-2025/assets/img/favicon.ico"
-  />
+      <link rel="shortcut icon" href="/dgm-fall-2025/assets/img/favicon.ico" />
 
-  <link rel="stylesheet" href="/dgm-fall-2025/assets/css/main.css" />
-  <link
-    rel="canonical"
-    href="/dgm-fall-2025/notes/lecture-07/"
-  />
+      <link rel="stylesheet" href="/dgm-fall-2025/assets/css/main.css" />
+      <link rel="canonical" href="/dgm-fall-2025/notes/lecture-07/" />
 
-  
-  <!-- Load Latex JS -->
-  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
-  
-</head>
+      <!-- Load Latex JS -->
+      <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+    </head>
 
     <script src="/dgm-fall-2025/assets/js/distillpub/template.v2.js"></script>
     <script src="/dgm-fall-2025/assets/js/distillpub/transforms.v2.js"></script>
@@ -39,99 +32,82 @@
   <d-front-matter>
     <script type="text/json">
       {
-            "title": "Lecture 07",
-            "description": "Cluster and cloud computing resources",
-            "published": "September 24, 2025",
-            "lecturers": [
-              
-              {
-                "lecturer": "Ben Lengerich",
-                "lecturerURL": "https://adaptinfer.org"
-              }
-              
-            ],
-            "authors": [
-              
-              {
-                "author": "Frederik Lund Pedersen"
-              }
-              
-            ],
-            "editors": [
-              
-              {
-                "editor": "Yifei Wu"
-              }
-              
-            ],
-            "katex": {
-              "delimiters": [
-                {
-                  "left": "$",
-                  "right": "$",
-                  "display": false
-                },
-                {
-                  "left": "$$",
-                  "right": "$$",
-                  "display": true
-                }
-              ]
-            }
+        "title": "Lecture 07",
+        "description": "Cluster and cloud computing resources",
+        "published": "September 24, 2025",
+        "lecturers": [
+          {
+            "lecturer": "Ben Lengerich",
+            "lecturerURL": "https://adaptinfer.org"
           }
+        ],
+        "authors": [
+          {
+            "author": "Frederik Lund Pedersen"
+          }
+        ],
+        "editors": [
+          {
+            "editor": "Yifei Wu"
+          }
+        ],
+        "katex": {
+          "delimiters": [
+            {
+              "left": "$",
+              "right": "$",
+              "display": false
+            },
+            {
+              "left": "$$",
+              "right": "$$",
+              "display": true
+            }
+          ]
+        }
+      }
     </script>
   </d-front-matter>
 
   <body>
     <header class="site-header">
-  <div class="wrapper">
-    <span class="site-title">
-      <a class="page-link" href="https://adaptinfer.org/dgm-fall-2025/"
-        >STAT 453</a
-      >
-    </span>
-
-    <nav class="site-nav">
-      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
-      <label for="nav-trigger">
-        <span class="menu-icon">
-          <svg viewBox="0 0 18 15" width="18px" height="15px">
-            <path
-              fill="#424242"
-              d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
-            />
-            <path
-              fill="#424242"
-              d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
-            />
-            <path
-              fill="#424242"
-              d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
-            />
-          </svg>
+      <div class="wrapper">
+        <span class="site-title">
+          <a class="page-link" href="https://adaptinfer.org/dgm-fall-2025/">STAT 453</a>
         </span>
-      </label>
 
-      <div class="trigger">
-        <a class="page-link" href="/dgm-fall-2025/logistics/"
-          >logistics</a
-        >
-        <a class="page-link" href="/dgm-fall-2025/lectures/"
-          >lectures</a
-        >
-        <a class="page-link" href="/dgm-fall-2025/notes/">notes</a>
-        <a class="page-link" href="/dgm-fall-2025/calendar/"
-          >calendar</a
-        >
-        <a class="page-link" href="/dgm-fall-2025/homework/"
-          >homework</a
-        >
-        <a class="page-link" href="/dgm-fall-2025/project/">project</a>
+        <nav class="site-nav">
+          <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+          <label for="nav-trigger">
+            <span class="menu-icon">
+              <svg viewBox="0 0 18 15" width="18px" height="15px">
+                <path
+                  fill="#424242"
+                  d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
+                />
+                <path
+                  fill="#424242"
+                  d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
+                />
+                <path
+                  fill="#424242"
+                  d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
+                />
+              </svg>
+            </span>
+          </label>
+
+          <div class="trigger">
+            <a class="page-link" href="/dgm-fall-2025/logistics/">logistics</a>
+            <a class="page-link" href="/dgm-fall-2025/lectures/">lectures</a>
+            <a class="page-link" href="/dgm-fall-2025/notes/">notes</a>
+            <a class="page-link" href="/dgm-fall-2025/calendar/">calendar</a>
+            <a class="page-link" href="/dgm-fall-2025/homework/">homework</a>
+            <a class="page-link" href="/dgm-fall-2025/project/">project</a>
+          </div>
+        </nav>
       </div>
-    </nav>
-  </div>
-</header>
-
+    </header>
 
     <div class="page-content">
       <d-title>
@@ -141,80 +117,102 @@
 
       <d-byline></d-byline>
 
-      <d-article> <h2 id="todays-topics">Today’s Topics</h2>
-<ol>
-  <li>Google Colab</li>
-  <li>Center for High-Throughput Computing (CHTC)</li>
-</ol>
+      <d-article>
+        <h2 id="todays-topics">Today’s Topics</h2>
+        <ol>
+          <li>Google Colab</li>
+          <li>Center for High-Throughput Computing (CHTC)</li>
+        </ol>
 
-<h1 id="cluster-and-cloud-computing-resources">Cluster and cloud computing resources</h1>
+        <h1 id="cluster-and-cloud-computing-resources">Cluster and cloud computing resources</h1>
 
-<h3 id="1-google-colab">1. Google Colab</h3>
+        <h3 id="1-google-colab">1. Google Colab</h3>
 
-<p>Google Colab provides free cloud-based Jupyter notebooks, with free GPU access. Each session is limited to 12 hours of computation, which should be enough for this class. Colab is useful for quick work, but can be tedious since packages need to be reinstalled each time.</p>
+        <p>
+          Google Colab provides free cloud-based Jupyter notebooks, with free GPU access. Each session is limited to 12 hours of computation, which
+          should be enough for this class. Colab is useful for quick work, but can be tedious since packages need to be reinstalled each time.
+        </p>
 
-<p>Website: <a href="https://colab.research.google.com">colab.research.google.com</a></p>
+        <p>Website: <a href="https://colab.research.google.com">colab.research.google.com</a></p>
 
-<figure>
-  <img src="/dgm-fall-2025/assets/img/notes/lecture-07/colab.png" alt="Google Colab interface" />
-  <figcaption><strong>Figure 1.</strong> Google Colab interface with GPU runtime enabled.</figcaption>
-</figure>
+        <figure>
+          <img src="/dgm-fall-2025/assets/img/notes/lecture-07/colab.png" alt="Google Colab interface" />
+          <figcaption><strong>Figure 1.</strong> Google Colab interface with GPU runtime enabled.</figcaption>
+        </figure>
 
-<h3 id="turn-gpu-mode-default-cpu">Turn GPU mode, default CPU</h3>
+        <h3 id="turn-gpu-mode-default-cpu">Turn GPU mode, default CPU</h3>
 
-<p>To enable GPU acceleration, go to:<br />
-<code class="language-plaintext highlighter-rouge">Runtime</code> → <code class="language-plaintext highlighter-rouge">Change Runtime Type</code> → <code class="language-plaintext highlighter-rouge">Hardware Accelerator</code></p>
+        <p>
+          To enable GPU acceleration, go to:<br />
+          <code class="language-plaintext highlighter-rouge">Runtime</code> →
+          <code class="language-plaintext highlighter-rouge">Change Runtime Type</code> →
+          <code class="language-plaintext highlighter-rouge">Hardware Accelerator</code>
+        </p>
 
-<p>Colab comes preloaded with some packages, including PyTorch.</p>
+        <p>Colab comes preloaded with some packages, including PyTorch.</p>
 
-<h3 id="installing-packages">Installing packages</h3>
+        <h3 id="installing-packages">Installing packages</h3>
 
-<p>You can install additional packages in a notebook cell using:</p>
+        <p>You can install additional packages in a notebook cell using:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>!pip install package_name
-</code></pre></div></div>
+        <div class="language-plaintext highlighter-rouge">
+          <div class="highlight">
+            <pre class="highlight"><code>!pip install package_name
+</code></pre>
+          </div>
+        </div>
 
-<h3 id="github">GitHub</h3>
+        <h3 id="github">GitHub</h3>
 
-<p>Colab can be directly connected to GitHub or Google Drive.<br />
-When you import a notebook from GitHub, save it to Drive, otherwise your changes will not be saved.</p>
+        <p>
+          Colab can be directly connected to GitHub or Google Drive.<br />
+          When you import a notebook from GitHub, save it to Drive, otherwise your changes will not be saved.
+        </p>
 
-<h3 id="how-to-get-data">How to get data</h3>
+        <h3 id="how-to-get-data">How to get data</h3>
 
-<p>Mount your Google Drive to the notebook to access files.<br />
-Once mounted, the notebook can open data as usual. Colab does not automatically have access to local data.</p>
+        <p>
+          Mount your Google Drive to the notebook to access files.<br />
+          Once mounted, the notebook can open data as usual. Colab does not automatically have access to local data.
+        </p>
 
-<p>Colab is a good way to get free GPU access. There are also many paid vendors for GPU access.</p>
+        <p>Colab is a good way to get free GPU access. There are also many paid vendors for GPU access.</p>
 
-<figure>
-  <img src="/dgm-fall-2025/assets/img/notes/lecture-07/mount-drive.png" alt="Mounting Google Drive in Colab" />
-  <figcaption><strong>Figure 2.</strong> Mounting Google Drive in Colab to access datasets.</figcaption>
-</figure>
+        <figure>
+          <img src="/dgm-fall-2025/assets/img/notes/lecture-07/mount-drive.png" alt="Mounting Google Drive in Colab" />
+          <figcaption><strong>Figure 2.</strong> Mounting Google Drive in Colab to access datasets.</figcaption>
+        </figure>
 
-<p>Once mounted, all your Drive files appear under <code class="language-plaintext highlighter-rouge">/content/drive/MyDrive/</code>.<br />
-You can then open datasets directly from these folders in your Colab notebook.</p>
+        <p>
+          Once mounted, all your Drive files appear under <code class="language-plaintext highlighter-rouge">/content/drive/MyDrive/</code>.<br />
+          You can then open datasets directly from these folders in your Colab notebook.
+        </p>
 
-<figure>
-  <img src="/dgm-fall-2025/assets/img/notes/lecture-07/open-dataset.png" alt="Opening dataset files from Google Drive in Colab" />
-  <figcaption><strong>Figure 3.</strong> Example code showing how to open dataset files once Google Drive is mounted.</figcaption>
-</figure>
+        <figure>
+          <img src="/dgm-fall-2025/assets/img/notes/lecture-07/open-dataset.png" alt="Opening dataset files from Google Drive in Colab" />
+          <figcaption><strong>Figure 3.</strong> Example code showing how to open dataset files once Google Drive is mounted.</figcaption>
+        </figure>
 
-<h3 id="2-chtc">2. CHTC</h3>
+        <h3 id="2-chtc">2. CHTC</h3>
 
-<p>CHTC is UW’s own cloud computing server.<br />
-If you are working with faculty, you can get a free account and access.<br />
-Research is conducted on the use of these servers by UW.</p>
+        <p>
+          CHTC is UW’s own cloud computing server.<br />
+          If you are working with faculty, you can get a free account and access.<br />
+          Research is conducted on the use of these servers by UW.
+        </p>
 
-<p>To get access, visit the CHTC website:</p>
-<ul>
-  <li>https://chtc.cs.wisc.edu<br />
-Click <strong>“Request an Account”</strong> to apply for access.</li>
-</ul>
+        <p>To get access, visit the CHTC website:</p>
+        <ul>
+          <li>
+            https://chtc.cs.wisc.edu<br />
+            Click <strong>“Request an Account”</strong> to apply for access.
+          </li>
+        </ul>
 
-<p>People running CHTC are people who make HT condor environment–widely used computing enervionment.</p>
+        <p>People running CHTC are people who make HT condor environment–widely used computing enervionment.</p>
 
-<hr />
- </d-article>
+        <hr />
+      </d-article>
 
       <d-appendix>
         <d-footnote-list></d-footnote-list>
@@ -223,107 +221,82 @@ Click <strong>“Request an Account”</strong> to apply for access.</li>
     </div>
 
     <footer class="site-footer">
-  <div class="wrapper">
-    <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
+      <div class="wrapper">
+        <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
 
-    <div class="footer-col-wrapper">
-      <div class="footer-col footer-col-1">
-        <ul class="contact-list">
-          <li class="p-name">Ben Lengerich</li><li>
-            <a class="u-email" href="mailto:TBD@wisc.edu"
-              >TBD@wisc.edu</a
-            >
-          </li></ul>
+        <div class="footer-col-wrapper">
+          <div class="footer-col footer-col-1">
+            <ul class="contact-list">
+              <li class="p-name">Ben Lengerich</li>
+              <li>
+                <a class="u-email" href="mailto:TBD@wisc.edu">TBD@wisc.edu</a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="footer-col footer-col-2">
+            <ul class="social-media-list">
+              <li>
+                <a href="https://github.com/AdaptInfer" target="_blank"><i class="fab fa-github"></i> <span class="username">AdaptInfer</span></a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="footer-col footer-col-3">
+            <p>
+              &copy; Copyright 2025 University of Wisconsin.
+              <br />
+            </p>
+          </div>
+        </div>
       </div>
-
-      <div class="footer-col footer-col-2"><ul class="social-media-list"><li>
-    <a
-      href="https://github.com/AdaptInfer"
-      target="_blank"
-      ><i class="fab fa-github"></i>
-      <span class="username">AdaptInfer</span></a
-    >
-  </li></ul>
-</div>
-
-      <div class="footer-col footer-col-3">
-        <p>
-          &copy; Copyright 2025 University of Wisconsin.
-          <br />
-          
-        </p>
-      </div>
-    </div>
-  </div>
-</footer>
-
+    </footer>
   </body>
 
-  <d-bibliography
-    src="/dgm-fall-2025/assets/bibliography/2025-09-24-lecture-07.bib"
-  >
-  </d-bibliography>
+  <d-bibliography src="/dgm-fall-2025/assets/bibliography/2025-09-24-lecture-07.bib"> </d-bibliography>
 
   <!-- Load jQuery -->
-<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
 
-<!-- Load Common JS -->
-<script src="/dgm-fall-2025/assets/js/common.js"></script>
+  <!-- Load Common JS -->
+  <script src="/dgm-fall-2025/assets/js/common.js"></script>
 
+  <!-- Load KaTeX -->
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css" />
+  <script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+  <script src="/dgm-fall-2025/assets/js/katex.js"></script>
 
-<!-- Load KaTeX -->
-<link
-  rel="stylesheet"
-  href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css"
-/>
-<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
-<script src="/dgm-fall-2025/assets/js/katex.js"></script>
- 
-<!-- Load Anchor JS -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
-<script>
-  anchors.options.visible = "hover";
-  anchors.add("article h2, article h3, article h4, article h5, article h6");
-</script>
- 
-<!-- Adjust LaTeX JS -->
-<script src="/dgm-fall-2025/assets/js/latex.js"></script>
+  <!-- Load Anchor JS -->
+  <script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+  <script>
+    anchors.options.visible = "hover";
+    anchors.add("article h2, article h3, article h4, article h5, article h6");
+  </script>
 
+  <!-- Adjust LaTeX JS -->
+  <script src="/dgm-fall-2025/assets/js/latex.js"></script>
 
-<!-- Include custom icon fonts -->
-<link
-  rel="stylesheet"
-  href="/dgm-fall-2025/assets/css/fontawesome-all.min.css"
-/>
-<link
-  rel="stylesheet"
-  href="/dgm-fall-2025/assets/css/academicons.min.css"
-/>
+  <!-- Include custom icon fonts -->
+  <link rel="stylesheet" href="/dgm-fall-2025/assets/css/fontawesome-all.min.css" />
+  <link rel="stylesheet" href="/dgm-fall-2025/assets/css/academicons.min.css" />
 
-<!-- Google Analytics -->
-<script>
-  (function (i, s, o, g, r, a, m) {
-    i["GoogleAnalyticsObject"] = r;
-    ((i[r] =
-      i[r] ||
-      function () {
-        (i[r].q = i[r].q || []).push(arguments);
-      }),
-      (i[r].l = 1 * new Date()));
-    ((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
-    a.async = 1;
-    a.src = g;
-    m.parentNode.insertBefore(a, m);
-  })(
-    window,
-    document,
-    "script",
-    "//www.google-analytics.com/analytics.js",
-    "ga",
-  );
+  <!-- Google Analytics -->
+  <script>
+    (function (i, s, o, g, r, a, m) {
+      i["GoogleAnalyticsObject"] = r;
+      (i[r] =
+        i[r] ||
+        function () {
+          (i[r].q = i[r].q || []).push(arguments);
+        }),
+        (i[r].l = 1 * new Date());
+      (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+      a.async = 1;
+      a.src = g;
+      m.parentNode.insertBefore(a, m);
+    })(window, document, "script", "//www.google-analytics.com/analytics.js", "ga");
 
-  ga("create", "", "auto");
-  ga("send", "pageview");
-</script>
-
+    ga("create", "", "auto");
+    ga("send", "pageview");
+  </script>
 </html>

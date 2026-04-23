@@ -2,35 +2,28 @@
 <html>
   <head>
     <head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="content-language" content="en" />
-  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-  <meta name="viewport" content="width=device-width initial-scale=1.0" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+      <meta charset="UTF-8" />
+      <meta http-equiv="content-language" content="en" />
+      <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+      <meta name="viewport" content="width=device-width initial-scale=1.0" />
+      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-  <title>
-    STAT 453 | Lecture 21: GPT Architectures
-  </title>
-  <meta name="description" content="STAT 453 - University of Wisconsin-Madison - Fall 2025
-" />
+      <title>STAT 453 | Lecture 21: GPT Architectures</title>
+      <meta
+        name="description"
+        content="STAT 453 - University of Wisconsin-Madison - Fall 2025
+"
+      />
 
-  <link
-    rel="shortcut icon"
-    href="/dgm-fall-2025/assets/img/favicon.ico"
-  />
+      <link rel="shortcut icon" href="/dgm-fall-2025/assets/img/favicon.ico" />
 
-  <link rel="stylesheet" href="/dgm-fall-2025/assets/css/main.css" />
-  <link
-    rel="canonical"
-    href="/dgm-fall-2025/notes/lecture-21/"
-  />
+      <link rel="stylesheet" href="/dgm-fall-2025/assets/css/main.css" />
+      <link rel="canonical" href="/dgm-fall-2025/notes/lecture-21/" />
 
-  
-  <!-- Load Latex JS -->
-  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
-  
-</head>
+      <!-- Load Latex JS -->
+      <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+    </head>
 
     <script src="/dgm-fall-2025/assets/js/distillpub/template.v2.js"></script>
     <script src="/dgm-fall-2025/assets/js/distillpub/transforms.v2.js"></script>
@@ -39,119 +32,102 @@
   <d-front-matter>
     <script type="text/json">
       {
-            "title": "Lecture 21: GPT Architectures",
-            "description": "From RNNs to Transformers to GPT - Understanding the evolution of modern language models",
-            "published": "November 17, 2025",
-            "lecturers": [
-              
-              {
-                "lecturer": "Ben Lengerich",
-                "lecturerURL": "https://adaptinfer.org"
-              }
-              
-            ],
-            "authors": [
-              
-              {
-                "author": "Aman Jain"
-              },
-              
-              {
-                "author": "Chenyi Tong"
-              },
-              
-              {
-                "author": "Ran Qiao"
-              },
-              
-              {
-                "author": "Junxian Song"
-              }
-              
-            ],
-            "editors": [
-              
-              {
-                "editor": "Jeff Zhang"
-              },
-              
-              {
-                "editor": "Mohammad Zaidan"
-              },
-              
-              {
-                "editor": "Colby Beliveau"
-              }
-              
-            ],
-            "katex": {
-              "delimiters": [
-                {
-                  "left": "$",
-                  "right": "$",
-                  "display": false
-                },
-                {
-                  "left": "$$",
-                  "right": "$$",
-                  "display": true
-                }
-              ]
-            }
+        "title": "Lecture 21: GPT Architectures",
+        "description": "From RNNs to Transformers to GPT - Understanding the evolution of modern language models",
+        "published": "November 17, 2025",
+        "lecturers": [
+          {
+            "lecturer": "Ben Lengerich",
+            "lecturerURL": "https://adaptinfer.org"
           }
+        ],
+        "authors": [
+          {
+            "author": "Aman Jain"
+          },
+
+          {
+            "author": "Chenyi Tong"
+          },
+
+          {
+            "author": "Ran Qiao"
+          },
+
+          {
+            "author": "Junxian Song"
+          }
+        ],
+        "editors": [
+          {
+            "editor": "Jeff Zhang"
+          },
+
+          {
+            "editor": "Mohammad Zaidan"
+          },
+
+          {
+            "editor": "Colby Beliveau"
+          }
+        ],
+        "katex": {
+          "delimiters": [
+            {
+              "left": "$",
+              "right": "$",
+              "display": false
+            },
+            {
+              "left": "$$",
+              "right": "$$",
+              "display": true
+            }
+          ]
+        }
+      }
     </script>
   </d-front-matter>
 
   <body>
     <header class="site-header">
-  <div class="wrapper">
-    <span class="site-title">
-      <a class="page-link" href="https://adaptinfer.org/dgm-fall-2025/"
-        >STAT 453</a
-      >
-    </span>
-
-    <nav class="site-nav">
-      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
-      <label for="nav-trigger">
-        <span class="menu-icon">
-          <svg viewBox="0 0 18 15" width="18px" height="15px">
-            <path
-              fill="#424242"
-              d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
-            />
-            <path
-              fill="#424242"
-              d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
-            />
-            <path
-              fill="#424242"
-              d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
-            />
-          </svg>
+      <div class="wrapper">
+        <span class="site-title">
+          <a class="page-link" href="https://adaptinfer.org/dgm-fall-2025/">STAT 453</a>
         </span>
-      </label>
 
-      <div class="trigger">
-        <a class="page-link" href="/dgm-fall-2025/logistics/"
-          >logistics</a
-        >
-        <a class="page-link" href="/dgm-fall-2025/lectures/"
-          >lectures</a
-        >
-        <a class="page-link" href="/dgm-fall-2025/notes/">notes</a>
-        <a class="page-link" href="/dgm-fall-2025/calendar/"
-          >calendar</a
-        >
-        <a class="page-link" href="/dgm-fall-2025/homework/"
-          >homework</a
-        >
-        <a class="page-link" href="/dgm-fall-2025/project/">project</a>
+        <nav class="site-nav">
+          <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+          <label for="nav-trigger">
+            <span class="menu-icon">
+              <svg viewBox="0 0 18 15" width="18px" height="15px">
+                <path
+                  fill="#424242"
+                  d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
+                />
+                <path
+                  fill="#424242"
+                  d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
+                />
+                <path
+                  fill="#424242"
+                  d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
+                />
+              </svg>
+            </span>
+          </label>
+
+          <div class="trigger">
+            <a class="page-link" href="/dgm-fall-2025/logistics/">logistics</a>
+            <a class="page-link" href="/dgm-fall-2025/lectures/">lectures</a>
+            <a class="page-link" href="/dgm-fall-2025/notes/">notes</a>
+            <a class="page-link" href="/dgm-fall-2025/calendar/">calendar</a>
+            <a class="page-link" href="/dgm-fall-2025/homework/">homework</a>
+            <a class="page-link" href="/dgm-fall-2025/project/">project</a>
+          </div>
+        </nav>
       </div>
-    </nav>
-  </div>
-</header>
-
+    </header>
 
     <div class="page-content">
       <d-title>
@@ -161,1149 +137,1255 @@
 
       <d-byline></d-byline>
 
-      <d-article> <h2 id="todays-topics">Today’s Topics:</h2>
-
-<ul>
-  <li>
-    <p><a href="#todays-topics">Today’s Topics:</a></p>
-  </li>
-  <li><a href="#part-1-from-rnn-to-self-attention--the-transformer">Part 1: From RNN to Self-Attention &amp; The Transformer</a>
-    <ul>
-      <li><a href="#1-the-limitations-of-rnns">1. The Limitations of RNNs</a></li>
-      <li><a href="#2-the-transformer-solution">2. The Transformer Solution</a></li>
-      <li><a href="#3-self-attention-the-basic-non-learnable-form">3. Self-Attention: The Basic (Non-Learnable) Form</a></li>
-      <li><a href="#4-learnable-self-attention-query-key-value">4. Learnable Self-Attention: Query, Key, Value</a></li>
-      <li><a href="#5-multi-head-attention">5. Multi-Head Attention</a></li>
-      <li><a href="#6-the-complete-transformer-architecture">6. The Complete Transformer Architecture</a></li>
-    </ul>
-  </li>
-  <li><a href="#part-2-gpt-architecture--probabilistic-model">Part 2: GPT Architecture &amp; Probabilistic Model</a>
-    <ul>
-      <li><a href="#1-architecture-simplification-from-transformer-to-gpt">1. Architecture Simplification: From Transformer to GPT</a></li>
-      <li><a href="#2-probabilistic-modeling-next-token-prediction">2. Probabilistic Modeling: Next-Token Prediction</a></li>
-      <li><a href="#3-gpt-vs-traditional-seq2seq-translation">3. GPT vs. Traditional Seq2Seq (Translation)</a></li>
-    </ul>
-  </li>
-  <li><a href="#part-3-the-evolution-of-the-gpt-series-gpt1-to-gpt4">Part 3: The Evolution of the GPT Series (GPT-1 to GPT-4)</a>
-    <ul>
-      <li><a href="#1-from-our-gpt0-to-gpt1">1. From our “GPT-0” to GPT-1</a></li>
-      <li><a href="#2-from-gpt1-to-gpt2">2. From GPT-1 to GPT-2</a></li>
-      <li><a href="#3-from-gpt2-to-gpt3">3. From GPT-2 to GPT-3</a></li>
-      <li><a href="#4-from-gpt3-to-gpt4">4. From GPT-3 to GPT-4</a></li>
-      <li><a href="#5-comparison-table-gpt1-to-gpt4">5. Comparison Table: GPT-1 to GPT-4</a></li>
-    </ul>
-  </li>
-  <li><a href="#part-4-mixture-of-experts-moe--final-summary">Part 4: Mixture of Experts (MoE) &amp; Final Summary</a>
-    <ul>
-      <li><a href="#1-mixture-of-experts-moe-architecture">1. Mixture of Experts (MoE): Architecture</a></li>
-      <li><a href="#2-probabilistic-view-of-moe">2. Probabilistic View of MoE</a></li>
-      <li><a href="#3-error-analysis-the-role-of-diversity">3. Error Analysis: The Role of Diversity</a></li>
-      <li><a href="#4-implications-for-llms">4. Implications for LLMs</a></li>
-      <li><a href="#5-summary-transformer-vs-gpt">5. Summary: Transformer vs. GPT</a></li>
-      <li><a href="#6-summary-from-gpt1-to-gpt4">6. Summary: From GPT-1 to GPT-4</a></li>
-    </ul>
-  </li>
-  <li><a href="#conclusion">Conclusion</a></li>
-  <li><a href="#references">References</a></li>
-</ul>
-
-<h2 id="part-1-from-rnn-to-self-attention--the-transformer"><strong>Part 1: From RNN to Self-Attention &amp; The Transformer</strong></h2>
-
-<p><em>(Ref: Slides 1–10, 15–16)</em></p>
-
-<h3 id="1-the-limitations-of-rnns"><strong>1. The Limitations of RNNs</strong></h3>
-
-<p><em>(Ref: Slides 2–3)</em></p>
-
-<p>Recurrent Neural Networks (RNNs) were the dominant architecture for sequence modeling before the Transformer era. RNNs process sequences <strong>sequentially</strong>, maintaining a hidden state $h^{\langle t \rangle}$ that gets updated at each time step:</p>
+      <d-article>
+        <h2 id="todays-topics">Today’s Topics:</h2>
+
+        <ul>
+          <li>
+            <p><a href="#todays-topics">Today’s Topics:</a></p>
+          </li>
+          <li>
+            <a href="#part-1-from-rnn-to-self-attention--the-transformer">Part 1: From RNN to Self-Attention &amp; The Transformer</a>
+            <ul>
+              <li><a href="#1-the-limitations-of-rnns">1. The Limitations of RNNs</a></li>
+              <li><a href="#2-the-transformer-solution">2. The Transformer Solution</a></li>
+              <li><a href="#3-self-attention-the-basic-non-learnable-form">3. Self-Attention: The Basic (Non-Learnable) Form</a></li>
+              <li><a href="#4-learnable-self-attention-query-key-value">4. Learnable Self-Attention: Query, Key, Value</a></li>
+              <li><a href="#5-multi-head-attention">5. Multi-Head Attention</a></li>
+              <li><a href="#6-the-complete-transformer-architecture">6. The Complete Transformer Architecture</a></li>
+            </ul>
+          </li>
+          <li>
+            <a href="#part-2-gpt-architecture--probabilistic-model">Part 2: GPT Architecture &amp; Probabilistic Model</a>
+            <ul>
+              <li><a href="#1-architecture-simplification-from-transformer-to-gpt">1. Architecture Simplification: From Transformer to GPT</a></li>
+              <li><a href="#2-probabilistic-modeling-next-token-prediction">2. Probabilistic Modeling: Next-Token Prediction</a></li>
+              <li><a href="#3-gpt-vs-traditional-seq2seq-translation">3. GPT vs. Traditional Seq2Seq (Translation)</a></li>
+            </ul>
+          </li>
+          <li>
+            <a href="#part-3-the-evolution-of-the-gpt-series-gpt1-to-gpt4">Part 3: The Evolution of the GPT Series (GPT-1 to GPT-4)</a>
+            <ul>
+              <li><a href="#1-from-our-gpt0-to-gpt1">1. From our “GPT-0” to GPT-1</a></li>
+              <li><a href="#2-from-gpt1-to-gpt2">2. From GPT-1 to GPT-2</a></li>
+              <li><a href="#3-from-gpt2-to-gpt3">3. From GPT-2 to GPT-3</a></li>
+              <li><a href="#4-from-gpt3-to-gpt4">4. From GPT-3 to GPT-4</a></li>
+              <li><a href="#5-comparison-table-gpt1-to-gpt4">5. Comparison Table: GPT-1 to GPT-4</a></li>
+            </ul>
+          </li>
+          <li>
+            <a href="#part-4-mixture-of-experts-moe--final-summary">Part 4: Mixture of Experts (MoE) &amp; Final Summary</a>
+            <ul>
+              <li><a href="#1-mixture-of-experts-moe-architecture">1. Mixture of Experts (MoE): Architecture</a></li>
+              <li><a href="#2-probabilistic-view-of-moe">2. Probabilistic View of MoE</a></li>
+              <li><a href="#3-error-analysis-the-role-of-diversity">3. Error Analysis: The Role of Diversity</a></li>
+              <li><a href="#4-implications-for-llms">4. Implications for LLMs</a></li>
+              <li><a href="#5-summary-transformer-vs-gpt">5. Summary: Transformer vs. GPT</a></li>
+              <li><a href="#6-summary-from-gpt1-to-gpt4">6. Summary: From GPT-1 to GPT-4</a></li>
+            </ul>
+          </li>
+          <li><a href="#conclusion">Conclusion</a></li>
+          <li><a href="#references">References</a></li>
+        </ul>
+
+        <h2 id="part-1-from-rnn-to-self-attention--the-transformer"><strong>Part 1: From RNN to Self-Attention &amp; The Transformer</strong></h2>
+
+        <p><em>(Ref: Slides 1–10, 15–16)</em></p>
+
+        <h3 id="1-the-limitations-of-rnns"><strong>1. The Limitations of RNNs</strong></h3>
+
+        <p><em>(Ref: Slides 2–3)</em></p>
+
+        <p>
+          Recurrent Neural Networks (RNNs) were the dominant architecture for sequence modeling before the Transformer era. RNNs process sequences
+          <strong>sequentially</strong>, maintaining a hidden state $h^{\langle t \rangle}$ that gets updated at each time step:
+        </p>
+
+        <d-math block=""> h^{\langle t \rangle} = f(W_{hh} h^{\langle t-1 \rangle} + W_{hx} x^{\langle t \rangle}) </d-math>
+
+        <d-math block=""> y^{\langle t \rangle} = g(W_{yh} h^{\langle t \rangle}) </d-math>
+
+        <p>While this recurrent structure allows the model to process sequences of arbitrary length, it introduces several critical problems:</p>
+
+        <ol>
+          <li>
+            <p>
+              <strong>Sequential Processing Bottleneck</strong>: Each token must be processed one at a time, meaning computation cannot be
+              parallelized across the sequence. This makes training extremely slow for long sequences.
+            </p>
+          </li>
+          <li>
+            <p>
+              <strong>Long-Range Dependency Problem</strong>: Information from early tokens must be passed through many intermediate hidden states to
+              reach later positions. Despite improvements like LSTMs and GRUs, gradients still tend to vanish or explode over long sequences, making
+              it difficult to capture dependencies between distant tokens.
+            </p>
+          </li>
+          <li>
+            <p>
+              <strong>Fixed-Capacity Hidden State</strong>: The entire sequence history must be compressed into a single fixed-dimensional vector
+              $h^{\langle t \rangle}$, creating an information bottleneck.
+            </p>
+          </li>
+        </ol>
+
+        <p><strong>Key Insight</strong>: We need an architecture that:</p>
+
+        <ul>
+          <li>Enables <strong>parallel computation</strong> across sequence positions</li>
+          <li>Allows <strong>direct connections</strong> between any pair of tokens</li>
+          <li>Avoids compressing all information into a single bottleneck</li>
+        </ul>
+
+        <p>This motivates the <strong>Transformer</strong> architecture.</p>
 
-<d-math block="">
-h^{\langle t \rangle} = f(W_{hh} h^{\langle t-1 \rangle} + W_{hx} x^{\langle t \rangle})
-</d-math>
+        <hr />
 
-<d-math block="">
-y^{\langle t \rangle} = g(W_{yh} h^{\langle t \rangle})
-</d-math>
+        <h3 id="2-the-transformer-solution"><strong>2. The Transformer Solution</strong></h3>
 
-<p>While this recurrent structure allows the model to process sequences of arbitrary length, it introduces several critical problems:</p>
+        <p><em>(Ref: Slides 4–5)</em></p>
 
-<ol>
-  <li>
-    <p><strong>Sequential Processing Bottleneck</strong>: Each token must be processed one at a time, meaning computation cannot be parallelized across the sequence. This makes training extremely slow for long sequences.</p>
-  </li>
-  <li>
-    <p><strong>Long-Range Dependency Problem</strong>: Information from early tokens must be passed through many intermediate hidden states to reach later positions. Despite improvements like LSTMs and GRUs, gradients still tend to vanish or explode over long sequences, making it difficult to capture dependencies between distant tokens.</p>
-  </li>
-  <li>
-    <p><strong>Fixed-Capacity Hidden State</strong>: The entire sequence history must be compressed into a single fixed-dimensional vector $h^{\langle t \rangle}$, creating an information bottleneck.</p>
-  </li>
-</ol>
+        <p>
+          The Transformer, introduced by Vaswani et al. (2017) in “Attention Is All You Need,” replaces recurrence with
+          <strong>attention mechanisms</strong>. Instead of sequentially processing tokens, the Transformer computes interactions between
+          <strong>all pairs of positions</strong> in parallel using self-attention.
+        </p>
 
-<p><strong>Key Insight</strong>: We need an architecture that:</p>
+        <p><strong>Key advantages</strong>:</p>
 
-<ul>
-  <li>Enables <strong>parallel computation</strong> across sequence positions</li>
-  <li>Allows <strong>direct connections</strong> between any pair of tokens</li>
-  <li>Avoids compressing all information into a single bottleneck</li>
-</ul>
+        <ul>
+          <li><strong>Parallelization</strong>: All token representations can be computed simultaneously</li>
+          <li>
+            <strong>Direct long-range connections</strong>: Every token can directly attend to every other token, eliminating the vanishing gradient
+            problem for long-range dependencies
+          </li>
+          <li>
+            <strong>Dynamic context</strong>: Each token’s representation is a weighted combination of all other tokens, with weights learned based on
+            content similarity
+          </li>
+        </ul>
 
-<p>This motivates the <strong>Transformer</strong> architecture.</p>
+        <p>The Transformer consists of:</p>
 
-<hr />
+        <ul>
+          <li><strong>Encoder</strong>: Processes the input sequence with bidirectional attention</li>
+          <li>
+            <strong>Decoder</strong>: Generates the output sequence with masked (causal) attention and cross-attention to encoder outputs
+            <img src="../assets/img/notes/lecture-21/transformer.png" alt="Transformer" />
+            —
+          </li>
+        </ul>
 
-<h3 id="2-the-transformer-solution"><strong>2. The Transformer Solution</strong></h3>
+        <h3 id="3-self-attention-the-basic-non-learnable-form"><strong>3. Self-Attention: The Basic (Non-Learnable) Form</strong></h3>
 
-<p><em>(Ref: Slides 4–5)</em></p>
+        <p><img src="../assets/img/notes/lecture-21/self-attention.png" alt="Self Attention" /></p>
 
-<p>The Transformer, introduced by Vaswani et al. (2017) in “Attention Is All You Need,” replaces recurrence with <strong>attention mechanisms</strong>. Instead of sequentially processing tokens, the Transformer computes interactions between <strong>all pairs of positions</strong> in parallel using self-attention.</p>
+        <p>
+          Before introducing the learnable self-attention used in Transformers, let’s understand the simplest form of self-attention to grasp the core
+          concept.
+        </p>
 
-<p><strong>Key advantages</strong>:</p>
+        <p>Given a sequence of token embeddings:</p>
 
-<ul>
-  <li><strong>Parallelization</strong>: All token representations can be computed simultaneously</li>
-  <li><strong>Direct long-range connections</strong>: Every token can directly attend to every other token, eliminating the vanishing gradient problem for long-range dependencies</li>
-  <li><strong>Dynamic context</strong>: Each token’s representation is a weighted combination of all other tokens, with weights learned based on content similarity</li>
-</ul>
+        <d-math block=""> X = [x_1, x_2, \ldots, x_T] \in \mathbb{R}^{T \times d} </d-math>
 
-<p>The Transformer consists of:</p>
+        <p>where $T$ is the sequence length and $d$ is the embedding dimension.</p>
 
-<ul>
-  <li><strong>Encoder</strong>: Processes the input sequence with bidirectional attention</li>
-  <li><strong>Decoder</strong>: Generates the output sequence with masked (causal) attention and cross-attention to encoder outputs
-<img src="../assets/img/notes/lecture-21/transformer.png" alt="Transformer" />
-—</li>
-</ul>
+        <p><strong>Step 1: Compute similarity scores</strong> between the current token $x_i$ and all tokens $x_j$:</p>
 
-<h3 id="3-self-attention-the-basic-non-learnable-form"><strong>3. Self-Attention: The Basic (Non-Learnable) Form</strong></h3>
+        <d-math block=""> \text{score}_{ij} = x_i^{\top} x_j </d-math>
 
-<p><img src="../assets/img/notes/lecture-21/self-attention.png" alt="Self Attention" /></p>
+        <p>This is simply the dot product between embeddings, measuring their similarity.</p>
 
-<p>Before introducing the learnable self-attention used in Transformers, let’s understand the simplest form of self-attention to grasp the core concept.</p>
+        <p><strong>Step 2: Normalize scores</strong> using softmax to get attention weights:</p>
 
-<p>Given a sequence of token embeddings:</p>
-
-<d-math block="">
-X = [x_1, x_2, \ldots, x_T] \in \mathbb{R}^{T \times d}
-</d-math>
-
-<p>where $T$ is the sequence length and $d$ is the embedding dimension.</p>
-
-<p><strong>Step 1: Compute similarity scores</strong> between the current token $x_i$ and all tokens $x_j$:</p>
-
-<d-math block="">
-\text{score}_{ij} = x_i^{\top} x_j
-</d-math>
-
-<p>This is simply the dot product between embeddings, measuring their similarity.</p>
-
-<p><strong>Step 2: Normalize scores</strong> using softmax to get attention weights:</p>
-
-<d-math block="">
-a_{i,j} = \text{softmax}\left([x_i^{\top} x_j]_{j \in [1,T]}\right) = \frac{\exp(x_i^{\top} x_j)}{\sum_{j'=1}^{T} \exp(x_i^{\top} x_{j'})}
-</d-math>
-
-<p>These weights $a_{i,j}$ sum to 1 across all $j$ for each position $i$.</p>
-
-<p><strong>Step 3: Compute context-aware representation</strong> as a weighted sum:</p>
-
-<d-math block="">
-A_i = \sum_{j=1}^{T} a_{ij} \cdot x_j
-</d-math>
-
-<p>The output $A_i$ is called a <strong>context-aware embedding vector</strong> because it incorporates information from all positions in the sequence, weighted by their relevance to position $i$.</p>
-
-<p><strong>Problem</strong>: This basic form has <strong>no learnable parameters</strong>! The model cannot learn what types of relationships to capture. The similarity is purely based on the raw embeddings.</p>
-
-<hr />
-
-<h3 id="4-learnable-self-attention-query-key-value"><strong>4. Learnable Self-Attention: Query, Key, Value</strong></h3>
-
-<p><em>(Ref: Slides 7–8)</em></p>
-
-<p>To make self-attention learnable, we introduce <strong>three trainable weight matrices</strong> that transform the input embeddings:</p>
-
-<d-math block="">
-\text{query} = W^q x_i, \quad \text{key} = W^k x_i, \quad \text{value} = W^v x_i
-</d-math>
-
-<p>where:</p>
-
-<ul>
-  <li>$W^q \in \mathbb{R}^{d_k \times d}$ is the <strong>Query</strong> matrix</li>
-  <li>$W^k \in \mathbb{R}^{d_k \times d}$ is the <strong>Key</strong> matrix</li>
-  <li>$W^v \in \mathbb{R}^{d_v \times d}$ is the <strong>Value</strong> matrix</li>
-</ul>
-
-<p>For the entire sequence, we compute:</p>
-
-<d-math block="">
-Q = X W^q, \quad K = X W^k, \quad V = X W^v
-</d-math>
-
-<p><strong>Intuition</strong>:</p>
-
-<ul>
-  <li><strong>Query</strong> ($q_i$): “What am I looking for?” - Represents the information needs of position $i$</li>
-  <li><strong>Key</strong> ($k_j$): “What do I contain?” - Represents the content available at position $j$</li>
-  <li><strong>Value</strong> ($v_j$): “What information do I provide?” - The actual information to be retrieved from position $j$</li>
-</ul>
-
-<h4 id="scaled-dot-product-attention"><strong>Scaled Dot-Product Attention</strong></h4>
-
-<p>The attention mechanism computes:</p>
-
-<p><strong>Step 1: Compute attention scores</strong> (compatibility between queries and keys):</p>
-
-<d-math block="">
-\text{score}_{ij} = \frac{q_i^{\top} k_j}{\sqrt{d_k}}
-</d-math>
-
-<p>The scaling by $\sqrt{d_k}$ prevents the dot products from becoming too large (which would cause softmax to saturate).</p>
-
-<p><strong>Step 2: Apply softmax</strong> to get attention weights:</p>
-
-<d-math block="">
-a_{ij} = \frac{\exp(\text{score}_{ij})}{\sum_{j'=1}^{T} \exp(\text{score}_{ij'})}
-</d-math>
-
-<p>This is a form of <strong>similarity or compatibility measure</strong> (multiplicative attention). The softmax ensures weights are normalized and can be interpreted as probabilities.</p>
-
-<p><strong>Step 3: Weighted aggregation</strong> of values:</p>
-
-<d-math block="">
-h_i = \sum_{j=1}^{T} a_{ij} \cdot v_j
-</d-math>
-
-<p>Or in matrix form for the entire sequence:</p>
-
-<d-math block="">
-\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^{\top}}{\sqrt{d_k}}\right) V
-</d-math>
-
-<p><strong>Key Insight</strong>: For each query position $i$, the model learns which key-value pairs to attend to. The attention weights $a_{ij}$ tell us how much position $i$ should focus on position $j$.</p>
-
-<hr />
-
-<h3 id="5-multi-head-attention"><strong>5. Multi-Head Attention</strong></h3>
-
-<p><em>(Ref: Slide 9)</em></p>
-
-<p>Instead of performing attention once, Transformers use <strong>multiple attention heads</strong> operating in parallel. Each head can learn to capture different types of relationships:</p>
-
-<d-math block="">
-\text{head}_h = \text{Attention}(Q W_h^Q, K W_h^K, V W_h^V)
-</d-math>
-
-<p>The outputs of all heads are concatenated and linearly transformed:</p>
-
-<d-math block="">
-\text{MultiHead}(Q, K, V) = \text{Concat}(\text{head}_1, \ldots, \text{head}_H) W^O
-</d-math>
-
-<p>where $W^O$ is an output projection matrix.</p>
-
-<p><strong>Benefits</strong>:</p>
-
-<ul>
-  <li><strong>Multiple relationship types</strong>: Different heads can specialize in different patterns (e.g., syntactic relationships, semantic relationships, positional relationships)</li>
-  <li><strong>Representation subspaces</strong>: Each head operates in a different representational subspace</li>
-  <li><strong>Rich context</strong>: The model can attend to different positions for different reasons simultaneously</li>
-</ul>
-
-<p><strong>Example from Slide 9</strong>: In the sentence <em>“It is in this spirit that a majority of American governments have passed new laws since 2009 making the registration or voting process more difficult”</em>, different attention heads capture:</p>
-
-<ul>
-  <li>Short-range syntactic dependencies (e.g., “making” → “difficult”)</li>
-  <li>Long-range semantic dependencies (e.g., “making” → “laws”)</li>
-  <li>Different types of relationships shown by different colors in the visualization</li>
-</ul>
-
-<hr />
-
-<h3 id="6-the-complete-transformer-architecture"><strong>6. The Complete Transformer Architecture</strong></h3>
-
-<p><em>(Ref: Slides 10, 15–16)</em>
-<img src="../assets/img/notes/lecture-21/transformer.png" alt="Transformer" />
-The original Transformer consists of two main components:</p>
-
-<h4 id="a-encoder-stack-left-side"><strong>A. Encoder Stack</strong> (Left side)</h4>
-
-<p>The encoder processes the <strong>entire input sequence</strong> using:</p>
-
-<ol>
-  <li><strong>Input Embedding</strong>: Converts tokens to dense vectors</li>
-  <li><strong>Positional Encoding</strong>: Adds position information (since attention is permutation-invariant)
-    <d-math block="">
-PE*{(pos, 2i)} = \sin\left(\frac{pos}{10000^{2i/d}}\right)
-</d-math>
-    <d-math block="">
-PE*{(pos, 2i+1)} = \cos\left(\frac{pos}{10000^{2i/d}}\right)
-</d-math>
-  </li>
-  <li><strong>$N_x$ Encoder Layers</strong>, each containing:
-    <ul>
-      <li><strong>Multi-Head Self-Attention</strong>: Full bidirectional attention (every position can attend to every other position)</li>
-      <li><strong>Add &amp; Norm</strong>: Residual connection + Layer Normalization</li>
-      <li><strong>Feed-Forward Network</strong>: Position-wise FFN applied independently to each position
         <d-math block="">
-\text{FFN}(x) = \max(0, xW_1 + b_1)W_2 + b_2
-</d-math>
-      </li>
-      <li><strong>Add &amp; Norm</strong>: Another residual connection + Layer Normalization</li>
-    </ul>
-  </li>
-</ol>
+          a_{i,j} = \text{softmax}\left([x_i^{\top} x_j]_{j \in [1,T]}\right) = \frac{\exp(x_i^{\top} x_j)}{\sum_{j'=1}^{T} \exp(x_i^{\top} x_{j'})}
+        </d-math>
 
-<p><strong>Key feature</strong>: The encoder uses <strong>bidirectional (full) self-attention</strong> - each token can see all other tokens in both directions. This is optimal for understanding the input context.</p>
+        <p>These weights $a_{i,j}$ sum to 1 across all $j$ for each position $i$.</p>
 
-<h4 id="b-decoder-stack-right-side"><strong>B. Decoder Stack</strong> (Right side)</h4>
+        <p><strong>Step 3: Compute context-aware representation</strong> as a weighted sum:</p>
 
-<p>The decoder generates the <strong>output sequence</strong> autoregressively using:</p>
+        <d-math block=""> A_i = \sum_{j=1}^{T} a_{ij} \cdot x_j </d-math>
 
-<ol>
-  <li><strong>Output Embedding + Positional Encoding</strong> (shifted right during training)</li>
-  <li><strong>$N_x$ Decoder Layers</strong>, each containing:
-    <ul>
-      <li><strong>Masked Multi-Head Self-Attention</strong>: Causal attention that prevents positions from attending to future positions
+        <p>
+          The output $A_i$ is called a <strong>context-aware embedding vector</strong> because it incorporates information from all positions in the
+          sequence, weighted by their relevance to position $i$.
+        </p>
+
+        <p>
+          <strong>Problem</strong>: This basic form has <strong>no learnable parameters</strong>! The model cannot learn what types of relationships
+          to capture. The similarity is purely based on the raw embeddings.
+        </p>
+
+        <hr />
+
+        <h3 id="4-learnable-self-attention-query-key-value"><strong>4. Learnable Self-Attention: Query, Key, Value</strong></h3>
+
+        <p><em>(Ref: Slides 7–8)</em></p>
+
+        <p>To make self-attention learnable, we introduce <strong>three trainable weight matrices</strong> that transform the input embeddings:</p>
+
+        <d-math block=""> \text{query} = W^q x_i, \quad \text{key} = W^k x_i, \quad \text{value} = W^v x_i </d-math>
+
+        <p>where:</p>
+
         <ul>
-          <li>Uses a mask to set attention scores for future positions to $-\infty$ before softmax</li>
-          <li>Ensures autoregressive property: position $t$ can only attend to positions $\leq t$</li>
+          <li>$W^q \in \mathbb{R}^{d_k \times d}$ is the <strong>Query</strong> matrix</li>
+          <li>$W^k \in \mathbb{R}^{d_k \times d}$ is the <strong>Key</strong> matrix</li>
+          <li>$W^v \in \mathbb{R}^{d_v \times d}$ is the <strong>Value</strong> matrix</li>
         </ul>
-      </li>
-      <li><strong>Add &amp; Norm</strong></li>
-      <li><strong>Multi-Head Cross-Attention</strong>: Attends to the encoder’s output
+
+        <p>For the entire sequence, we compute:</p>
+
+        <d-math block=""> Q = X W^q, \quad K = X W^k, \quad V = X W^v </d-math>
+
+        <p><strong>Intuition</strong>:</p>
+
         <ul>
-          <li><strong>Queries</strong> come from the decoder</li>
-          <li><strong>Keys</strong> and <strong>Values</strong> come from the encoder output</li>
-          <li>Allows decoder to focus on relevant parts of the input</li>
+          <li><strong>Query</strong> ($q_i$): “What am I looking for?” - Represents the information needs of position $i$</li>
+          <li><strong>Key</strong> ($k_j$): “What do I contain?” - Represents the content available at position $j$</li>
+          <li><strong>Value</strong> ($v_j$): “What information do I provide?” - The actual information to be retrieved from position $j$</li>
         </ul>
-      </li>
-      <li><strong>Add &amp; Norm</strong></li>
-      <li><strong>Feed-Forward Network</strong></li>
-      <li><strong>Add &amp; Norm</strong></li>
-    </ul>
-  </li>
-  <li><strong>Linear + Softmax</strong>: Projects to vocabulary size and produces token probabilities</li>
-</ol>
 
-<p><strong>Key features</strong>:</p>
+        <h4 id="scaled-dot-product-attention"><strong>Scaled Dot-Product Attention</strong></h4>
 
-<ul>
-  <li><strong>Masked attention</strong>: Prevents information leakage from future tokens</li>
-  <li><strong>Cross-attention</strong>: Connects decoder to encoder for sequence-to-sequence tasks</li>
-  <li><strong>Autoregressive generation</strong>: Outputs one token at a time, conditioned on previous tokens</li>
-</ul>
+        <p>The attention mechanism computes:</p>
 
-<h4 id="design-principles"><strong>Design Principles</strong></h4>
+        <p><strong>Step 1: Compute attention scores</strong> (compatibility between queries and keys):</p>
 
-<p>The Transformer architecture embodies several key principles:</p>
+        <d-math block=""> \text{score}_{ij} = \frac{q_i^{\top} k_j}{\sqrt{d_k}} </d-math>
 
-<ol>
-  <li><strong>Parallelization</strong>: Unlike RNNs, all positions in a sequence can be processed simultaneously</li>
-  <li><strong>Residual Connections</strong>: Help with gradient flow in deep networks</li>
-  <li><strong>Layer Normalization</strong>: Stabilizes training</li>
-  <li><strong>Position-wise FFN</strong>: Adds non-linearity and increases model capacity</li>
-  <li><strong>Positional Encodings</strong>: Inject order information into the otherwise permutation-invariant attention</li>
-</ol>
+        <p>The scaling by $\sqrt{d_k}$ prevents the dot products from becoming too large (which would cause softmax to saturate).</p>
 
-<p><strong>Original Use Case</strong>: The Transformer was designed for <strong>machine translation</strong>, where:</p>
+        <p><strong>Step 2: Apply softmax</strong> to get attention weights:</p>
 
-<ul>
-  <li>The encoder processes the full source sentence (e.g., English)</li>
-  <li>The decoder generates the target sentence (e.g., French) while attending to the encoded source</li>
-</ul>
+        <d-math block=""> a_{ij} = \frac{\exp(\text{score}_{ij})}{\sum_{j'=1}^{T} \exp(\text{score}_{ij'})} </d-math>
 
-<p>This <strong>encoder-decoder</strong> structure with cross-attention is ideal for tasks where you have a complete input sequence and need to generate a related output sequence.</p>
+        <p>
+          This is a form of <strong>similarity or compatibility measure</strong> (multiplicative attention). The softmax ensures weights are
+          normalized and can be interpreted as probabilities.
+        </p>
 
-<hr />
+        <p><strong>Step 3: Weighted aggregation</strong> of values:</p>
 
-<h2 id="part-2-gpt-architecture--probabilistic-model"><strong>Part 2: GPT Architecture &amp; Probabilistic Model</strong></h2>
+        <d-math block=""> h_i = \sum_{j=1}^{T} a_{ij} \cdot v_j </d-math>
 
-<p><em>(Ref: Slides 11–14, 17–21)</em></p>
+        <p>Or in matrix form for the entire sequence:</p>
 
-<h3 id="1-architecture-simplification-from-transformer-to-gpt"><strong>1. Architecture Simplification: From Transformer to GPT</strong></h3>
+        <d-math block=""> \text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^{\top}}{\sqrt{d_k}}\right) V </d-math>
 
-<p>GPT (Generative Pre-trained Transformer) represents a significant architectural shift from the original Transformer model.</p>
+        <p>
+          <strong>Key Insight</strong>: For each query position $i$, the model learns which key-value pairs to attend to. The attention weights
+          $a_{ij}$ tell us how much position $i$ should focus on position $j$.
+        </p>
 
-<h4 id="a-the-decoder-only-architecture"><strong>A. The “Decoder-Only” Architecture</strong></h4>
+        <hr />
 
-<p>The original Transformer consisted of two main blocks:</p>
+        <h3 id="5-multi-head-attention"><strong>5. Multi-Head Attention</strong></h3>
 
-<ol>
-  <li><strong>Encoder:</strong> Processes the input sequence (bidirectional attention).</li>
-  <li><strong>Decoder:</strong> Generates the output sequence (masked unidirectional attention) + Cross-attention to the encoder.</li>
-</ol>
+        <p><em>(Ref: Slide 9)</em></p>
 
-<p><strong>GPT simplifies this by removing the Encoder entirely.</strong></p>
+        <p>
+          Instead of performing attention once, Transformers use <strong>multiple attention heads</strong> operating in parallel. Each head can learn
+          to capture different types of relationships:
+        </p>
+
+        <d-math block=""> \text{head}_h = \text{Attention}(Q W_h^Q, K W_h^K, V W_h^V) </d-math>
+
+        <p>The outputs of all heads are concatenated and linearly transformed:</p>
+
+        <d-math block=""> \text{MultiHead}(Q, K, V) = \text{Concat}(\text{head}_1, \ldots, \text{head}_H) W^O </d-math>
+
+        <p>where $W^O$ is an output projection matrix.</p>
+
+        <p><strong>Benefits</strong>:</p>
+
+        <ul>
+          <li>
+            <strong>Multiple relationship types</strong>: Different heads can specialize in different patterns (e.g., syntactic relationships,
+            semantic relationships, positional relationships)
+          </li>
+          <li><strong>Representation subspaces</strong>: Each head operates in a different representational subspace</li>
+          <li><strong>Rich context</strong>: The model can attend to different positions for different reasons simultaneously</li>
+        </ul>
+
+        <p>
+          <strong>Example from Slide 9</strong>: In the sentence
+          <em
+            >“It is in this spirit that a majority of American governments have passed new laws since 2009 making the registration or voting process
+            more difficult”</em
+          >, different attention heads capture:
+        </p>
+
+        <ul>
+          <li>Short-range syntactic dependencies (e.g., “making” → “difficult”)</li>
+          <li>Long-range semantic dependencies (e.g., “making” → “laws”)</li>
+          <li>Different types of relationships shown by different colors in the visualization</li>
+        </ul>
+
+        <hr />
+
+        <h3 id="6-the-complete-transformer-architecture"><strong>6. The Complete Transformer Architecture</strong></h3>
+
+        <p>
+          <em>(Ref: Slides 10, 15–16)</em>
+          <img src="../assets/img/notes/lecture-21/transformer.png" alt="Transformer" />
+          The original Transformer consists of two main components:
+        </p>
+
+        <h4 id="a-encoder-stack-left-side"><strong>A. Encoder Stack</strong> (Left side)</h4>
 
-<ul>
-  <li><strong>Structure:</strong> A stack of Transformer Decoder blocks.</li>
-  <li><strong>Removed Mechanism:</strong> The “Cross-Attention” layer (which usually connects Decoder to Encoder) is removed.</li>
-  <li><strong>Retained Mechanism:</strong> <strong>Masked Self-Attention</strong>.</li>
-</ul>
+        <p>The encoder processes the <strong>entire input sequence</strong> using:</p>
 
-<h4 id="b-masked-self-attention-causal-masking"><strong>B. Masked Self-Attention (Causal Masking)</strong></h4>
+        <ol>
+          <li><strong>Input Embedding</strong>: Converts tokens to dense vectors</li>
+          <li>
+            <strong>Positional Encoding</strong>: Adds position information (since attention is permutation-invariant)
+            <d-math block=""> PE*{(pos, 2i)} = \sin\left(\frac{pos}{10000^{2i/d}}\right) </d-math>
+            <d-math block=""> PE*{(pos, 2i+1)} = \cos\left(\frac{pos}{10000^{2i/d}}\right) </d-math>
+          </li>
+          <li>
+            <strong>$N_x$ Encoder Layers</strong>, each containing:
+            <ul>
+              <li><strong>Multi-Head Self-Attention</strong>: Full bidirectional attention (every position can attend to every other position)</li>
+              <li><strong>Add &amp; Norm</strong>: Residual connection + Layer Normalization</li>
+              <li>
+                <strong>Feed-Forward Network</strong>: Position-wise FFN applied independently to each position
+                <d-math block=""> \text{FFN}(x) = \max(0, xW_1 + b_1)W_2 + b_2 </d-math>
+              </li>
+              <li><strong>Add &amp; Norm</strong>: Another residual connection + Layer Normalization</li>
+            </ul>
+          </li>
+        </ol>
+
+        <p>
+          <strong>Key feature</strong>: The encoder uses <strong>bidirectional (full) self-attention</strong> - each token can see all other tokens in
+          both directions. This is optimal for understanding the input context.
+        </p>
+
+        <h4 id="b-decoder-stack-right-side"><strong>B. Decoder Stack</strong> (Right side)</h4>
+
+        <p>The decoder generates the <strong>output sequence</strong> autoregressively using:</p>
+
+        <ol>
+          <li><strong>Output Embedding + Positional Encoding</strong> (shifted right during training)</li>
+          <li>
+            <strong>$N_x$ Decoder Layers</strong>, each containing:
+            <ul>
+              <li>
+                <strong>Masked Multi-Head Self-Attention</strong>: Causal attention that prevents positions from attending to future positions
+                <ul>
+                  <li>Uses a mask to set attention scores for future positions to $-\infty$ before softmax</li>
+                  <li>Ensures autoregressive property: position $t$ can only attend to positions $\leq t$</li>
+                </ul>
+              </li>
+              <li><strong>Add &amp; Norm</strong></li>
+              <li>
+                <strong>Multi-Head Cross-Attention</strong>: Attends to the encoder’s output
+                <ul>
+                  <li><strong>Queries</strong> come from the decoder</li>
+                  <li><strong>Keys</strong> and <strong>Values</strong> come from the encoder output</li>
+                  <li>Allows decoder to focus on relevant parts of the input</li>
+                </ul>
+              </li>
+              <li><strong>Add &amp; Norm</strong></li>
+              <li><strong>Feed-Forward Network</strong></li>
+              <li><strong>Add &amp; Norm</strong></li>
+            </ul>
+          </li>
+          <li><strong>Linear + Softmax</strong>: Projects to vocabulary size and produces token probabilities</li>
+        </ol>
+
+        <p><strong>Key features</strong>:</p>
+
+        <ul>
+          <li><strong>Masked attention</strong>: Prevents information leakage from future tokens</li>
+          <li><strong>Cross-attention</strong>: Connects decoder to encoder for sequence-to-sequence tasks</li>
+          <li><strong>Autoregressive generation</strong>: Outputs one token at a time, conditioned on previous tokens</li>
+        </ul>
+
+        <h4 id="design-principles"><strong>Design Principles</strong></h4>
+
+        <p>The Transformer architecture embodies several key principles:</p>
+
+        <ol>
+          <li><strong>Parallelization</strong>: Unlike RNNs, all positions in a sequence can be processed simultaneously</li>
+          <li><strong>Residual Connections</strong>: Help with gradient flow in deep networks</li>
+          <li><strong>Layer Normalization</strong>: Stabilizes training</li>
+          <li><strong>Position-wise FFN</strong>: Adds non-linearity and increases model capacity</li>
+          <li><strong>Positional Encodings</strong>: Inject order information into the otherwise permutation-invariant attention</li>
+        </ol>
 
-<p>This is the critical component that defines GPT’s behavior.</p>
+        <p><strong>Original Use Case</strong>: The Transformer was designed for <strong>machine translation</strong>, where:</p>
 
-<ul>
-  <li>In a standard Encoder (like BERT), a token at position $t$ can attend to <em>all</em> tokens ($1$ to $T$).</li>
-  <li>In GPT (Decoder), a token at position $t$ can <strong>only attend to previous positions</strong> ($1$ to $t-1$) and itself.</li>
-  <li><strong>Why?</strong> To prevent “cheating” (seeing the future tokens) during the generation process.</li>
-</ul>
+        <ul>
+          <li>The encoder processes the full source sentence (e.g., English)</li>
+          <li>The decoder generates the target sentence (e.g., French) while attending to the encoded source</li>
+        </ul>
 
-<hr />
+        <p>
+          This <strong>encoder-decoder</strong> structure with cross-attention is ideal for tasks where you have a complete input sequence and need to
+          generate a related output sequence.
+        </p>
 
-<h3 id="2-probabilistic-modeling-next-token-prediction"><strong>2. Probabilistic Modeling: Next-Token Prediction</strong></h3>
+        <hr />
 
-<h4 id="a-the-formula-chain-rule-of-probability"><strong>A. The Formula (Chain Rule of Probability)</strong></h4>
+        <h2 id="part-2-gpt-architecture--probabilistic-model"><strong>Part 2: GPT Architecture &amp; Probabilistic Model</strong></h2>
 
-<p>Given a sequence of tokens $U = {u_1, u_2, …, u_n}$, the joint probability of the entire sequence $P(U)$ is factored using the chain rule:</p>
+        <p><em>(Ref: Slides 11–14, 17–21)</em></p>
 
-<p>$P(U) = \prod_{i=1}^{n} P(u_i \mid u_{1}, \dots, u_{i-1})$</p>
+        <h3 id="1-architecture-simplification-from-transformer-to-gpt"><strong>1. Architecture Simplification: From Transformer to GPT</strong></h3>
 
-<ul>
-  <li>$u_i$: The token at the current step.</li>
-  <li>$u_{1}, \dots, u_{i-1}$: The <strong>context window</strong> (history).</li>
-</ul>
+        <p>GPT (Generative Pre-trained Transformer) represents a significant architectural shift from the original Transformer model.</p>
 
-<h4 id="b-training-objective"><strong>B. Training Objective</strong></h4>
+        <h4 id="a-the-decoder-only-architecture"><strong>A. The “Decoder-Only” Architecture</strong></h4>
 
-<p>We define the loss function (typically Cross-Entropy) as:</p>
+        <p>The original Transformer consisted of two main blocks:</p>
 
-<p>$\mathcal{L}(\theta) = - \sum_{i} \log P(u_i \mid u_{i-k}, \dots, u_{i-1}; \theta)
-$</p>
+        <ol>
+          <li><strong>Encoder:</strong> Processes the input sequence (bidirectional attention).</li>
+          <li><strong>Decoder:</strong> Generates the output sequence (masked unidirectional attention) + Cross-attention to the encoder.</li>
+        </ol>
 
-<ul>
-  <li><strong>Input:</strong> A sequence of tokens.</li>
-  <li><strong>Output:</strong> A probability distribution over the vocabulary for the <em>next</em> token.</li>
-  <li><strong>Process:</strong>
-    <ol>
-      <li>Pass context through the Decoder stack.</li>
-      <li>Output vector $h_n$ passes through a Softmax layer.</li>
-      <li>Sample or select the highest probability token.</li>
-    </ol>
-  </li>
-</ul>
-
-<h4 id="c-directed-probabilistic-graphical-model"><strong>C. Directed Probabilistic Graphical Model</strong></h4>
-
-<p>GPT can be viewed as a directed PGM:</p>
-
-<p><img src="../assets/img/notes/lecture-21/PGM.png" alt="Directed PGM" /></p>
-
-<p>$P_{\theta}(X) = \prod_i \prod_t P_{\theta} (X_{i,t} \mid X_{i,&lt;t})$</p>
-
-<p>when we transform this probability into log-likelihood form, the probabilistic objective becomes maximizing :</p>
-
-<p>$\max_{\theta} \sum_{i} \sum_{t} \log P_{\theta} (X_{i,t} \mid X_{i,&lt;t})$</p>
-
-<p>which corresponds to MLE objective.</p>
-
-<p><strong>Model structure:</strong></p>
-
-<ul>
-  <li>Input: token embeddings + positional encodings</li>
-  <li>Masked multi-head attention: Enforces “causality”</li>
-  <li>Decoder stack: Learns \(P(X_t \mid X_{&lt;t})\)</li>
-  <li>Output: softmax over vocabulary</li>
-</ul>
-
-<hr />
-
-<h3 id="3-gpt-vs-traditional-seq2seq-translation"><strong>3. GPT vs. Traditional Seq2Seq (Translation)</strong></h3>
-
-<p>How does GPT differ from traditional Sequence-to-Sequence models (like the original Transformer or LSTM-based translation models)?</p>
-
-<h4 id="a-traditional-seq2seq-encoder-decoder"><strong>A. Traditional Seq2Seq (Encoder-Decoder)</strong></h4>
-
-<p>Used typically for translation ($English \rightarrow French$).</p>
-
-<ul>
-  <li><strong>Mechanism:</strong>
-    <ol>
-      <li><strong>Encode:</strong> Read the entire English sentence into a context vector ($Context$).</li>
-      <li><strong>Decode:</strong> Generate French based on $p(\text{French} \mid \text{Context})$</li>
-    </ol>
-  </li>
-  <li><strong>Key Feature:</strong> The Encoder is <strong>bidirectional</strong> (it sees the whole English sentence at once).</li>
-</ul>
-
-<h4 id="b-gpt-autoregressive-language-model"><strong>B. GPT (Autoregressive Language Model)</strong></h4>
-
-<p>GPT does not have a separate “source” encoding stage. It treats Translation as <strong>Conditioned Generation</strong>.</p>
-
-<ul>
-  <li><strong>Input:</strong> It concatenates the source and the prompt into a single sequence.
-    <ul>
-      <li><em>Example:</em> “Translate to French: Hello world -&gt;”</li>
-    </ul>
-  </li>
-  <li><strong>Mechanism:</strong> The model predicts the next token sequentially.</li>
-  <li><strong>Key Difference:</strong>
-    <ul>
-      <li><strong>No Architecture Change:</strong> The same architecture used for writing poems is used for translation.</li>
-      <li><strong>Unidirectional Context:</strong> Even when reading the source sentence, GPT processes it left-to-right (though for the source part, this is less efficient than bidirectional encoding, scale compensates for it).</li>
-    </ul>
-  </li>
-</ul>
-
-<h4 id="summary-table"><strong>Summary Table</strong></h4>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: left">Feature</th>
-      <th style="text-align: left">Traditional Seq2Seq (e.g., T5)</th>
-      <th style="text-align: left">GPT (Decoder-Only)</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: left"><strong>Architecture</strong></td>
-      <td style="text-align: left">Encoder-Decoder</td>
-      <td style="text-align: left">Decoder-Only</td>
-    </tr>
-    <tr>
-      <td style="text-align: left"><strong>Attention</strong></td>
-      <td style="text-align: left">Bidirectional (Enc) &amp; Causal (Dec)</td>
-      <td style="text-align: left">Causal (Masked) Only</td>
-    </tr>
-    <tr>
-      <td style="text-align: left"><strong>Objective</strong></td>
-      <td style="text-align: left">Masked Language Modeling / Translation</td>
-      <td style="text-align: left">Next-Token Prediction</td>
-    </tr>
-    <tr>
-      <td style="text-align: left"><strong>Task Approach</strong></td>
-      <td style="text-align: left">Task-specific fine-tuning structure</td>
-      <td style="text-align: left">Few-shot prompting (Input concatenation)</td>
-    </tr>
-  </tbody>
-</table>
+        <p><strong>GPT simplifies this by removing the Encoder entirely.</strong></p>
 
-<hr />
+        <ul>
+          <li><strong>Structure:</strong> A stack of Transformer Decoder blocks.</li>
+          <li><strong>Removed Mechanism:</strong> The “Cross-Attention” layer (which usually connects Decoder to Encoder) is removed.</li>
+          <li><strong>Retained Mechanism:</strong> <strong>Masked Self-Attention</strong>.</li>
+        </ul>
 
-<h2 id="part-3-the-evolution-of-the-gpt-series-gpt-1-to-gpt-4"><strong>Part 3: The Evolution of the GPT Series (GPT-1 to GPT-4)</strong></h2>
+        <h4 id="b-masked-self-attention-causal-masking"><strong>B. Masked Self-Attention (Causal Masking)</strong></h4>
 
-<p><em>(Ref: Slides 22–26, 36)</em></p>
+        <p>This is the critical component that defines GPT’s behavior.</p>
 
-<h3 id="1-from-our-gpt-0-to-gpt-1"><strong>1. From our “GPT-0” to GPT-1</strong></h3>
-
-<p><em>(Ref: Slide 23)</em></p>
-
-<p>Moving from a simple character-level GPT to GPT-1 involves several key improvements:</p>
-
-<h4 id="architecture-changes"><strong>Architecture Changes:</strong></h4>
-
-<ul>
-  <li><strong>Tokenizer</strong>: Characters → <strong>Byte-Pair Encoding (BPE)</strong> tokenizer
-    <ul>
-      <li>More efficient representation of text</li>
-      <li>Vocabulary of 40,000 tokens vs. 65 characters</li>
-    </ul>
-  </li>
-  <li><strong>Activation</strong>: ReLU → <strong>GELU</strong> (Gaussian Error Linear Unit)</li>
-  <li><strong>Weight sharing</strong> for embedding and output layers</li>
-</ul>
-
-<h4 id="scale-117m-parameters"><strong>Scale (117M parameters):</strong></h4>
-
-<ul>
-  <li><strong>Layers</strong>: 4 → 12</li>
-  <li><strong>Attention Heads</strong>: 4 → 12</li>
-  <li><strong>Block size (max context)</strong>: 32 → 512</li>
-  <li><strong>Vocab</strong>: 65 → 40,000 BPE tokens</li>
-  <li><strong>Embedding dim</strong>: 64 → 768</li>
-</ul>
-
-<h4 id="training"><strong>Training:</strong></h4>
-
-<ul>
-  <li><strong>Dataset</strong>: TinyShakespeare (1MB) → <strong>BookCorpus (5GB)</strong></li>
-  <li><strong>Initialization &amp; normalization</strong>: Default → Carefully tuned</li>
-  <li><strong>Optimizer</strong>: Vanilla Adam → Adam + learning rate warmup + weight decay</li>
-</ul>
-
-<h4 id="inference"><strong>Inference:</strong></h4>
-
-<ul>
-  <li><strong>Sampling</strong>: Greedy → <strong>Top-k sampling</strong></li>
-</ul>
-
-<hr />
-
-<h3 id="2-from-gpt-1-to-gpt-2"><strong>2. From GPT-1 to GPT-2</strong></h3>
-
-<p><em>(Ref: Slide 24)</em></p>
-
-<p>GPT-2 demonstrated that language models could be “unsupervised multitask learners.”</p>
-
-<h4 id="architecture"><strong>Architecture:</strong></h4>
-
-<p><strong>Scale options</strong>, with largest model at <strong>1.5B parameters</strong>:</p>
-
-<ul>
-  <li><strong>Layers</strong>: 12 → 48</li>
-  <li><strong>Attention Heads</strong>: 12 → 25</li>
-  <li><strong>Embedding Dim</strong>: 768 → 1,600</li>
-  <li><strong>Block size (max context)</strong>: 512 → 1,024</li>
-  <li><strong>Vocab</strong>: 40k → 50k tokens</li>
-</ul>
-
-<h4 id="training-1"><strong>Training:</strong></h4>
-
-<ul>
-  <li><strong>Dataset</strong>: BookCorpus (5GB) → <strong>WebText (40GB)</strong>
-    <ul>
-      <li>Scraped from Reddit outbound links</li>
-      <li>Higher quality and diversity</li>
-    </ul>
-  </li>
-</ul>
-
-<p><strong>Note</strong>: You can reproduce GPT-2 yourself using Andrej Karpathy’s nanoGPT (takes 4 days on an 8xA100 machine)</p>
-
-<hr />
-
-<h3 id="3-from-gpt-2-to-gpt-3"><strong>3. From GPT-2 to GPT-3</strong></h3>
-
-<p><em>(Ref: Slide 25)</em></p>
-
-<p>GPT-3 demonstrated that with sufficient scale, language models become “few-shot learners.”</p>
-
-<h4 id="architecture-1"><strong>Architecture:</strong></h4>
-
-<p><strong>Massive scale increase</strong> to <strong>175B parameters</strong>:</p>
-
-<ul>
-  <li><strong>Block size (max context)</strong>: 1,024 → 2,048</li>
-  <li><strong>Layers</strong>: 48 → 96</li>
-  <li><strong>Embedding Dim</strong>: 1,600 → 12,288</li>
-  <li><strong>Attention Heads</strong>: 25 → 96</li>
-</ul>
-
-<h4 id="training-2"><strong>Training:</strong></h4>
-
-<ul>
-  <li><strong>Dataset</strong>: WebText (40GB) → <strong>Common Crawl + books, Wikipedia, code</strong> (~570GB)
-    <ul>
-      <li>Significantly more diverse training data</li>
-      <li>Better quality filtering</li>
-    </ul>
-  </li>
-</ul>
-
-<p><strong>Key Innovation</strong>: Few-shot and zero-shot learning capabilities emerge at scale</p>
-
-<hr />
-
-<h3 id="4-from-gpt-3-to-gpt-4"><strong>4. From GPT-3 to GPT-4</strong></h3>
-
-<p><em>(Ref: Slide 26)</em></p>
-
-<p>GPT-4 represents a leap in capabilities with architectural innovations and alignment improvements.</p>
-
-<h4 id="architecture-2"><strong>Architecture:</strong></h4>
-
-<ul>
-  <li><strong>Likely includes Mixture of Experts (MoE)</strong></li>
-  <li><strong>Tokenizer</strong>: Includes <strong>image patches for multimodality</strong>
-    <ul>
-      <li>Can process both text and images</li>
-      <li>Vision encoder integrated into the model</li>
-    </ul>
-  </li>
-</ul>
-
-<h4 id="scale"><strong>Scale:</strong></h4>
-
-<ul>
-  <li><strong>Total parameters</strong>: 175B → Likely <strong>&gt;1T</strong> (trillion)
-    <ul>
-      <li>Though not all parameters active per token (if using MoE)</li>
-    </ul>
-  </li>
-  <li><strong>Block size (max context)</strong>: 2,048 → <strong>128K</strong> tokens
-    <ul>
-      <li>Can process much longer documents</li>
-    </ul>
-  </li>
-</ul>
-
-<h4 id="training-3"><strong>Training:</strong></h4>
-
-<ul>
-  <li><strong>Dataset</strong>: ~570GB → <strong>Larger, undisclosed</strong> (~50TB, 13T tokens reported)</li>
-  <li><strong>Alignment</strong>: <strong>Reinforcement Learning from Human Feedback (RLHF)</strong>
-    <ul>
-      <li>Human labelers rank model outputs</li>
-      <li>Reward model trained on preferences</li>
-      <li>Policy fine-tuned using PPO (Proximal Policy Optimization)</li>
-      <li>System-level “safety” measures</li>
-    </ul>
-  </li>
-</ul>
-
-<hr />
-
-<h3 id="5-comparison-table-gpt-1-to-gpt-4"><strong>5. Comparison Table: GPT-1 to GPT-4</strong></h3>
-
-<table>
-  <thead>
-    <tr>
-      <th>Model</th>
-      <th>Number of parameters</th>
-      <th>Training data</th>
-      <th>Context window</th>
-      <th>Tokenizer</th>
-      <th>Architecture</th>
-      <th>New capabilities</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><strong>GPT-1</strong></td>
-      <td>117M</td>
-      <td><em>5GB</em></td>
-      <td>512</td>
-      <td>BPE</td>
-      <td>Layers: 12<br />Heads: 12<br />Emb dim: 768<br />Vocab: 40K</td>
-      <td>Transfer learning</td>
-    </tr>
-    <tr>
-      <td><strong>GPT-2</strong></td>
-      <td>1.5B</td>
-      <td><em>40GB</em></td>
-      <td>1024</td>
-      <td>BPE</td>
-      <td>Layers: 48<br />Heads: 25<br />Emb dim: 1600<br />Vocab: 50K</td>
-      <td>Zero-shot learning</td>
-    </tr>
-    <tr>
-      <td><strong>GPT-3</strong></td>
-      <td>175B</td>
-      <td><em>~570GB</em></td>
-      <td>2048</td>
-      <td>BPE</td>
-      <td>Layers: 96<br />Heads: 96<br />Emb dim: 12288<br />Vocab: &gt;50K</td>
-      <td>Few-shot learning</td>
-    </tr>
-    <tr>
-      <td><strong>GPT-4</strong></td>
-      <td>Likely &gt;1T</td>
-      <td><em>~50TB</em></td>
-      <td>128K</td>
-      <td>Text + image patches</td>
-      <td>MoE (likely)<br />• Larger scale (depth/width)</td>
-      <td>• RLHF<br />• Multimodal<br />• Long-context reasoning</td>
-    </tr>
-  </tbody>
-</table>
-
-<p><strong>Key Trends:</strong></p>
-
-<ul>
-  <li>Exponential growth in parameters and training data</li>
-  <li>Increasing context window size</li>
-  <li>Improved alignment and safety</li>
-  <li>Multimodal capabilities</li>
-</ul>
-
-<hr />
-
-<h2 id="part-4-mixture-of-experts-moe--final-summary"><strong>Part 4: Mixture of Experts (MoE) &amp; Final Summary</strong></h2>
-
-<p><em>(Ref: Slides 27–35)</em></p>
-
-<h3 id="1-mixture-of-experts-moe-architecture"><strong>1. Mixture of Experts (MoE): Architecture</strong></h3>
-<p><img src="assets/img/notes/lecture-21/experts.png" alt="Mixture of Experts" /></p>
-
-<p>As models scale (e.g., GPT-4), <strong>Mixture of Experts (MoE)</strong> decouples total model capacity from computational cost, allowing for massive parameter counts without slowing down inference.</p>
-
-<h4 id="a-the-core-idea"><strong>A. The Core Idea</strong></h4>
-
-<figure>
-  <div class="row">
-    <div class="col one">
-      <img src="/assets/img/notes/lecture21/moe_architecture.png" />
-    </div>
-  </div>
-  <figcaption>
-    <strong>Mixture of Experts Architecture.</strong>
-    A router network selects which expert(s) to activate for each token.
-  </figcaption>
-</figure>
-
-<ul>
-  <li><strong>The Experts:</strong> The standard dense Feed-Forward Network (FFNN) is replaced by multiple independent networks called “experts.”</li>
-  <li><strong>The Router:</strong> A learned gating mechanism that selects only the most relevant expert(s) to process a specific token.</li>
-</ul>
-
-<h4 id="b-dense-vs-sparse-models"><strong>B. Dense vs. Sparse Models</strong></h4>
-
-<p><strong>Dense Model:</strong></p>
-
-<ul>
-  <li>Every input activates <strong>all parameters</strong></li>
-  <li>High compute cost: All FFN weights are used for every token</li>
-</ul>
-
-<p><strong>Sparse Model (MoE):</strong></p>
-
-<ul>
-  <li>Uses <strong>conditional computation</strong></li>
-  <li>Only a small subset of parameters (e.g., 2 out of 16 experts) is activated per token</li>
-  <li><strong>Key advantage</strong>: Maintains fast inference despite high total capacity</li>
-</ul>
-
-<h4 id="c-moe-in-transformer-decoder"><strong>C. MoE in Transformer Decoder</strong></h4>
-
-<p>The FFNN layer in each Transformer block is replaced with multiple expert FFNNs:
-<img src="../assets/img/notes/lecture-21/mixtransformer.png" alt=" MoE in Transformer Decoder" />
-<strong>Dense Decoder:</strong></p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Layer Norm → Masked Self-Attention → Add &amp; Norm →
+        <ul>
+          <li>In a standard Encoder (like BERT), a token at position $t$ can attend to <em>all</em> tokens ($1$ to $T$).</li>
+          <li>In GPT (Decoder), a token at position $t$ can <strong>only attend to previous positions</strong> ($1$ to $t-1$) and itself.</li>
+          <li><strong>Why?</strong> To prevent “cheating” (seeing the future tokens) during the generation process.</li>
+        </ul>
+
+        <hr />
+
+        <h3 id="2-probabilistic-modeling-next-token-prediction"><strong>2. Probabilistic Modeling: Next-Token Prediction</strong></h3>
+
+        <h4 id="a-the-formula-chain-rule-of-probability"><strong>A. The Formula (Chain Rule of Probability)</strong></h4>
+
+        <p>
+          Given a sequence of tokens $U = {u_1, u_2, …, u_n}$, the joint probability of the entire sequence $P(U)$ is factored using the chain rule:
+        </p>
+
+        <p>$P(U) = \prod_{i=1}^{n} P(u_i \mid u_{1}, \dots, u_{i-1})$</p>
+
+        <ul>
+          <li>$u_i$: The token at the current step.</li>
+          <li>$u_{1}, \dots, u_{i-1}$: The <strong>context window</strong> (history).</li>
+        </ul>
+
+        <h4 id="b-training-objective"><strong>B. Training Objective</strong></h4>
+
+        <p>We define the loss function (typically Cross-Entropy) as:</p>
+
+        <p>$\mathcal{L}(\theta) = - \sum_{i} \log P(u_i \mid u_{i-k}, \dots, u_{i-1}; \theta) $</p>
+
+        <ul>
+          <li><strong>Input:</strong> A sequence of tokens.</li>
+          <li><strong>Output:</strong> A probability distribution over the vocabulary for the <em>next</em> token.</li>
+          <li>
+            <strong>Process:</strong>
+            <ol>
+              <li>Pass context through the Decoder stack.</li>
+              <li>Output vector $h_n$ passes through a Softmax layer.</li>
+              <li>Sample or select the highest probability token.</li>
+            </ol>
+          </li>
+        </ul>
+
+        <h4 id="c-directed-probabilistic-graphical-model"><strong>C. Directed Probabilistic Graphical Model</strong></h4>
+
+        <p>GPT can be viewed as a directed PGM:</p>
+
+        <p><img src="../assets/img/notes/lecture-21/PGM.png" alt="Directed PGM" /></p>
+
+        <p>$P_{\theta}(X) = \prod_i \prod_t P_{\theta} (X_{i,t} \mid X_{i,&lt;t})$</p>
+
+        <p>when we transform this probability into log-likelihood form, the probabilistic objective becomes maximizing :</p>
+
+        <p>$\max_{\theta} \sum_{i} \sum_{t} \log P_{\theta} (X_{i,t} \mid X_{i,&lt;t})$</p>
+
+        <p>which corresponds to MLE objective.</p>
+
+        <p><strong>Model structure:</strong></p>
+
+        <ul>
+          <li>Input: token embeddings + positional encodings</li>
+          <li>Masked multi-head attention: Enforces “causality”</li>
+          <li>Decoder stack: Learns \(P(X_t \mid X_{&lt;t})\)</li>
+          <li>Output: softmax over vocabulary</li>
+        </ul>
+
+        <hr />
+
+        <h3 id="3-gpt-vs-traditional-seq2seq-translation"><strong>3. GPT vs. Traditional Seq2Seq (Translation)</strong></h3>
+
+        <p>How does GPT differ from traditional Sequence-to-Sequence models (like the original Transformer or LSTM-based translation models)?</p>
+
+        <h4 id="a-traditional-seq2seq-encoder-decoder"><strong>A. Traditional Seq2Seq (Encoder-Decoder)</strong></h4>
+
+        <p>Used typically for translation ($English \rightarrow French$).</p>
+
+        <ul>
+          <li>
+            <strong>Mechanism:</strong>
+            <ol>
+              <li><strong>Encode:</strong> Read the entire English sentence into a context vector ($Context$).</li>
+              <li><strong>Decode:</strong> Generate French based on $p(\text{French} \mid \text{Context})$</li>
+            </ol>
+          </li>
+          <li><strong>Key Feature:</strong> The Encoder is <strong>bidirectional</strong> (it sees the whole English sentence at once).</li>
+        </ul>
+
+        <h4 id="b-gpt-autoregressive-language-model"><strong>B. GPT (Autoregressive Language Model)</strong></h4>
+
+        <p>GPT does not have a separate “source” encoding stage. It treats Translation as <strong>Conditioned Generation</strong>.</p>
+
+        <ul>
+          <li>
+            <strong>Input:</strong> It concatenates the source and the prompt into a single sequence.
+            <ul>
+              <li><em>Example:</em> “Translate to French: Hello world -&gt;”</li>
+            </ul>
+          </li>
+          <li><strong>Mechanism:</strong> The model predicts the next token sequentially.</li>
+          <li>
+            <strong>Key Difference:</strong>
+            <ul>
+              <li><strong>No Architecture Change:</strong> The same architecture used for writing poems is used for translation.</li>
+              <li>
+                <strong>Unidirectional Context:</strong> Even when reading the source sentence, GPT processes it left-to-right (though for the source
+                part, this is less efficient than bidirectional encoding, scale compensates for it).
+              </li>
+            </ul>
+          </li>
+        </ul>
+
+        <h4 id="summary-table"><strong>Summary Table</strong></h4>
+
+        <table>
+          <thead>
+            <tr>
+              <th style="text-align: left">Feature</th>
+              <th style="text-align: left">Traditional Seq2Seq (e.g., T5)</th>
+              <th style="text-align: left">GPT (Decoder-Only)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="text-align: left"><strong>Architecture</strong></td>
+              <td style="text-align: left">Encoder-Decoder</td>
+              <td style="text-align: left">Decoder-Only</td>
+            </tr>
+            <tr>
+              <td style="text-align: left"><strong>Attention</strong></td>
+              <td style="text-align: left">Bidirectional (Enc) &amp; Causal (Dec)</td>
+              <td style="text-align: left">Causal (Masked) Only</td>
+            </tr>
+            <tr>
+              <td style="text-align: left"><strong>Objective</strong></td>
+              <td style="text-align: left">Masked Language Modeling / Translation</td>
+              <td style="text-align: left">Next-Token Prediction</td>
+            </tr>
+            <tr>
+              <td style="text-align: left"><strong>Task Approach</strong></td>
+              <td style="text-align: left">Task-specific fine-tuning structure</td>
+              <td style="text-align: left">Few-shot prompting (Input concatenation)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <hr />
+
+        <h2 id="part-3-the-evolution-of-the-gpt-series-gpt-1-to-gpt-4"><strong>Part 3: The Evolution of the GPT Series (GPT-1 to GPT-4)</strong></h2>
+
+        <p><em>(Ref: Slides 22–26, 36)</em></p>
+
+        <h3 id="1-from-our-gpt-0-to-gpt-1"><strong>1. From our “GPT-0” to GPT-1</strong></h3>
+
+        <p><em>(Ref: Slide 23)</em></p>
+
+        <p>Moving from a simple character-level GPT to GPT-1 involves several key improvements:</p>
+
+        <h4 id="architecture-changes"><strong>Architecture Changes:</strong></h4>
+
+        <ul>
+          <li>
+            <strong>Tokenizer</strong>: Characters → <strong>Byte-Pair Encoding (BPE)</strong> tokenizer
+            <ul>
+              <li>More efficient representation of text</li>
+              <li>Vocabulary of 40,000 tokens vs. 65 characters</li>
+            </ul>
+          </li>
+          <li><strong>Activation</strong>: ReLU → <strong>GELU</strong> (Gaussian Error Linear Unit)</li>
+          <li><strong>Weight sharing</strong> for embedding and output layers</li>
+        </ul>
+
+        <h4 id="scale-117m-parameters"><strong>Scale (117M parameters):</strong></h4>
+
+        <ul>
+          <li><strong>Layers</strong>: 4 → 12</li>
+          <li><strong>Attention Heads</strong>: 4 → 12</li>
+          <li><strong>Block size (max context)</strong>: 32 → 512</li>
+          <li><strong>Vocab</strong>: 65 → 40,000 BPE tokens</li>
+          <li><strong>Embedding dim</strong>: 64 → 768</li>
+        </ul>
+
+        <h4 id="training"><strong>Training:</strong></h4>
+
+        <ul>
+          <li><strong>Dataset</strong>: TinyShakespeare (1MB) → <strong>BookCorpus (5GB)</strong></li>
+          <li><strong>Initialization &amp; normalization</strong>: Default → Carefully tuned</li>
+          <li><strong>Optimizer</strong>: Vanilla Adam → Adam + learning rate warmup + weight decay</li>
+        </ul>
+
+        <h4 id="inference"><strong>Inference:</strong></h4>
+
+        <ul>
+          <li><strong>Sampling</strong>: Greedy → <strong>Top-k sampling</strong></li>
+        </ul>
+
+        <hr />
+
+        <h3 id="2-from-gpt-1-to-gpt-2"><strong>2. From GPT-1 to GPT-2</strong></h3>
+
+        <p><em>(Ref: Slide 24)</em></p>
+
+        <p>GPT-2 demonstrated that language models could be “unsupervised multitask learners.”</p>
+
+        <h4 id="architecture"><strong>Architecture:</strong></h4>
+
+        <p><strong>Scale options</strong>, with largest model at <strong>1.5B parameters</strong>:</p>
+
+        <ul>
+          <li><strong>Layers</strong>: 12 → 48</li>
+          <li><strong>Attention Heads</strong>: 12 → 25</li>
+          <li><strong>Embedding Dim</strong>: 768 → 1,600</li>
+          <li><strong>Block size (max context)</strong>: 512 → 1,024</li>
+          <li><strong>Vocab</strong>: 40k → 50k tokens</li>
+        </ul>
+
+        <h4 id="training-1"><strong>Training:</strong></h4>
+
+        <ul>
+          <li>
+            <strong>Dataset</strong>: BookCorpus (5GB) → <strong>WebText (40GB)</strong>
+            <ul>
+              <li>Scraped from Reddit outbound links</li>
+              <li>Higher quality and diversity</li>
+            </ul>
+          </li>
+        </ul>
+
+        <p><strong>Note</strong>: You can reproduce GPT-2 yourself using Andrej Karpathy’s nanoGPT (takes 4 days on an 8xA100 machine)</p>
+
+        <hr />
+
+        <h3 id="3-from-gpt-2-to-gpt-3"><strong>3. From GPT-2 to GPT-3</strong></h3>
+
+        <p><em>(Ref: Slide 25)</em></p>
+
+        <p>GPT-3 demonstrated that with sufficient scale, language models become “few-shot learners.”</p>
+
+        <h4 id="architecture-1"><strong>Architecture:</strong></h4>
+
+        <p><strong>Massive scale increase</strong> to <strong>175B parameters</strong>:</p>
+
+        <ul>
+          <li><strong>Block size (max context)</strong>: 1,024 → 2,048</li>
+          <li><strong>Layers</strong>: 48 → 96</li>
+          <li><strong>Embedding Dim</strong>: 1,600 → 12,288</li>
+          <li><strong>Attention Heads</strong>: 25 → 96</li>
+        </ul>
+
+        <h4 id="training-2"><strong>Training:</strong></h4>
+
+        <ul>
+          <li>
+            <strong>Dataset</strong>: WebText (40GB) → <strong>Common Crawl + books, Wikipedia, code</strong> (~570GB)
+            <ul>
+              <li>Significantly more diverse training data</li>
+              <li>Better quality filtering</li>
+            </ul>
+          </li>
+        </ul>
+
+        <p><strong>Key Innovation</strong>: Few-shot and zero-shot learning capabilities emerge at scale</p>
+
+        <hr />
+
+        <h3 id="4-from-gpt-3-to-gpt-4"><strong>4. From GPT-3 to GPT-4</strong></h3>
+
+        <p><em>(Ref: Slide 26)</em></p>
+
+        <p>GPT-4 represents a leap in capabilities with architectural innovations and alignment improvements.</p>
+
+        <h4 id="architecture-2"><strong>Architecture:</strong></h4>
+
+        <ul>
+          <li><strong>Likely includes Mixture of Experts (MoE)</strong></li>
+          <li>
+            <strong>Tokenizer</strong>: Includes <strong>image patches for multimodality</strong>
+            <ul>
+              <li>Can process both text and images</li>
+              <li>Vision encoder integrated into the model</li>
+            </ul>
+          </li>
+        </ul>
+
+        <h4 id="scale"><strong>Scale:</strong></h4>
+
+        <ul>
+          <li>
+            <strong>Total parameters</strong>: 175B → Likely <strong>&gt;1T</strong> (trillion)
+            <ul>
+              <li>Though not all parameters active per token (if using MoE)</li>
+            </ul>
+          </li>
+          <li>
+            <strong>Block size (max context)</strong>: 2,048 → <strong>128K</strong> tokens
+            <ul>
+              <li>Can process much longer documents</li>
+            </ul>
+          </li>
+        </ul>
+
+        <h4 id="training-3"><strong>Training:</strong></h4>
+
+        <ul>
+          <li><strong>Dataset</strong>: ~570GB → <strong>Larger, undisclosed</strong> (~50TB, 13T tokens reported)</li>
+          <li>
+            <strong>Alignment</strong>: <strong>Reinforcement Learning from Human Feedback (RLHF)</strong>
+            <ul>
+              <li>Human labelers rank model outputs</li>
+              <li>Reward model trained on preferences</li>
+              <li>Policy fine-tuned using PPO (Proximal Policy Optimization)</li>
+              <li>System-level “safety” measures</li>
+            </ul>
+          </li>
+        </ul>
+
+        <hr />
+
+        <h3 id="5-comparison-table-gpt-1-to-gpt-4"><strong>5. Comparison Table: GPT-1 to GPT-4</strong></h3>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Model</th>
+              <th>Number of parameters</th>
+              <th>Training data</th>
+              <th>Context window</th>
+              <th>Tokenizer</th>
+              <th>Architecture</th>
+              <th>New capabilities</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>GPT-1</strong></td>
+              <td>117M</td>
+              <td><em>5GB</em></td>
+              <td>512</td>
+              <td>BPE</td>
+              <td>Layers: 12<br />Heads: 12<br />Emb dim: 768<br />Vocab: 40K</td>
+              <td>Transfer learning</td>
+            </tr>
+            <tr>
+              <td><strong>GPT-2</strong></td>
+              <td>1.5B</td>
+              <td><em>40GB</em></td>
+              <td>1024</td>
+              <td>BPE</td>
+              <td>Layers: 48<br />Heads: 25<br />Emb dim: 1600<br />Vocab: 50K</td>
+              <td>Zero-shot learning</td>
+            </tr>
+            <tr>
+              <td><strong>GPT-3</strong></td>
+              <td>175B</td>
+              <td><em>~570GB</em></td>
+              <td>2048</td>
+              <td>BPE</td>
+              <td>Layers: 96<br />Heads: 96<br />Emb dim: 12288<br />Vocab: &gt;50K</td>
+              <td>Few-shot learning</td>
+            </tr>
+            <tr>
+              <td><strong>GPT-4</strong></td>
+              <td>Likely &gt;1T</td>
+              <td><em>~50TB</em></td>
+              <td>128K</td>
+              <td>Text + image patches</td>
+              <td>MoE (likely)<br />• Larger scale (depth/width)</td>
+              <td>• RLHF<br />• Multimodal<br />• Long-context reasoning</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p><strong>Key Trends:</strong></p>
+
+        <ul>
+          <li>Exponential growth in parameters and training data</li>
+          <li>Increasing context window size</li>
+          <li>Improved alignment and safety</li>
+          <li>Multimodal capabilities</li>
+        </ul>
+
+        <hr />
+
+        <h2 id="part-4-mixture-of-experts-moe--final-summary"><strong>Part 4: Mixture of Experts (MoE) &amp; Final Summary</strong></h2>
+
+        <p><em>(Ref: Slides 27–35)</em></p>
+
+        <h3 id="1-mixture-of-experts-moe-architecture"><strong>1. Mixture of Experts (MoE): Architecture</strong></h3>
+        <p><img src="assets/img/notes/lecture-21/experts.png" alt="Mixture of Experts" /></p>
+
+        <p>
+          As models scale (e.g., GPT-4), <strong>Mixture of Experts (MoE)</strong> decouples total model capacity from computational cost, allowing
+          for massive parameter counts without slowing down inference.
+        </p>
+
+        <h4 id="a-the-core-idea"><strong>A. The Core Idea</strong></h4>
+
+        <figure>
+          <div class="row">
+            <div class="col one">
+              <img src="/assets/img/notes/lecture21/moe_architecture.png" />
+            </div>
+          </div>
+          <figcaption>
+            <strong>Mixture of Experts Architecture.</strong>
+            A router network selects which expert(s) to activate for each token.
+          </figcaption>
+        </figure>
+
+        <ul>
+          <li>
+            <strong>The Experts:</strong> The standard dense Feed-Forward Network (FFNN) is replaced by multiple independent networks called
+            “experts.”
+          </li>
+          <li><strong>The Router:</strong> A learned gating mechanism that selects only the most relevant expert(s) to process a specific token.</li>
+        </ul>
+
+        <h4 id="b-dense-vs-sparse-models"><strong>B. Dense vs. Sparse Models</strong></h4>
+
+        <p><strong>Dense Model:</strong></p>
+
+        <ul>
+          <li>Every input activates <strong>all parameters</strong></li>
+          <li>High compute cost: All FFN weights are used for every token</li>
+        </ul>
+
+        <p><strong>Sparse Model (MoE):</strong></p>
+
+        <ul>
+          <li>Uses <strong>conditional computation</strong></li>
+          <li>Only a small subset of parameters (e.g., 2 out of 16 experts) is activated per token</li>
+          <li><strong>Key advantage</strong>: Maintains fast inference despite high total capacity</li>
+        </ul>
+
+        <h4 id="c-moe-in-transformer-decoder"><strong>C. MoE in Transformer Decoder</strong></h4>
+
+        <p>
+          The FFNN layer in each Transformer block is replaced with multiple expert FFNNs:
+          <img src="../assets/img/notes/lecture-21/mixtransformer.png" alt=" MoE in Transformer Decoder" />
+          <strong>Dense Decoder:</strong>
+        </p>
+
+        <div class="language-plaintext highlighter-rouge">
+          <div class="highlight">
+            <pre class="highlight"><code>Layer Norm → Masked Self-Attention → Add &amp; Norm →
 Layer Norm → [FFNN] → Add &amp; Norm
-</code></pre></div></div>
+</code></pre>
+          </div>
+        </div>
 
-<p><strong>Sparse Decoder (MoE):</strong></p>
+        <p><strong>Sparse Decoder (MoE):</strong></p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Layer Norm → Masked Self-Attention → Add &amp; Norm →
+        <div class="language-plaintext highlighter-rouge">
+          <div class="highlight">
+            <pre class="highlight"><code>Layer Norm → Masked Self-Attention → Add &amp; Norm →
 Layer Norm → [Router → Select Experts → FFNN₁, FFNN₂, ..., FFNNₙ] → Add &amp; Norm
-</code></pre></div></div>
+</code></pre>
+          </div>
+        </div>
 
-<p>The router computes:</p>
+        <p>The router computes:</p>
 
-<d-math block="">
-\text{MoE}(x) = \sum_{i=1}^{N} g_i(x) \cdot \text{Expert}_i(x)
-</d-math>
+        <d-math block=""> \text{MoE}(x) = \sum_{i=1}^{N} g_i(x) \cdot \text{Expert}_i(x) </d-math>
 
-<p>where $g_i(x)$ is the gating weight for expert $i$.</p>
+        <p>where $g_i(x)$ is the gating weight for expert $i$.</p>
 
-<hr />
+        <hr />
 
-<h3 id="2-probabilistic-view-of-moe"><strong>2. Probabilistic View of MoE</strong></h3>
+        <h3 id="2-probabilistic-view-of-moe"><strong>2. Probabilistic View of MoE</strong></h3>
 
-<p>MoE acts as a probabilistic ensemble where the contribution of each expert is dynamic. The output probability $P(Y \mid X)$
-is:</p>
+        <p>MoE acts as a probabilistic ensemble where the contribution of each expert is dynamic. The output probability $P(Y \mid X)$ is:</p>
 
-<d-math block="">
-P(Y | X) = \sum_{m} g_m(X) \cdot P_m(Y | X)
-</d-math>
+        <d-math block=""> P(Y | X) = \sum_{m} g_m(X) \cdot P_m(Y | X) </d-math>
 
-<p>where:</p>
+        <p>where:</p>
 
-<ul>
-  <li>$P(Y \mid X)$ is expert $m$’s prediction</li>
-  <li>$g_m(X)$ is the <strong>gating function</strong> (weight for expert $m$)</li>
-</ul>
+        <ul>
+          <li>$P(Y \mid X)$ is expert $m$’s prediction</li>
+          <li>$g_m(X)$ is the <strong>gating function</strong> (weight for expert $m$)</li>
+        </ul>
 
-<p><strong>Constraints:</strong></p>
+        <p><strong>Constraints:</strong></p>
 
-<d-math block="">
-\sum_{m} g_m(X) = 1, \quad g_m(X) \geq 0 \quad \forall m, X
-</d-math>
+        <d-math block=""> \sum_{m} g_m(X) = 1, \quad g_m(X) \geq 0 \quad \forall m, X </d-math>
 
-<p>This formulation <strong>unifies several ensemble approaches</strong>:</p>
+        <p>This formulation <strong>unifies several ensemble approaches</strong>:</p>
 
-<h4 id="comparison-with-other-ensemble-methods"><strong>Comparison with Other Ensemble Methods:</strong></h4>
+        <h4 id="comparison-with-other-ensemble-methods"><strong>Comparison with Other Ensemble Methods:</strong></h4>
 
-<table>
-  <thead>
-    <tr>
-      <th>Method</th>
-      <th>Gating Function $g_m(X)$</th>
-      <th>Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><strong>Bagging</strong></td>
-      <td>$g_m(X) = \frac{1}{M}$</td>
-      <td>Constant, uniform weighting across all experts</td>
-    </tr>
-    <tr>
-      <td><strong>Boosting</strong></td>
-      <td>$g_m(X) = \alpha_m$</td>
-      <td>Constant but expert-specific weights</td>
-    </tr>
-    <tr>
-      <td><strong>MoE</strong></td>
-      <td>$g_m(X) = \text{Router}(X)$</td>
-      <td><strong>Learned function of the input</strong> - adapts per example</td>
-    </tr>
-  </tbody>
-</table>
+        <table>
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>Gating Function $g_m(X)$</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Bagging</strong></td>
+              <td>$g_m(X) = \frac{1}{M}$</td>
+              <td>Constant, uniform weighting across all experts</td>
+            </tr>
+            <tr>
+              <td><strong>Boosting</strong></td>
+              <td>$g_m(X) = \alpha_m$</td>
+              <td>Constant but expert-specific weights</td>
+            </tr>
+            <tr>
+              <td><strong>MoE</strong></td>
+              <td>$g_m(X) = \text{Router}(X)$</td>
+              <td><strong>Learned function of the input</strong> - adapts per example</td>
+            </tr>
+          </tbody>
+        </table>
 
-<p><strong>Key Insight</strong>: In MoE, the gating function $g_m(X)$ is <strong>input-dependent</strong>. The model learns to route specific types of inputs to specific experts, enabling specialization.</p>
+        <p>
+          <strong>Key Insight</strong>: In MoE, the gating function $g_m(X)$ is <strong>input-dependent</strong>. The model learns to route specific
+          types of inputs to specific experts, enabling specialization.
+        </p>
 
-<hr />
+        <hr />
 
-<h3 id="3-error-analysis-the-role-of-diversity"><strong>3. Error Analysis: The Role of Diversity</strong></h3>
+        <h3 id="3-error-analysis-the-role-of-diversity"><strong>3. Error Analysis: The Role of Diversity</strong></h3>
 
-<p>The goal of MoE is to minimize the <strong>Ensemble Error</strong> rather than the individual <strong>Average Expert Error</strong>.</p>
+        <p>The goal of MoE is to minimize the <strong>Ensemble Error</strong> rather than the individual <strong>Average Expert Error</strong>.</p>
 
-<h4 id="a-error-definitions"><strong>A. Error Definitions</strong></h4>
+        <h4 id="a-error-definitions"><strong>A. Error Definitions</strong></h4>
 
-<p>Define:</p>
+        <p>Define:</p>
 
-<ul>
-  <li><strong>Ensemble mean</strong>: $\bar{f}(x) = \mathbb{E}[Y \mid X] = \sum_m g_m(X)\, f_m(x)$</li>
-  <li><strong>Individual expert mean</strong>: $f_m(x) = \mathbb{E}_m[Y \mid X]$</li>
-</ul>
+        <ul>
+          <li><strong>Ensemble mean</strong>: $\bar{f}(x) = \mathbb{E}[Y \mid X] = \sum_m g_m(X)\, f_m(x)$</li>
+          <li><strong>Individual expert mean</strong>: $f_m(x) = \mathbb{E}_m[Y \mid X]$</li>
+        </ul>
 
-<p>Compare:</p>
+        <p>Compare:</p>
 
-<ul>
-  <li><strong>Ensemble error</strong>: $\epsilon(x) = (Y - \bar{f}(x))^2$</li>
-  <li><strong>Average expert error</strong>: $\bar{\epsilon}(x) = \frac{1}{M}\sum_m (Y - f_m(x))^2$</li>
-</ul>
+        <ul>
+          <li><strong>Ensemble error</strong>: $\epsilon(x) = (Y - \bar{f}(x))^2$</li>
+          <li><strong>Average expert error</strong>: $\bar{\epsilon}(x) = \frac{1}{M}\sum_m (Y - f_m(x))^2$</li>
+        </ul>
 
-<h4 id="b-analysis-for-linear-models"><strong>B. Analysis for Linear Models</strong></h4>
+        <h4 id="b-analysis-for-linear-models"><strong>B. Analysis for Linear Models</strong></h4>
 
-<p>For linear experts $f_m$, we can decompose the errors:</p>
+        <p>For linear experts $f_m$, we can decompose the errors:</p>
 
-<figure>
-  <div class="row">
-    <div class="col one">
-      <img src="/assets/img/notes/lecture21/moe_error_analysis.png" />
-    </div>
-  </div>
-  <figcaption>
-    <strong>Error vs. Diversity Trade-off.</strong>
-    As expert diversity increases (more unique training data), ensemble error decreases while average expert error increases. The disagreement between experts (dashed line) shows why diverse experts help.
-  </figcaption>
-</figure>
-
-<p><strong>Key Observations:</strong></p>
-
-<ol>
-  <li><strong>Ensemble error decreases</strong> with diversity (solid line, lower)</li>
-  <li><strong>Average expert error increases</strong> with diversity (solid line, upper)</li>
-  <li><strong>Disagreement between experts</strong> (dashed line) increases with diversity</li>
-</ol>
-
-<p><strong>Intuition</strong>: Expert errors are wrong in individualized ways and cancel out through consensus.</p>
-
-<d-math block="">
-\text{Ensemble Error} &lt; \text{Average Expert Error} \quad \text{when experts are diverse}
-</d-math>
-
-<p><strong>→ Slight “overfitting” of experts helps!</strong></p>
-
-<p>Experts that specialize (even overfit) to different data subsets create diversity, which reduces ensemble error even if individual expert errors are higher.</p>
-
-<hr />
-
-<h3 id="4-implications-for-llms"><strong>4. Implications for LLMs</strong></h3>
-
-<h4 id="a-training-implications"><strong>A. Training Implications</strong></h4>
-
-<p>From the error analysis, we learn:</p>
-
-<ul>
-  <li><strong>Encourage specialization</strong>: Experts should learn different patterns</li>
-  <li><strong>Load balancing challenges</strong>: Need to ensure all experts are utilized
-    <ul>
-      <li>If one expert dominates, we lose diversity benefits</li>
-      <li>Auxiliary losses encourage balanced expert usage</li>
-    </ul>
-  </li>
-</ul>
-
-<p><strong>Common training challenge</strong>: Experts can collapse to similar solutions, reducing diversity.</p>
-
-<p>Solutions include:</p>
-
-<ul>
-  <li>Load balancing losses</li>
-  <li>Expert capacity constraints</li>
-  <li>Noise injection in routing</li>
-</ul>
-
-<h4 id="b-serving-implications"><strong>B. Serving Implications</strong></h4>
-<p><img src="../assets/img/notes/lecture-21/expertsLLM.png" alt="Serving Architecture" />
-Shows the router network selecting experts and the gating mechanism for combining expert outputs.</p>
-
-<p><strong>Benefits:</strong></p>
-
-<ul>
-  <li><strong>Faster inference</strong>: Only activate k out of N experts per token</li>
-  <li><strong>Higher capacity</strong>: Can have 10x more total parameters with similar compute</li>
-  <li><strong>Example</strong>: Activate 2 experts out of 16 → only ~12.5% of expert parameters used per token</li>
-</ul>
-
-<p><strong>Challenges:</strong></p>
-
-<ul>
-  <li><strong>Memory requirements</strong>: All expert parameters must be loaded</li>
-  <li><strong>Load balancing</strong>: Some experts may become overloaded</li>
-  <li><strong>Communication overhead</strong>: In distributed settings, routing to different experts requires coordination</li>
-</ul>
-
-<hr />
-
-<h3 id="5-summary-transformer-vs-gpt"><strong>5. Summary: Transformer vs. GPT</strong></h3>
-
-<p>While GPT originates from the Transformer architecture, it evolved specifically for generative tasks.</p>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: left">Component</th>
-      <th style="text-align: left">Original Transformer (Vaswani et al., 2017)</th>
-      <th style="text-align: left">GPT (Generative Pre-Trained Transformer)</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: left"><strong>Architecture</strong></td>
-      <td style="text-align: left"><strong>Encoder-Decoder</strong> (Full sequence transduction)</td>
-      <td style="text-align: left"><strong>Decoder-only</strong> (Unconditional generation)</td>
-    </tr>
-    <tr>
-      <td style="text-align: left"><strong>Attention</strong></td>
-      <td style="text-align: left">Full self-attention (Bidirectional in encoder)</td>
-      <td style="text-align: left"><strong>Masked (Causal)</strong> self-attention</td>
-    </tr>
-    <tr>
-      <td style="text-align: left"><strong>Positional Encoding</strong></td>
-      <td style="text-align: left">Sinusoidal (Fixed function)</td>
-      <td style="text-align: left"><strong>Learned</strong> positional embeddings (GPT-1+)</td>
-    </tr>
-    <tr>
-      <td style="text-align: left"><strong>Output</strong></td>
-      <td style="text-align: left">Task-specific (e.g., translation)</td>
-      <td style="text-align: left"><strong>Next-token prediction</strong> (Softmax)</td>
-    </tr>
-    <tr>
-      <td style="text-align: left"><strong>Training Objective</strong></td>
-      <td style="text-align: left">Flexible / Supervised (task-specific)</td>
-      <td style="text-align: left"><strong>Language Modeling</strong> (Autoregressive)</td>
-    </tr>
-    <tr>
-      <td style="text-align: left"><strong>Inference</strong></td>
-      <td style="text-align: left">Processes full input, generates full output</td>
-      <td style="text-align: left"><strong>Greedy / Sampling</strong> (Token-by-token)</td>
-    </tr>
-    <tr>
-      <td style="text-align: left"><strong>Use Case</strong></td>
-      <td style="text-align: left">Machine translation, seq2seq tasks</td>
-      <td style="text-align: left"><strong>Text generation, few-shot learning</strong></td>
-    </tr>
-  </tbody>
-</table>
-
-<hr />
-
-<h3 id="6-summary-from-gpt-1-to-gpt-4"><strong>6. Summary: From GPT-1 to GPT-4</strong></h3>
-
-<p>The evolution of GPT models shows consistent trends:</p>
-
-<h4 id="architectural-evolution"><strong>Architectural Evolution:</strong></h4>
-
-<ul>
-  <li><strong>Scale</strong>: 117M params → &gt;1T params (10,000x increase)</li>
-  <li><strong>Context</strong>: 512 tokens → 128K tokens (250x increase)</li>
-  <li><strong>Layers</strong>: 12 → &gt;96</li>
-  <li><strong>Attention Heads</strong>: 12 → &gt;96</li>
-  <li><strong>Embedding Dimension</strong>: 768 → &gt;12,288</li>
-</ul>
-
-<h4 id="data-evolution"><strong>Data Evolution:</strong></h4>
-
-<ul>
-  <li><strong>Size</strong>: 5GB → ~50TB (10,000x increase)</li>
-  <li><strong>Quality</strong>: BookCorpus → Curated web + books + code</li>
-  <li><strong>Diversity</strong>: Single domain → Multi-domain, multi-modal</li>
-</ul>
-
-<h4 id="capability-evolution"><strong>Capability Evolution:</strong></h4>
-
-<ul>
-  <li><strong>GPT-1</strong>: Transfer learning via fine-tuning</li>
-  <li><strong>GPT-2</strong>: Zero-shot task generalization</li>
-  <li><strong>GPT-3</strong>: Few-shot in-context learning</li>
-  <li><strong>GPT-4</strong>: Multimodal understanding, enhanced reasoning, RLHF alignment</li>
-</ul>
-
-<h4 id="architectural-innovations"><strong>Architectural Innovations:</strong></h4>
-
-<ul>
-  <li><strong>Tokenization</strong>: Character → BPE → Enhanced BPE + image patches</li>
-  <li><strong>Activation</strong>: ReLU → GELU</li>
-  <li><strong>Sparse Architectures</strong>: Dense FFN → Mixture of Experts (likely in GPT-4)</li>
-  <li><strong>Alignment</strong>: Pure language modeling → RLHF for human preference alignment</li>
-</ul>
-
-<hr />
-
-<h2 id="conclusion"><strong>Conclusion</strong></h2>
-
-<p>This lecture traced the evolution from RNNs through Transformers to modern GPT architectures:</p>
-
-<ol>
-  <li><strong>RNNs</strong> had fundamental limitations in parallelization and long-range dependencies</li>
-  <li><strong>Transformers</strong> solved these with self-attention and parallel processing</li>
-  <li><strong>GPT</strong> simplified the Transformer to a decoder-only architecture focused on language modeling</li>
-  <li><strong>Scaling</strong> from GPT-1 to GPT-4 showed that increased capacity, data, and training enable emergent capabilities</li>
-  <li><strong>Mixture of Experts</strong> enables continued scaling by decoupling model capacity from computational cost</li>
-</ol>
-
-<p>The key insights are:</p>
-
-<ul>
-  <li><strong>Attention is all you need</strong> for sequence modeling</li>
-  <li><strong>Causal masking</strong> enables autoregressive generation</li>
-  <li><strong>Scale</strong> (parameters, data, compute) unlocks qualitatively new capabilities</li>
-  <li><strong>Sparse architectures</strong> like MoE allow continued scaling</li>
-  <li><strong>Alignment</strong> through RLHF is crucial for deploying powerful models safely</li>
-</ul>
-
-<hr />
-
-<h2 id="references"><strong>References</strong></h2>
-
-<ol>
-  <li>
-    <p>Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A.N., Kaiser, L. and Polosukhin, I., 2017. <a href="https://arxiv.org/abs/1706.03762">Attention Is All You Need</a>. NeurIPS 2017.</p>
-  </li>
-  <li>
-    <p>Radford, A., Narasimhan, K., Salimans, T. and Sutskever, I., 2018. <a href="https://cdn.openai.com/research-covers/language-unsupervised/language_understanding_paper.pdf">Improving Language Understanding by Generative Pre-Training</a>. OpenAI.</p>
-  </li>
-  <li>
-    <p>Radford, A., Wu, J., Child, R., Luan, D., Amodei, D. and Sutskever, I., 2019. <a href="https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf">Language Models are Unsupervised Multitask Learners</a>. OpenAI.</p>
-  </li>
-  <li>
-    <p>Brown, T., Mann, B., Ryder, N., et al., 2020. <a href="https://arxiv.org/abs/2005.14165">Language Models are Few-Shot Learners</a>. NeurIPS 2020.</p>
-  </li>
-  <li>
-    <p>OpenAI, 2023. <a href="https://arxiv.org/abs/2303.08774">GPT-4 Technical Report</a>.</p>
-  </li>
-  <li>
-    <p>Jacobs, R.A., Jordan, M.I., Nowlan, S.J. and Hinton, G.E., 1991. <a href="https://www.cs.toronto.edu/~hinton/absps/jjnh91.pdf">Adaptive Mixtures of Local Experts</a>. Neural Computation.</p>
-  </li>
-  <li>
-    <p>Jordan, M.I. and Jacobs, R.A., 1994. <a href="https://www.cs.toronto.edu/~hinton/absps/emhmm.pdf">Hierarchical Mixtures of Experts and the EM Algorithm</a>. Neural Computation.</p>
-  </li>
-  <li>
-    <p>Shazeer, N., et al., 2017. <a href="https://arxiv.org/abs/1701.06538">Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer</a>. ICLR 2017.</p>
-  </li>
-  <li>
-    <p>Sollich, P. and Krogh, A., 1995. <a href="http://papers.nips.cc/paper/1044-learning-with-ensembles-how-over-fitting-can-be-useful">Learning with Ensembles: How Overfitting Can Be Useful</a>. NeurIPS 1995.</p>
-  </li>
-  <li>
-    <p>Yang, L., et al., 2023. <a href="https://arxiv.org/abs/2304.13712">A Survey on Transformers</a>. arXiv preprint.</p>
-  </li>
-  <li>
-    <p>Grootendorst, M., <a href="https://maartengrootendorst.com">A Visual Guide to Mixture of Experts</a>. Blog post.</p>
-  </li>
-  <li>
-    <p>Xie, S., et al., 2022. <a href="https://arxiv.org/abs/2210.04423">On the Role of the Action Space in Robot Manipulation Learning</a>. arXiv preprint.</p>
-  </li>
-</ol>
- </d-article>
+        <figure>
+          <div class="row">
+            <div class="col one">
+              <img src="/assets/img/notes/lecture21/moe_error_analysis.png" />
+            </div>
+          </div>
+          <figcaption>
+            <strong>Error vs. Diversity Trade-off.</strong>
+            As expert diversity increases (more unique training data), ensemble error decreases while average expert error increases. The disagreement
+            between experts (dashed line) shows why diverse experts help.
+          </figcaption>
+        </figure>
+
+        <p><strong>Key Observations:</strong></p>
+
+        <ol>
+          <li><strong>Ensemble error decreases</strong> with diversity (solid line, lower)</li>
+          <li><strong>Average expert error increases</strong> with diversity (solid line, upper)</li>
+          <li><strong>Disagreement between experts</strong> (dashed line) increases with diversity</li>
+        </ol>
+
+        <p><strong>Intuition</strong>: Expert errors are wrong in individualized ways and cancel out through consensus.</p>
+
+        <d-math block=""> \text{Ensemble Error} &lt; \text{Average Expert Error} \quad \text{when experts are diverse} </d-math>
+
+        <p><strong>→ Slight “overfitting” of experts helps!</strong></p>
+
+        <p>
+          Experts that specialize (even overfit) to different data subsets create diversity, which reduces ensemble error even if individual expert
+          errors are higher.
+        </p>
+
+        <hr />
+
+        <h3 id="4-implications-for-llms"><strong>4. Implications for LLMs</strong></h3>
+
+        <h4 id="a-training-implications"><strong>A. Training Implications</strong></h4>
+
+        <p>From the error analysis, we learn:</p>
+
+        <ul>
+          <li><strong>Encourage specialization</strong>: Experts should learn different patterns</li>
+          <li>
+            <strong>Load balancing challenges</strong>: Need to ensure all experts are utilized
+            <ul>
+              <li>If one expert dominates, we lose diversity benefits</li>
+              <li>Auxiliary losses encourage balanced expert usage</li>
+            </ul>
+          </li>
+        </ul>
+
+        <p><strong>Common training challenge</strong>: Experts can collapse to similar solutions, reducing diversity.</p>
+
+        <p>Solutions include:</p>
+
+        <ul>
+          <li>Load balancing losses</li>
+          <li>Expert capacity constraints</li>
+          <li>Noise injection in routing</li>
+        </ul>
+
+        <h4 id="b-serving-implications"><strong>B. Serving Implications</strong></h4>
+        <p>
+          <img src="../assets/img/notes/lecture-21/expertsLLM.png" alt="Serving Architecture" /> Shows the router network selecting experts and the
+          gating mechanism for combining expert outputs.
+        </p>
+
+        <p><strong>Benefits:</strong></p>
+
+        <ul>
+          <li><strong>Faster inference</strong>: Only activate k out of N experts per token</li>
+          <li><strong>Higher capacity</strong>: Can have 10x more total parameters with similar compute</li>
+          <li><strong>Example</strong>: Activate 2 experts out of 16 → only ~12.5% of expert parameters used per token</li>
+        </ul>
+
+        <p><strong>Challenges:</strong></p>
+
+        <ul>
+          <li><strong>Memory requirements</strong>: All expert parameters must be loaded</li>
+          <li><strong>Load balancing</strong>: Some experts may become overloaded</li>
+          <li><strong>Communication overhead</strong>: In distributed settings, routing to different experts requires coordination</li>
+        </ul>
+
+        <hr />
+
+        <h3 id="5-summary-transformer-vs-gpt"><strong>5. Summary: Transformer vs. GPT</strong></h3>
+
+        <p>While GPT originates from the Transformer architecture, it evolved specifically for generative tasks.</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th style="text-align: left">Component</th>
+              <th style="text-align: left">Original Transformer (Vaswani et al., 2017)</th>
+              <th style="text-align: left">GPT (Generative Pre-Trained Transformer)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="text-align: left"><strong>Architecture</strong></td>
+              <td style="text-align: left"><strong>Encoder-Decoder</strong> (Full sequence transduction)</td>
+              <td style="text-align: left"><strong>Decoder-only</strong> (Unconditional generation)</td>
+            </tr>
+            <tr>
+              <td style="text-align: left"><strong>Attention</strong></td>
+              <td style="text-align: left">Full self-attention (Bidirectional in encoder)</td>
+              <td style="text-align: left"><strong>Masked (Causal)</strong> self-attention</td>
+            </tr>
+            <tr>
+              <td style="text-align: left"><strong>Positional Encoding</strong></td>
+              <td style="text-align: left">Sinusoidal (Fixed function)</td>
+              <td style="text-align: left"><strong>Learned</strong> positional embeddings (GPT-1+)</td>
+            </tr>
+            <tr>
+              <td style="text-align: left"><strong>Output</strong></td>
+              <td style="text-align: left">Task-specific (e.g., translation)</td>
+              <td style="text-align: left"><strong>Next-token prediction</strong> (Softmax)</td>
+            </tr>
+            <tr>
+              <td style="text-align: left"><strong>Training Objective</strong></td>
+              <td style="text-align: left">Flexible / Supervised (task-specific)</td>
+              <td style="text-align: left"><strong>Language Modeling</strong> (Autoregressive)</td>
+            </tr>
+            <tr>
+              <td style="text-align: left"><strong>Inference</strong></td>
+              <td style="text-align: left">Processes full input, generates full output</td>
+              <td style="text-align: left"><strong>Greedy / Sampling</strong> (Token-by-token)</td>
+            </tr>
+            <tr>
+              <td style="text-align: left"><strong>Use Case</strong></td>
+              <td style="text-align: left">Machine translation, seq2seq tasks</td>
+              <td style="text-align: left"><strong>Text generation, few-shot learning</strong></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <hr />
+
+        <h3 id="6-summary-from-gpt-1-to-gpt-4"><strong>6. Summary: From GPT-1 to GPT-4</strong></h3>
+
+        <p>The evolution of GPT models shows consistent trends:</p>
+
+        <h4 id="architectural-evolution"><strong>Architectural Evolution:</strong></h4>
+
+        <ul>
+          <li><strong>Scale</strong>: 117M params → &gt;1T params (10,000x increase)</li>
+          <li><strong>Context</strong>: 512 tokens → 128K tokens (250x increase)</li>
+          <li><strong>Layers</strong>: 12 → &gt;96</li>
+          <li><strong>Attention Heads</strong>: 12 → &gt;96</li>
+          <li><strong>Embedding Dimension</strong>: 768 → &gt;12,288</li>
+        </ul>
+
+        <h4 id="data-evolution"><strong>Data Evolution:</strong></h4>
+
+        <ul>
+          <li><strong>Size</strong>: 5GB → ~50TB (10,000x increase)</li>
+          <li><strong>Quality</strong>: BookCorpus → Curated web + books + code</li>
+          <li><strong>Diversity</strong>: Single domain → Multi-domain, multi-modal</li>
+        </ul>
+
+        <h4 id="capability-evolution"><strong>Capability Evolution:</strong></h4>
+
+        <ul>
+          <li><strong>GPT-1</strong>: Transfer learning via fine-tuning</li>
+          <li><strong>GPT-2</strong>: Zero-shot task generalization</li>
+          <li><strong>GPT-3</strong>: Few-shot in-context learning</li>
+          <li><strong>GPT-4</strong>: Multimodal understanding, enhanced reasoning, RLHF alignment</li>
+        </ul>
+
+        <h4 id="architectural-innovations"><strong>Architectural Innovations:</strong></h4>
+
+        <ul>
+          <li><strong>Tokenization</strong>: Character → BPE → Enhanced BPE + image patches</li>
+          <li><strong>Activation</strong>: ReLU → GELU</li>
+          <li><strong>Sparse Architectures</strong>: Dense FFN → Mixture of Experts (likely in GPT-4)</li>
+          <li><strong>Alignment</strong>: Pure language modeling → RLHF for human preference alignment</li>
+        </ul>
+
+        <hr />
+
+        <h2 id="conclusion"><strong>Conclusion</strong></h2>
+
+        <p>This lecture traced the evolution from RNNs through Transformers to modern GPT architectures:</p>
+
+        <ol>
+          <li><strong>RNNs</strong> had fundamental limitations in parallelization and long-range dependencies</li>
+          <li><strong>Transformers</strong> solved these with self-attention and parallel processing</li>
+          <li><strong>GPT</strong> simplified the Transformer to a decoder-only architecture focused on language modeling</li>
+          <li><strong>Scaling</strong> from GPT-1 to GPT-4 showed that increased capacity, data, and training enable emergent capabilities</li>
+          <li><strong>Mixture of Experts</strong> enables continued scaling by decoupling model capacity from computational cost</li>
+        </ol>
+
+        <p>The key insights are:</p>
+
+        <ul>
+          <li><strong>Attention is all you need</strong> for sequence modeling</li>
+          <li><strong>Causal masking</strong> enables autoregressive generation</li>
+          <li><strong>Scale</strong> (parameters, data, compute) unlocks qualitatively new capabilities</li>
+          <li><strong>Sparse architectures</strong> like MoE allow continued scaling</li>
+          <li><strong>Alignment</strong> through RLHF is crucial for deploying powerful models safely</li>
+        </ul>
+
+        <hr />
+
+        <h2 id="references"><strong>References</strong></h2>
+
+        <ol>
+          <li>
+            <p>
+              Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A.N., Kaiser, L. and Polosukhin, I., 2017.
+              <a href="https://arxiv.org/abs/1706.03762">Attention Is All You Need</a>. NeurIPS 2017.
+            </p>
+          </li>
+          <li>
+            <p>
+              Radford, A., Narasimhan, K., Salimans, T. and Sutskever, I., 2018.
+              <a href="https://cdn.openai.com/research-covers/language-unsupervised/language_understanding_paper.pdf"
+                >Improving Language Understanding by Generative Pre-Training</a
+              >. OpenAI.
+            </p>
+          </li>
+          <li>
+            <p>
+              Radford, A., Wu, J., Child, R., Luan, D., Amodei, D. and Sutskever, I., 2019.
+              <a href="https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf"
+                >Language Models are Unsupervised Multitask Learners</a
+              >. OpenAI.
+            </p>
+          </li>
+          <li>
+            <p>
+              Brown, T., Mann, B., Ryder, N., et al., 2020. <a href="https://arxiv.org/abs/2005.14165">Language Models are Few-Shot Learners</a>.
+              NeurIPS 2020.
+            </p>
+          </li>
+          <li>
+            <p>OpenAI, 2023. <a href="https://arxiv.org/abs/2303.08774">GPT-4 Technical Report</a>.</p>
+          </li>
+          <li>
+            <p>
+              Jacobs, R.A., Jordan, M.I., Nowlan, S.J. and Hinton, G.E., 1991.
+              <a href="https://www.cs.toronto.edu/~hinton/absps/jjnh91.pdf">Adaptive Mixtures of Local Experts</a>. Neural Computation.
+            </p>
+          </li>
+          <li>
+            <p>
+              Jordan, M.I. and Jacobs, R.A., 1994.
+              <a href="https://www.cs.toronto.edu/~hinton/absps/emhmm.pdf">Hierarchical Mixtures of Experts and the EM Algorithm</a>. Neural
+              Computation.
+            </p>
+          </li>
+          <li>
+            <p>
+              Shazeer, N., et al., 2017.
+              <a href="https://arxiv.org/abs/1701.06538">Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer</a>. ICLR
+              2017.
+            </p>
+          </li>
+          <li>
+            <p>
+              Sollich, P. and Krogh, A., 1995.
+              <a href="http://papers.nips.cc/paper/1044-learning-with-ensembles-how-over-fitting-can-be-useful"
+                >Learning with Ensembles: How Overfitting Can Be Useful</a
+              >. NeurIPS 1995.
+            </p>
+          </li>
+          <li>
+            <p>Yang, L., et al., 2023. <a href="https://arxiv.org/abs/2304.13712">A Survey on Transformers</a>. arXiv preprint.</p>
+          </li>
+          <li>
+            <p>Grootendorst, M., <a href="https://maartengrootendorst.com">A Visual Guide to Mixture of Experts</a>. Blog post.</p>
+          </li>
+          <li>
+            <p>
+              Xie, S., et al., 2022. <a href="https://arxiv.org/abs/2210.04423">On the Role of the Action Space in Robot Manipulation Learning</a>.
+              arXiv preprint.
+            </p>
+          </li>
+        </ol>
+      </d-article>
 
       <d-appendix>
         <d-footnote-list></d-footnote-list>
@@ -1312,107 +1394,82 @@ Shows the router network selecting experts and the gating mechanism for combinin
     </div>
 
     <footer class="site-footer">
-  <div class="wrapper">
-    <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
+      <div class="wrapper">
+        <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
 
-    <div class="footer-col-wrapper">
-      <div class="footer-col footer-col-1">
-        <ul class="contact-list">
-          <li class="p-name">Ben Lengerich</li><li>
-            <a class="u-email" href="mailto:TBD@wisc.edu"
-              >TBD@wisc.edu</a
-            >
-          </li></ul>
+        <div class="footer-col-wrapper">
+          <div class="footer-col footer-col-1">
+            <ul class="contact-list">
+              <li class="p-name">Ben Lengerich</li>
+              <li>
+                <a class="u-email" href="mailto:TBD@wisc.edu">TBD@wisc.edu</a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="footer-col footer-col-2">
+            <ul class="social-media-list">
+              <li>
+                <a href="https://github.com/AdaptInfer" target="_blank"><i class="fab fa-github"></i> <span class="username">AdaptInfer</span></a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="footer-col footer-col-3">
+            <p>
+              &copy; Copyright 2025 University of Wisconsin.
+              <br />
+            </p>
+          </div>
+        </div>
       </div>
-
-      <div class="footer-col footer-col-2"><ul class="social-media-list"><li>
-    <a
-      href="https://github.com/AdaptInfer"
-      target="_blank"
-      ><i class="fab fa-github"></i>
-      <span class="username">AdaptInfer</span></a
-    >
-  </li></ul>
-</div>
-
-      <div class="footer-col footer-col-3">
-        <p>
-          &copy; Copyright 2025 University of Wisconsin.
-          <br />
-          
-        </p>
-      </div>
-    </div>
-  </div>
-</footer>
-
+    </footer>
   </body>
 
-  <d-bibliography
-    src="/dgm-fall-2025/assets/bibliography/2025-11-17-lecture-21.bib"
-  >
-  </d-bibliography>
+  <d-bibliography src="/dgm-fall-2025/assets/bibliography/2025-11-17-lecture-21.bib"> </d-bibliography>
 
   <!-- Load jQuery -->
-<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
 
-<!-- Load Common JS -->
-<script src="/dgm-fall-2025/assets/js/common.js"></script>
+  <!-- Load Common JS -->
+  <script src="/dgm-fall-2025/assets/js/common.js"></script>
 
+  <!-- Load KaTeX -->
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css" />
+  <script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+  <script src="/dgm-fall-2025/assets/js/katex.js"></script>
 
-<!-- Load KaTeX -->
-<link
-  rel="stylesheet"
-  href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css"
-/>
-<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
-<script src="/dgm-fall-2025/assets/js/katex.js"></script>
- 
-<!-- Load Anchor JS -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
-<script>
-  anchors.options.visible = "hover";
-  anchors.add("article h2, article h3, article h4, article h5, article h6");
-</script>
- 
-<!-- Adjust LaTeX JS -->
-<script src="/dgm-fall-2025/assets/js/latex.js"></script>
+  <!-- Load Anchor JS -->
+  <script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+  <script>
+    anchors.options.visible = "hover";
+    anchors.add("article h2, article h3, article h4, article h5, article h6");
+  </script>
 
+  <!-- Adjust LaTeX JS -->
+  <script src="/dgm-fall-2025/assets/js/latex.js"></script>
 
-<!-- Include custom icon fonts -->
-<link
-  rel="stylesheet"
-  href="/dgm-fall-2025/assets/css/fontawesome-all.min.css"
-/>
-<link
-  rel="stylesheet"
-  href="/dgm-fall-2025/assets/css/academicons.min.css"
-/>
+  <!-- Include custom icon fonts -->
+  <link rel="stylesheet" href="/dgm-fall-2025/assets/css/fontawesome-all.min.css" />
+  <link rel="stylesheet" href="/dgm-fall-2025/assets/css/academicons.min.css" />
 
-<!-- Google Analytics -->
-<script>
-  (function (i, s, o, g, r, a, m) {
-    i["GoogleAnalyticsObject"] = r;
-    ((i[r] =
-      i[r] ||
-      function () {
-        (i[r].q = i[r].q || []).push(arguments);
-      }),
-      (i[r].l = 1 * new Date()));
-    ((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
-    a.async = 1;
-    a.src = g;
-    m.parentNode.insertBefore(a, m);
-  })(
-    window,
-    document,
-    "script",
-    "//www.google-analytics.com/analytics.js",
-    "ga",
-  );
+  <!-- Google Analytics -->
+  <script>
+    (function (i, s, o, g, r, a, m) {
+      i["GoogleAnalyticsObject"] = r;
+      (i[r] =
+        i[r] ||
+        function () {
+          (i[r].q = i[r].q || []).push(arguments);
+        }),
+        (i[r].l = 1 * new Date());
+      (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+      a.async = 1;
+      a.src = g;
+      m.parentNode.insertBefore(a, m);
+    })(window, document, "script", "//www.google-analytics.com/analytics.js", "ga");
 
-  ga("create", "", "auto");
-  ga("send", "pageview");
-</script>
-
+    ga("create", "", "auto");
+    ga("send", "pageview");
+  </script>
 </html>

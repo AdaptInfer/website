@@ -2,35 +2,28 @@
 <html>
   <head>
     <head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="content-language" content="en" />
-  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-  <meta name="viewport" content="width=device-width initial-scale=1.0" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+      <meta charset="UTF-8" />
+      <meta http-equiv="content-language" content="en" />
+      <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+      <meta name="viewport" content="width=device-width initial-scale=1.0" />
+      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-  <title>
-    STAT 453 | Lecture 19
-  </title>
-  <meta name="description" content="STAT 453 - University of Wisconsin-Madison - Fall 2025
-" />
+      <title>STAT 453 | Lecture 19</title>
+      <meta
+        name="description"
+        content="STAT 453 - University of Wisconsin-Madison - Fall 2025
+"
+      />
 
-  <link
-    rel="shortcut icon"
-    href="/dgm-fall-2025/assets/img/favicon.ico"
-  />
+      <link rel="shortcut icon" href="/dgm-fall-2025/assets/img/favicon.ico" />
 
-  <link rel="stylesheet" href="/dgm-fall-2025/assets/css/main.css" />
-  <link
-    rel="canonical"
-    href="/dgm-fall-2025/notes/lecture-19/"
-  />
+      <link rel="stylesheet" href="/dgm-fall-2025/assets/css/main.css" />
+      <link rel="canonical" href="/dgm-fall-2025/notes/lecture-19/" />
 
-  
-  <!-- Load Latex JS -->
-  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
-  
-</head>
+      <!-- Load Latex JS -->
+      <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+    </head>
 
     <script src="/dgm-fall-2025/assets/js/distillpub/template.v2.js"></script>
     <script src="/dgm-fall-2025/assets/js/distillpub/transforms.v2.js"></script>
@@ -39,111 +32,94 @@
   <d-front-matter>
     <script type="text/json">
       {
-            "title": "Lecture 19",
-            "description": "Sequence Learning with RNNs",
-            "published": "November 10, 2025",
-            "lecturers": [
-              
-              {
-                "lecturer": "Ben Lengerich",
-                "lecturerURL": "https://adaptinfer.org"
-              }
-              
-            ],
-            "authors": [
-              
-              {
-                "author": "Yi Zhang"
-              },
-              
-              {
-                "author": "Yufan Cheng"
-              },
-              
-              {
-                "author": "Erica Henderson"
-              }
-              
-            ],
-            "editors": [
-              
-              {
-                "editor": "Reid Chen"
-              },
-              
-              {
-                "editor": "Colby Beliveau"
-              }
-              
-            ],
-            "katex": {
-              "delimiters": [
-                {
-                  "left": "$",
-                  "right": "$",
-                  "display": false
-                },
-                {
-                  "left": "$$",
-                  "right": "$$",
-                  "display": true
-                }
-              ]
-            }
+        "title": "Lecture 19",
+        "description": "Sequence Learning with RNNs",
+        "published": "November 10, 2025",
+        "lecturers": [
+          {
+            "lecturer": "Ben Lengerich",
+            "lecturerURL": "https://adaptinfer.org"
           }
+        ],
+        "authors": [
+          {
+            "author": "Yi Zhang"
+          },
+
+          {
+            "author": "Yufan Cheng"
+          },
+
+          {
+            "author": "Erica Henderson"
+          }
+        ],
+        "editors": [
+          {
+            "editor": "Reid Chen"
+          },
+
+          {
+            "editor": "Colby Beliveau"
+          }
+        ],
+        "katex": {
+          "delimiters": [
+            {
+              "left": "$",
+              "right": "$",
+              "display": false
+            },
+            {
+              "left": "$$",
+              "right": "$$",
+              "display": true
+            }
+          ]
+        }
+      }
     </script>
   </d-front-matter>
 
   <body>
     <header class="site-header">
-  <div class="wrapper">
-    <span class="site-title">
-      <a class="page-link" href="https://adaptinfer.org/dgm-fall-2025/"
-        >STAT 453</a
-      >
-    </span>
-
-    <nav class="site-nav">
-      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
-      <label for="nav-trigger">
-        <span class="menu-icon">
-          <svg viewBox="0 0 18 15" width="18px" height="15px">
-            <path
-              fill="#424242"
-              d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
-            />
-            <path
-              fill="#424242"
-              d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
-            />
-            <path
-              fill="#424242"
-              d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
-            />
-          </svg>
+      <div class="wrapper">
+        <span class="site-title">
+          <a class="page-link" href="https://adaptinfer.org/dgm-fall-2025/">STAT 453</a>
         </span>
-      </label>
 
-      <div class="trigger">
-        <a class="page-link" href="/dgm-fall-2025/logistics/"
-          >logistics</a
-        >
-        <a class="page-link" href="/dgm-fall-2025/lectures/"
-          >lectures</a
-        >
-        <a class="page-link" href="/dgm-fall-2025/notes/">notes</a>
-        <a class="page-link" href="/dgm-fall-2025/calendar/"
-          >calendar</a
-        >
-        <a class="page-link" href="/dgm-fall-2025/homework/"
-          >homework</a
-        >
-        <a class="page-link" href="/dgm-fall-2025/project/">project</a>
+        <nav class="site-nav">
+          <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+          <label for="nav-trigger">
+            <span class="menu-icon">
+              <svg viewBox="0 0 18 15" width="18px" height="15px">
+                <path
+                  fill="#424242"
+                  d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
+                />
+                <path
+                  fill="#424242"
+                  d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
+                />
+                <path
+                  fill="#424242"
+                  d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
+                />
+              </svg>
+            </span>
+          </label>
+
+          <div class="trigger">
+            <a class="page-link" href="/dgm-fall-2025/logistics/">logistics</a>
+            <a class="page-link" href="/dgm-fall-2025/lectures/">lectures</a>
+            <a class="page-link" href="/dgm-fall-2025/notes/">notes</a>
+            <a class="page-link" href="/dgm-fall-2025/calendar/">calendar</a>
+            <a class="page-link" href="/dgm-fall-2025/homework/">homework</a>
+            <a class="page-link" href="/dgm-fall-2025/project/">project</a>
+          </div>
+        </nav>
       </div>
-    </nav>
-  </div>
-</header>
-
+    </header>
 
     <div class="page-content">
       <d-title>
@@ -153,300 +129,309 @@
 
       <d-byline></d-byline>
 
-      <d-article> <h2 id="motivation-why-text-modeling-is-challenging">Motivation: Why Text Modeling Is Challenging</h2>
+      <d-article>
+        <h2 id="motivation-why-text-modeling-is-challenging">Motivation: Why Text Modeling Is Challenging</h2>
 
-<p>Modeling text sequences is difficult due to:</p>
+        <p>Modeling text sequences is difficult due to:</p>
 
-<ul>
-  <li><strong>Variable sequence length</strong></li>
-  <li><strong>Long-range dependencies</strong></li>
-  <li><strong>Need for generative models</strong></li>
-  <li><strong>Large data requirements</strong></li>
-</ul>
+        <ul>
+          <li><strong>Variable sequence length</strong></li>
+          <li><strong>Long-range dependencies</strong></li>
+          <li><strong>Need for generative models</strong></li>
+          <li><strong>Large data requirements</strong></li>
+        </ul>
 
-<h2 id="historical-approaches">Historical Approaches</h2>
+        <h2 id="historical-approaches">Historical Approaches</h2>
 
-<h3 id="bag-of-words-bow">Bag-of-Words (BOW)</h3>
+        <h3 id="bag-of-words-bow">Bag-of-Words (BOW)</h3>
 
-<p>Represents text as unordered word counts.</p>
+        <p>Represents text as unordered word counts.</p>
 
-<p><strong>Problem:</strong> Word order is lost<br />
-Example:</p>
+        <p>
+          <strong>Problem:</strong> Word order is lost<br />
+          Example:
+        </p>
 
-<ul>
-  <li>“NOT good”</li>
-  <li>“good NOT”<br />
-become identical vectors.</li>
-</ul>
+        <ul>
+          <li>“NOT good”</li>
+          <li>
+            “good NOT”<br />
+            become identical vectors.
+          </li>
+        </ul>
 
-<h3 id="hidden-markov-models-hmms">Hidden Markov Models (HMMs)</h3>
+        <h3 id="hidden-markov-models-hmms">Hidden Markov Models (HMMs)</h3>
 
-<p>Use the Markov assumption:</p>
+        <p>Use the Markov assumption:</p>
 
-\[P(Y_n \mid X_1,\ldots,X_n) = P(Y_n \mid X_n)\]
+        \[P(Y_n \mid X_1,\ldots,X_n) = P(Y_n \mid X_n)\]
 
-<p><strong>Problem:</strong> Only captures one-step dependencies.</p>
+        <p><strong>Problem:</strong> Only captures one-step dependencies.</p>
 
-<h3 id="convolutional-neural-networks-cnns">Convolutional Neural Networks (CNNs)</h3>
+        <h3 id="convolutional-neural-networks-cnns">Convolutional Neural Networks (CNNs)</h3>
 
-<p>Capture local patterns using filters.</p>
+        <p>Capture local patterns using filters.</p>
 
-<p><strong>Limitation:</strong> Require fixed-length input; cannot naturally handle long sequences.</p>
+        <p><strong>Limitation:</strong> Require fixed-length input; cannot naturally handle long sequences.</p>
 
-<hr />
+        <hr />
 
-<h2 id="recurrent-neural-networks">Recurrent Neural Networks</h2>
+        <h2 id="recurrent-neural-networks">Recurrent Neural Networks</h2>
 
-<p>RNNs address sequential dependence using recurrent connections.</p>
+        <p>RNNs address sequential dependence using recurrent connections.</p>
 
-<p><img src="../assets/img/notes/lecture-19/MLRNN.png" alt="RNN Diagram" /></p>
+        <p><img src="../assets/img/notes/lecture-19/MLRNN.png" alt="RNN Diagram" /></p>
 
-<h3 id="the-recurrence-equation">The Recurrence Equation</h3>
+        <h3 id="the-recurrence-equation">The Recurrence Equation</h3>
 
-\[h^{(t)} = \sigma(W_{hx}x^{(t)} + W_{hh}h^{(t-1)} + b_h)\]
+        \[h^{(t)} = \sigma(W_{hx}x^{(t)} + W_{hh}h^{(t-1)} + b_h)\]
 
-<p>Where:</p>
+        <p>Where:</p>
 
-<ul>
-  <li>$h^{(t)}$: Hidden state</li>
-  <li>$x^{(t)}$: Input at time $t$</li>
-  <li>$W_{hx}, W_{hh}$: Input and recurrent weights</li>
-  <li>$\sigma$: Typically <code class="language-plaintext highlighter-rouge">tanh</code></li>
-</ul>
+        <ul>
+          <li>$h^{(t)}$: Hidden state</li>
+          <li>$x^{(t)}$: Input at time $t$</li>
+          <li>$W_{hx}, W_{hh}$: Input and recurrent weights</li>
+          <li>$\sigma$: Typically <code class="language-plaintext highlighter-rouge">tanh</code></li>
+        </ul>
 
-<h3 id="unrolling-through-time">Unrolling Through Time</h3>
+        <h3 id="unrolling-through-time">Unrolling Through Time</h3>
 
-<p>Unrolling converts an RNN into a deep network with depth equal to sequence length.</p>
+        <p>Unrolling converts an RNN into a deep network with depth equal to sequence length.</p>
 
-<h3 id="rnn-architectures">RNN Architectures</h3>
+        <h3 id="rnn-architectures">RNN Architectures</h3>
 
-<p><img src="../assets/img/notes/lecture-19/Sequence_task.png" alt="" /></p>
+        <p><img src="../assets/img/notes/lecture-19/Sequence_task.png" alt="" /></p>
 
-<ul>
-  <li><strong>Many-to-One:</strong> sentiment classification</li>
-  <li><strong>One-to-Many:</strong> image captioning</li>
-  <li><strong>Many-to-Many:</strong>
-    <ul>
-      <li>synchronous: video captioning</li>
-      <li>delayed: machine translation</li>
-    </ul>
-  </li>
-</ul>
+        <ul>
+          <li><strong>Many-to-One:</strong> sentiment classification</li>
+          <li><strong>One-to-Many:</strong> image captioning</li>
+          <li>
+            <strong>Many-to-Many:</strong>
+            <ul>
+              <li>synchronous: video captioning</li>
+              <li>delayed: machine translation</li>
+            </ul>
+          </li>
+        </ul>
 
-<hr />
+        <hr />
 
-<h2 id="training-rnns-backpropagation-through-time-bptt">Training RNNs: Backpropagation Through Time (BPTT)</h2>
+        <h2 id="training-rnns-backpropagation-through-time-bptt">Training RNNs: Backpropagation Through Time (BPTT)</h2>
 
-<p>Training RNNs involves unrolling through time and applying the chain rule.</p>
+        <p>Training RNNs involves unrolling through time and applying the chain rule.</p>
 
-<h3 id="gradient-expression">Gradient Expression</h3>
+        <h3 id="gradient-expression">Gradient Expression</h3>
 
-\[\frac{\partial L^{(t)}}{\partial W_{hh}} =
-\frac{\partial L^{(t)}}{\partial y^{(t)}}
-\frac{\partial y^{(t)}}{\partial h^{(t)}}
-\Biggl(
-\sum_{k=1}^t
-\frac{\partial h^{(t)}}{\partial h^{(k)}}
-\frac{\partial h^{(k)}}{\partial W_{hh}}
-\Biggr)\]
+        \[\frac{\partial L^{(t)}}{\partial W_{hh}} = \frac{\partial L^{(t)}}{\partial y^{(t)}} \frac{\partial y^{(t)}}{\partial h^{(t)}} \Biggl(
+        \sum_{k=1}^t \frac{\partial h^{(t)}}{\partial h^{(k)}} \frac{\partial h^{(k)}}{\partial W_{hh}} \Biggr)\]
 
-<p>Key term:</p>
+        <p>Key term:</p>
 
-\[\frac{\partial h^{(t)}}{\partial h^{(k)}} =
-\prod_{i=k+1}^{t}
-\frac{\partial h^{(i)}}{\partial h^{(i-1)}}\]
+        \[\frac{\partial h^{(t)}}{\partial h^{(k)}} = \prod_{i=k+1}^{t} \frac{\partial h^{(i)}}{\partial h^{(i-1)}}\]
 
-<p>A product of many Jacobians → unstable.</p>
+        <p>A product of many Jacobians → unstable.</p>
 
-<h3 id="vanishing-and-exploding-gradients">Vanishing and Exploding Gradients</h3>
+        <h3 id="vanishing-and-exploding-gradients">Vanishing and Exploding Gradients</h3>
 
-<ul>
-  <li>If Jacobians &lt; 1 → <strong>vanishing gradients</strong></li>
-  <li>If Jacobians &gt; 1 → <strong>exploding gradients</strong></li>
-</ul>
+        <ul>
+          <li>If Jacobians &lt; 1 → <strong>vanishing gradients</strong></li>
+          <li>If Jacobians &gt; 1 → <strong>exploding gradients</strong></li>
+        </ul>
 
-<p>Consequences:</p>
+        <p>Consequences:</p>
 
-<ul>
-  <li>Loss of long-range memory</li>
-  <li>Training instability</li>
-</ul>
+        <ul>
+          <li>Loss of long-range memory</li>
+          <li>Training instability</li>
+        </ul>
 
-<h3 id="remedies">Remedies</h3>
+        <h3 id="remedies">Remedies</h3>
 
-<ul>
-  <li><strong>Gradient clipping</strong></li>
-  <li><strong>Truncated BPTT</strong></li>
-  <li><strong>LSTM / GRU architectures</strong></li>
-</ul>
+        <ul>
+          <li><strong>Gradient clipping</strong></li>
+          <li><strong>Truncated BPTT</strong></li>
+          <li><strong>LSTM / GRU architectures</strong></li>
+        </ul>
 
-<hr />
+        <hr />
 
-<h2 id="long-short-term-memory-lstm">Long Short-Term Memory (LSTM)</h2>
+        <h2 id="long-short-term-memory-lstm">Long Short-Term Memory (LSTM)</h2>
 
-<p>LSTMs solve gradient issues by introducing a <strong>cell state</strong> $c_t$ that acts as a memory highway.</p>
+        <p>LSTMs solve gradient issues by introducing a <strong>cell state</strong> $c_t$ that acts as a memory highway.</p>
 
-<p><img src="../assets/img/notes/lecture-19/LSTM.png" alt="LSTM Diagram" /></p>
+        <p><img src="../assets/img/notes/lecture-19/LSTM.png" alt="LSTM Diagram" /></p>
 
-<h3 id="lstm-gate-equations">LSTM Gate Equations</h3>
+        <h3 id="lstm-gate-equations">LSTM Gate Equations</h3>
 
-\[\begin{aligned}
-f_t &amp;= \sigma(W_f[x_t, h_{t-1}] + b_f) \\
-i_t &amp;= \sigma(W_i[x_t, h_{t-1}] + b_i) \\
-g_t &amp;= \tanh(W_g[x_t, h_{t-1}] + b_g) \\
-c_t &amp;= f_t \odot c_{t-1} + i_t \odot g_t \\
-o_t &amp;= \sigma(W_o[x_t, h_{t-1}] + b_o) \\
-h_t &amp;= o_t \odot \tanh(c_t)
-\end{aligned}\]
+        \[\begin{aligned} f_t &amp;= \sigma(W_f[x_t, h_{t-1}] + b_f) \\ i_t &amp;= \sigma(W_i[x_t, h_{t-1}] + b_i) \\ g_t &amp;= \tanh(W_g[x_t,
+        h_{t-1}] + b_g) \\ c_t &amp;= f_t \odot c_{t-1} + i_t \odot g_t \\ o_t &amp;= \sigma(W_o[x_t, h_{t-1}] + b_o) \\ h_t &amp;= o_t \odot
+        \tanh(c_t) \end{aligned}\]
 
-<h3 id="interpretation">Interpretation</h3>
+        <h3 id="interpretation">Interpretation</h3>
 
-<ul>
-  <li><strong>Forget gate:</strong> remove irrelevant memory</li>
-  <li><strong>Input gate + candidate:</strong> add new information</li>
-  <li><strong>Output gate:</strong> expose memory to next layer</li>
-  <li><strong>Cell state:</strong> preserves long-term gradients</li>
-</ul>
+        <ul>
+          <li><strong>Forget gate:</strong> remove irrelevant memory</li>
+          <li><strong>Input gate + candidate:</strong> add new information</li>
+          <li><strong>Output gate:</strong> expose memory to next layer</li>
+          <li><strong>Cell state:</strong> preserves long-term gradients</li>
+        </ul>
 
-<p>Forget gate controls which information is remembered, and which is forgotten. It can reset the cell state:</p>
+        <p>Forget gate controls which information is remembered, and which is forgotten. It can reset the cell state:</p>
 
-\[f_{t} = \sigma(W_{fx} x^t + W_{fh} h^{t - 1} + b_{f})\]
+        \[f_{t} = \sigma(W_{fx} x^t + W_{fh} h^{t - 1} + b_{f})\]
 
-<p>The sigmoid activation function has a range of $[0, 1]$. The output from the forget gate $f_{t}$ is later multiplied element-wise with the cell state. If $f_{t}$ is close to 0, it can make the cell state $C$ to “forget” some information.</p>
+        <p>
+          The sigmoid activation function has a range of $[0, 1]$. The output from the forget gate $f_{t}$ is later multiplied element-wise with the
+          cell state. If $f_{t}$ is close to 0, it can make the cell state $C$ to “forget” some information.
+        </p>
 
-<p>Input gate adds stuff to the cell state:</p>
+        <p>Input gate adds stuff to the cell state:</p>
 
-\[i_{t} = \sigma(W_{ix} x^t + W_{ih} h^{t - 1} + b_{i})\]
+        \[i_{t} = \sigma(W_{ix} x^t + W_{ih} h^{t - 1} + b_{i})\]
 
-<p>Input node</p>
+        <p>Input node</p>
 
-\[g_{t} =\tanh(W_{gx} x^t + W_{gh} h^{t-1} + b_{g})\]
+        \[g_{t} =\tanh(W_{gx} x^t + W_{gh} h^{t-1} + b_{g})\]
 
-<p>is element-wise multiplied with the input gate. The product then later is element-wise added to the cell state $C$.</p>
+        <p>is element-wise multiplied with the input gate. The product then later is element-wise added to the cell state $C$.</p>
 
-<p>Output gate is used to update the values of hidden units:</p>
+        <p>Output gate is used to update the values of hidden units:</p>
 
-\[o_{t} = \sigma(W_{ox} x^t + W_{oh} h^{t-1} + b_{o}).\]
+        \[o_{t} = \sigma(W_{ox} x^t + W_{oh} h^{t-1} + b_{o}).\]
 
-<p>The new value for the hidden unit will be the element-wise product between $\tanh(C^t)$ and $o_{t}$.</p>
+        <p>The new value for the hidden unit will be the element-wise product between $\tanh(C^t)$ and $o_{t}$.</p>
 
-<h3 id="why-lstms-help-with-vanishing-gradients">Why LSTMs help with vanishing gradients</h3>
+        <h3 id="why-lstms-help-with-vanishing-gradients">Why LSTMs help with vanishing gradients</h3>
 
-<p>A key reason LSTMs work better than vanilla RNNs is how the <strong>cell state</strong> (c_t) is updated. Recall the cell update:</p>
+        <p>A key reason LSTMs work better than vanilla RNNs is how the <strong>cell state</strong> (c_t) is updated. Recall the cell update:</p>
 
-\[c_t = f_t \odot c_{t-1} + i_t \odot g_t.\]
+        \[c_t = f_t \odot c_{t-1} + i_t \odot g_t.\]
 
-<p>If we look at the gradient of the loss (L) with respect to an earlier cell state (c_{t-k}), the dominant term is a product of forget gates:</p>
+        <p>
+          If we look at the gradient of the loss (L) with respect to an earlier cell state (c_{t-k}), the dominant term is a product of forget gates:
+        </p>
 
-\[\frac{\partial L}{\partial c_{t-k}}
-\approx
-\frac{\partial L}{\partial c_t}
-\prod_{j=t-k+1}^{t} f_j.\]
+        \[\frac{\partial L}{\partial c_{t-k}} \approx \frac{\partial L}{\partial c_t} \prod_{j=t-k+1}^{t} f_j.\]
 
-<ul>
-  <li>When the forget gates (f_j) are close to 1, the product stays close to 1 and gradients can flow back over many time steps.</li>
-  <li>When the model decides some information is no longer needed, it can set (f_j) closer to 0, actively “forgetting” that part of the state.</li>
-</ul>
+        <ul>
+          <li>When the forget gates (f_j) are close to 1, the product stays close to 1 and gradients can flow back over many time steps.</li>
+          <li>
+            When the model decides some information is no longer needed, it can set (f_j) closer to 0, actively “forgetting” that part of the state.
+          </li>
+        </ul>
 
-<p>This is very different from a vanilla RNN, where the hidden state is repeatedly multiplied by a weight matrix and passed through a nonlinearity. In that case, the Jacobian often has eigenvalues much smaller (or larger) than 1, leading to <strong>vanishing</strong> or <strong>exploding</strong> gradients.</p>
+        <p>
+          This is very different from a vanilla RNN, where the hidden state is repeatedly multiplied by a weight matrix and passed through a
+          nonlinearity. In that case, the Jacobian often has eigenvalues much smaller (or larger) than 1, leading to <strong>vanishing</strong> or
+          <strong>exploding</strong> gradients.
+        </p>
 
-<p>The LSTM cell therefore provides an almost <strong>linear highway</strong> for gradients along the (c_t) path, with the gates controlling when to preserve information and when to reset it.</p>
+        <p>
+          The LSTM cell therefore provides an almost <strong>linear highway</strong> for gradients along the (c_t) path, with the gates controlling
+          when to preserve information and when to reset it.
+        </p>
 
-<hr />
+        <hr />
 
-<h2 id="preparing-text-for-rnns">Preparing Text for RNNs</h2>
+        <h2 id="preparing-text-for-rnns">Preparing Text for RNNs</h2>
 
-<h3 id="step-1--build-vocabulary">Step 1 — Build Vocabulary</h3>
+        <h3 id="step-1--build-vocabulary">Step 1 — Build Vocabulary</h3>
 
-<p>Include: <code class="language-plaintext highlighter-rouge">&lt;unk&gt;</code>, <code class="language-plaintext highlighter-rouge">&lt;pad&gt;</code>, <code class="language-plaintext highlighter-rouge">&lt;bos&gt;</code>, <code class="language-plaintext highlighter-rouge">&lt;eos&gt;</code>.</p>
+        <p>
+          Include: <code class="language-plaintext highlighter-rouge">&lt;unk&gt;</code>,
+          <code class="language-plaintext highlighter-rouge">&lt;pad&gt;</code>,
+          <code class="language-plaintext highlighter-rouge">&lt;bos&gt;</code>,
+          <code class="language-plaintext highlighter-rouge">&lt;eos&gt;</code>.
+        </p>
 
-<h3 id="step-2--convert-text-to-indices">Step 2 — Convert Text to Indices</h3>
+        <h3 id="step-2--convert-text-to-indices">Step 2 — Convert Text to Indices</h3>
 
-<p>Pad sequences to equal length for batching.</p>
+        <p>Pad sequences to equal length for batching.</p>
 
-<h3 id="step-3--one-hot-encoding-conceptual">Step 3 — One-Hot Encoding (conceptual)</h3>
+        <h3 id="step-3--one-hot-encoding-conceptual">Step 3 — One-Hot Encoding (conceptual)</h3>
 
-<p>Not used in modern practice due to high dimensionality.</p>
+        <p>Not used in modern practice due to high dimensionality.</p>
 
-<h3 id="step-4--word-embeddings">Step 4 — Word Embeddings</h3>
+        <h3 id="step-4--word-embeddings">Step 4 — Word Embeddings</h3>
 
-<p>Learned dense vectors:</p>
+        <p>Learned dense vectors:</p>
 
-<ul>
-  <li>Low dimension (e.g., 300-D)</li>
-  <li>Similar words → similar embeddings</li>
-  <li>Implemented via <code class="language-plaintext highlighter-rouge">nn.Embedding</code></li>
-</ul>
+        <ul>
+          <li>Low dimension (e.g., 300-D)</li>
+          <li>Similar words → similar embeddings</li>
+          <li>Implemented via <code class="language-plaintext highlighter-rouge">nn.Embedding</code></li>
+        </ul>
 
-<hr />
+        <hr />
 
-<h2 id="rnns-for-generative-modeling">RNNs for Generative Modeling</h2>
+        <h2 id="rnns-for-generative-modeling">RNNs for Generative Modeling</h2>
 
-<p>RNNs model the autoregressive distribution:</p>
+        <p>RNNs model the autoregressive distribution:</p>
 
-<p>$P_{\theta}(X) = \prod_{t} P_{\theta}(X_t \mid X_{&lt;t})$</p>
+        <p>$P_{\theta}(X) = \prod_{t} P_{\theta}(X_t \mid X_{&lt;t})$</p>
 
-<p>Training objective:</p>
+        <p>Training objective:</p>
 
-<p>$\max_{\theta} \sum_i \sum_t \log P_{\theta}(X_{i,t} \mid X_{i,&lt;t})$</p>
+        <p>$\max_{\theta} \sum_i \sum_t \log P_{\theta}(X_{i,t} \mid X_{i,&lt;t})$</p>
 
-<p>Used in classic language modeling.</p>
+        <p>Used in classic language modeling.</p>
 
-<hr />
+        <hr />
 
-<h2 id="many-to-one-word-rnn-example">Many-to-One Word RNN Example</h2>
+        <h2 id="many-to-one-word-rnn-example">Many-to-One Word RNN Example</h2>
 
-<ol>
-  <li>Build vocabulary</li>
-  <li>Convert text → indices</li>
-  <li>Convert indices → embeddings</li>
-  <li>Feed sequence into RNN</li>
-  <li>Use final hidden state for classification</li>
-</ol>
+        <ol>
+          <li>Build vocabulary</li>
+          <li>Convert text → indices</li>
+          <li>Convert indices → embeddings</li>
+          <li>Feed sequence into RNN</li>
+          <li>Use final hidden state for classification</li>
+        </ol>
 
-<hr />
+        <hr />
 
-<h2 id="summary">Summary</h2>
+        <h2 id="summary">Summary</h2>
 
-<table>
-  <thead>
-    <tr>
-      <th>Concept</th>
-      <th>Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>RNN</td>
-      <td>Maintains hidden state to model sequential data</td>
-    </tr>
-    <tr>
-      <td>BPTT</td>
-      <td>Unrolls through time; gradient instability</td>
-    </tr>
-    <tr>
-      <td>LSTM</td>
-      <td>Gates + memory cell enable long-term learning</td>
-    </tr>
-    <tr>
-      <td>Gradient Clipping</td>
-      <td>Prevents gradient explosion</td>
-    </tr>
-    <tr>
-      <td>Truncated BPTT</td>
-      <td>Limits backpropagation depth</td>
-    </tr>
-    <tr>
-      <td>Embeddings</td>
-      <td>Dense word representations</td>
-    </tr>
-    <tr>
-      <td>Applications</td>
-      <td>NLP, speech, translation, time series</td>
-    </tr>
-  </tbody>
-</table>
- </d-article>
+        <table>
+          <thead>
+            <tr>
+              <th>Concept</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>RNN</td>
+              <td>Maintains hidden state to model sequential data</td>
+            </tr>
+            <tr>
+              <td>BPTT</td>
+              <td>Unrolls through time; gradient instability</td>
+            </tr>
+            <tr>
+              <td>LSTM</td>
+              <td>Gates + memory cell enable long-term learning</td>
+            </tr>
+            <tr>
+              <td>Gradient Clipping</td>
+              <td>Prevents gradient explosion</td>
+            </tr>
+            <tr>
+              <td>Truncated BPTT</td>
+              <td>Limits backpropagation depth</td>
+            </tr>
+            <tr>
+              <td>Embeddings</td>
+              <td>Dense word representations</td>
+            </tr>
+            <tr>
+              <td>Applications</td>
+              <td>NLP, speech, translation, time series</td>
+            </tr>
+          </tbody>
+        </table>
+      </d-article>
 
       <d-appendix>
         <d-footnote-list></d-footnote-list>
@@ -455,107 +440,82 @@ h_t &amp;= o_t \odot \tanh(c_t)
     </div>
 
     <footer class="site-footer">
-  <div class="wrapper">
-    <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
+      <div class="wrapper">
+        <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
 
-    <div class="footer-col-wrapper">
-      <div class="footer-col footer-col-1">
-        <ul class="contact-list">
-          <li class="p-name">Ben Lengerich</li><li>
-            <a class="u-email" href="mailto:TBD@wisc.edu"
-              >TBD@wisc.edu</a
-            >
-          </li></ul>
+        <div class="footer-col-wrapper">
+          <div class="footer-col footer-col-1">
+            <ul class="contact-list">
+              <li class="p-name">Ben Lengerich</li>
+              <li>
+                <a class="u-email" href="mailto:TBD@wisc.edu">TBD@wisc.edu</a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="footer-col footer-col-2">
+            <ul class="social-media-list">
+              <li>
+                <a href="https://github.com/AdaptInfer" target="_blank"><i class="fab fa-github"></i> <span class="username">AdaptInfer</span></a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="footer-col footer-col-3">
+            <p>
+              &copy; Copyright 2025 University of Wisconsin.
+              <br />
+            </p>
+          </div>
+        </div>
       </div>
-
-      <div class="footer-col footer-col-2"><ul class="social-media-list"><li>
-    <a
-      href="https://github.com/AdaptInfer"
-      target="_blank"
-      ><i class="fab fa-github"></i>
-      <span class="username">AdaptInfer</span></a
-    >
-  </li></ul>
-</div>
-
-      <div class="footer-col footer-col-3">
-        <p>
-          &copy; Copyright 2025 University of Wisconsin.
-          <br />
-          
-        </p>
-      </div>
-    </div>
-  </div>
-</footer>
-
+    </footer>
   </body>
 
-  <d-bibliography
-    src="/dgm-fall-2025/assets/bibliography/2025-11-10-lecture-19.bib"
-  >
-  </d-bibliography>
+  <d-bibliography src="/dgm-fall-2025/assets/bibliography/2025-11-10-lecture-19.bib"> </d-bibliography>
 
   <!-- Load jQuery -->
-<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
 
-<!-- Load Common JS -->
-<script src="/dgm-fall-2025/assets/js/common.js"></script>
+  <!-- Load Common JS -->
+  <script src="/dgm-fall-2025/assets/js/common.js"></script>
 
+  <!-- Load KaTeX -->
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css" />
+  <script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+  <script src="/dgm-fall-2025/assets/js/katex.js"></script>
 
-<!-- Load KaTeX -->
-<link
-  rel="stylesheet"
-  href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css"
-/>
-<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
-<script src="/dgm-fall-2025/assets/js/katex.js"></script>
- 
-<!-- Load Anchor JS -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
-<script>
-  anchors.options.visible = "hover";
-  anchors.add("article h2, article h3, article h4, article h5, article h6");
-</script>
- 
-<!-- Adjust LaTeX JS -->
-<script src="/dgm-fall-2025/assets/js/latex.js"></script>
+  <!-- Load Anchor JS -->
+  <script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+  <script>
+    anchors.options.visible = "hover";
+    anchors.add("article h2, article h3, article h4, article h5, article h6");
+  </script>
 
+  <!-- Adjust LaTeX JS -->
+  <script src="/dgm-fall-2025/assets/js/latex.js"></script>
 
-<!-- Include custom icon fonts -->
-<link
-  rel="stylesheet"
-  href="/dgm-fall-2025/assets/css/fontawesome-all.min.css"
-/>
-<link
-  rel="stylesheet"
-  href="/dgm-fall-2025/assets/css/academicons.min.css"
-/>
+  <!-- Include custom icon fonts -->
+  <link rel="stylesheet" href="/dgm-fall-2025/assets/css/fontawesome-all.min.css" />
+  <link rel="stylesheet" href="/dgm-fall-2025/assets/css/academicons.min.css" />
 
-<!-- Google Analytics -->
-<script>
-  (function (i, s, o, g, r, a, m) {
-    i["GoogleAnalyticsObject"] = r;
-    ((i[r] =
-      i[r] ||
-      function () {
-        (i[r].q = i[r].q || []).push(arguments);
-      }),
-      (i[r].l = 1 * new Date()));
-    ((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
-    a.async = 1;
-    a.src = g;
-    m.parentNode.insertBefore(a, m);
-  })(
-    window,
-    document,
-    "script",
-    "//www.google-analytics.com/analytics.js",
-    "ga",
-  );
+  <!-- Google Analytics -->
+  <script>
+    (function (i, s, o, g, r, a, m) {
+      i["GoogleAnalyticsObject"] = r;
+      (i[r] =
+        i[r] ||
+        function () {
+          (i[r].q = i[r].q || []).push(arguments);
+        }),
+        (i[r].l = 1 * new Date());
+      (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+      a.async = 1;
+      a.src = g;
+      m.parentNode.insertBefore(a, m);
+    })(window, document, "script", "//www.google-analytics.com/analytics.js", "ga");
 
-  ga("create", "", "auto");
-  ga("send", "pageview");
-</script>
-
+    ga("create", "", "auto");
+    ga("send", "pageview");
+  </script>
 </html>

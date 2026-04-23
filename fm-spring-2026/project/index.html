@@ -1,333 +1,315 @@
 <!doctype html>
 <html>
   <head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="content-language" content="en" />
-  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-  <meta name="viewport" content="width=device-width initial-scale=1.0" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta charset="UTF-8" />
+    <meta http-equiv="content-language" content="en" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-  <title>
-    STAT 992 | Course Project
-  </title>
-  <meta name="description" content="STAT 992 - University of Wisconsin-Madison - Spring 2026
-" />
+    <title>STAT 992 | Course Project</title>
+    <meta
+      name="description"
+      content="STAT 992 - University of Wisconsin-Madison - Spring 2026
+"
+    />
 
-  <link
-    rel="shortcut icon"
-    href="/fm-spring-2026/assets/img/favicon.ico"
-  />
+    <link rel="shortcut icon" href="/fm-spring-2026/assets/img/favicon.ico" />
 
-  <link rel="stylesheet" href="/fm-spring-2026/assets/css/main.css" />
-  <link
-    rel="canonical"
-    href="/fm-spring-2026/project/"
-  />
+    <link rel="stylesheet" href="/fm-spring-2026/assets/css/main.css" />
+    <link rel="canonical" href="/fm-spring-2026/project/" />
 
-  
-  <!-- Load Latex JS -->
-  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
-  
-</head>
-
+    <!-- Load Latex JS -->
+    <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+  </head>
 
   <body>
     <header class="site-header">
-  <div class="wrapper">
-    <span class="site-title">
-      <a class="page-link" href="https://adaptinfer.org/fm-spring-2026/"
-        >STAT 992</a
-      >
-    </span>
-
-    <nav class="site-nav">
-      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
-      <label for="nav-trigger">
-        <span class="menu-icon">
-          <svg viewBox="0 0 18 15" width="18px" height="15px">
-            <path
-              fill="#424242"
-              d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
-            />
-            <path
-              fill="#424242"
-              d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
-            />
-            <path
-              fill="#424242"
-              d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
-            />
-          </svg>
+      <div class="wrapper">
+        <span class="site-title">
+          <a class="page-link" href="https://adaptinfer.org/fm-spring-2026/">STAT 992</a>
         </span>
-      </label>
 
-      <div class="trigger">
-        <a class="page-link" href="/fm-spring-2026/logistics/"
-          >logistics</a
-        >
-        <a class="page-link" href="/fm-spring-2026/lectures/"
-          >lectures</a
-        >
-        <a class="page-link" href="/fm-spring-2026/calendar/"
-          >calendar</a
-        >
-        <a class="page-link" href="/fm-spring-2026/notes/"
-          >notes</a
-        >
-        <a class="page-link" href="/fm-spring-2026/project/">project</a>
+        <nav class="site-nav">
+          <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+          <label for="nav-trigger">
+            <span class="menu-icon">
+              <svg viewBox="0 0 18 15" width="18px" height="15px">
+                <path
+                  fill="#424242"
+                  d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
+                />
+                <path
+                  fill="#424242"
+                  d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
+                />
+                <path
+                  fill="#424242"
+                  d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
+                />
+              </svg>
+            </span>
+          </label>
+
+          <div class="trigger">
+            <a class="page-link" href="/fm-spring-2026/logistics/">logistics</a>
+            <a class="page-link" href="/fm-spring-2026/lectures/">lectures</a>
+            <a class="page-link" href="/fm-spring-2026/calendar/">calendar</a>
+            <a class="page-link" href="/fm-spring-2026/notes/">notes</a>
+            <a class="page-link" href="/fm-spring-2026/project/">project</a>
+          </div>
+        </nav>
       </div>
-    </nav>
-  </div>
-</header>
-
+    </header>
 
     <div class="page-content">
-      <div class="wrapper"><div class="post">
-  <header class="post-header">
-    <h1 class="post-title">Course Project</h1>
-    <h2 class="post-description">Guidelines and deliverables for the shared course review paper</h2>
-  </header>
+      <div class="wrapper">
+        <div class="post">
+          <header class="post-header">
+            <h1 class="post-title">Course Project</h1>
+            <h2 class="post-description">Guidelines and deliverables for the shared course review paper</h2>
+          </header>
 
-  <article class="post-content Course Project clearfix"><p>This course has <strong>one project</strong>: a <strong>single, collaboratively written review paper</strong> on <em>Foundation Models for Biomedical Data</em>.</p>
+          <article class="post-content Course Project clearfix">
+            <p>
+              This course has <strong>one project</strong>: a <strong>single, collaboratively written review paper</strong> on
+              <em>Foundation Models for Biomedical Data</em>.
+            </p>
 
-<p>There are <strong>no separate teams and no independent projects</strong>. All enrolled students are collaborators on the same paper, which will be written incrementally throughout the semester using <strong>Manubot on GitHub</strong>.</p>
+            <p>
+              There are <strong>no separate teams and no independent projects</strong>. All enrolled students are collaborators on the same paper,
+              which will be written incrementally throughout the semester using <strong>Manubot on GitHub</strong>.
+            </p>
 
-<p>The project accounts for <strong>30% of your final grade</strong>, but it is <strong>not graded as a single submission</strong>. Instead, credit is distributed across writing contributions, paper-driven presentations, notes, peer review, and professional engagement, as described on the logistics page.</p>
+            <p>
+              The project accounts for <strong>30% of your final grade</strong>, but it is <strong>not graded as a single submission</strong>.
+              Instead, credit is distributed across writing contributions, paper-driven presentations, notes, peer review, and professional
+              engagement, as described on the logistics page.
+            </p>
 
-<p>This project is intentionally modeled after how review papers are written in research groups:</p>
-<ul>
-  <li>shared ownership,</li>
-  <li>incremental synthesis,</li>
-  <li>frequent revision,</li>
-  <li>and public-facing standards.</li>
-</ul>
+            <p>This project is intentionally modeled after how review papers are written in research groups:</p>
+            <ul>
+              <li>shared ownership,</li>
+              <li>incremental synthesis,</li>
+              <li>frequent revision,</li>
+              <li>and public-facing standards.</li>
+            </ul>
 
-<hr />
+            <hr />
 
-<h3 id="writing-platform-and-infrastructure">Writing Platform and Infrastructure</h3>
+            <h3 id="writing-platform-and-infrastructure">Writing Platform and Infrastructure</h3>
 
-<ul>
-  <li>The paper will be written using Manubot.</li>
-  <li>All source files, citations, issues, and revisions live in a shared <a href="https://github.com/AdaptInfer/fm-survey"><strong>GitHub repository</strong></a>.</li>
-  <li>Contributions are tracked via commits, pull requests, and comments.</li>
-</ul>
+            <ul>
+              <li>The paper will be written using Manubot.</li>
+              <li>
+                All source files, citations, issues, and revisions live in a shared
+                <a href="https://github.com/AdaptInfer/fm-survey"><strong>GitHub repository</strong></a
+                >.
+              </li>
+              <li>Contributions are tracked via commits, pull requests, and comments.</li>
+            </ul>
 
-<p>You are <strong>not expected to know Manubot in advance</strong>. We will establish a minimal, reproducible workflow early in the semester.</p>
+            <p>
+              You are <strong>not expected to know Manubot in advance</strong>. We will establish a minimal, reproducible workflow early in the
+              semester.
+            </p>
 
-<hr />
+            <hr />
 
-<h3 id="paper-scope-and-outline">Paper Scope and Outline</h3>
+            <h3 id="paper-scope-and-outline">Paper Scope and Outline</h3>
 
-<p>The paper follows a shared outline agreed upon by the class:</p>
+            <p>The paper follows a shared outline agreed upon by the class:</p>
 
-<ol>
-  <li>Outline TBD</li>
-  <li>Outline TBD</li>
-  <li>Outline TBD</li>
-  <li>Outline TBD</li>
-  <li>Outline TBD</li>
-</ol>
+            <ol>
+              <li>Outline TBD</li>
+              <li>Outline TBD</li>
+              <li>Outline TBD</li>
+              <li>Outline TBD</li>
+              <li>Outline TBD</li>
+            </ol>
 
-<p>Each student takes <strong>primary responsibility for one major section</strong>, while contributing to others through discussion, editing, and review.</p>
+            <p>
+              Each student takes <strong>primary responsibility for one major section</strong>, while contributing to others through discussion,
+              editing, and review.
+            </p>
 
-<p>Primary responsibility means <em>owning coherence</em>, not writing in isolation.</p>
+            <p>Primary responsibility means <em>owning coherence</em>, not writing in isolation.</p>
 
-<hr />
+            <hr />
 
-<h3 id="how-the-paper-is-built-important">How the Paper Is Built (Important)</h3>
+            <h3 id="how-the-paper-is-built-important">How the Paper Is Built (Important)</h3>
 
-<p>The paper is developed <strong>through normal class activity</strong>, not through separate project checkpoints.</p>
+            <p>The paper is developed <strong>through normal class activity</strong>, not through separate project checkpoints.</p>
 
-<p>Progress happens via:</p>
-<ul>
-  <li>Assigned paper readings</li>
-  <li>Student-led paper presentations</li>
-  <li>Structured class discussion</li>
-  <li>Shared class notes</li>
-  <li>Section-level drafting and revision</li>
-</ul>
+            <p>Progress happens via:</p>
+            <ul>
+              <li>Assigned paper readings</li>
+              <li>Student-led paper presentations</li>
+              <li>Structured class discussion</li>
+              <li>Shared class notes</li>
+              <li>Section-level drafting and revision</li>
+            </ul>
 
-<p>There is <strong>no standalone “project presentation”</strong> and no final sprint at the end of the semester.</p>
+            <p>There is <strong>no standalone “project presentation”</strong> and no final sprint at the end of the semester.</p>
 
-<hr />
+            <hr />
 
-<h3 id="project-milestones">Project Milestones</h3>
+            <h3 id="project-milestones">Project Milestones</h3>
 
-<p>Dates will be announced in class. These milestones are shared by the whole class.</p>
+            <p>Dates will be announced in class. These milestones are shared by the whole class.</p>
 
-<p>Roughly, we will have:</p>
+            <p>Roughly, we will have:</p>
 
-<h4 id="section-ownership-and-outline-early-semester">Section Ownership and Outline (Early Semester)</h4>
+            <h4 id="section-ownership-and-outline-early-semester">Section Ownership and Outline (Early Semester)</h4>
 
-<p>Each student will:</p>
-<ul>
-  <li>Claim ownership of <strong>one major section</strong></li>
-  <li>Draft a subsection outline for that section</li>
-  <li>Identify the core papers that define its structure</li>
-</ul>
+            <p>Each student will:</p>
+            <ul>
+              <li>Claim ownership of <strong>one major section</strong></li>
+              <li>Draft a subsection outline for that section</li>
+              <li>Identify the core papers that define its structure</li>
+            </ul>
 
-<p>This establishes responsibility while leaving room for refinement.</p>
+            <p>This establishes responsibility while leaving room for refinement.</p>
 
-<h4 id="section-drafts-mid-semester">Section Drafts (Mid-Semester)</h4>
+            <h4 id="section-drafts-mid-semester">Section Drafts (Mid-Semester)</h4>
 
-<p>Each student will produce a <strong>substantive draft</strong> of their owned section.</p>
+            <p>Each student will produce a <strong>substantive draft</strong> of their owned section.</p>
 
-<p><strong>Expectations</strong></p>
-<ul>
-  <li>Real prose, not notes or bullet points</li>
-  <li>Clear synthesis of the literature</li>
-  <li>Accurate technical framing</li>
-  <li>Proper citations using Manubot</li>
-</ul>
+            <p><strong>Expectations</strong></p>
+            <ul>
+              <li>Real prose, not notes or bullet points</li>
+              <li>Clear synthesis of the literature</li>
+              <li>Accurate technical framing</li>
+              <li>Proper citations using Manubot</li>
+            </ul>
 
-<p>Target length will vary by section, but expect roughly <strong>4–6 pages worth of content</strong> at this stage.</p>
+            <p>Target length will vary by section, but expect roughly <strong>4–6 pages worth of content</strong> at this stage.</p>
 
-<p>Drafts are expected to change significantly after feedback.</p>
+            <p>Drafts are expected to change significantly after feedback.</p>
 
-<h4 id="final-revised-paper-end-of-semester">Final Revised Paper (End of Semester)</h4>
+            <h4 id="final-revised-paper-end-of-semester">Final Revised Paper (End of Semester)</h4>
 
-<p>The final deliverable is the <strong>entire revised paper</strong>, incorporating:</p>
-<ul>
-  <li>Peer feedback</li>
-  <li>Instructor feedback</li>
-  <li>Cross-section consistency checks</li>
-</ul>
+            <p>The final deliverable is the <strong>entire revised paper</strong>, incorporating:</p>
+            <ul>
+              <li>Peer feedback</li>
+              <li>Instructor feedback</li>
+              <li>Cross-section consistency checks</li>
+            </ul>
 
-<p>Each student is expected to:</p>
-<ul>
-  <li>Substantially revise their own section</li>
-  <li>Contribute edits to other sections</li>
-  <li>Help ensure the paper reads as a <strong>single coherent document</strong></li>
-</ul>
+            <p>Each student is expected to:</p>
+            <ul>
+              <li>Substantially revise their own section</li>
+              <li>Contribute edits to other sections</li>
+              <li>Help ensure the paper reads as a <strong>single coherent document</strong></li>
+            </ul>
 
-<hr />
+            <hr />
 
-<h3 id="evaluation-philosophy">Evaluation Philosophy</h3>
+            <h3 id="evaluation-philosophy">Evaluation Philosophy</h3>
 
-<p>This project is evaluated holistically.</p>
+            <p>This project is evaluated holistically.</p>
 
-<p>You are assessed on:</p>
-<ul>
-  <li>Quality of synthesis and judgment</li>
-  <li>Clarity and precision of writing</li>
-  <li>Responsiveness to feedback</li>
-  <li>Reliability as a collaborator on a shared research artifact</li>
-</ul>
+            <p>You are assessed on:</p>
+            <ul>
+              <li>Quality of synthesis and judgment</li>
+              <li>Clarity and precision of writing</li>
+              <li>Responsiveness to feedback</li>
+              <li>Reliability as a collaborator on a shared research artifact</li>
+            </ul>
 
-<p>Originality comes from <strong>framing and synthesis</strong>, not from building new models or running large experiments.</p>
+            <p>Originality comes from <strong>framing and synthesis</strong>, not from building new models or running large experiments.</p>
 
-<hr />
+            <hr />
 
-<h3 id="authorship-and-public-release">Authorship and Public Release</h3>
+            <h3 id="authorship-and-public-release">Authorship and Public Release</h3>
 
-<p>The paper is intended to be <strong>public-facing</strong>.</p>
+            <p>The paper is intended to be <strong>public-facing</strong>.</p>
 
-<ul>
-  <li>All students who make substantive contributions will be included as authors.</li>
-  <li>Authorship order and naming conventions will be discussed transparently.</li>
-  <li>Students may opt out of public attribution if desired.</li>
-</ul>
-</article>
-</div>
-</div>
+            <ul>
+              <li>All students who make substantive contributions will be included as authors.</li>
+              <li>Authorship order and naming conventions will be discussed transparently.</li>
+              <li>Students may opt out of public attribution if desired.</li>
+            </ul>
+          </article>
+        </div>
+      </div>
     </div>
 
     <footer class="site-footer">
-  <div class="wrapper">
-    <h2 class="footer-heading">Foundation Models for Biomedical Data</h2>
+      <div class="wrapper">
+        <h2 class="footer-heading">Foundation Models for Biomedical Data</h2>
 
-    <div class="footer-col-wrapper">
-      <div class="footer-col footer-col-1">
-        <ul class="contact-list">
-          <li class="p-name">Ben Lengerich</li><li>
-            <a class="u-email" href="mailto:TBD@wisc.edu"
-              >TBD@wisc.edu</a
-            >
-          </li></ul>
+        <div class="footer-col-wrapper">
+          <div class="footer-col footer-col-1">
+            <ul class="contact-list">
+              <li class="p-name">Ben Lengerich</li>
+              <li>
+                <a class="u-email" href="mailto:TBD@wisc.edu">TBD@wisc.edu</a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="footer-col footer-col-2">
+            <ul class="social-media-list">
+              <li>
+                <a href="https://github.com/AdaptInfer" target="_blank"><i class="fab fa-github"></i> <span class="username">AdaptInfer</span></a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="footer-col footer-col-3">
+            <p>
+              &copy; Copyright 2026 University of Wisconsin.
+              <br />
+            </p>
+          </div>
+        </div>
       </div>
+    </footer>
+    <!-- Load jQuery -->
+    <script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
 
-      <div class="footer-col footer-col-2"><ul class="social-media-list"><li>
-    <a
-      href="https://github.com/AdaptInfer"
-      target="_blank"
-      ><i class="fab fa-github"></i>
-      <span class="username">AdaptInfer</span></a
-    >
-  </li></ul>
-</div>
+    <!-- Load Common JS -->
+    <script src="/fm-spring-2026/assets/js/common.js"></script>
 
-      <div class="footer-col footer-col-3">
-        <p>
-          &copy; Copyright 2026 University of Wisconsin.
-          <br />
-          
-        </p>
-      </div>
-    </div>
-  </div>
-</footer>
- <!-- Load jQuery -->
-<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+    <!-- Load KaTeX -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css" />
+    <script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+    <script src="/fm-spring-2026/assets/js/katex.js"></script>
 
-<!-- Load Common JS -->
-<script src="/fm-spring-2026/assets/js/common.js"></script>
+    <!-- Load Anchor JS -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+    <script>
+      anchors.options.visible = "hover";
+      anchors.add("article h2, article h3, article h4, article h5, article h6");
+    </script>
 
+    <!-- Adjust LaTeX JS -->
+    <script src="/fm-spring-2026/assets/js/latex.js"></script>
 
-<!-- Load KaTeX -->
-<link
-  rel="stylesheet"
-  href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css"
-/>
-<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
-<script src="/fm-spring-2026/assets/js/katex.js"></script>
- 
-<!-- Load Anchor JS -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
-<script>
-  anchors.options.visible = "hover";
-  anchors.add("article h2, article h3, article h4, article h5, article h6");
-</script>
- 
-<!-- Adjust LaTeX JS -->
-<script src="/fm-spring-2026/assets/js/latex.js"></script>
+    <!-- Include custom icon fonts -->
+    <link rel="stylesheet" href="/fm-spring-2026/assets/css/fontawesome-all.min.css" />
+    <link rel="stylesheet" href="/fm-spring-2026/assets/css/academicons.min.css" />
 
+    <!-- Google Analytics -->
+    <script>
+      (function (i, s, o, g, r, a, m) {
+        i["GoogleAnalyticsObject"] = r;
+        (i[r] =
+          i[r] ||
+          function () {
+            (i[r].q = i[r].q || []).push(arguments);
+          }),
+          (i[r].l = 1 * new Date());
+        (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+        a.async = 1;
+        a.src = g;
+        m.parentNode.insertBefore(a, m);
+      })(window, document, "script", "//www.google-analytics.com/analytics.js", "ga");
 
-<!-- Include custom icon fonts -->
-<link
-  rel="stylesheet"
-  href="/fm-spring-2026/assets/css/fontawesome-all.min.css"
-/>
-<link
-  rel="stylesheet"
-  href="/fm-spring-2026/assets/css/academicons.min.css"
-/>
-
-<!-- Google Analytics -->
-<script>
-  (function (i, s, o, g, r, a, m) {
-    i["GoogleAnalyticsObject"] = r;
-    ((i[r] =
-      i[r] ||
-      function () {
-        (i[r].q = i[r].q || []).push(arguments);
-      }),
-      (i[r].l = 1 * new Date()));
-    ((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
-    a.async = 1;
-    a.src = g;
-    m.parentNode.insertBefore(a, m);
-  })(
-    window,
-    document,
-    "script",
-    "//www.google-analytics.com/analytics.js",
-    "ga",
-  );
-
-  ga("create", "", "auto");
-  ga("send", "pageview");
-</script>
-
+      ga("create", "", "auto");
+      ga("send", "pageview");
+    </script>
   </body>
 </html>

@@ -2,35 +2,28 @@
 <html>
   <head>
     <head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="content-language" content="en" />
-  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-  <meta name="viewport" content="width=device-width initial-scale=1.0" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+      <meta charset="UTF-8" />
+      <meta http-equiv="content-language" content="en" />
+      <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+      <meta name="viewport" content="width=device-width initial-scale=1.0" />
+      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-  <title>
-    STAT 453 | Lecture 09
-  </title>
-  <meta name="description" content="STAT 453 - University of Wisconsin-Madison - Fall 2025
-" />
+      <title>STAT 453 | Lecture 09</title>
+      <meta
+        name="description"
+        content="STAT 453 - University of Wisconsin-Madison - Fall 2025
+"
+      />
 
-  <link
-    rel="shortcut icon"
-    href="/dgm-fall-2025/assets/img/favicon.ico"
-  />
+      <link rel="shortcut icon" href="/dgm-fall-2025/assets/img/favicon.ico" />
 
-  <link rel="stylesheet" href="/dgm-fall-2025/assets/css/main.css" />
-  <link
-    rel="canonical"
-    href="/dgm-fall-2025/notes/lecture-09/"
-  />
+      <link rel="stylesheet" href="/dgm-fall-2025/assets/css/main.css" />
+      <link rel="canonical" href="/dgm-fall-2025/notes/lecture-09/" />
 
-  
-  <!-- Load Latex JS -->
-  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
-  
-</head>
+      <!-- Load Latex JS -->
+      <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+    </head>
 
     <script src="/dgm-fall-2025/assets/js/distillpub/template.v2.js"></script>
     <script src="/dgm-fall-2025/assets/js/distillpub/transforms.v2.js"></script>
@@ -39,108 +32,91 @@
   <d-front-matter>
     <script type="text/json">
       {
-            "title": "Lecture 09",
-            "description": "Multilayer Perceptrons & Backpropagation",
-            "published": "October 1, 2025",
-            "lecturers": [
-              
-              {
-                "lecturer": "Ben Lengerich",
-                "lecturerURL": "https://adaptinfer.org"
-              }
-              
-            ],
-            "authors": [
-              
-              {
-                "author": "Shengdong Yao",
-                "authorURL": "https://github.com/ysd9451"
-              },
-              
-              {
-                "author": "Yifei Wu"
-              },
-              
-              {
-                "author": "Davis LaRoque"
-              }
-              
-            ],
-            "editors": [
-              
-              {
-                "editor": "Xinyu Pan"
-              }
-              
-            ],
-            "katex": {
-              "delimiters": [
-                {
-                  "left": "$",
-                  "right": "$",
-                  "display": false
-                },
-                {
-                  "left": "$$",
-                  "right": "$$",
-                  "display": true
-                }
-              ]
-            }
+        "title": "Lecture 09",
+        "description": "Multilayer Perceptrons & Backpropagation",
+        "published": "October 1, 2025",
+        "lecturers": [
+          {
+            "lecturer": "Ben Lengerich",
+            "lecturerURL": "https://adaptinfer.org"
           }
+        ],
+        "authors": [
+          {
+            "author": "Shengdong Yao",
+            "authorURL": "https://github.com/ysd9451"
+          },
+
+          {
+            "author": "Yifei Wu"
+          },
+
+          {
+            "author": "Davis LaRoque"
+          }
+        ],
+        "editors": [
+          {
+            "editor": "Xinyu Pan"
+          }
+        ],
+        "katex": {
+          "delimiters": [
+            {
+              "left": "$",
+              "right": "$",
+              "display": false
+            },
+            {
+              "left": "$$",
+              "right": "$$",
+              "display": true
+            }
+          ]
+        }
+      }
     </script>
   </d-front-matter>
 
   <body>
     <header class="site-header">
-  <div class="wrapper">
-    <span class="site-title">
-      <a class="page-link" href="https://adaptinfer.org/dgm-fall-2025/"
-        >STAT 453</a
-      >
-    </span>
-
-    <nav class="site-nav">
-      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
-      <label for="nav-trigger">
-        <span class="menu-icon">
-          <svg viewBox="0 0 18 15" width="18px" height="15px">
-            <path
-              fill="#424242"
-              d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
-            />
-            <path
-              fill="#424242"
-              d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
-            />
-            <path
-              fill="#424242"
-              d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
-            />
-          </svg>
+      <div class="wrapper">
+        <span class="site-title">
+          <a class="page-link" href="https://adaptinfer.org/dgm-fall-2025/">STAT 453</a>
         </span>
-      </label>
 
-      <div class="trigger">
-        <a class="page-link" href="/dgm-fall-2025/logistics/"
-          >logistics</a
-        >
-        <a class="page-link" href="/dgm-fall-2025/lectures/"
-          >lectures</a
-        >
-        <a class="page-link" href="/dgm-fall-2025/notes/">notes</a>
-        <a class="page-link" href="/dgm-fall-2025/calendar/"
-          >calendar</a
-        >
-        <a class="page-link" href="/dgm-fall-2025/homework/"
-          >homework</a
-        >
-        <a class="page-link" href="/dgm-fall-2025/project/">project</a>
+        <nav class="site-nav">
+          <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+          <label for="nav-trigger">
+            <span class="menu-icon">
+              <svg viewBox="0 0 18 15" width="18px" height="15px">
+                <path
+                  fill="#424242"
+                  d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
+                />
+                <path
+                  fill="#424242"
+                  d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
+                />
+                <path
+                  fill="#424242"
+                  d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
+                />
+              </svg>
+            </span>
+          </label>
+
+          <div class="trigger">
+            <a class="page-link" href="/dgm-fall-2025/logistics/">logistics</a>
+            <a class="page-link" href="/dgm-fall-2025/lectures/">lectures</a>
+            <a class="page-link" href="/dgm-fall-2025/notes/">notes</a>
+            <a class="page-link" href="/dgm-fall-2025/calendar/">calendar</a>
+            <a class="page-link" href="/dgm-fall-2025/homework/">homework</a>
+            <a class="page-link" href="/dgm-fall-2025/project/">project</a>
+          </div>
+        </nav>
       </div>
-    </nav>
-  </div>
-</header>
-
+    </header>
 
     <div class="page-content">
       <d-title>
@@ -150,335 +126,432 @@
 
       <d-byline></d-byline>
 
-      <d-article> <h2 id="todays-topics">Today’s Topics:</h2>
+      <d-article>
+        <h2 id="todays-topics">Today’s Topics:</h2>
+
+        <ul>
+          <li><a href="#todays-topics">Today’s Topics:</a></li>
+          <li><a href="#1-Multilayer-Perceptron-Architecture">1. Multilayer Perceptron Architecture</a></li>
+          <li><a href="#2-Nonlinear-Activation-Functions">2. Nonlinear Activation Functions</a></li>
+          <li><a href="#3-Multilayer-Perceptron-Code-Examples">3. Multilayer Perceptron Code Examples</a></li>
+          <li><a href="#4-Overfitting-and-Underfitting-(intro)">4. Overfitting and Underfitting (intro)</a></li>
+        </ul>
+
+        <h2 id="1-multilayer-perceptron-architecture">1. Multilayer Perceptron Architecture</h2>
+
+        <p>
+          The <strong>Multilayer Perceptron (MLP)</strong> is a neural network model that extends the single-layer perceptron by stacking
+          <strong>multiple fully connected layers</strong> into a computation graph. Each layer performs a linear transformation followed by a
+          nonlinear activation function, enabling the network to capture non-linear relationships and hierarchical features.
+        </p>
+
+        <p><strong>Key Points:</strong></p>
+
+        <ol>
+          <li>
+            <strong>Definition</strong>
+            <ul>
+              <li>An MLP consists of multiple layers where each neuron in one layer connects to every neuron in the next.</li>
+              <li>
+                This structure generalizes linear models and enables more powerful function approximation than the basic perceptron, which can only
+                output a single bit of information (0 or 1).
+              </li>
+              <li>
+                <em>Illustration:</em><br />
+                <img src="/dgm-fall-2025/assets/img/notes/lecture-09/slide05.png" width="500" /><br />
+                <img src="/dgm-fall-2025/assets/img/notes/lecture-09/slide06.png" width="500" />
+              </li>
+            </ul>
+          </li>
+        </ol>
+
+        <hr />
+
+        <h4 id="2-growth-of-parameters-slide-10">2. Growth of Parameters (Slide 10)</h4>
+
+        <p>
+          Every connection introduces a weight and a bias. As the network grows, the <strong>number of trainable parameters</strong> increases
+          rapidly.<br />
+          This highlights both the expressive power of MLPs and their tendency to overfit.<br />
+          <strong>Example:</strong><br />
+          In the lecture, the instructor computed the exact number of parameters for a sample network:
+        </p>
+
+        <ul>
+          <li>Input layer: 2 units</li>
+          <li>Hidden layer 1: 5 units</li>
+          <li>Hidden layer 2: 4 units</li>
+          <li>Output layer: 3 units</li>
+        </ul>
+
+        <p>Trainable parameters:</p>
+
+        <ul>
+          <li><strong>Biases:</strong> 12</li>
+          <li>
+            <strong>Weights:</strong>
+            <ul>
+              <li>(2 \times 5 = 10)</li>
+              <li>(5 \times 4 = 20)</li>
+              <li>(4 \times 3 = 12)</li>
+            </ul>
+          </li>
+        </ul>
+
+        <p><strong>Total = 42 weights + 12 biases = 54 trainable parameters.</strong></p>
+
+        <p>
+          This concrete example highlights how rapidly parameters grow even in small MLPs, which is why automatic differentiation (e.g., PyTorch) is
+          essential for practical training.
+        </p>
+
+        <p><img src="/dgm-fall-2025/assets/img/notes/lecture-09/slide10.png" width="500" /></p>
+
+        <hr />
+
+        <h4 id="3-from-shallow-to-deep-slide-11">3. From “Shallow” to “Deep” (Slide 11)</h4>
+
+        <p>Adding more layers leads to <strong>deep learning</strong>.</p>
+
+        <ul>
+          <li>Shallow networks can already approximate many functions, but depth enables <strong>hierarchical feature learning</strong>.</li>
+          <li>Early layers capture simple features, while deeper layers build on them to represent complex structures.</li>
+        </ul>
 
-<ul>
-  <li><a href="#todays-topics">Today’s Topics:</a></li>
-  <li><a href="#1-Multilayer-Perceptron-Architecture">1. Multilayer Perceptron Architecture</a></li>
-  <li><a href="#2-Nonlinear-Activation-Functions">2. Nonlinear Activation Functions</a></li>
-  <li><a href="#3-Multilayer-Perceptron-Code-Examples">3. Multilayer Perceptron Code Examples</a></li>
-  <li><a href="#4-Overfitting-and-Underfitting-(intro)">4. Overfitting and Underfitting (intro)</a></li>
-</ul>
+        <h3 id="-1-function-composition">• 1. Function Composition</h3>
+
+        <p>
+          Deep networks perform <strong>function composition</strong> layer-by-layer.<br />
+          Each layer builds a higher-order representation from the previous one, allowing the model to express complex functions
+          <strong>more efficiently</strong> than a single very wide layer.
+        </p>
+
+        <h3 id="-2-expressiveness-width-vs-depth">• 2. Expressiveness: Width vs. Depth</h3>
 
-<h2 id="1-multilayer-perceptron-architecture">1. Multilayer Perceptron Architecture</h2>
+        <p>The instructor highlighted an important rule of thumb:</p>
 
-<p>The <strong>Multilayer Perceptron (MLP)</strong> is a neural network model that extends the single-layer perceptron by stacking <strong>multiple fully connected layers</strong> into a computation graph. Each layer performs a linear transformation followed by a nonlinear activation function, enabling the network to capture non-linear relationships and hierarchical features.</p>
+        <ul>
+          <li>Increasing <strong>width</strong> grows expressiveness <strong>polynomially</strong></li>
+          <li>Increasing <strong>depth</strong> grows expressiveness <strong>exponentially</strong></li>
+        </ul>
 
-<p><strong>Key Points:</strong></p>
-
-<ol>
-  <li><strong>Definition</strong>
-    <ul>
-      <li>An MLP consists of multiple layers where each neuron in one layer connects to every neuron in the next.</li>
-      <li>This structure generalizes linear models and enables more powerful function approximation than the basic perceptron, which can only output a single bit of information (0 or 1).</li>
-      <li><em>Illustration:</em><br />
-<img src="/dgm-fall-2025/assets/img/notes/lecture-09/slide05.png" width="500" /><br />
-<img src="/dgm-fall-2025/assets/img/notes/lecture-09/slide06.png" width="500" /></li>
-    </ul>
-  </li>
-</ol>
-
-<hr />
-
-<h4 id="2-growth-of-parameters-slide-10">2. Growth of Parameters (Slide 10)</h4>
-
-<p>Every connection introduces a weight and a bias. As the network grows, the <strong>number of trainable parameters</strong> increases rapidly.<br />
-This highlights both the expressive power of MLPs and their tendency to overfit.<br />
-<strong>Example:</strong><br />
-In the lecture, the instructor computed the exact number of parameters for a sample network:</p>
-
-<ul>
-  <li>Input layer: 2 units</li>
-  <li>Hidden layer 1: 5 units</li>
-  <li>Hidden layer 2: 4 units</li>
-  <li>Output layer: 3 units</li>
-</ul>
-
-<p>Trainable parameters:</p>
-
-<ul>
-  <li><strong>Biases:</strong> 12</li>
-  <li><strong>Weights:</strong>
-    <ul>
-      <li>(2 \times 5 = 10)</li>
-      <li>(5 \times 4 = 20)</li>
-      <li>(4 \times 3 = 12)</li>
-    </ul>
-  </li>
-</ul>
-
-<p><strong>Total = 42 weights + 12 biases = 54 trainable parameters.</strong></p>
-
-<p>This concrete example highlights how rapidly parameters grow even in small MLPs, which is why automatic differentiation (e.g., PyTorch) is essential for practical training.</p>
-
-<p><img src="/dgm-fall-2025/assets/img/notes/lecture-09/slide10.png" width="500" /></p>
-
-<hr />
-
-<h4 id="3-from-shallow-to-deep-slide-11">3. From “Shallow” to “Deep” (Slide 11)</h4>
-
-<p>Adding more layers leads to <strong>deep learning</strong>.</p>
-
-<ul>
-  <li>Shallow networks can already approximate many functions, but depth enables <strong>hierarchical feature learning</strong>.</li>
-  <li>Early layers capture simple features, while deeper layers build on them to represent complex structures.</li>
-</ul>
-
-<h3 id="-1-function-composition">• 1. Function Composition</h3>
-
-<p>Deep networks perform <strong>function composition</strong> layer-by-layer.<br />
-Each layer builds a higher-order representation from the previous one, allowing the model to express complex functions <strong>more efficiently</strong> than a single very wide layer.</p>
-
-<h3 id="-2-expressiveness-width-vs-depth">• 2. Expressiveness: Width vs. Depth</h3>
-
-<p>The instructor highlighted an important rule of thumb:</p>
-
-<ul>
-  <li>Increasing <strong>width</strong> grows expressiveness <strong>polynomially</strong></li>
-  <li>Increasing <strong>depth</strong> grows expressiveness <strong>exponentially</strong></li>
-</ul>
-
-<p>This means a deep network can represent certain functions with <strong>far fewer parameters</strong> than a shallow but extremely wide network.</p>
-
-<p>This is the conceptual leap from “just a perceptron with more neurons” to the foundation of deep architectures.</p>
-
-<p><img src="/dgm-fall-2025/assets/img/notes/lecture-09/slide11.png" width="500" /></p>
-
-<hr />
-
-<h4 id="4-optimization-landscape-convex-vs-non-convex-slides-1217">4. Optimization Landscape: Convex vs. Non-convex (Slides 12–17)</h4>
-
-<p>Earlier models (e.g., logistic regression, adaline) had <strong>convex loss functions</strong>, ensuring one global minimum.<br />
-Formally, a function $f$ is convex if:</p>
-
-\[f(\lambda x + (1-\lambda)y) \leq \lambda f(x) + (1-\lambda) f(y), \quad \forall x,y,\; \lambda \in [0,1].\]
-
-<ul>
-  <li>Convex optimization is simple: gradient descent always finds the global optimum.</li>
-  <li>MLPs instead have <strong>non-convex loss surfaces</strong> full of local minima and saddle points.</li>
-  <li>Training outcomes vary with initialization or data ordering, yet in practice many local minima perform equally well.</li>
-  <li>As Yann LeCun pointed out, non-convexity is not a dealbreaker — deep learning still succeeds despite it.</li>
-</ul>
-
-<hr />
-
-<h4 id="5-importance-of-initialization-slide-18">5. Importance of Initialization (Slide 18)</h4>
-
-<p>If all weights are initialized to zero, every neuron behaves identically, and the network cannot learn. The model would not be able to distinguish any importance of the nodes.<br />
-To break symmetry and ensure effective learning, <strong>random initialization</strong> (centered at zero, with variance scaled properly) and input <strong>normalization</strong> are essential.</p>
-
-<hr />
-
-<h3 id="logical-flow">Logical Flow</h3>
-
-<ul>
-  <li><strong>Start (Slides 5–6):</strong> Define what an MLP is — a layered computation graph.</li>
-  <li><strong>Next (Slide 10):</strong> Show the cost of this design — many parameters to train.</li>
-  <li><strong>Then (Slide 11):</strong> Extend the idea — depth brings hierarchical power.</li>
-  <li><strong>Follow-up (Slides 12–17):</strong> Explain why optimization becomes harder (convex vs. non-convex).</li>
-  <li><strong>Conclusion (Slide 18):</strong> Stress initialization — without it, even powerful architectures fail.</li>
-</ul>
-
-<hr />
-
-<h2 id="2-nonlinear-activation-functions">2. Nonlinear Activation Functions</h2>
-
-<p>Nonlinear activation functions are the key to making multilayer perceptrons more powerful than simple linear models. Without non-linearity, stacking multiple layers would still result in a single linear transformation, offering no advantage over logistic regression. By introducing nonlinear functions at each layer, MLPs can learn <strong>non-linear decision boundaries</strong> and solve problems like XOR that linear models fail to capture.</p>
-
-<hr />
-
-<h4 id="1-why-nonlinearity-matters-slide-21">1. Why Nonlinearity Matters (Slide 21)</h4>
-
-<ul>
-  <li>The XOR problem illustrates the limitation of linear classifiers: no single straight line can separate XOR’s outputs.</li>
-  <li>By applying nonlinear activations in hidden layers, MLPs can <strong>combine multiple linear boundaries</strong> into a nonlinear solution.</li>
-  <li>This is the central reason MLPs succeed where perceptrons fail.</li>
-</ul>
-
-<p><img src="/dgm-fall-2025/assets/img/notes/lecture-09/slide21.png" width="500" /></p>
-
-<hr />
-
-<h4 id="2-common-activation-functions-slides-2224">2. Common Activation Functions (Slides 22–24)</h4>
-
-<p>Several nonlinear activation functions are widely used. Each has its benefits and drawbacks:</p>
-
-<ul>
-  <li><strong>Sigmoid</strong>: $ \sigma(x) = \frac{1}{1+e^{-x}} $
-    <ul>
-      <li>Outputs between 0 and 1.</li>
-      <li>
-        <table>
-          <tbody>
-            <tr>
-              <td>Historically important, but suffers from vanishing gradients for large $</td>
-              <td>x</td>
-              <td>$.</td>
-            </tr>
-          </tbody>
-        </table>
-      </li>
-    </ul>
-  </li>
-  <li><strong>Tanh</strong>: $ \tanh(x) $
-    <ul>
-      <li>Outputs between -1 and 1, centered around zero.</li>
-      <li>Provides stronger gradients than sigmoid, but still saturates at extremes.</li>
-      <li>Works best when inputs are normalized to zero mean.</li>
-    </ul>
-  </li>
-  <li><strong>ReLU</strong>: $ \max(0, x) $
-    <ul>
-      <li>Simple, fast to compute, avoids saturation for positive inputs.</li>
-      <li>Risk of “dying ReLUs” (neurons stuck at zero).</li>
-    </ul>
-  </li>
-  <li><strong>Variants</strong> (Leaky ReLU, Smooth ReLU, etc.)
-    <ul>
-      <li>Address ReLU’s shortcomings, e.g. keeping small gradients for negative inputs.</li>
-    </ul>
-  </li>
-</ul>
-
-<p><img src="/dgm-fall-2025/assets/img/notes/lecture-09/slide22.png" width="500" /><br />
-<img src="/dgm-fall-2025/assets/img/notes/lecture-09/slide23.png" width="500" /></p>
-
-<hr />
-
-<h4 id="3-activation-functions-and-robustness-slides-2526">3. Activation Functions and Robustness (Slides 25–26)</h4>
-
-<ul>
-  <li>Recent research shows that the <strong>choice of activation</strong> can influence not just accuracy, but also robustness.</li>
-  <li>For example, ReLU’s non-smooth nature can weaken adversarial training.</li>
-  <li>Replacing ReLU with smoother alternatives can improve both robustness and stability under adversarial attacks.</li>
-</ul>
-
-<p><img src="/dgm-fall-2025/assets/img/notes/lecture-09/slide25.png" width="500" /><br />
-<img src="/dgm-fall-2025/assets/img/notes/lecture-09/slide26.png" width="500" /></p>
-
-<hr />
-
-<h3 id="logical-flow-1">Logical Flow</h3>
-
-<ul>
-  <li><strong>Start (Slide 21):</strong> Motivate with XOR — why linear models fail.</li>
-  <li><strong>Next (Slides 22–24):</strong> Present the main activation functions, with strengths and weaknesses.</li>
-  <li><strong>Then (Slides 25–26):</strong> Highlight modern insights — activation choice also affects robustness, not just expressiveness.</li>
-</ul>
-
-<p><strong>Takeaway:</strong> Nonlinear activations unlock the true power of MLPs. They not only allow non-linear decision boundaries but also shape training dynamics, convergence, and robustness.</p>
-
-<hr />
-
-<h2 id="3-multilayer-perceptron-code-examples">3. Multilayer Perceptron Code Examples</h2>
-
-<h3 id="what-to-check-before-training">What to check before training</h3>
-
-<ul>
-  <li><strong>Set random seed</strong> for <strong>reproducibility</strong> (and log the random seed and package versions).</li>
-  <li><strong>Check datasets</strong> and <strong>input data</strong> are as expected before training (shapes, dtypes, ranges, labels, NaNs).</li>
-  <li><strong>Set timer</strong>, <strong>generator log</strong>, and <strong>print intermediate values</strong> to verify the training loop.</li>
-  <li>During training, if the <strong>loss</strong> behaves strangely (e.g., going up prematurely), stop and start <strong>diagnosis/debugging</strong>.</li>
-  <li>Change training <strong>hyperparameters</strong> and repeat experiments (learning rate, weight decay, batch size, scheduler, dropout).</li>
-</ul>
-
-<h3 id="diagnosing-loss-curves">Diagnosing Loss Curves</h3>
-
-<ul>
-  <li>Compare <strong>training</strong> and <strong>validation/test loss</strong> to identify issues.</li>
-  <li>If validation loss <strong>plateaus or rises</strong> while training loss <strong>decreases</strong>, this often indicates <strong>overfitting</strong> → may require <strong>regularization</strong> or early stopping.</li>
-  <li><strong>Training loss curves</strong> are often smoothed over mini-batches to reduce <strong>noise</strong>.</li>
-  <li>Some architectures (e.g., Transformers) show unusual <strong>training dynamics</strong>, such as sharp drops followed by long plateaus <strong>(“grokking”)</strong>.</li>
-  <li><strong>Loss curve</strong> behavior is strongly influenced by <strong>learning rate</strong>, <strong>LR scheduling</strong>, and <strong>initialization</strong>, so experimentation is often necessary.</li>
-</ul>
-
-<h2 id="4-overfitting-and-underfitting-intro">4. Overfitting and Underfitting (intro)</h2>
-
-<hr />
-
-<h3 id="training-vs-generalization-error">Training vs. Generalization Error</h3>
-
-<figure>
-  <img src="/dgm-fall-2025/assets/img/notes/lecture-09/IMG_9271.jpg" width="500" />
-</figure>
-
-<p><strong>Big picture.</strong></p>
-
-<ul>
-  <li><strong>Training error (orange)</strong> typically <strong>decreases monotonically</strong> as model capacity increases.</li>
-  <li><strong>Generalization (test/validation) error (green)</strong> first <strong>decreases</strong> (model fits signal better), then <strong>increases</strong> when the model starts to fit <strong>noise</strong> → <strong>overfitting</strong>.</li>
-  <li>The <strong>gap</strong> on the right is the classic sign of overfitting: low training loss, higher test loss.</li>
-</ul>
-
-<hr />
-
-<h3 id="biasvariance-decomposition--formulas">Bias–Variance Decomposition — Formulas</h3>
-
-<p><strong>General definition</strong></p>
-
-\[\mathrm{Bias}_\theta[\hat{\theta}] \=\ \mathbb{E}_\theta[\hat{\theta}] \-\ \theta\]
-
-\[\mathrm{Var}_\theta[\hat{\theta}] \=\ \mathbb{E}_\theta[\hat{\theta}^{2}] \-\ \big(\mathbb{E}_\theta[\hat{\theta}]\big)^{2}\]
-
-<!-- Intuition (Bias–Variance) -->
-<h4>Intuition</h4>
-
-<figure>
-  <!-- Update the src path if your file name/folder differs -->
-  <img src="/dgm-fall-2025/assets/img/notes/lecture-09/IMG_9272.jpg" width="500" />
-  <figcaption>
-    <strong>Intuition.</strong>
-    Each “arrow” is the model learned from a different training set:
-    <em>bias</em> is how far the <u>average</u> landing point is from the true target \(y\),
-    and <em>variance</em> is how widely the arrows scatter around that average.
-    (Noise is ignored in this sketch—high bias misses consistently; high variance sprays shots even if the average is on target.)
-  </figcaption>
-</figure>
-
-<hr />
-
-<h3 id="why-deep-learning-loves-large-datasets">Why Deep Learning Loves Large Datasets</h3>
-
-<figure>
-  <img src="/dgm-fall-2025/assets/img/notes/lecture-09/IMG_9272.jpg" width="500" />
-</figure>
-
-<ul>
-  <li><strong>Traditional ML (blue, dashed)</strong>: improves, then <strong>plateaus</strong>; limited capacity can’t keep exploiting more data.</li>
-  <li><strong>Deep learning (green)</strong>: with <strong>huge capacity</strong>, it keeps improving as <strong>dataset size grows</strong>—big data helps <strong>tame variance</strong> and lets the network learn richer invariances/features.</li>
-  <li>deep nets <strong>need</strong> lots of data to fully realize their capacity without overfitting.</li>
-</ul>
-
-<hr />
-
-<h3 id="double-descent-classical-vs-modern-view">Double Descent (classical vs modern view)</h3>
-
-<figure>
-  <img src="/dgm-fall-2025/assets/img/notes/lecture-09/IMG_9274.jpg" width="500" />
-</figure>
-
-<p><strong>Classic U-curve (first descent).</strong><br />
-As capacity increases from very small, <strong>Bias falls faster</strong> than <strong>Variance rises</strong>, so test error <strong>drops</strong>.</p>
-
-<p><strong>Interpolation peak.</strong><br />
-Near the point where the model <strong>just fits training data exactly</strong> (interpolation), <strong>Variance spikes</strong> ⇒ <strong>test error peaks</strong>.</p>
-
-<p><strong>Second descent (overparameterized regime).</strong><br />
-With even more capacity, <strong>test error falls again</strong> because learning dynamics and architecture steer solutions toward <strong>simpler interpolants</strong>:</p>
-
-<ul>
-  <li><strong>Implicit regularization of SGD</strong>: among many perfect-fit solutions, training prefers <strong>low-norm/low-complexity</strong> ones.</li>
-  <li><strong>Architectural inductive bias</strong>: convolutions/attention/residuals encode structures that <strong>generalize</strong>.</li>
-  <li><strong>Scale with data</strong>: large datasets dampen variance and let capacity be used productively.</li>
-</ul>
-
-<p><strong>Which descent is “better”?</strong></p>
-
-<ul>
-  <li><strong>Linear regression (classic)</strong>: often the <strong>first descent</strong> (pre-interpolation, $p&lt;n$) achieves the <strong>lowest</strong> test error; the overparameterized second descent ($p\gg n$) may <strong>not</strong> beat it.</li>
-  <li><strong>Deep learning (modern practice)</strong>: typically the <strong>second descent</strong> (massively overparameterized) is <strong>better</strong> <strong>when</strong> there is <strong>enough data</strong>, <strong>SGD’s implicit bias</strong>, and <strong>good architectures/regularization</strong>. That’s why today <strong>larger models</strong> often <strong>generalize better</strong>.</li>
-</ul>
- </d-article>
+        <p>
+          This means a deep network can represent certain functions with <strong>far fewer parameters</strong> than a shallow but extremely wide
+          network.
+        </p>
+
+        <p>This is the conceptual leap from “just a perceptron with more neurons” to the foundation of deep architectures.</p>
+
+        <p><img src="/dgm-fall-2025/assets/img/notes/lecture-09/slide11.png" width="500" /></p>
+
+        <hr />
+
+        <h4 id="4-optimization-landscape-convex-vs-non-convex-slides-1217">4. Optimization Landscape: Convex vs. Non-convex (Slides 12–17)</h4>
+
+        <p>
+          Earlier models (e.g., logistic regression, adaline) had <strong>convex loss functions</strong>, ensuring one global minimum.<br />
+          Formally, a function $f$ is convex if:
+        </p>
+
+        \[f(\lambda x + (1-\lambda)y) \leq \lambda f(x) + (1-\lambda) f(y), \quad \forall x,y,\; \lambda \in [0,1].\]
+
+        <ul>
+          <li>Convex optimization is simple: gradient descent always finds the global optimum.</li>
+          <li>MLPs instead have <strong>non-convex loss surfaces</strong> full of local minima and saddle points.</li>
+          <li>Training outcomes vary with initialization or data ordering, yet in practice many local minima perform equally well.</li>
+          <li>As Yann LeCun pointed out, non-convexity is not a dealbreaker — deep learning still succeeds despite it.</li>
+        </ul>
+
+        <hr />
+
+        <h4 id="5-importance-of-initialization-slide-18">5. Importance of Initialization (Slide 18)</h4>
+
+        <p>
+          If all weights are initialized to zero, every neuron behaves identically, and the network cannot learn. The model would not be able to
+          distinguish any importance of the nodes.<br />
+          To break symmetry and ensure effective learning, <strong>random initialization</strong> (centered at zero, with variance scaled properly)
+          and input <strong>normalization</strong> are essential.
+        </p>
+
+        <hr />
+
+        <h3 id="logical-flow">Logical Flow</h3>
+
+        <ul>
+          <li><strong>Start (Slides 5–6):</strong> Define what an MLP is — a layered computation graph.</li>
+          <li><strong>Next (Slide 10):</strong> Show the cost of this design — many parameters to train.</li>
+          <li><strong>Then (Slide 11):</strong> Extend the idea — depth brings hierarchical power.</li>
+          <li><strong>Follow-up (Slides 12–17):</strong> Explain why optimization becomes harder (convex vs. non-convex).</li>
+          <li><strong>Conclusion (Slide 18):</strong> Stress initialization — without it, even powerful architectures fail.</li>
+        </ul>
+
+        <hr />
+
+        <h2 id="2-nonlinear-activation-functions">2. Nonlinear Activation Functions</h2>
+
+        <p>
+          Nonlinear activation functions are the key to making multilayer perceptrons more powerful than simple linear models. Without non-linearity,
+          stacking multiple layers would still result in a single linear transformation, offering no advantage over logistic regression. By
+          introducing nonlinear functions at each layer, MLPs can learn <strong>non-linear decision boundaries</strong> and solve problems like XOR
+          that linear models fail to capture.
+        </p>
+
+        <hr />
+
+        <h4 id="1-why-nonlinearity-matters-slide-21">1. Why Nonlinearity Matters (Slide 21)</h4>
+
+        <ul>
+          <li>The XOR problem illustrates the limitation of linear classifiers: no single straight line can separate XOR’s outputs.</li>
+          <li>
+            By applying nonlinear activations in hidden layers, MLPs can <strong>combine multiple linear boundaries</strong> into a nonlinear
+            solution.
+          </li>
+          <li>This is the central reason MLPs succeed where perceptrons fail.</li>
+        </ul>
+
+        <p><img src="/dgm-fall-2025/assets/img/notes/lecture-09/slide21.png" width="500" /></p>
+
+        <hr />
+
+        <h4 id="2-common-activation-functions-slides-2224">2. Common Activation Functions (Slides 22–24)</h4>
+
+        <p>Several nonlinear activation functions are widely used. Each has its benefits and drawbacks:</p>
+
+        <ul>
+          <li>
+            <strong>Sigmoid</strong>: $ \sigma(x) = \frac{1}{1+e^{-x}} $
+            <ul>
+              <li>Outputs between 0 and 1.</li>
+              <li>
+                <table>
+                  <tbody>
+                    <tr>
+                      <td>Historically important, but suffers from vanishing gradients for large $</td>
+                      <td>x</td>
+                      <td>$.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <strong>Tanh</strong>: $ \tanh(x) $
+            <ul>
+              <li>Outputs between -1 and 1, centered around zero.</li>
+              <li>Provides stronger gradients than sigmoid, but still saturates at extremes.</li>
+              <li>Works best when inputs are normalized to zero mean.</li>
+            </ul>
+          </li>
+          <li>
+            <strong>ReLU</strong>: $ \max(0, x) $
+            <ul>
+              <li>Simple, fast to compute, avoids saturation for positive inputs.</li>
+              <li>Risk of “dying ReLUs” (neurons stuck at zero).</li>
+            </ul>
+          </li>
+          <li>
+            <strong>Variants</strong> (Leaky ReLU, Smooth ReLU, etc.)
+            <ul>
+              <li>Address ReLU’s shortcomings, e.g. keeping small gradients for negative inputs.</li>
+            </ul>
+          </li>
+        </ul>
+
+        <p>
+          <img src="/dgm-fall-2025/assets/img/notes/lecture-09/slide22.png" width="500" /><br />
+          <img src="/dgm-fall-2025/assets/img/notes/lecture-09/slide23.png" width="500" />
+        </p>
+
+        <hr />
+
+        <h4 id="3-activation-functions-and-robustness-slides-2526">3. Activation Functions and Robustness (Slides 25–26)</h4>
+
+        <ul>
+          <li>Recent research shows that the <strong>choice of activation</strong> can influence not just accuracy, but also robustness.</li>
+          <li>For example, ReLU’s non-smooth nature can weaken adversarial training.</li>
+          <li>Replacing ReLU with smoother alternatives can improve both robustness and stability under adversarial attacks.</li>
+        </ul>
+
+        <p>
+          <img src="/dgm-fall-2025/assets/img/notes/lecture-09/slide25.png" width="500" /><br />
+          <img src="/dgm-fall-2025/assets/img/notes/lecture-09/slide26.png" width="500" />
+        </p>
+
+        <hr />
+
+        <h3 id="logical-flow-1">Logical Flow</h3>
+
+        <ul>
+          <li><strong>Start (Slide 21):</strong> Motivate with XOR — why linear models fail.</li>
+          <li><strong>Next (Slides 22–24):</strong> Present the main activation functions, with strengths and weaknesses.</li>
+          <li>
+            <strong>Then (Slides 25–26):</strong> Highlight modern insights — activation choice also affects robustness, not just expressiveness.
+          </li>
+        </ul>
+
+        <p>
+          <strong>Takeaway:</strong> Nonlinear activations unlock the true power of MLPs. They not only allow non-linear decision boundaries but also
+          shape training dynamics, convergence, and robustness.
+        </p>
+
+        <hr />
+
+        <h2 id="3-multilayer-perceptron-code-examples">3. Multilayer Perceptron Code Examples</h2>
+
+        <h3 id="what-to-check-before-training">What to check before training</h3>
+
+        <ul>
+          <li><strong>Set random seed</strong> for <strong>reproducibility</strong> (and log the random seed and package versions).</li>
+          <li>
+            <strong>Check datasets</strong> and <strong>input data</strong> are as expected before training (shapes, dtypes, ranges, labels, NaNs).
+          </li>
+          <li>
+            <strong>Set timer</strong>, <strong>generator log</strong>, and <strong>print intermediate values</strong> to verify the training loop.
+          </li>
+          <li>
+            During training, if the <strong>loss</strong> behaves strangely (e.g., going up prematurely), stop and start
+            <strong>diagnosis/debugging</strong>.
+          </li>
+          <li>
+            Change training <strong>hyperparameters</strong> and repeat experiments (learning rate, weight decay, batch size, scheduler, dropout).
+          </li>
+        </ul>
+
+        <h3 id="diagnosing-loss-curves">Diagnosing Loss Curves</h3>
+
+        <ul>
+          <li>Compare <strong>training</strong> and <strong>validation/test loss</strong> to identify issues.</li>
+          <li>
+            If validation loss <strong>plateaus or rises</strong> while training loss <strong>decreases</strong>, this often indicates
+            <strong>overfitting</strong> → may require <strong>regularization</strong> or early stopping.
+          </li>
+          <li><strong>Training loss curves</strong> are often smoothed over mini-batches to reduce <strong>noise</strong>.</li>
+          <li>
+            Some architectures (e.g., Transformers) show unusual <strong>training dynamics</strong>, such as sharp drops followed by long plateaus
+            <strong>(“grokking”)</strong>.
+          </li>
+          <li>
+            <strong>Loss curve</strong> behavior is strongly influenced by <strong>learning rate</strong>, <strong>LR scheduling</strong>, and
+            <strong>initialization</strong>, so experimentation is often necessary.
+          </li>
+        </ul>
+
+        <h2 id="4-overfitting-and-underfitting-intro">4. Overfitting and Underfitting (intro)</h2>
+
+        <hr />
+
+        <h3 id="training-vs-generalization-error">Training vs. Generalization Error</h3>
+
+        <figure>
+          <img src="/dgm-fall-2025/assets/img/notes/lecture-09/IMG_9271.jpg" width="500" />
+        </figure>
+
+        <p><strong>Big picture.</strong></p>
+
+        <ul>
+          <li><strong>Training error (orange)</strong> typically <strong>decreases monotonically</strong> as model capacity increases.</li>
+          <li>
+            <strong>Generalization (test/validation) error (green)</strong> first <strong>decreases</strong> (model fits signal better), then
+            <strong>increases</strong> when the model starts to fit <strong>noise</strong> → <strong>overfitting</strong>.
+          </li>
+          <li>The <strong>gap</strong> on the right is the classic sign of overfitting: low training loss, higher test loss.</li>
+        </ul>
+
+        <hr />
+
+        <h3 id="biasvariance-decomposition--formulas">Bias–Variance Decomposition — Formulas</h3>
+
+        <p><strong>General definition</strong></p>
+
+        \[\mathrm{Bias}_\theta[\hat{\theta}] \=\ \mathbb{E}_\theta[\hat{\theta}] \-\ \theta\] \[\mathrm{Var}_\theta[\hat{\theta}] \=\
+        \mathbb{E}_\theta[\hat{\theta}^{2}] \-\ \big(\mathbb{E}_\theta[\hat{\theta}]\big)^{2}\]
+
+        <!-- Intuition (Bias–Variance) -->
+        <h4>Intuition</h4>
+
+        <figure>
+          <!-- Update the src path if your file name/folder differs -->
+          <img src="/dgm-fall-2025/assets/img/notes/lecture-09/IMG_9272.jpg" width="500" />
+          <figcaption>
+            <strong>Intuition.</strong>
+            Each “arrow” is the model learned from a different training set:
+            <em>bias</em> is how far the <u>average</u> landing point is from the true target \(y\), and <em>variance</em> is how widely the arrows
+            scatter around that average. (Noise is ignored in this sketch—high bias misses consistently; high variance sprays shots even if the
+            average is on target.)
+          </figcaption>
+        </figure>
+
+        <hr />
+
+        <h3 id="why-deep-learning-loves-large-datasets">Why Deep Learning Loves Large Datasets</h3>
+
+        <figure>
+          <img src="/dgm-fall-2025/assets/img/notes/lecture-09/IMG_9272.jpg" width="500" />
+        </figure>
+
+        <ul>
+          <li>
+            <strong>Traditional ML (blue, dashed)</strong>: improves, then <strong>plateaus</strong>; limited capacity can’t keep exploiting more
+            data.
+          </li>
+          <li>
+            <strong>Deep learning (green)</strong>: with <strong>huge capacity</strong>, it keeps improving as <strong>dataset size grows</strong>—big
+            data helps <strong>tame variance</strong> and lets the network learn richer invariances/features.
+          </li>
+          <li>deep nets <strong>need</strong> lots of data to fully realize their capacity without overfitting.</li>
+        </ul>
+
+        <hr />
+
+        <h3 id="double-descent-classical-vs-modern-view">Double Descent (classical vs modern view)</h3>
+
+        <figure>
+          <img src="/dgm-fall-2025/assets/img/notes/lecture-09/IMG_9274.jpg" width="500" />
+        </figure>
+
+        <p>
+          <strong>Classic U-curve (first descent).</strong><br />
+          As capacity increases from very small, <strong>Bias falls faster</strong> than <strong>Variance rises</strong>, so test error
+          <strong>drops</strong>.
+        </p>
+
+        <p>
+          <strong>Interpolation peak.</strong><br />
+          Near the point where the model <strong>just fits training data exactly</strong> (interpolation), <strong>Variance spikes</strong> ⇒
+          <strong>test error peaks</strong>.
+        </p>
+
+        <p>
+          <strong>Second descent (overparameterized regime).</strong><br />
+          With even more capacity, <strong>test error falls again</strong> because learning dynamics and architecture steer solutions toward
+          <strong>simpler interpolants</strong>:
+        </p>
+
+        <ul>
+          <li>
+            <strong>Implicit regularization of SGD</strong>: among many perfect-fit solutions, training prefers
+            <strong>low-norm/low-complexity</strong> ones.
+          </li>
+          <li><strong>Architectural inductive bias</strong>: convolutions/attention/residuals encode structures that <strong>generalize</strong>.</li>
+          <li><strong>Scale with data</strong>: large datasets dampen variance and let capacity be used productively.</li>
+        </ul>
+
+        <p><strong>Which descent is “better”?</strong></p>
+
+        <ul>
+          <li>
+            <strong>Linear regression (classic)</strong>: often the <strong>first descent</strong> (pre-interpolation, $p&lt;n$) achieves the
+            <strong>lowest</strong> test error; the overparameterized second descent ($p\gg n$) may <strong>not</strong> beat it.
+          </li>
+          <li>
+            <strong>Deep learning (modern practice)</strong>: typically the <strong>second descent</strong> (massively overparameterized) is
+            <strong>better</strong> <strong>when</strong> there is <strong>enough data</strong>, <strong>SGD’s implicit bias</strong>, and
+            <strong>good architectures/regularization</strong>. That’s why today <strong>larger models</strong> often
+            <strong>generalize better</strong>.
+          </li>
+        </ul>
+      </d-article>
 
       <d-appendix>
         <d-footnote-list></d-footnote-list>
@@ -487,107 +560,82 @@ With even more capacity, <strong>test error falls again</strong> because learnin
     </div>
 
     <footer class="site-footer">
-  <div class="wrapper">
-    <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
+      <div class="wrapper">
+        <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
 
-    <div class="footer-col-wrapper">
-      <div class="footer-col footer-col-1">
-        <ul class="contact-list">
-          <li class="p-name">Ben Lengerich</li><li>
-            <a class="u-email" href="mailto:TBD@wisc.edu"
-              >TBD@wisc.edu</a
-            >
-          </li></ul>
+        <div class="footer-col-wrapper">
+          <div class="footer-col footer-col-1">
+            <ul class="contact-list">
+              <li class="p-name">Ben Lengerich</li>
+              <li>
+                <a class="u-email" href="mailto:TBD@wisc.edu">TBD@wisc.edu</a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="footer-col footer-col-2">
+            <ul class="social-media-list">
+              <li>
+                <a href="https://github.com/AdaptInfer" target="_blank"><i class="fab fa-github"></i> <span class="username">AdaptInfer</span></a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="footer-col footer-col-3">
+            <p>
+              &copy; Copyright 2025 University of Wisconsin.
+              <br />
+            </p>
+          </div>
+        </div>
       </div>
-
-      <div class="footer-col footer-col-2"><ul class="social-media-list"><li>
-    <a
-      href="https://github.com/AdaptInfer"
-      target="_blank"
-      ><i class="fab fa-github"></i>
-      <span class="username">AdaptInfer</span></a
-    >
-  </li></ul>
-</div>
-
-      <div class="footer-col footer-col-3">
-        <p>
-          &copy; Copyright 2025 University of Wisconsin.
-          <br />
-          
-        </p>
-      </div>
-    </div>
-  </div>
-</footer>
-
+    </footer>
   </body>
 
-  <d-bibliography
-    src="/dgm-fall-2025/assets/bibliography/2025-10-01-lecture-09.bib"
-  >
-  </d-bibliography>
+  <d-bibliography src="/dgm-fall-2025/assets/bibliography/2025-10-01-lecture-09.bib"> </d-bibliography>
 
   <!-- Load jQuery -->
-<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
 
-<!-- Load Common JS -->
-<script src="/dgm-fall-2025/assets/js/common.js"></script>
+  <!-- Load Common JS -->
+  <script src="/dgm-fall-2025/assets/js/common.js"></script>
 
+  <!-- Load KaTeX -->
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css" />
+  <script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+  <script src="/dgm-fall-2025/assets/js/katex.js"></script>
 
-<!-- Load KaTeX -->
-<link
-  rel="stylesheet"
-  href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css"
-/>
-<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
-<script src="/dgm-fall-2025/assets/js/katex.js"></script>
- 
-<!-- Load Anchor JS -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
-<script>
-  anchors.options.visible = "hover";
-  anchors.add("article h2, article h3, article h4, article h5, article h6");
-</script>
- 
-<!-- Adjust LaTeX JS -->
-<script src="/dgm-fall-2025/assets/js/latex.js"></script>
+  <!-- Load Anchor JS -->
+  <script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+  <script>
+    anchors.options.visible = "hover";
+    anchors.add("article h2, article h3, article h4, article h5, article h6");
+  </script>
 
+  <!-- Adjust LaTeX JS -->
+  <script src="/dgm-fall-2025/assets/js/latex.js"></script>
 
-<!-- Include custom icon fonts -->
-<link
-  rel="stylesheet"
-  href="/dgm-fall-2025/assets/css/fontawesome-all.min.css"
-/>
-<link
-  rel="stylesheet"
-  href="/dgm-fall-2025/assets/css/academicons.min.css"
-/>
+  <!-- Include custom icon fonts -->
+  <link rel="stylesheet" href="/dgm-fall-2025/assets/css/fontawesome-all.min.css" />
+  <link rel="stylesheet" href="/dgm-fall-2025/assets/css/academicons.min.css" />
 
-<!-- Google Analytics -->
-<script>
-  (function (i, s, o, g, r, a, m) {
-    i["GoogleAnalyticsObject"] = r;
-    ((i[r] =
-      i[r] ||
-      function () {
-        (i[r].q = i[r].q || []).push(arguments);
-      }),
-      (i[r].l = 1 * new Date()));
-    ((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
-    a.async = 1;
-    a.src = g;
-    m.parentNode.insertBefore(a, m);
-  })(
-    window,
-    document,
-    "script",
-    "//www.google-analytics.com/analytics.js",
-    "ga",
-  );
+  <!-- Google Analytics -->
+  <script>
+    (function (i, s, o, g, r, a, m) {
+      i["GoogleAnalyticsObject"] = r;
+      (i[r] =
+        i[r] ||
+        function () {
+          (i[r].q = i[r].q || []).push(arguments);
+        }),
+        (i[r].l = 1 * new Date());
+      (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+      a.async = 1;
+      a.src = g;
+      m.parentNode.insertBefore(a, m);
+    })(window, document, "script", "//www.google-analytics.com/analytics.js", "ga");
 
-  ga("create", "", "auto");
-  ga("send", "pageview");
-</script>
-
+    ga("create", "", "auto");
+    ga("send", "pageview");
+  </script>
 </html>
