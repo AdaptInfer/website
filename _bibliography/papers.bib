@@ -1,6 +1,16 @@
 ---
 ---
 
+@article{liu2026mka,
+    title = {MKA: Memory-Keyed Attention for Efficient Long-Context Reasoning},
+    journal={ACM International Conference on Computing Frontier (CF 2026)},
+    author = {Liu, Dong and Yu, Yanxuan and Wang, Xuhong and Lengerich, Ben and Wu, Ying Nian},
+    abstract = {As long-context language modeling becomes increasingly important, the cost of maintaining and attending to large Key/Value (KV) caches grows rapidly, becoming a major bottleneck in both training and inference. While prior works such as Multi-Query Attention (MQA) and MultiLatent Attention (MLA) reduce memory by sharing or compressing KV features, they often trade off representation quality or incur runtime overhead. We propose Memory-Keyed Attention (MKA), a hierarchical attention mechanism that integrates multi-level KV caches—local, session, and long-term—and learns to route attention across them dynamically. We further introduce FastMKA, a broadcast-routed variant that fuses memory sources before attention computation for enhanced efficiency. Experiments on different sequence lengths show that MKA improves perplexity over MHA and MLA, while FastMKA achieves comparable accuracy to MLA with up to 4× faster training and 40\% lower evaluation latency. These results highlight MKA as a practical and extensible framework for efficient longcontext attention.},
+    year = {2026},
+  bibtex_show = {true},
+  pdf = {https://arxiv.org/pdf/2603.20586},
+}
+
 @article{lengerich2025hidden,
   title={The hidden risk of round numbers and sharp thresholds in clinical practice},
   author={Lengerich, Benjamin J and Caruana, Rich and Nunnally, Mark E and Kellis, Manolis},
@@ -459,7 +469,7 @@ We examine Contextualized Machine Learning (ML), a paradigm for learning heterog
   informal_venue = {AAAI XAI4Sci},
   abstract = {Recent years have seen important advances in the building of interpretable models, machine learning models that are designed to be easily understood by humans. In this work, we show that large language models (LLMs) are remarkably good at working with interpretable models, too. In particular, we show that LLMs can describe, interpret, and debug Generalized Additive Models (GAMs). Combining the flexibility of LLMs with the breadth of statistical patterns accurately described by GAMs enables dataset summarization, question answering, and model critique. LLMs can also improve the interaction between domain experts and interpretable models, and generate hypotheses about the underlying phenomenon. We release TalkToEBM as an open-source LLM-GAM interface.},
   keywords = {Interpretable, LLMs},
-  selected = {true},
+  selected = {false},
   bibtex_show = {true},
   arxiv = {2308.01157}
 }

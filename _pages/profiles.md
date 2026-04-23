@@ -32,12 +32,12 @@ profiles:
 
 ## Master's students:
 
-- Yue Yao, [[Contextualized models](/projects/1_contextualized)]
 - Peter Li, [[Contextualized models](/projects/1_contextualized)]
 
 ## Undergraduate research assistants:
 
-- Dong Liu, [[Efficient Foundation Models](/projects/4_efficient_foundation)]
+- Zhiyuan Li, [[Contextualized models](/projects/1_contextualized), [Maternal health](/projects/7_maternal)]
+- Jesse Yang [[Foundation Models as Context](/projects/2_foundation_models)]
 - Amy Cai, [[Contextualized models](/projects/1_contextualized), [Maternal health](/projects/7_maternal)]
 - Kushal Patel, [[Contextualized models](/projects/1_contextualized)]
 - Jojo Qiao, [[Contextualized models](/projects/1_contextualized)]
@@ -46,3 +46,8 @@ profiles:
 
 - Lama Salem, [[Personalized genomics](/projects/5_personalized_genomics)]
 - [Caleb Ellington](https://cnellington.github.io/), [[Contextualized models](/projects/1_contextualized), [Personalized genomics](/projects/5_personalized_genomics)]
+
+## Alumni:
+
+- Dong Liu, [[Efficient Foundation Models](/projects/4_efficient_foundation)], Was Undergraduate RA, Now PhD Student @ [UCLA CS](https://www.cs.ucla.edu/)
+- Yue Yao, [[Contextualized models](/projects/1_contextualized)], Was Master's RA, Now PhD Student @ [UNC Statistics](https://stor.unc.edu/)
