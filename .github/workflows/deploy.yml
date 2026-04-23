@@ -78,7 +78,7 @@ jobs:
           propertyPath: "giscus.repo"
           value: ${{ github.repository }}
       - name: Install and Build 🔧
-        env: 
+        env:
           SKIP_EXTERNAL_POSTS: "1"
         run: |
           pip3 install --upgrade jupyter
