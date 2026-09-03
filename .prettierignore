@@ -8,3 +8,7 @@ assets/js/search/*.js
 assets/plotly/demo.html
 lighthouse_results/**
 _posts/2015-10-20-math.md
+
+# Built/deployed course subsites (generated output, not hand-authored)
+dgm-fall-2026/**
+fm-spring-2026/**
