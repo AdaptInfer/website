@@ -1,0 +1,1511 @@
+<!doctype html>
+<html>
+  <head>
+    <head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="content-language" content="en" />
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <title>
+    STAT 453 | Lecture 03 - Stats / Linear Algebra Review
+  </title>
+  <meta name="description" content="STAT 453 - University of Wisconsin-Madison - Fall 2026
+" />
+
+  <link
+    rel="shortcut icon"
+    href="/dgm-fall-2026/assets/img/favicon.ico"
+  />
+
+  <link rel="stylesheet" href="/dgm-fall-2026/assets/css/main.css" />
+  <link
+    rel="canonical"
+    href="/dgm-fall-2026/notes/lecture-03/"
+  />
+
+  
+  <!-- Load Latex JS -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+  
+</head>
+
+    <script src="/dgm-fall-2026/assets/js/distillpub/template.v2.js"></script>
+    <script src="/dgm-fall-2026/assets/js/distillpub/transforms.v2.js"></script>
+  </head>
+
+  <d-front-matter>
+    <script type="text/json">
+      {
+            "title": "Lecture 03 - Stats / Linear Algebra Review",
+            "description": "The fundamental math skills for deep learning - tensors and PyTorch, vectors, matrices and broadcasting, probability basics, estimation (MLE and MAP), and linear regression.",
+            "published": "September 10, 2026",
+            "lecturers": [
+              
+              {
+                "lecturer": "Ben Lengerich",
+                "lecturerURL": "https://adaptinfer.org"
+              }
+              
+            ],
+            "authors": [
+              
+              {
+                "author": "Eleonora P. Ziehler"
+              },
+              
+              {
+                "author": "Joey Li"
+              },
+              
+              {
+                "author": "Daksh Kacham"
+              }
+              
+            ],
+            "editors": [
+              
+              {
+                "editor": "None"
+              }
+              
+            ],
+            "katex": {
+              "delimiters": [
+                {
+                  "left": "$",
+                  "right": "$",
+                  "display": false
+                },
+                {
+                  "left": "$$",
+                  "right": "$$",
+                  "display": true
+                }
+              ]
+            }
+          }
+    </script>
+  </d-front-matter>
+
+  <body>
+    <header class="site-header">
+  <div class="wrapper">
+    <span class="site-title">
+      <a class="page-link" href="https://adaptinfer.org/dgm-fall-2026/"
+        >STAT 453</a
+      >
+    </span>
+
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path
+              fill="#424242"
+              d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
+            />
+            <path
+              fill="#424242"
+              d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
+            />
+            <path
+              fill="#424242"
+              d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
+            />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger">
+        <a class="page-link" href="/dgm-fall-2026/logistics/"
+          >logistics</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/lectures/"
+          >lectures</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/notes/">notes</a>
+        <a class="page-link" href="/dgm-fall-2026/calendar/"
+          >calendar</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/homework/"
+          >homework</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/project/">project</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+      <d-title>
+        <h1>Lecture 03 - Stats / Linear Algebra Review</h1>
+        <p>The fundamental math skills for deep learning - tensors and PyTorch, vectors, matrices and broadcasting, probability basics, estimation (MLE and MAP), and linear regression.</p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article> <h2 id="1-motivation-why-we-need-this-math">1. Motivation: Why We Need This Math</h2>
+
+<p>Today’s roadmap is:</p>
+
+<ul>
+  <li>Tensors in deep learning</li>
+  <li>Tensors and PyTorch</li>
+  <li>Vectors, matrices, and broadcasting</li>
+  <li>Probability basics</li>
+  <li>Estimation methods</li>
+  <li>Linear regression</li>
+</ul>
+
+<hr />
+
+<h2 id="2-tensors-in-deep-learning">2. Tensors in Deep Learning</h2>
+
+<h3 id="21-scalars-vectors-and-matrices">2.1 Scalars, vectors, and matrices</h3>
+
+<p>A <strong>scalar</strong> is an order-0 tensor, written with a lowercase symbol:</p>
+
+<d-math block="">
+x \in \mathbb{R}, \qquad x = 1.23.
+</d-math>
+<p>A <strong>vector</strong> is an order-1 tensor, written with a bold lowercase symbol:</p>
+
+<d-math block="">
+\mathbf{x} \in \mathbb{R}^{n}.
+</d-math>
+<p>In this lecture, vectors are assumed to be column vectors:</p>
+
+<d-math block="">
+\mathbf{x} \in \mathbb{R}^{n\times 1},
+\qquad
+\mathbf{x}
+=
+\begin{bmatrix}
+x_1\\
+x_2\\
+\vdots\\
+x_n
+\end{bmatrix}.
+</d-math>
+<p>Its transpose is a row vector:</p>
+
+<d-math block="">
+\mathbf{x}^{\top}
+=
+[x_1\;x_2\;\cdots\;x_n]
+\in
+\mathbb{R}^{1\times n}.
+</d-math>
+<p>A <strong>matrix</strong> is an order-2 tensor, written with a bold capital symbol:</p>
+
+<d-math block="">
+\mathbf{X}\in\mathbb{R}^{m\times n}.
+</d-math>
+<p>Each step up in tensor order adds another axis (dimension).</p>
+
+<h3 id="22-the-design-matrix-convention">2.2 The design matrix convention</h3>
+
+<p>$\mathbf{X}$ denotes the <strong>design matrix</strong> (also called the feature matrix or input matrix), containing training examples and their features:</p>
+
+<d-math block="">
+\mathbf{X}\in\mathbb{R}^{n\times m},
+</d-math>
+<p>where $n$ is the number of training examples (rows) and $m$ is the number of features (columns).</p>
+
+<p>A superscript in square brackets indexes the example and a subscript indexes the feature. For example,</p>
+
+<d-math block="">
+x_2^{[1]}
+</d-math>
+<p>is the second feature value of the first training example.</p>
+
+<p><strong>In lecture.</strong> Fluency with this notation matters as nearly every model in the course is expressed via the design matrix and operations on it.</p>
+
+<h3 id="23-higher-order-tensors">2.3 Higher-order tensors</h3>
+
+<p>A 3D tensor (order-3 tensor) can be pictured as a stack of matrices:</p>
+
+<d-math block="">
+\mathbf{X}\in\mathbb{R}^{m\times n\times p}.
+</d-math>
+<p>Here $m,n,p$ denote the sizes of the three tensor dimensions.</p>
+
+<p><strong>In lecture.</strong> We usually say scalar, vector, or matrix for orders 0–2, and commonly use the word “tensor” once the order is 3 or higher, even though technically all of these objects are tensors.</p>
+
+<p>A <strong>3D tensor</strong> can represent a color image: three stacked matrices corresponding to the red, green, and blue channels, each storing one intensity per pixel.</p>
+
+<p>A <strong>4D tensor</strong> can represent a batch of images. Stacking 3D image tensors creates a 4D tensor whose first axis indexes the image in the batch.</p>
+
+<h3 id="24-for-our-purposes-tensor--multidimensional-array">2.4 For our purposes: tensor = multidimensional array</h3>
+
+<p>For this course, a <strong>tensor</strong> is a multidimensional array. The tensor’s dimensionality (or <strong>order</strong>) is the number of axes in its <code class="language-plaintext highlighter-rouge">.shape</code>.</p>
+
+<d-code block="" language="python">
+import torch
+
+t = torch.tensor([[1, 2, 3],
+                  [4, 5, 6]])
+
+t.shape   # torch.Size([2, 3])
+t.ndim    # 2 -&gt; an order-2 tensor (a matrix)
+</d-code>
+
+<hr />
+
+<h2 id="3-tensors-and-pytorch">3. Tensors and PyTorch</h2>
+
+<h3 id="31-numpy-arrays-to-pytorch-tensors">3.1 NumPy arrays to PyTorch tensors</h3>
+
+<p>Both <code class="language-plaintext highlighter-rouge">numpy.array</code> / <code class="language-plaintext highlighter-rouge">numpy.ndarray</code> and <code class="language-plaintext highlighter-rouge">torch.tensor</code> / <code class="language-plaintext highlighter-rouge">torch.Tensor</code> are data-structure representations of tensors.</p>
+
+<d-code block="" language="python">
+import numpy as np
+a = np.array([1., 2., 3.])
+print(a.dtype)   # float64
+print(a.shape)   # (3,)
+
+import torch
+b = torch.tensor([1., 2., 3.])
+print(b.dtype)   # torch.float32
+print(b.shape)   # torch.Size([3])
+</d-code>
+
+<h3 id="32-numpy-and-pytorch-syntax-is-similar">3.2 NumPy and PyTorch syntax is similar</h3>
+
+<d-code block="" language="python">
+a.dot(a)       # 14.0 (NumPy)
+
+b.matmul(b)    # tensor(14.) (PyTorch)
+b.dot(b)       # tensor(14.)
+b @ b          # tensor(14.)
+
+b.numpy()      # array([1., 2., 3.], dtype=float32)
+</d-code>
+
+<p>For two 1D vectors, <code class="language-plaintext highlighter-rouge">matmul</code>, <code class="language-plaintext highlighter-rouge">dot</code>, and <code class="language-plaintext highlighter-rouge">@</code> all compute the inner product.<d-footnote>`torch.dot` only accepts two 1D tensors, while `matmul` / `@` also handle matrix-vector, matrix-matrix, and batched products (with broadcasting).</d-footnote></p>
+
+<h3 id="33-data-types">3.3 Data types</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>NumPy data type</th>
+      <th>PyTorch tensor type</th>
+      <th>Note</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">numpy.uint8</code></td>
+      <td><code class="language-plaintext highlighter-rouge">torch.ByteTensor</code></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">numpy.int16</code></td>
+      <td><code class="language-plaintext highlighter-rouge">torch.ShortTensor</code></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">numpy.int32</code></td>
+      <td><code class="language-plaintext highlighter-rouge">torch.IntTensor</code></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">numpy.int64</code></td>
+      <td><code class="language-plaintext highlighter-rouge">torch.LongTensor</code></td>
+      <td>Default integer type in the lecture examples; <code class="language-plaintext highlighter-rouge">numpy.int</code> is a removed legacy alias</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">numpy.float16</code></td>
+      <td><code class="language-plaintext highlighter-rouge">torch.HalfTensor</code></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">numpy.float32</code></td>
+      <td><code class="language-plaintext highlighter-rouge">torch.FloatTensor</code></td>
+      <td>Default float in PyTorch</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">numpy.float64</code></td>
+      <td><code class="language-plaintext highlighter-rouge">torch.DoubleTensor</code></td>
+      <td>Default float in the lecture’s NumPy examples; <code class="language-plaintext highlighter-rouge">numpy.float</code> is a removed legacy alias</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The dtype can be specified explicitly:</p>
+
+<d-code block="" language="python">
+c = torch.tensor([1., 2., 3.], dtype=torch.float)
+# torch.float32
+
+c = torch.tensor([1., 2., 3.], dtype=torch.double)
+# torch.float64
+
+c = torch.tensor([1., 2., 3.], dtype=torch.float64)
+# torch.float64
+</d-code>
+
+<p><strong>In lecture.</strong> Dtypes can cause setup problems when operations mix incompatible types. Converting to lower precision throws information away, while higher precision consumes more memory.</p>
+
+<p>A classic dtype bug is:</p>
+
+<d-code block="" language="python">
+x = torch.from_numpy(np.array([1., 2.]))   # keeps NumPy float64
+x = x.float()                              # convert to float32
+# or:
+x = x.to(torch.float32)
+</d-code>
+
+<h3 id="34-why-not-just-use-numpy">3.4 Why not just use NumPy?</h3>
+
+<p>PyTorch offers NumPy-like operations, but it is designed for deep learning:</p>
+
+<ul>
+  <li><strong>GPU support:</strong> tensor operations can run on compatible GPUs.</li>
+  <li><strong>Automatic differentiation (autograd):</strong> PyTorch records a computation graph and can traverse it in reverse to compute gradients automatically.</li>
+  <li><strong>DL convenience functions:</strong> layers, loss functions, optimizers, data loaders, and related utilities. <d-cite key="pytorch"></d-cite></li>
+</ul>
+
+<h3 id="35-loading-data-onto-a-gpu">3.5 Loading data onto a GPU</h3>
+
+<d-code block="" language="python">
+print(torch.cuda.is_available())
+
+b = b.to(torch.device("cuda:0"))
+print(b)
+
+b = b.to(torch.device("cpu"))
+print(b)
+</d-code>
+
+<p>If CUDA is installed, <code class="language-plaintext highlighter-rouge">nvidia-smi</code> can be used to inspect the available NVIDIA GPUs, including their memory usage, utilization, driver, and CUDA version.</p>
+
+<h3 id="36-installing-pytorch">3.6 Installing PyTorch</h3>
+
+<p>The lecture recommends using the selector on the PyTorch website to choose the operating system, package manager, language, and compute platform, then running the generated install command.<d-footnote>The screenshot in the slide deck shows an older PyTorch selector. Use the current command generated by the PyTorch website rather than copying the old screenshot.</d-footnote> <d-cite key="pytorch"></d-cite></p>
+
+<hr />
+
+<h2 id="4-vectors-matrices-and-broadcasting">4. Vectors, Matrices, and Broadcasting</h2>
+
+<h3 id="41-vectors-the-pre-activation-of-a-neuron">4.1 Vectors: the pre-activation of a neuron</h3>
+
+<p>For one observation,</p>
+
+<d-math block="">
+\mathbf{w}^{\top}\mathbf{x} + b = z,
+</d-math>
+<p>where $\mathbf{x}$ is the input feature vector, $\mathbf{w}$ is the weight vector, $b$ is the bias, and $z$ is the <strong>pre-activation</strong> (also called the net input).</p>
+
+<p>Equivalently,</p>
+
+<d-math block="">
+z
+=
+\sum_{j=1}^{m} w_jx_j + b.
+</d-math>
+
+<h3 id="42-matrices-computing-outputs-for-multiple-examples">4.2 Matrices: computing outputs for multiple examples</h3>
+
+<p>Stacking examples as rows of the design matrix lets us compute all pre-activations at once:</p>
+
+<d-math block="">
+\mathbf{X}\mathbf{w} + b = \mathbf{z},
+</d-math>
+<p>where</p>
+
+<d-math block="">
+\mathbf{X}\in\mathbb{R}^{n\times m},
+\qquad
+\mathbf{w}\in\mathbb{R}^{m\times 1},
+\qquad
+\mathbf{z}\in\mathbb{R}^{n\times 1}.
+</d-math>
+<p>Each entry of $\mathbf{z}$ is the pre-activation for one example.</p>
+
+<p><strong>In lecture: Big-O cost of matrix multiplication.</strong> For two $N\times N$ matrices, the standard matrix-multiplication algorithm is $O(N^3)$: there are $N^2$ output entries and each is a dot product of length $N$. Faster asymptotic algorithms exist, but in practice the lecture assumes approximately $O(N^3)$.<d-footnote>Strassen's algorithm has complexity $O(N^{\log_2 7}) \approx O(N^{2.81})$. Faster theoretical algorithms exist but have large constants and are not the standard practical assumption for this course.</d-footnote></p>
+
+<h3 id="43-a-common-notational-convenience">4.3 A common notational convenience</h3>
+
+<p>Strictly, $\mathbf{X}\mathbf{w}$ is an $n\times1$ vector and $b$ is a scalar, so the fully explicit expression is</p>
+
+<d-math block="">
+\mathbf{X}\mathbf{w} + \mathbf{1}_n b = \mathbf{z},
+\qquad
+\mathbf{1}_n=[1,1,\ldots,1]^{\top}\in\mathbb{R}^{n}.
+</d-math>
+<p>In deep-learning notation, we typically write</p>
+
+<d-math block="">
+\mathbf{X}\mathbf{w}+b=\mathbf{z}
+</d-math>
+<p>and assume <strong>broadcasting</strong>.</p>
+
+<h3 id="44-broadcasting">4.4 Broadcasting</h3>
+
+<d-code block="" language="python">
+torch.tensor([1, 2, 3]) + 1
+# tensor([2, 3, 4])
+
+t = torch.tensor([[4, 5, 6],
+                  [7, 8, 9]])
+
+t + torch.tensor([1, 2, 3])
+# tensor([[ 5,  7,  9],
+#         [ 8, 10, 12]])
+</d-code>
+
+<p>Broadcasting can silently produce an unintended result when shapes are compatible, so tensor shapes are important when debugging.</p>
+
+<d-code block="" language="python">
+y = torch.randn(5)        # shape (5,)
+yhat = torch.randn(5, 1)  # shape (5, 1)
+
+(y - yhat).shape          # torch.Size([5, 5]) -- not (5,)
+
+# Possible fixes:
+yhat.squeeze(1)
+# or reshape y to (5, 1) if that is the intended layout
+</d-code>
+
+<p><strong>Beyond the slides: linear algebra facts used later.</strong></p>
+
+<p>Matrix product:</p>
+
+<d-math block="">
+(AB)_{ij}=\sum_k A_{ik}B_{kj},
+\qquad
+(p\times q)(q\times r)\rightarrow(p\times r).
+</d-math>
+<p>Transpose:</p>
+
+<d-math block="">
+(AB)^{\top}=B^{\top}A^{\top},
+\qquad
+(A^{\top})^{\top}=A.
+</d-math>
+<p>Norms:</p>
+
+<d-math block="">
+\|\mathbf{x}\|_2=\left(\sum_jx_j^2\right)^{1/2},
+\qquad
+\|\mathbf{x}\|_2^2=\mathbf{x}^{\top}\mathbf{x},
+\qquad
+\|\mathbf{x}\|_1=\sum_j|x_j|.
+</d-math>
+<p>Inverse:</p>
+
+<d-math block="">
+A^{-1}A=I.
+</d-math>
+<p>Gradients:</p>
+
+<d-math block="">
+\nabla_{\mathbf{w}}(\mathbf{a}^{\top}\mathbf{w})=\mathbf{a},
+</d-math>
+<p>and, for symmetric $A$,</p>
+
+<d-math block="">
+\nabla_{\mathbf{w}}(\mathbf{w}^{\top}A\mathbf{w})=2A\mathbf{w}.
+</d-math>
+<hr />
+
+<h2 id="5-probability-basics">5. Probability Basics</h2>
+
+<h3 id="51-definitions">5.1 Definitions</h3>
+
+<p>A <strong>discrete random variable</strong> takes values from a countable set, such as a coin flip.</p>
+
+<p>A <strong>continuous random variable</strong> can take values over a continuous range, such as a height.</p>
+
+<p>For discrete $X$, a probability mass function (PMF) is</p>
+
+<d-math block="">
+P(X=x).
+</d-math>
+<p>For continuous $X$, a probability density function (PDF) is</p>
+
+<d-math block="">
+f(x).
+</d-math>
+<p><strong>Beyond the slides.</strong> A PMF gives actual point probabilities:</p>
+
+<d-math block="">
+\sum_x P(X=x)=1.
+</d-math>
+<p>A PDF gives a density. Probabilities come from areas:</p>
+
+<d-math block="">
+P(a\leq X\leq b)
+=
+\int_a^b f(x)\,dx,
+\qquad
+\int f(x)\,dx = 1.
+</d-math>
+<p>A density value $f(x)$ can be larger than 1, while for a continuous random variable $P(X=x)=0$ for any single point.</p>
+
+<h3 id="52-key-distributions">5.2 Key distributions</h3>
+
+<p>Distributions are parameterized; the lecture generally uses $\theta$ for parameters.</p>
+
+<p><strong>Bernoulli distribution:</strong></p>
+
+<d-math block="">
+P(X=x)
+=
+\theta^x(1-\theta)^{1-x},
+\qquad
+x\in\{0,1\}.
+</d-math>
+<p>For a fair coin, $\theta=0.5$. For Bernoulli $X$,</p>
+
+<d-math block="">
+\theta=P(X=1),
+\qquad
+E[X]=\theta,
+\qquad
+\operatorname{Var}(X)=\theta(1-\theta).
+</d-math>
+<p><strong>Gaussian distribution:</strong> with mean $\mu$ and variance $\sigma^2$,<d-footnote>The exponent on the lecture slide is missing its minus sign. Without the minus sign, the expression would not define a valid Gaussian density.</d-footnote></p>
+
+<d-math block="">
+f(x)
+=
+\frac{1}{(2\pi\sigma^2)^{1/2}}
+\exp\left(
+-\frac{(x-\mu)^2}{2\sigma^2}
+\right).
+</d-math>
+<p>The <strong>standard normal</strong> has</p>
+
+<d-math block="">
+\mu=0,\qquad \sigma=1.
+</d-math>
+
+<h3 id="53-central-limit-theorem-clt">5.3 Central Limit Theorem (CLT)</h3>
+
+<p>Let $X_1,X_2,\ldots,X_n$ be i.i.d. random variables with mean $\mu$ and variance $\sigma^2$. Define the sample mean</p>
+
+<d-math block="">
+\bar X_n
+=
+\frac{1}{n}\sum_{i=1}^{n}X_i.
+</d-math>
+<p>Then, as $n\rightarrow\infty$,</p>
+
+<d-math block="">
+\frac{\bar X_n-\mu}{\sigma/n^{1/2}}
+\rightarrow
+\mathcal{N}(0,1)
+</d-math>
+<p>in distribution.</p>
+
+<p><strong>In lecture.</strong> Under the usual CLT assumptions, if we average many independent variables from the same distribution, subtract the mean, and divide by the standard error $\sigma/n^{1/2}$, the standardized average approaches a standard normal as $n$ becomes large.</p>
+
+<figure id="figure-clt" class="l-body-outset">
+  <div class="row">
+    <div class="col three">
+      <img src="/dgm-fall-2026/assets/img/notes/lecture-03/figure1-clt.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Figure 1. The CLT in action.</strong>
+    Each panel shows standardized sample means from a skewed Exponential(1) distribution. At small $n$ the shape remains skewed; by larger $n$ it is close to the standard normal density.
+  </figcaption>
+</figure>
+
+<h3 id="54-joint-marginal-and-conditional-probabilities">5.4 Joint, marginal, and conditional probabilities</h3>
+
+<p><strong>Joint:</strong></p>
+
+<d-math block="">
+P(A,B),
+</d-math>
+<p>the probability of two events occurring together.</p>
+
+<p><strong>Marginal:</strong></p>
+
+<d-math block="">
+P(A)=\sum_B P(A,B),
+</d-math>
+<p>the sum of joint probabilities over one variable.</p>
+
+<p><strong>Conditional:</strong></p>
+
+<d-math block="">
+P(A\mid B)
+=
+\frac{P(A,B)}{P(B)},
+</d-math>
+<p>the probability of $A$ given $B$.</p>
+
+<p><strong>Beyond the slides: rules that follow.</strong></p>
+
+<p>Product rule:</p>
+
+<d-math block="">
+P(A,B)
+=
+P(A\mid B)P(B)
+=
+P(B\mid A)P(A).
+</d-math>
+<p>Independence:</p>
+
+<d-math block="">
+A\perp B
+\Longleftrightarrow
+P(A,B)=P(A)P(B)
+\Longleftrightarrow
+P(A\mid B)=P(A).
+</d-math>
+<p>Law of total probability:</p>
+
+<d-math block="">
+P(B)
+=
+\sum_a
+P(B\mid A=a)P(A=a).
+</d-math>
+<h3 id="55-expectation-and-variance">5.5 Expectation and variance</h3>
+
+<p>Expectation:</p>
+
+<d-math block="">
+E[X]
+=
+\sum_xxP(X=x)
+\qquad\text{(discrete)},
+</d-math>
+<d-math block="">
+E[X]
+=
+\int xf(x)\,dx
+\qquad\text{(continuous)}.
+</d-math>
+<p>Variance:</p>
+
+<d-math block="">
+\operatorname{Var}(X)
+=
+E[(X-E[X])^2],
+</d-math>
+<p>equivalently,</p>
+
+<d-math block="">
+\operatorname{Var}(X)
+=
+E[X^2]-E[X]^2.
+</d-math>
+<p><strong>Beyond the slides: why the two variance formulas agree.</strong> Let $\mu=E[X]$. Expanding the square,</p>
+
+<d-math block="">
+E[(X-\mu)^2]
+=
+E[X^2]-2\mu E[X]+\mu^2
+=
+E[X^2]-\mu^2.
+</d-math>
+<h3 id="56-linearity-of-expectation">5.6 Linearity of expectation</h3>
+
+<p>For constants $a,b$,</p>
+
+<d-math block="">
+E[aX+b]
+=
+aE[X]+b.
+</d-math>
+<p>For multiple random variables,</p>
+
+<d-math block="">
+E[X_1+X_2]
+=
+E[X_1]+E[X_2].
+</d-math>
+<p><strong>In lecture.</strong> Independence is <strong>not</strong> required for linearity of expectation. Independence matters for variance:</p>
+
+<d-math block="">
+\operatorname{Var}(aX+b)=a^2\operatorname{Var}(X),
+</d-math>
+<d-math block="">
+\operatorname{Var}(X_1+X_2)
+=
+\operatorname{Var}(X_1)
++
+\operatorname{Var}(X_2)
++
+2\operatorname{Cov}(X_1,X_2).
+</d-math>
+<p>Thus variances add when $\operatorname{Cov}(X_1,X_2)=0$, as for independent variables.</p>
+
+<p>For the sample mean,</p>
+
+<d-math block="">
+\operatorname{Var}(\bar X_n)
+=
+\frac{\sigma^2}{n},
+</d-math>
+<p>which gives the standard error $\sigma/n^{1/2}$ used in the CLT.</p>
+
+<h3 id="57-expectation-of-functions">5.7 Expectation of functions</h3>
+
+<p>For a function $g$,</p>
+
+<d-math block="">
+E[g(X)]
+=
+\sum_xg(x)P(X=x)
+\qquad\text{(discrete)},
+</d-math>
+<d-math block="">
+E[g(X)]
+=
+\int g(x)f(x)\,dx
+\qquad\text{(continuous)}.
+</d-math>
+<p>Discrete example: if $X\sim\operatorname{Bernoulli}(\theta)$ and $g(X)=X^2$,</p>
+
+<d-math block="">
+E[g(X)]
+=
+1^2\theta+0^2(1-\theta)
+=
+\theta.
+</d-math>
+<p>Continuous example: if $X\sim\operatorname{Uniform}(0,1)$ and $g(X)=X^2$,</p>
+
+<d-math block="">
+E[g(X)]
+=
+\int_0^1x^2\,dx
+=
+\frac{1}{3}.
+</d-math>
+<h3 id="58-variance-of-functions">5.8 Variance of functions</h3>
+
+<d-math block="">
+\operatorname{Var}(g(X))
+=
+E[(g(X)-E[g(X)])^2]
+=
+E[g(X)^2]-(E[g(X)])^2.
+</d-math>
+<p><strong>Beyond the slides: finishing the two examples.</strong></p>
+
+<p>For Bernoulli $X$, since $X^4=X$ when $X\in{0,1}$,</p>
+
+<d-math block="">
+\operatorname{Var}(X^2)
+=
+\theta-\theta^2
+=
+\theta(1-\theta).
+</d-math>
+<p>For $X\sim\operatorname{Uniform}(0,1)$,</p>
+
+<d-math block="">
+E[X^4]
+=
+\int_0^1x^4\,dx
+=
+\frac15,
+</d-math>
+<p>so</p>
+
+<d-math block="">
+\operatorname{Var}(X^2)
+=
+\frac15-\frac19
+=
+\frac{4}{45}
+\approx0.089.
+</d-math>
+<h3 id="59-covariance-and-correlation">5.9 Covariance and correlation</h3>
+
+<p>Covariance:</p>
+
+<d-math block="">
+\operatorname{Cov}(X,Y)
+=
+E[(X-E[X])(Y-E[Y])]
+=
+E[XY]-E[X]E[Y].
+</d-math>
+<p>Properties:</p>
+
+<d-math block="">
+\operatorname{Cov}(X,X)=\operatorname{Var}(X).
+</d-math>
+<p>If $X,Y$ are independent,</p>
+
+<d-math block="">
+\operatorname{Cov}(X,Y)=0.
+</d-math>
+<p>Correlation:</p>
+
+<d-math block="">
+\rho(X,Y)
+=
+\frac{\operatorname{Cov}(X,Y)}
+{\left(\operatorname{Var}(X)\operatorname{Var}(Y)\right)^{1/2}}
+\in[-1,1].
+</d-math>
+<ul>
+  <li>$\rho=1$: perfect positive linear relationship.</li>
+  <li>$\rho=0$: no linear correlation.</li>
+  <li>$\rho=-1$: perfect negative linear relationship.</li>
+</ul>
+
+<p><strong>Beyond the slides: the converse is false.</strong> Zero covariance does not imply independence. If $X\sim\operatorname{Uniform}(-1,1)$ and $Y=X^2$, then $Y$ is completely determined by $X$, yet</p>
+
+<d-math block="">
+\operatorname{Cov}(X,Y)
+=
+E[X^3]-E[X]E[X^2]
+=
+0.
+</d-math>
+<p>Correlation detects linear dependence, not every kind of dependence.</p>
+
+<h3 id="510-bayes-rule">5.10 Bayes’ rule</h3>
+
+<d-math block="">
+P(A\mid B)
+=
+\frac{P(B\mid A)P(A)}{P(B)}
+=
+\frac{\text{likelihood}\times\text{prior}}{\text{evidence}}.
+</d-math>
+<p>For a medical test,</p>
+
+<d-math block="">
+P(\text{disease}\mid\text{positive})
+=
+\frac{
+P(\text{positive}\mid\text{disease})P(\text{disease})
+}{
+P(\text{positive})
+}.
+</d-math>
+<p><strong>Beyond the slides: plugging in numbers.</strong> Suppose 1% of people have the disease, the test catches 99% of cases, and the false-positive rate is 5%.</p>
+
+<d-math block="">
+P(+)
+=
+0.99(0.01)+0.05(0.99)
+=
+0.0594.
+</d-math>
+<p>Therefore,</p>
+
+<d-math block="">
+P(D\mid+)
+=
+\frac{0.99\times0.01}{0.0594}
+\approx0.167.
+</d-math>
+<p>The prior/base rate matters here: MAP incorporates prior information, while MLE uses the likelihood alone.</p>
+
+<hr />
+
+<h2 id="6-estimation-methods">6. Estimation Methods</h2>
+
+<h3 id="61-introduction-to-estimation">6.1 Introduction to estimation</h3>
+
+<p>The goal of estimation is to infer unknown parameters $\theta$ from observed data.</p>
+
+<p><strong>Types of estimation:</strong></p>
+
+<ul>
+  <li><strong>Point estimation:</strong> a single value, such as an MLE.</li>
+  <li><strong>Interval estimation:</strong> a range of plausible values, such as a confidence interval.</li>
+</ul>
+
+<p><strong>Common methods:</strong></p>
+
+<ul>
+  <li>Maximum Likelihood Estimation (MLE)</li>
+  <li>Maximum A Posteriori (MAP)</li>
+  <li>Method of Moments</li>
+</ul>
+
+<p><strong>Beyond the slides: the two methods not covered in detail.</strong></p>
+
+<p>For a large-sample mean, an approximate 95% confidence interval is</p>
+
+<d-math block="">
+\bar x \pm 1.96\frac{s}{n^{1/2}},
+</d-math>
+<p>using the sample standard deviation $s$ when $\sigma$ is unknown.</p>
+
+<p>For the <strong>method of moments</strong>, set theoretical moments equal to sample moments and solve for the parameter. For Bernoulli data,</p>
+
+<d-math block="">
+E[X]=\theta
+\quad\Rightarrow\quad
+\hat\theta_{\mathrm{MoM}}=\bar x.
+</d-math>
+<h3 id="62-maximum-likelihood-estimation-mle">6.2 Maximum Likelihood Estimation (MLE)</h3>
+
+<p>The MLE is</p>
+
+<d-math block="">
+\hat{\theta}_{\mathrm{MLE}}
+=
+\arg\max_{\theta}L(\theta),
+</d-math>
+<p>where $L(\theta)$ is the probability mass or probability density of the observed data given $\theta$, viewed as a function of $\theta$.</p>
+
+<h4 id="bernoulli-example">Bernoulli example</h4>
+
+<p>For the observed data</p>
+
+<d-math block="">
+\{x_i\}_{i=1}^{5}=\{1,0,1,1,0\},
+</d-math>
+<p>modeled as i.i.d. Bernoulli observations with $P(X=1\mid\theta)=\theta$,</p>
+
+<d-math block="">
+L(\theta)
+=
+\prod_i
+\theta^{x_i}(1-\theta)^{1-x_i}.
+</d-math>
+<p>The log-likelihood is</p>
+
+<d-math block="">
+\ell(\theta)
+=
+\log L(\theta)
+=
+\sum_{i=1}^{n}
+\left[
+x_i\log\theta
++
+(1-x_i)\log(1-\theta)
+\right].
+</d-math>
+<p>Let</p>
+
+<d-math block="">
+k=\sum_i x_i.
+</d-math>
+<p>Then</p>
+
+<d-math block="">
+\ell(\theta)
+=
+k\log\theta+(n-k)\log(1-\theta),
+</d-math>
+<p>and</p>
+
+<d-math block="">
+\frac{d\ell}{d\theta}
+=
+\frac{k}{\theta}
+-
+\frac{n-k}{1-\theta}.
+</d-math>
+<p>Setting the derivative to zero gives</p>
+
+<d-math block="">
+\hat\theta_{\mathrm{MLE}}
+=
+\frac{k}{n}.
+</d-math>
+<p>For the dataset above, $k=3$ and $n=5$, so</p>
+
+<d-math block="">
+\hat\theta_{\mathrm{MLE}}
+=
+\frac35
+=
+0.6.
+</d-math>
+<p><strong>Beyond the slides: why take the log, and why it matters for DL.</strong></p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">log</code> is strictly increasing, so it does not change the location of the maximum.</li>
+  <li>It converts products into sums, which are easier to differentiate.</li>
+  <li>Products of many probabilities can numerically underflow, while sums of log-probabilities are more stable.</li>
+  <li>For a Bernoulli model, minimizing negative log-likelihood gives binary cross-entropy. Many common deep-learning losses have negative-log-likelihood interpretations. <d-cite key="goodfellow2016"></d-cite></li>
+</ul>
+
+<p>The lecture also notes that the MLE:</p>
+
+<ul>
+  <li>does not always exist,</li>
+  <li>is not necessarily unique,</li>
+  <li>is not necessarily admissible.<d-footnote>"Admissible" means that there is no other estimator with lower or equal risk for every parameter value and strictly lower risk for at least one.</d-footnote></li>
+</ul>
+
+<h3 id="63-maximum-a-posteriori-map-estimation">6.3 Maximum A Posteriori (MAP) estimation</h3>
+
+<p>MAP selects the parameter that maximizes the posterior:</p>
+
+<d-math block="">
+\hat\theta_{\mathrm{MAP}}
+=
+\arg\max_{\theta}
+P(\theta\mid\text{data})
+=
+\arg\max_{\theta}
+P(\text{data}\mid\theta)P(\theta).
+</d-math>
+<p>The evidence $P(\text{data})$ can be dropped from the argmax because it does not depend on $\theta$.</p>
+
+<ul>
+  <li>$P(\text{data}\mid\theta)$ is the <strong>likelihood</strong>.</li>
+  <li>$P(\theta)$ is the <strong>prior</strong>.</li>
+</ul>
+
+<p>MLE ignores $P(\theta)$; MAP incorporates prior information.</p>
+
+<p><strong>Beyond the slides: MAP for the Bernoulli example.</strong> With a Beta$(\alpha,\beta)$ prior,</p>
+
+<d-math block="">
+P(\theta)
+\propto
+\theta^{\alpha-1}(1-\theta)^{\beta-1}.
+</d-math>
+<p>The posterior is proportional to</p>
+
+<d-math block="">
+\theta^{k+\alpha-1}(1-\theta)^{n-k+\beta-1},
+</d-math>
+<p>and, when the posterior has an interior mode, the MAP estimate is</p>
+
+<d-math block="">
+\hat\theta_{\mathrm{MAP}}
+=
+\frac{k+\alpha-1}{n+\alpha+\beta-2}.
+</d-math>
+<p>With Beta$(2,2)$ and $k=3,n=5$,</p>
+
+<d-math block="">
+\hat\theta_{\mathrm{MAP}}
+=
+\frac47
+\approx0.571.
+</d-math>
+<figure id="figure-mle-map" class="l-body-outset">
+  <div class="row">
+    <div class="col three">
+      <img src="/dgm-fall-2026/assets/img/notes/lecture-03/figure2-mle-map.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Figure 2. MLE vs. MAP for the dataset {1, 0, 1, 1, 0}.</strong>
+    The likelihood peaks at the MLE, while the Beta(2,2) prior shifts the posterior mode toward 0.5.
+  </figcaption>
+</figure>
+
+<h3 id="64-regularization-is-map">6.4 Regularization is MAP</h3>
+
+<p>A regularized maximum-likelihood objective adds a penalty:</p>
+
+<d-math block="">
+\hat\theta_{\mathrm{reg}}
+=
+\arg\max_{\theta}
+\left[
+\log L(\theta)-\lambda R(\theta)
+\right].
+</d-math>
+<p>If</p>
+
+<d-math block="">
+P(\theta)\propto e^{-\lambda R(\theta)},
+</d-math>
+<p>then</p>
+
+<d-math block="">
+\hat\theta_{\mathrm{MAP}}
+=
+\arg\max_{\theta}
+\left[
+\log L(\theta)+\log P(\theta)
+\right]
+=
+\arg\max_{\theta}
+\left[
+\log L(\theta)-\lambda R(\theta)
+\right].
+</d-math>
+<p>Thus regularization can be interpreted as MAP estimation under a corresponding prior. <d-cite key="bishop2006"></d-cite></p>
+
+<hr />
+
+<h2 id="7-linear-regression">7. Linear Regression</h2>
+
+<h3 id="71-model-definition">7.1 Model definition</h3>
+
+<p>Linear regression is written as</p>
+
+<d-math block="">
+\mathbf{y}
+=
+\mathbf{X}\boldsymbol{\beta}
++
+\boldsymbol{\epsilon},
+</d-math>
+<p>where</p>
+
+<ul>
+  <li>$\mathbf{y}$ is the response variable, $n\times1$;</li>
+  <li>$\mathbf{X}$ is the design matrix, $n\times m$;</li>
+  <li>$\boldsymbol{\beta}$ is the coefficient vector, $m\times1$;</li>
+  <li>$\boldsymbol{\epsilon}$ is the error term, often modeled with Gaussian noise.</li>
+</ul>
+
+<p>The goal is to estimate $\boldsymbol{\beta}$. An intercept can be included by adding a column of ones to $\mathbf{X}$.</p>
+
+<h3 id="72-evaluation-metrics">7.2 Evaluation metrics</h3>
+
+<p><strong>Coefficient of determination:</strong></p>
+
+<d-math block="">
+R^2
+=
+1-
+\frac{SS_{\mathrm{residual}}}{SS_{\mathrm{total}}},
+</d-math>
+<p>where</p>
+
+<d-math block="">
+SS_{\mathrm{residual}}
+=
+\sum_i(y_i-\hat y_i)^2
+</d-math>
+<p>and</p>
+
+<d-math block="">
+SS_{\mathrm{total}}
+=
+\sum_i(y_i-\bar y)^2.
+</d-math>
+<p>It measures the proportion of variance in $y$ explained by the model.</p>
+
+<p><strong>Mean Squared Error (MSE):</strong></p>
+
+<d-math block="">
+\mathrm{MSE}
+=
+\frac1n
+\sum_i(y_i-\hat y_i)^2.
+</d-math>
+<p><strong>Mean Absolute Error (MAE):</strong><d-footnote>The lecture slide labels the absolute-error formula "MSE"; the expression itself is the MAE.</d-footnote></p>
+
+<d-math block="">
+\mathrm{MAE}
+=
+\frac1n
+\sum_i|y_i-\hat y_i|.
+</d-math>
+
+<p><strong>Beyond the slides.</strong> MSE penalizes large errors more heavily because errors are squared, while MAE is more robust to large outliers. RMSE,</p>
+
+<d-math block="">
+\mathrm{RMSE}=(\mathrm{MSE})^{1/2},
+</d-math>
+<p>has the same units as $y$.</p>
+
+<h3 id="73-ordinary-least-squares-ols">7.3 Ordinary Least Squares (OLS)</h3>
+
+<p>The OLS objective is</p>
+
+<d-math block="">
+\hat{\boldsymbol{\beta}}_{\mathrm{OLS}}
+=
+\arg\min_{\boldsymbol{\beta}}
+\|\mathbf{y}-\mathbf{X}\boldsymbol{\beta}\|_2^2.
+</d-math>
+<p>Residuals are</p>
+
+<d-math block="">
+e_i
+=
+y_i-\hat y_i.
+</d-math>
+<p>When the inverse exists, the familiar closed-form expression is</p>
+
+<d-math block="">
+\hat{\boldsymbol{\beta}}_{\mathrm{OLS}}
+=
+(\mathbf{X}^{\top}\mathbf{X})^{-1}
+\mathbf{X}^{\top}\mathbf{y}.
+</d-math>
+<p><strong>Beyond the slides: deriving the OLS solution.</strong></p>
+
+<p>Expand the objective:</p>
+
+<d-math block="">
+\|\mathbf{y}-\mathbf{X}\boldsymbol{\beta}\|^2
+=
+\mathbf{y}^{\top}\mathbf{y}
+-
+2\boldsymbol{\beta}^{\top}\mathbf{X}^{\top}\mathbf{y}
++
+\boldsymbol{\beta}^{\top}\mathbf{X}^{\top}\mathbf{X}\boldsymbol{\beta}.
+</d-math>
+<p>Taking the gradient and setting it to zero gives the normal equations:</p>
+
+<d-math block="">
+-2\mathbf{X}^{\top}\mathbf{y}
++
+2\mathbf{X}^{\top}\mathbf{X}\boldsymbol{\beta}
+=
+0,
+</d-math>
+<p>so</p>
+
+<d-math block="">
+\mathbf{X}^{\top}\mathbf{X}\boldsymbol{\beta}
+=
+\mathbf{X}^{\top}\mathbf{y}.
+</d-math>
+<p>In code, use a least-squares solver such as <code class="language-plaintext highlighter-rouge">np.linalg.lstsq</code> or <code class="language-plaintext highlighter-rouge">torch.linalg.lstsq</code> rather than explicitly forming a matrix inverse.</p>
+
+<p><strong>OLS is MLE under independent Gaussian noise.</strong> If</p>
+
+<d-math block="">
+y_i
+=
+\mathbf{x}_i^{\top}\boldsymbol{\beta}
++
+\epsilon_i,
+\qquad
+\epsilon_i\sim\mathcal{N}(0,\sigma^2),
+</d-math>
+<p>then</p>
+
+<d-math block="">
+\log L(\boldsymbol{\beta})
+=
+-\frac{1}{2\sigma^2}
+\sum_i
+(y_i-\mathbf{x}_i^{\top}\boldsymbol{\beta})^2
++
+\text{const}.
+</d-math>
+<p>Maximizing the likelihood is therefore equivalent to minimizing squared error. <d-cite key="hastie2009"></d-cite></p>
+
+<h3 id="74-regularization-in-linear-regression-map">7.4 Regularization in linear regression (MAP)</h3>
+
+<p><strong>Ridge regression (L2 regularization):</strong></p>
+
+<d-math block="">
+\hat{\boldsymbol{\beta}}_{\mathrm{ridge}}
+=
+\arg\min_{\boldsymbol{\beta}}
+\|\mathbf{y}-\mathbf{X}\boldsymbol{\beta}\|_2^2
++
+\lambda\|\boldsymbol{\beta}\|_2^2.
+</d-math>
+<p>A Gaussian prior on the coefficients gives the MAP interpretation:</p>
+
+<d-math block="">
+\boldsymbol{\beta}
+\sim
+\mathcal{N}
+\left(
+0,
+\frac{\sigma^2}{\lambda}I
+\right),
+</d-math>
+<p>with</p>
+
+<d-math block="">
+P(\boldsymbol{\beta}\mid\mathbf{y})
+\propto
+P(\mathbf{y}\mid\boldsymbol{\beta})
+P(\boldsymbol{\beta}).
+</d-math>
+<p><strong>Lasso regression (L1 regularization):</strong></p>
+
+<d-math block="">
+\hat{\boldsymbol{\beta}}_{\mathrm{lasso}}
+=
+\arg\min_{\boldsymbol{\beta}}
+\|\mathbf{y}-\mathbf{X}\boldsymbol{\beta}\|_2^2
++
+\lambda\|\boldsymbol{\beta}\|_1.
+</d-math>
+<p>This corresponds to a Laplace prior on each coefficient, with the exact scale depending on the chosen objective parameterization. <d-cite key="hastie2009"></d-cite></p>
+
+<figure id="figure-ridge-lasso" class="l-body-outset">
+  <div class="row">
+    <div class="col three">
+      <img src="/dgm-fall-2026/assets/img/notes/lecture-03/figure3-ridge-lasso.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Figure 3. Ridge and lasso priors and penalties.</strong>
+    A Gaussian prior leads to a quadratic L2 penalty, while a Laplace prior leads to an L1 penalty with a sharp corner at zero.
+  </figcaption>
+</figure>
+
+<hr />
+
+<h2 id="8-summary-and-practice-questions">8. Summary and Practice Questions</h2>
+
+<h3 id="key-takeaways">Key takeaways</h3>
+
+<ul>
+  <li>Tensors are multidimensional arrays; order = number of axes = <code class="language-plaintext highlighter-rouge">.ndim</code>.</li>
+  <li>In the design matrix $\mathbf{X}$, rows are examples and columns are features.</li>
+  <li>PyTorch is NumPy-like but adds GPU support, autograd, and deep-learning utilities.</li>
+  <li>$\mathbf{X}\mathbf{w}+b$ computes pre-activations for a whole batch, with $b$ handled by broadcasting.</li>
+  <li>Linearity of expectation does not require independence.</li>
+  <li>Independent variables have zero covariance, but zero covariance does not in general imply independence.</li>
+  <li>MLE maximizes the likelihood; MAP maximizes likelihood times prior.</li>
+  <li>L2 regularization corresponds to a Gaussian-prior MAP interpretation; L1 corresponds to a Laplace-prior interpretation.</li>
+  <li>OLS is MLE under independent Gaussian noise; ridge and lasso have corresponding MAP interpretations.</li>
+</ul>
+
+<h3 id="check-your-understanding">Check your understanding</h3>
+
+<ol>
+  <li>
+    <p><strong>A batch of 64 grayscale $28\times28$ images: what is the tensor’s order and typical PyTorch shape?</strong><br />
+Order 4, shape <code class="language-plaintext highlighter-rouge">(64, 1, 28, 28)</code>.</p>
+  </li>
+  <li>
+    <p><strong>If $\mathbf{X}\in\mathbb{R}^{100\times5}$, what shapes must $\mathbf{w}$ and $\mathbf{z}$ have in $\mathbf{X}\mathbf{w}+b=\mathbf{z}$?</strong><br />
+$\mathbf{w}$ has shape $5\times1$ and $\mathbf{z}$ has shape $100\times1$.</p>
+  </li>
+  <li>
+    <p><strong>You flip a coin 10 times and get 10 heads. What is the Bernoulli MLE? What is the MAP estimate with a Beta$(2,2)$ prior?</strong></p>
+    <d-math block="">
+\hat\theta_{\mathrm{MLE}}=1,
+</d-math>
+    <p>and</p>
+    <d-math block="">
+\hat\theta_{\mathrm{MAP}}
+=
+\frac{10+2-1}{10+2+2-2}
+=
+\frac{11}{12}
+\approx0.917.
+</d-math>
+  </li>
+</ol>
+ </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+    </div>
+
+    <footer class="site-footer">
+  <div class="wrapper">
+    <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Ben Lengerich</li><li>
+            <a class="u-email" href="mailto:lengerich@wisc.edu"
+              >lengerich@wisc.edu</a
+            >
+          </li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li>
+    <a
+      href="https://github.com/AdaptInfer"
+      target="_blank"
+      ><i class="fab fa-github"></i>
+      <span class="username">AdaptInfer</span></a
+    >
+  </li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>
+          &copy; Copyright 2026 University of Wisconsin.
+          <br />
+          
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  </body>
+
+  <d-bibliography
+    src="/dgm-fall-2026/assets/bibliography/2026-09-10-lecture-03.bib"
+  >
+  </d-bibliography>
+
+  <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/dgm-fall-2026/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link
+  rel="stylesheet"
+  href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css"
+/>
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+<script src="/dgm-fall-2026/assets/js/katex.js"></script>
+ 
+<!-- Load Anchor JS -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+<script>
+  anchors.options.visible = "hover";
+  anchors.add("article h2, article h3, article h4, article h5, article h6");
+</script>
+ 
+<!-- Adjust LaTeX JS -->
+<script src="/dgm-fall-2026/assets/js/latex.js"></script>
+
+
+<!-- Include custom icon fonts -->
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2026/assets/css/fontawesome-all.min.css"
+/>
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2026/assets/css/academicons.min.css"
+/>
+
+<!-- Google Analytics -->
+<script>
+  (function (i, s, o, g, r, a, m) {
+    i["GoogleAnalyticsObject"] = r;
+    ((i[r] =
+      i[r] ||
+      function () {
+        (i[r].q = i[r].q || []).push(arguments);
+      }),
+      (i[r].l = 1 * new Date()));
+    ((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
+    a.async = 1;
+    a.src = g;
+    m.parentNode.insertBefore(a, m);
+  })(
+    window,
+    document,
+    "script",
+    "//www.google-analytics.com/analytics.js",
+    "ga",
+  );
+
+  ga("create", "", "auto");
+  ga("send", "pageview");
+</script>
+
+</html>

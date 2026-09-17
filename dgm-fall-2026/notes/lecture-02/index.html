@@ -1,0 +1,513 @@
+<!doctype html>
+<html>
+  <head>
+    <head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="content-language" content="en" />
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <title>
+    STAT 453 | Lecture Notes from Lecture 2
+  </title>
+  <meta name="description" content="STAT 453 - University of Wisconsin-Madison - Fall 2026
+" />
+
+  <link
+    rel="shortcut icon"
+    href="/dgm-fall-2026/assets/img/favicon.ico"
+  />
+
+  <link rel="stylesheet" href="/dgm-fall-2026/assets/css/main.css" />
+  <link
+    rel="canonical"
+    href="/dgm-fall-2026/notes/lecture-02/"
+  />
+
+  
+  <!-- Load Latex JS -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+  
+</head>
+
+    <script src="/dgm-fall-2026/assets/js/distillpub/template.v2.js"></script>
+    <script src="/dgm-fall-2026/assets/js/distillpub/transforms.v2.js"></script>
+  </head>
+
+  <d-front-matter>
+    <script type="text/json">
+      {
+            "title": "Lecture Notes from Lecture 2",
+            "description": "Introduction to Deep Learning and Generative Models",
+            "published": "September 8, 2026",
+            "lecturers": [
+              
+              {
+                "lecturer": "Ben Lengerich",
+                "lecturerURL": "https://adaptinfer.org"
+              }
+              
+            ],
+            "authors": [
+              
+              {
+                "author": "Patrick Klein"
+              },
+              
+              {
+                "author": "Divya Krishnan"
+              }
+              
+            ],
+            "editors": [
+              
+              {
+                "editor": "Editor 1"
+              }
+              
+            ],
+            "katex": {
+              "delimiters": [
+                {
+                  "left": "$",
+                  "right": "$",
+                  "display": false
+                },
+                {
+                  "left": "$$",
+                  "right": "$$",
+                  "display": true
+                }
+              ]
+            }
+          }
+    </script>
+  </d-front-matter>
+
+  <body>
+    <header class="site-header">
+  <div class="wrapper">
+    <span class="site-title">
+      <a class="page-link" href="https://adaptinfer.org/dgm-fall-2026/"
+        >STAT 453</a
+      >
+    </span>
+
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path
+              fill="#424242"
+              d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
+            />
+            <path
+              fill="#424242"
+              d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
+            />
+            <path
+              fill="#424242"
+              d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
+            />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger">
+        <a class="page-link" href="/dgm-fall-2026/logistics/"
+          >logistics</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/lectures/"
+          >lectures</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/notes/">notes</a>
+        <a class="page-link" href="/dgm-fall-2026/calendar/"
+          >calendar</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/homework/"
+          >homework</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/project/">project</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+      <d-title>
+        <h1>Lecture Notes from Lecture 2</h1>
+        <p>Introduction to Deep Learning and Generative Models</p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article> <h2 id="brief-history-of-machine-learning">Brief History of Machine Learning</h2>
+
+<p>Machine Learning is the process of creating programs that improve their performance on a task through experience. 
+Here is the current timeline of machine learning and neural networks:</p>
+
+<ul>
+  <li><strong>1950s:</strong> Perceptrons</li>
+  <li><strong>1960s:</strong> K-nearest neigbors (KNN)</li>
+  <li><strong>1970s-1980s:</strong> Decision trees</li>
+  <li><strong>1980s-1990s:</strong> Neural networks and Bayesian networks</li>
+  <li><strong>1990s:</strong> Support vector machines (SVM)</li>
+  <li><strong>2000s:</strong> Boosted trees and random forests</li>
+  <li><strong>2010s:</strong> Deep neural networks (DNNs)</li>
+  <li><strong>2020s:</strong> Large language models (LLMs)
+The history of neural networks can be thought of as several different periods of increased interest, followed by periods where other machine learning methods became more popular.
+—</li>
+</ul>
+
+<h2 id="artificial-neurons">Artificial Neurons</h2>
+<h3 id="mcculloch--pitts-neuron">McCulloch &amp; Pitts Neuron</h3>
+
+<p>In 1943, <strong>Warren McCulloch and Walter Pitts</strong> introduced a mathematical model of a neuron.
+The model used inputs, weights, and a threshold to determine whether the neuron should activate. The weights were limited to $+1$ and $-1$.</p>
+
+<p>These neurons could represent simple logical operations such as:</p>
+
+<ul>
+  <li>AND</li>
+  <li>OR</li>
+  <li>NOT</li>
+</ul>
+
+<p>However, a single McCulloch &amp; Pitts neuron could not represent <strong>XOR</strong>.</p>
+
+<p><img src="/assets/img/mcculloch-pitts.png" alt="McCulloch &amp; Pitts neuron model" /></p>
+
+<p><strong>Figure 1:</strong> McCulloch &amp; Pitts neuron model.</p>
+
+<hr />
+
+<h2 id="the-perceptron">The Perceptron</h2>
+
+<p>The <strong>perceptron</strong>, developed by Frank Rosenblatt in 1957, generalized the earlier artificial neuron.</p>
+
+<p>Unlike the McCulloch &amp; Pitts neuron, a perceptron uses <strong>continuous weights</strong> and an <strong>activation function</strong>.</p>
+
+<p>For a binary classification problem, the perceptron attempts to find a <strong>decision boundary</strong> that separates the two classes.</p>
+
+<p>If the classes are <strong>linearly separable</strong>, the perceptron can find a boundary that correctly separates them.</p>
+
+<p>The perceptron learning algorithm updates its weights based on whether the predicted value agrees with the actual value.
+<img src="/assets/img/perceptron.png" alt="McCulloch &amp; Pitts neuron model" />
+<strong>Figure 2:</strong> Perceptron architecture</p>
+
+<hr />
+
+<h2 id="the-xor-problem">The XOR Problem</h2>
+
+<p>A major limitation of a single perceptron is that it cannot represent the <strong>XOR</strong> logical operation.</p>
+
+<p>For XOR:</p>
+
+<ul>
+  <li>$0,0 \rightarrow 0$</li>
+  <li>$0,1 \rightarrow 1$</li>
+  <li>$1,0 \rightarrow 1$</li>
+  <li>$1,1 \rightarrow 0$</li>
+</ul>
+
+<p>The problem is that there is no single linear decision boundary that separates these two classes.</p>
+
+<p>Therefore, a single perceptron cannot solve XOR.</p>
+
+<p>This limitation helped motivate the development of <strong>multilayer neural networks</strong>, which can represent more complicated relationships.</p>
+
+<hr />
+
+<h2 id="multi-layer-neural-networks">Multi-layer Neural Networks</h2>
+<p>A <strong>multilayer perceptron (MLP)</strong>, also called a multilayer neural network, combines multiple neurons into multiple layers.</p>
+
+<p>The idea is to <strong>stack neuron models on top of each other</strong> so that the network can learn more complicated representations of the input. A single perceptron can only find a linear decision boundary, so it cannot solve problems such as <strong>XOR</strong>. However, multiple perceptrons can be combined to create the multiple decision boundaries needed for XOR.</p>
+
+<p>The layers between the input and output are called <strong>hidden layers</strong> because their values are not directly observed in the training data.
+<img src="/assets/img/multilayerPerceptrons.png" alt="Multilayer neural network" /></p>
+
+<p><strong>Figure 3:</strong> Example of a multilayer neural network.</p>
+
+<hr />
+
+<h2 id="backpropagation">Backpropagation</h2>
+<p>A challenge with multilayer networks is that there are no direct target values for the hidden nodes. The network therefore needs a way to determine how much each parameter contributed to the final error.</p>
+
+<p><strong>Backpropagation</strong> provides this method. Neural networks can be represented as <strong>computation graphs</strong>, and the <strong>chain rule</strong> can be used to work backward through the graph and calculate gradients for the different parameters.</p>
+
+<p>These gradients are then used to update the network’s parameters during training, allowing the network to learn the appropriate weights needed to represent more complicated functions such as <strong>XOR</strong>.</p>
+
+<hr />
+<h2 id="deep-learning">Deep Learning</h2>
+
+<p>Deep learning refers to using neural networks with multiple layers to learn increasingly complex representations of data.</p>
+
+<p>The main idea is that different layers can learn different levels of representation. Earlier layers can learn simpler patterns, while later layers can combine those patterns into more complex features.</p>
+
+<p>The term <strong>“deep”</strong> refers to the number of layers in the neural network. Adding more layers allows the model to learn a hierarchy of representations.</p>
+
+<h3 id="building-blocks-of-deep-learning">Building Blocks of Deep Learning</h3>
+
+<p>Deep learning models are built by combining several important components:</p>
+
+<ul>
+  <li><strong>Neurons:</strong> Perform computations using inputs, weights, and an activation function.</li>
+  <li><strong>Layers:</strong> Groups of neurons that process information at different stages of the network.</li>
+  <li><strong>Activation functions:</strong> Introduce nonlinearity, allowing neural networks to learn relationships that cannot be represented by a simple linear model.</li>
+  <li><strong>Loss functions:</strong> Measure how far the model’s predictions are from the desired output.</li>
+  <li><strong>Backpropagation:</strong> Calculates gradients of the loss with respect to the model’s parameters.</li>
+  <li><strong>Optimization:</strong> Uses these gradients to update the parameters and improve the model.</li>
+</ul>
+
+<p>Together, these components allow a neural network to learn useful representations from data rather than requiring a person to manually specify all of the features.</p>
+
+<h3 id="hierarchical-representations">Hierarchical Representations</h3>
+
+<p>One important idea in deep learning is that neural networks can learn <strong>hierarchical representations</strong>.</p>
+
+<p>For example, when working with an image, earlier layers might learn simple patterns such as edges. Later layers can combine these patterns to recognize shapes, and even later layers can combine those shapes into more complex objects.</p>
+
+<p>This allows the network to learn useful features automatically from the data.</p>
+
+<hr />
+
+<h2 id="the-rise-of-deep-learning">The Rise of Deep Learning</h2>
+
+<p>Although neural networks had existed for decades, deep learning became much more successful when larger datasets, better algorithms, and more powerful hardware became available.</p>
+
+<p>Benchmark datasets played an important role in measuring progress in machine learning.</p>
+
+<p>Some important datasets include:</p>
+
+<ul>
+  <li><strong>MNIST:</strong> A dataset of handwritten digits.</li>
+  <li><strong>CIFAR:</strong> Image datasets commonly used for image classification.</li>
+  <li><strong>ImageNet:</strong> A much larger image dataset that became an important benchmark for computer vision.</li>
+</ul>
+
+<p>These datasets made it possible to compare different machine learning approaches and measure improvements in performance.</p>
+
+<h3 id="alexnet">AlexNet</h3>
+
+<p>A major breakthrough came with <strong>AlexNet</strong>, which achieved a large improvement on the ImageNet image-classification benchmark.</p>
+
+<p>AlexNet demonstrated that deep neural networks could perform extremely well when combined with large datasets and powerful hardware.</p>
+
+<p>This helped lead to the rapid growth of modern deep learning during the 2010s.</p>
+
+<hr />
+<h2 id="the-dl-hardware--software-landscape">The DL Hardware &amp; Software Landscape</h2>
+
+<h3 id="hardware">Hardware</h3>
+
+<h4 id="cpu">CPU</h4>
+<ul>
+  <li>Centralized control</li>
+  <li>Local cache memory</li>
+  <li>General-purpose computing</li>
+</ul>
+
+<h4 id="gpu">GPU</h4>
+<ul>
+  <li>Optimized for matrix multiplication</li>
+  <li>Many compute cores</li>
+  <li>Shared control and cache across cores</li>
+  <li>Highly parallel</li>
+</ul>
+
+<h3 id="memory-and-infrastructure-bottlenecks">Memory and Infrastructure Bottlenecks</h3>
+
+<ul>
+  <li>Data movement can be slower than computation</li>
+  <li>Memory needs to be close to compute</li>
+  <li>Advanced packaging and high-performance memory are increasingly important</li>
+</ul>
+
+<p>AI compute demand now affects:</p>
+
+<ul>
+  <li>GPU chips</li>
+  <li>Packaging + memory</li>
+  <li>EUV lithography</li>
+  <li>Capital</li>
+  <li>Electricity</li>
+  <li>Gas turbines and turbine manufacturing</li>
+</ul>
+
+<h2 id="current-research-trends">Current Research Trends</h2>
+
+<h3 id="self-supervised-learning">Self-Supervised Learning</h3>
+
+<ul>
+  <li>Learn from data without manually provided labels</li>
+  <li>Use pretext tasks to learn useful representations</li>
+  <li>Contrastive learning</li>
+</ul>
+
+<h3 id="structured-data">Structured Data</h3>
+
+<p>Deep learning can also be applied to structured data such as graphs.</p>
+
+<ul>
+  <li>Aggregate information from neighboring nodes</li>
+  <li>Apply a neural network</li>
+</ul>
+
+<h3 id="massive-unsupervised-learning">Massive Unsupervised Learning</h3>
+
+<p>From GPT-1 (2018) to GPT-4:</p>
+
+<ul>
+  <li>Parameters: 1.5B → &gt;1T</li>
+  <li>Context length: 512 → 128k</li>
+  <li>Layers: 12 → &gt;96</li>
+  <li>Attention heads: 12 → &gt;96</li>
+  <li>Embedding dimension: 768 → &gt;12,288</li>
+  <li>Vocabulary: 40k → &gt;50k tokens</li>
+  <li>Multimodal tokenization</li>
+  <li>Mixture-of-Experts</li>
+  <li>Training data: ~5GB → ~50TB</li>
+  <li>Reinforcement learning for alignment</li>
+</ul>
+
+<h3 id="compute-optimal-scaling">Compute-Optimal Scaling</h3>
+
+<ul>
+  <li>Compute-optimal training balances model parameters and training tokens</li>
+  <li>Most pre-2022 LLMs were undertrained relative to their parameter count</li>
+  <li>Growing focus on data quality, curation, and synthetic data</li>
+</ul>
+
+<p><strong>Takeaway:</strong> “Bigger” alone is no longer the story. What and how much data matters as much as model size.</p>
+
+<h3 id="open-directions">Open Directions</h3>
+
+<ul>
+  <li>Verifiable rewards</li>
+  <li>Vision-language and multimodal models</li>
+  <li>Large-scale reinforcement learning</li>
+  <li>Model uncertainty and hallucinations</li>
+  <li>Model editing and interpretability</li>
+  <li>Agentic systems / tool use</li>
+  <li>Compute-optimal scaling</li>
+  <li>Efficient inference</li>
+  <li>Mechanistic interpretability</li>
+  <li>World models</li>
+</ul>
+ </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+    </div>
+
+    <footer class="site-footer">
+  <div class="wrapper">
+    <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Ben Lengerich</li><li>
+            <a class="u-email" href="mailto:lengerich@wisc.edu"
+              >lengerich@wisc.edu</a
+            >
+          </li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li>
+    <a
+      href="https://github.com/AdaptInfer"
+      target="_blank"
+      ><i class="fab fa-github"></i>
+      <span class="username">AdaptInfer</span></a
+    >
+  </li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>
+          &copy; Copyright 2026 University of Wisconsin.
+          <br />
+          
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  </body>
+
+  <d-bibliography
+    src="/dgm-fall-2026/assets/bibliography/2026-09-08-lecture-02.bib"
+  >
+  </d-bibliography>
+
+  <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/dgm-fall-2026/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link
+  rel="stylesheet"
+  href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css"
+/>
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+<script src="/dgm-fall-2026/assets/js/katex.js"></script>
+ 
+<!-- Load Anchor JS -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+<script>
+  anchors.options.visible = "hover";
+  anchors.add("article h2, article h3, article h4, article h5, article h6");
+</script>
+ 
+<!-- Adjust LaTeX JS -->
+<script src="/dgm-fall-2026/assets/js/latex.js"></script>
+
+
+<!-- Include custom icon fonts -->
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2026/assets/css/fontawesome-all.min.css"
+/>
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2026/assets/css/academicons.min.css"
+/>
+
+<!-- Google Analytics -->
+<script>
+  (function (i, s, o, g, r, a, m) {
+    i["GoogleAnalyticsObject"] = r;
+    ((i[r] =
+      i[r] ||
+      function () {
+        (i[r].q = i[r].q || []).push(arguments);
+      }),
+      (i[r].l = 1 * new Date()));
+    ((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
+    a.async = 1;
+    a.src = g;
+    m.parentNode.insertBefore(a, m);
+  })(
+    window,
+    document,
+    "script",
+    "//www.google-analytics.com/analytics.js",
+    "ga",
+  );
+
+  ga("create", "", "auto");
+  ga("send", "pageview");
+</script>
+
+</html>
