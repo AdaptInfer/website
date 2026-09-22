@@ -1,0 +1,669 @@
+<!doctype html>
+<html>
+  <head>
+    <head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="content-language" content="en" />
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <title>
+    STAT 453 | Lecture 05: Parameter Optimization and Gradient Descent
+  </title>
+  <meta name="description" content="STAT 453 - University of Wisconsin-Madison - Fall 2026
+" />
+
+  <link
+    rel="shortcut icon"
+    href="/dgm-fall-2026/assets/img/favicon.ico"
+  />
+
+  <link rel="stylesheet" href="/dgm-fall-2026/assets/css/main.css" />
+  <link
+    rel="canonical"
+    href="/dgm-fall-2026/notes/lecture-05/"
+  />
+
+  
+  <!-- Load Latex JS -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+  
+</head>
+
+    <script src="/dgm-fall-2026/assets/js/distillpub/template.v2.js"></script>
+    <script src="/dgm-fall-2026/assets/js/distillpub/transforms.v2.js"></script>
+  </head>
+
+  <d-front-matter>
+    <script type="text/json">
+      {
+            "title": "Lecture 05: Parameter Optimization and Gradient Descent",
+            "description": "From the perceptron's hard threshold to a smooth sigmoid unit, maximum likelihood, stochastic gradient descent, and backpropagation on computation graphs.",
+            "published": "September 17, 2026",
+            "lecturers": [
+              
+              {
+                "lecturer": "Ben Lengerich",
+                "lecturerURL": "https://lengerichlab.github.io/"
+              }
+              
+            ],
+            "authors": [
+              
+              {
+                "author": "Bennett Nippert"
+              },
+              
+              {
+                "author": "Arnav Gupta"
+              },
+              
+              {
+                "author": "Catherine Zhou"
+              },
+              
+              {
+                "author": "Kayvan Sinha"
+              }
+              
+            ],
+            "editors": [
+              
+              {
+                "editor": "None"
+              }
+              
+            ],
+            "katex": {
+              "delimiters": [
+                {
+                  "left": "$",
+                  "right": "$",
+                  "display": false
+                },
+                {
+                  "left": "$$",
+                  "right": "$$",
+                  "display": true
+                }
+              ]
+            }
+          }
+    </script>
+  </d-front-matter>
+
+  <body>
+    <header class="site-header">
+  <div class="wrapper">
+    <span class="site-title">
+      <a class="page-link" href="https://adaptinfer.org/dgm-fall-2026/"
+        >STAT 453</a
+      >
+    </span>
+
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path
+              fill="#424242"
+              d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
+            />
+            <path
+              fill="#424242"
+              d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
+            />
+            <path
+              fill="#424242"
+              d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
+            />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger">
+        <a class="page-link" href="/dgm-fall-2026/logistics/"
+          >logistics</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/lectures/"
+          >lectures</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/notes/">notes</a>
+        <a class="page-link" href="/dgm-fall-2026/calendar/"
+          >calendar</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/homework/"
+          >homework</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/project/">project</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+      <d-title>
+        <h1>Lecture 05: Parameter Optimization and Gradient Descent</h1>
+        <p>From the perceptron's hard threshold to a smooth sigmoid unit, maximum likelihood, stochastic gradient descent, and backpropagation on computation graphs.</p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article> <h2 id="1-todays-roadmap">1. Today’s Roadmap</h2>
+
+<ul>
+  <li>Perceptron</li>
+  <li>Soft threshold <d-math>\rightarrow</d-math> likelihood</li>
+  <li>Gradient descent</li>
+  <li>Backpropagation and computation graphs</li>
+</ul>
+
+<p>The thread running through all four: a hard threshold gives us no way to learn from data, so we swap in a smooth activation function, turn the model into a likelihood we can maximize, and then walk up that likelihood with gradient descent. Applying gradient descent to a deep model is backpropagation. <d-cite key="lengerich2026"></d-cite></p>
+
+<hr />
+
+<h2 id="2-review-of-the-perceptron-from-last-class">2. Review of the Perceptron from Last Class</h2>
+
+<h3 id="21-mcculloch-and-pitts-neuron-model-1943">2.1 McCulloch and Pitts’ neuron model (1943)</h3>
+
+<p>McCulloch and Pitts made a neuron model that had inputs feeding a <strong>linear combiner</strong>, which passes through a <strong>hard limiter</strong> to produce an output. <d-cite key="mcculloch1943"></d-cite> The hard limiter fires only when the weighted sum exceeds a threshold <d-math>\theta</d-math>.</p>
+
+<h3 id="22-rosenblatts-perceptron-1957">2.2 Rosenblatt’s perceptron (1957)</h3>
+
+<p>Rosenblatt built on this by creating the perceptron, which added <strong>continuous weighting</strong> and an <strong>activation (threshold) function</strong>. <d-cite key="rosenblatt1958"></d-cite> The net input is</p>
+
+<d-math block="">
+\text{net} = \sum_{i=0}^{n} w_i x_i, \qquad o = \sigma(\text{net}),
+</d-math>
+
+<p>where <d-math>x_0 = 1</d-math> carries the bias weight <d-math>w_0</d-math>. Perceptrons generalize MP neurons a bit, since the weights are now real-valued rather than fixed.</p>
+
+<h3 id="23-the-perceptron-learning-algorithm">2.3 The perceptron learning algorithm</h3>
+
+<p>The algorithm assumes a <strong>binary classification task</strong>, and it finds a decision boundary if the classes are separable. For a dataset</p>
+
+<d-math block="">
+\mathcal{D} = \left(\langle \mathbf{x}^{[1]}, y^{[1]}\rangle, \ldots, \langle \mathbf{x}^{[n]}, y^{[n]}\rangle\right) \in \left(\mathbb{R}^m \times \{0,1\}\right)^n,
+</d-math>
+
+<p>the pseudocode is:</p>
+
+<ol>
+  <li>Initialize <d-math>\mathbf{w} := \mathbf{0}^m</d-math> (assume the weight vector includes the bias).</li>
+  <li>For every training epoch:
+    <ul>
+      <li>For every <d-math>\langle \mathbf{x}^{[i]}, y^{[i]} \rangle \in \mathcal{D}</d-math>:
+        <ul>
+          <li>
+            <d-math>\hat{y}^{[i]} := \sigma\left(\mathbf{x}^{[i]T}\mathbf{w}\right)</d-math>
+            <p>, which is only 0 or 1</p>
+          </li>
+          <li>
+            <d-math>\textit{err} := \left(y^{[i]} - \hat{y}^{[i]}\right)</d-math>
+            <p>, which is only <d-math>-1</d-math>, 0, or 1</p>
+          </li>
+          <li>
+            <d-math>\mathbf{w} := \mathbf{w} + \textit{err} \times \mathbf{x}^{[i]}</d-math>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ol>
+
+<p>Because the error can only be <d-math>-1</d-math>, <d-math>0</d-math>, or <d-math>1</d-math>, the update is just <strong>adding or subtracting the input vector to the weight vector</strong>. There is no notion of how wrong a prediction was, which is the limitation the sigmoid unit fixes later.</p>
+
+<h3 id="24-geometric-intuition">2.4 Geometric intuition</h3>
+
+<p>The <strong>weight vector is perpendicular to the decision boundary</strong>. To see why, recall that</p>
+
+<d-math block="">
+\hat{y} = \begin{cases} 0, &amp; \mathbf{w}^\top \mathbf{x} \leq 0 \\ 1, &amp; \mathbf{w}^\top \mathbf{x} &gt; 0 \end{cases}
+\qquad\text{and}\qquad
+\mathbf{w}^\top \mathbf{x} = \lVert \mathbf{w} \rVert \cdot \lVert \mathbf{x} \rVert \cdot \cos(\theta).
+</d-math>
+
+<p>At the boundary <d-math>\mathbf{w}^\top \mathbf{x}</d-math> needs to be 0, and <d-math>\cos(\theta)</d-math> is zero at <d-math>90^\circ</d-math>, so the weight vector sits at a right angle to the boundary.</p>
+
+<figure id="figure-perceptron-geometry" class="l-body-outset">
+  <div class="row">
+    <div class="col three">
+      <img src="/dgm-fall-2026/assets/img/notes/lecture-05/figure1-perceptron-geometry.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Figure 1. Perceptron geometric intuition.</strong>
+    Points on one side of the boundary are labeled 1 and points on the other are labeled 0. Since <d-math>\mathbf{w}^\top\mathbf{x} = \lVert\mathbf{w}\rVert\lVert\mathbf{x}\rVert\cos(\theta)</d-math> must vanish on the boundary, the weight vector points perpendicular to it.
+  </figcaption>
+</figure>
+
+<p>When a point with label 1 lands on the wrong side, we add its input vector to the weight vector. The new weight vector is rotated toward that example, which puts it on the correct side.</p>
+
+<hr />
+
+<h2 id="3-beyond-rosenblatts-perceptron-choosing-an-activation-function">3. Beyond Rosenblatt’s Perceptron: Choosing an Activation Function</h2>
+
+<p>With a hard threshold function we need some way to learn from data, and the threshold gives us no gradient to work with. Everything beyond the classic perceptron comes from swapping out the activation function:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Activation function</th>
+      <th>What the unit becomes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Threshold function (perceptron, 1950+)</td>
+      <td>Classic Rosenblatt perceptron</td>
+    </tr>
+    <tr>
+      <td>Sigmoid function (before 2000)</td>
+      <td>Deep learning “perceptron” / sigmoid unit</td>
+    </tr>
+    <tr>
+      <td>Identity</td>
+      <td>Linear regression</td>
+    </tr>
+    <tr>
+      <td>ReLU (popular since CNNs), plus variants such as leaky ReLU and GeLU</td>
+      <td>Modern deep networks</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>If we swap out the activation function for something smooth like the sigmoid, we get a deep learning perceptron, or <strong>sigmoid unit</strong>. If we use the identity as the activation function we get linear regression.</p>
+
+<p><strong>In lecture.</strong> Depth only buys us something when the activation is nonlinear. Stacking units with identity activations composes linear maps into one linear map, so the stack collapses back to a single linear model. Nonlinear activations are what let a stack of units represent functions a single unit cannot.</p>
+
+<p>Making the activation function smooth is the key move. Once it is differentiable, we can apply gradient descent, and applying gradient descent to a deep learning model is backpropagation.</p>
+
+<hr />
+
+<h2 id="4-the-sigmoid-unit-logistic-regression-gives-us-an-optimizer">4. The Sigmoid Unit: Logistic Regression Gives Us an Optimizer</h2>
+
+<h3 id="41-the-forward-pass">4.1 The forward pass</h3>
+
+<p>For binary classes <d-math>y \in \{0, 1\}</d-math>, the weights come together to form the net input, which is put into the activation function (the logistic sigmoid), which forms the output:</p>
+
+<d-math block="">
+z = \sum_i w_i x_i + b, \qquad a = \sigma(z) = \frac{1}{1 + e^{-z}}, \qquad h(\mathbf{x}) = \sigma(\mathbf{w}^\top \mathbf{x} + b).
+</d-math>
+
+<figure id="figure-sigmoid-unit" class="l-body-outset">
+  <div class="row">
+    <div class="col three">
+      <img src="/dgm-fall-2026/assets/img/notes/lecture-05/figure2-sigmoid-unit.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Figure 2. The sigmoid unit.</strong>
+    Inputs <d-math>x_1, \ldots, x_m</d-math> are weighted and summed into the net input <d-math>z</d-math>, which is squashed by the logistic sigmoid into the activation <d-math>a</d-math>.
+  </figcaption>
+</figure>
+
+<h3 id="42-a-probabilistic-model">4.2 A probabilistic model</h3>
+
+<p>Because the output lies in <d-math>(0,1)</d-math>, we can read it as a probability:</p>
+
+<d-math block="">
+P(y \mid \mathbf{x}) = \begin{cases} h(\mathbf{x}) &amp; \text{if } y = 1 \\ 1 - h(\mathbf{x}) &amp; \text{if } y = 0 \end{cases}
+</d-math>
+
+<p>Recalling the Bernoulli distribution, the two cases collapse into one expression:</p>
+
+<d-math block="">
+P(y \mid \mathbf{x}) = a^{y}(1-a)^{(1-y)}.
+</d-math>
+
+<p>Once we have a probabilistic model we have a likelihood function, and we can optimize it in different ways. Optimizing it by gradient descent is what gives us backpropagation.</p>
+
+<h3 id="43-likelihood-and-log-likelihood">4.3 Likelihood and log-likelihood</h3>
+
+<p>Under MLE we would like to maximize the multi-sample likelihood:</p>
+
+<d-math block="">
+P\left(y^{[i]}, \ldots, y^{[n]} \mid \mathbf{x}^{[1]}, \ldots, \mathbf{x}^{[n]}\right) = \prod_{i=1}^{n} P\left(y^{[i]} \mid \mathbf{x}^{[i]}\right) = \prod_{i=1}^{n}\left(\sigma(z^{(i)})\right)^{y^{(i)}}\left(1 - \sigma(z^{(i)})\right)^{1 - y^{(i)}}.
+</d-math>
+
+<p>Since we are going to optimize via gradient descent, we apply the logarithm to separate the components. The <strong>maximizer of the likelihood is also the maximizer of the log-likelihood</strong>, so nothing is lost:</p>
+
+<d-math block="">
+l(\mathbf{w}) = \log L(\mathbf{w}) = \sum_{i=1}^{n}\left[y^{(i)}\log\left(\sigma(z^{(i)})\right) + \left(1 - y^{(i)}\right)\log\left(1 - \sigma(z^{(i)})\right)\right].
+</d-math>
+
+<p>The log turns a product into a sum, which makes the derivative of each component much easier to compute.</p>
+
+<h3 id="44-deriving-the-gradient-piece-by-piece">4.4 Deriving the gradient piece by piece</h3>
+
+<p>Dividing the equation into parts makes deriving each part easier. By the chain rule,</p>
+
+<d-math block="">
+\frac{\partial \mathcal{L}}{\partial w_j} = \frac{\partial \mathcal{L}}{\partial a}\frac{da}{dz}\frac{\partial z}{\partial w_j},
+</d-math>
+
+<p>and the three pieces are</p>
+
+<d-math block="">
+\frac{\partial \mathcal{L}}{\partial a} = \frac{a - y}{a - a^2}, \qquad
+\frac{da}{dz} = \frac{e^{-z}}{(1 + e^{-z})^2} = a \cdot (1 - a), \qquad
+\frac{\partial z}{\partial w_j} = x_j.
+</d-math>
+
+<p>Multiplying them through, the messy denominator cancels:</p>
+
+<d-math block="">
+\frac{\partial \mathcal{L}}{\partial z} = a - y \qquad \Longrightarrow \qquad \frac{\partial \mathcal{L}}{\partial w_j} = (a - y)x_j.
+</d-math>
+
+<p><strong>In lecture.</strong> If the post-activation value is very far away from the target, we make a bigger update to our weight. If it is very close, we make a very little weight update. The perceptron could not do this, since its error was only <d-math>-1</d-math>, 0, or 1.</p>
+
+<hr />
+
+<h2 id="5-gradient-descent">5. Gradient Descent</h2>
+
+<h3 id="51-why-we-take-steps-instead-of-solving">5.1 Why we take steps instead of solving</h3>
+
+<p>If we want the best weights for our data, we want to maximize the likelihood. If we could set the derivative to zero and solve, we would, but for most deep learning functions we can’t. Instead we take steps in the direction of the gradient (the slope) to reach a local maximum. We can’t guarantee a global maximum, but we can find a local one by walking up the gradient.</p>
+
+<p>So the recipe is: take the derivative first, then walk up the gradient to find the maximizer. <d-cite key="goodfellow2016"></d-cite></p>
+
+<h3 id="52-stochastic-gradient-descent">5.2 Stochastic gradient descent</h3>
+
+<p>Stochastic gradient descent is a <strong>greedy algorithm</strong>. At each point it takes one step in the direction that moves us best toward the goal. The gradient tells us which direction to move in, and the weight vector is updated by some step size times that gradient.</p>
+
+<ol>
+  <li>Initialize <d-math>\mathbf{w} := \mathbf{0} \in \mathbb{R}^m</d-math>, <d-math>b := 0</d-math>.</li>
+  <li>For every training epoch:
+    <ul>
+      <li>For every <d-math>\langle \mathbf{x}^{[i]}, y^{[i]} \rangle \in \mathcal{D}</d-math>:
+        <ul>
+          <li>(a) <d-math>\hat{y}^{[i]} := \sigma\left(\mathbf{x}^{[i]T}\mathbf{w} + b\right)</d-math></li>
+          <li>(b) <d-math>\nabla_{\mathbf{w}}\mathcal{L} = -\left(y^{[i]} - \hat{y}^{[i]}\right)\mathbf{x}^{[i]}</d-math> and <d-math>\nabla_{b}\mathcal{L} = -\left(y^{[i]} - \hat{y}^{[i]}\right)</d-math></li>
+          <li>(c) <d-math>\mathbf{w} := \mathbf{w} + \eta \times \left(-\nabla_{\mathbf{w}}\mathcal{L}\right)</d-math> and <d-math>b := b + \eta \times \left(-\nabla_{b}\mathcal{L}\right)</d-math></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ol>
+
+<p>Here <d-math>\eta</d-math> is the <strong>learning rate</strong> and <d-math>-\nabla\mathcal{L}</d-math> is the <strong>negative gradient</strong>. This is the same quantity we derived above, just with the sign flipped:</p>
+
+<d-math block="">
+a - y \iff -\left(y^{[i]} - \hat{y}^{[i]}\right).
+</d-math>
+
+<p>Using the negative versus the positive gradient is what changes whether we are descending or ascending. We iteratively take steps in the direction of the gradient, which is the slope, and that steps us toward the optimum in a greedy fashion.</p>
+
+<hr />
+
+<h2 id="6-multilayer-perceptron">6. Multilayer Perceptron</h2>
+
+<p>Gradient descent applies to large models too, not just a single unit. A multilayer perceptron is a <strong>computation graph with multiple fully-connected layers</strong>, and stacking layers allows us to model more functions than a single unit can.</p>
+
+<figure id="figure-mlp" class="l-body-outset">
+  <div class="row">
+    <div class="col three">
+      <img src="/dgm-fall-2026/assets/img/notes/lecture-05/figure3-mlp.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Figure 3. Multilayer perceptron.</strong>
+    Inputs <d-math>x_1, x_2</d-math> feed a hidden layer <d-math>a^{(1)}</d-math>, then a second hidden layer <d-math>a^{(2)}</d-math>, then the outputs <d-math>o_1, o_2, o_3</d-math>, which are compared against the targets by the loss <d-math>\mathcal{L}(\mathbf{y}, \mathbf{o})</d-math>.
+  </figcaption>
+</figure>
+
+<p>Use <strong>softmax</strong> at the output if this is a multi-class problem with mutually exclusive classes.</p>
+
+<hr />
+
+<h2 id="7-backpropagation-and-computation-graphs">7. Backpropagation and Computation Graphs</h2>
+
+<h3 id="71-the-chain-rule-is-the-whole-thing">7.1 The chain rule is the whole thing</h3>
+
+<p>The chain rule is basically the essence of training deep neural networks, and it is the basis for all neural networks and deep learning. For a nested function decomposed into an inner and an outer part,</p>
+
+<d-math block="">
+F(x) = f(g(x)) = z \qquad \Longrightarrow \qquad F'(x) = f'(g(x))\,g'(x) = z'.
+</d-math>
+
+<p>Neural networks are function compositions that can be represented as computation graphs. By applying the chain rule and working in reverse order, we get</p>
+
+<d-math block="">
+\frac{\partial f_n}{\partial x} = \sum_{i_1 \in \pi(n)} \frac{\partial f_n}{\partial f_{i_1}}\frac{\partial f_{i_1}}{\partial x} = \sum_{i_1 \in \pi(n)} \frac{\partial f_n}{\partial f_{i_1}} \sum_{i_2 \in \pi(i_1)} \frac{\partial f_{i_1}}{\partial f_{i_2}}\frac{\partial f_{i_1}}{\partial x} = \cdots
+</d-math>
+
+<p>where <d-math>\pi(n)</d-math> denotes the parents of node <d-math>n</d-math> in the graph. In practice: take the gradient of the output, then move back and take the gradient with respect to those inputs, and keep moving back.</p>
+
+<h3 id="72-quick-calculus-refresher">7.2 Quick calculus refresher</h3>
+
+<p>The derivative of a function is its <strong>rate of change</strong>, or its <strong>slope</strong>:</p>
+
+<d-math block="">
+f'(x) = \frac{df}{dx} = \lim_{\Delta x \to 0}\frac{f(x + \Delta x) - f(x)}{\Delta x}.
+</d-math>
+
+<p>Conceptually we are approximating the slope (the tangent) by a secant between two points and then shrinking the gap. Two worked examples from lecture: for <d-math>f(x) = 2x</d-math> the difference quotient is <d-math>2\Delta x / \Delta x</d-math>, so <d-math>df/dx = 2</d-math>; for <d-math>f(x) = x^2</d-math> it is <d-math>(2x\Delta x + (\Delta x)^2)/\Delta x</d-math>, so <d-math>df/dx = 2x</d-math>.</p>
+
+<p>The rules we lean on are the standard ones: sum, difference, product, quotient, reciprocal, and above all the chain rule, <d-math>\frac{d}{dx}f(g(x)) = f'(g(x))g'(x)</d-math>.</p>
+
+<h3 id="73-pytorch-does-this-automatically">7.3 PyTorch does this automatically</h3>
+
+<p>PyTorch can usually do all of this automatically for us. It literally keeps a computation graph in the background, so when you define <d-math>f(x)</d-math> and <d-math>g(x)</d-math> it already has what it needs to compute <d-math>f'(x)</d-math> and <d-math>g'(x)</d-math>, and it can compute the derivatives of most differentiable functions automatically.</p>
+
+<h3 id="74-worked-example-relu">7.4 Worked example: ReLU</h3>
+
+<p><strong>ReLU</strong> is the Rectified Linear Unit, probably the most commonly used activation function in deep learning. Every input that is positive is sent straight to the output, and every input that is negative is set to 0:</p>
+
+<d-math block="">
+\text{relu}(z) = \begin{cases} z &amp; \text{if } z &gt; 0 \\ 0 &amp; \text{otherwise} \end{cases}
+\qquad\text{equivalently}\qquad \text{relu}(z) = \max(0, z).
+</d-math>
+
+<p>Take the activation <d-math>a(x, w, b) = \text{relu}(w \cdot x + b)</d-math> and break it into intermediate nodes: <d-math>u = wx</d-math>, then <d-math>v = u + b</d-math>, then <d-math>a = \text{relu}(v)</d-math>.</p>
+
+<figure id="figure-relu-computation-graph" class="l-body-outset">
+  <div class="row">
+    <div class="col three">
+      <img src="/dgm-fall-2026/assets/img/notes/lecture-05/figure4-relu-computation-graph.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Figure 4. Computation graph for a ReLU unit, with <d-math>w = 2</d-math> and <d-math>b = 1</d-math>.</strong>
+    The forward pass runs left to right through <d-math>u = wx</d-math>, <d-math>v = u + b</d-math>, and <d-math>a = \text{relu}(v)</d-math>. The red arrows are the backward pass: first <d-math>da/dv</d-math>, then <d-math>\partial v/\partial b</d-math>, and so on back to each input.
+  </figcaption>
+</figure>
+
+<p>Then we can work backwards with the chain rule, doing <d-math>da/dv</d-math> first and then <d-math>\partial v/\partial b</d-math>. The local derivatives are simple:</p>
+
+<d-math block="">
+\frac{da}{dv} = \begin{cases} 1 &amp; v &gt; 0 \\ 0 &amp; \text{otherwise}\end{cases}, \qquad
+\frac{\partial v}{\partial b} = 1, \qquad
+\frac{\partial v}{\partial u} = 1, \qquad
+\frac{\partial u}{\partial w} = x.
+</d-math>
+
+<h3 id="75-single-path-graphs">7.5 Single-path graphs</h3>
+
+<p>For a single path, we take the product of each of these derivatives, which is the univariate chain rule. For <d-math>\mathcal{L}\left(y, \sigma_1(w_1 \cdot x_1)\right)</d-math>:</p>
+
+<d-math block="">
+\frac{\partial l}{\partial w_1} = \frac{\partial l}{\partial o}\cdot\frac{\partial o}{\partial a_1}\cdot\frac{\partial a_1}{\partial w_1}.
+</d-math>
+
+<h3 id="76-fully-connected-layers">7.6 Fully-connected layers</h3>
+
+<p>For a fully-connected layer we have to <strong>sum the different paths</strong> of derivatives from the input weight to the output, because a single weight influences the loss through every downstream unit it feeds. Backprop traces how much a weight affects the output using the chain rule along each of those paths:</p>
+
+<d-math block="">
+\frac{\partial l}{\partial w_{1,1}^{(1)}} = \frac{\partial l}{\partial o}\cdot\frac{\partial o}{\partial a_1^{(2)}}\cdot\frac{\partial a_1^{(2)}}{\partial a_1^{(1)}}\cdot\frac{\partial a_1^{(1)}}{\partial w_{1,1}^{(1)}} + \frac{\partial l}{\partial o}\cdot\frac{\partial o}{\partial a_2^{(2)}}\cdot\frac{\partial a_2^{(2)}}{\partial a_1^{(1)}}\cdot\frac{\partial a_1^{(1)}}{\partial w_{1,1}^{(1)}}.
+</d-math>
+
+<figure id="figure-fully-connected" class="l-body-outset">
+  <div class="row">
+    <div class="col three">
+      <img src="/dgm-fall-2026/assets/img/notes/lecture-05/figure5-fully-connected.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Figure 5. Computation graph for a fully-connected layer.</strong>
+    The weight <d-math>w_{1,1}^{(1)}</d-math> reaches the loss through both units of the second hidden layer, so its gradient is the sum of the two path products.
+  </figcaption>
+</figure>
+
+<h3 id="77-weight-sharing">7.7 Weight sharing</h3>
+
+<p>Weight sharing happens in <strong>convolutional neural networks</strong>. CNNs are really good for image recognition because a fully-connected network would not work at that scale, since that is far too many paths connecting every pixel to every other pixel. So CNNs reuse the same weight in many places, and it works really well.</p>
+
+<p>When weights are shared across different paths, we have to use the <strong>multivariable chain rule</strong> and sum up the contributions of each of the paths the shared weight appears on. For <d-math>\mathcal{L}\left(y, \sigma_3\left[\sigma_1(w_1 \cdot x_1), \sigma_2(w_1 \cdot x_1)\right]\right)</d-math>, where the same <d-math>w_1</d-math> appears on both paths:</p>
+
+<d-math block="">
+\frac{\partial l}{\partial w_1} = \underbrace{\frac{\partial l}{\partial o}\cdot\frac{\partial o}{\partial a_1}\cdot\frac{\partial a_1}{\partial w_1}}_{\text{upper path}} + \underbrace{\frac{\partial l}{\partial o}\cdot\frac{\partial o}{\partial a_2}\cdot\frac{\partial a_2}{\partial w_1}}_{\text{lower path}}.
+</d-math>
+
+<figure id="figure-weight-sharing" class="l-body-outset">
+  <div class="row">
+    <div class="col three">
+      <img src="/dgm-fall-2026/assets/img/notes/lecture-05/figure6-weight-sharing.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Figure 6. Weight sharing.</strong>
+    The same weight <d-math>w_1</d-math> is used on two different paths from <d-math>x_1</d-math> to the output <d-math>o</d-math>, so its gradient is the sum of the contributions from the upper and lower paths.
+  </figcaption>
+</figure>
+
+<hr />
+
+<h2 id="8-summary">8. Summary</h2>
+
+<ul>
+  <li>The perceptron adds continuous weighting and an activation function to the MP neuron.</li>
+  <li>Its update just adds or subtracts the input vector, because the error is only <d-math>-1</d-math>, 0, or 1.</li>
+  <li>The weight vector is perpendicular to the decision boundary.</li>
+  <li>The activation function decides what the unit is: threshold gives the perceptron, identity gives linear regression, sigmoid gives the sigmoid unit, and ReLU is the modern default.</li>
+  <li>A smooth activation is differentiable, which is what lets us use gradient descent.</li>
+  <li>The sigmoid unit is a Bernoulli model, so we can write a likelihood and maximize it.</li>
+  <li>Taking the log turns the product into a sum and makes each derivative easy.</li>
+  <li>The gradient works out to <d-math>(a - y)x_j</d-math>, so predictions far from the target give big updates and close ones give small updates.</li>
+  <li>SGD is greedy. It takes one step at a time in the direction the gradient points, scaled by the learning rate.</li>
+  <li>Backpropagation is the chain rule applied in reverse over a computation graph.</li>
+  <li>One path means multiplying the derivatives. Several paths means multiplying along each one and adding them up.</li>
+</ul>
+ </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+    </div>
+
+    <footer class="site-footer">
+  <div class="wrapper">
+    <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Ben Lengerich</li><li>
+            <a class="u-email" href="mailto:lengerich@wisc.edu"
+              >lengerich@wisc.edu</a
+            >
+          </li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li>
+    <a
+      href="https://github.com/AdaptInfer"
+      target="_blank"
+      ><i class="fab fa-github"></i>
+      <span class="username">AdaptInfer</span></a
+    >
+  </li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>
+          &copy; Copyright 2026 University of Wisconsin.
+          <br />
+          
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  </body>
+
+  <d-bibliography
+    src="/dgm-fall-2026/assets/bibliography/2026-09-17-lecture-05.bib"
+  >
+  </d-bibliography>
+
+  <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/dgm-fall-2026/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link
+  rel="stylesheet"
+  href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css"
+/>
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+<script src="/dgm-fall-2026/assets/js/katex.js"></script>
+ 
+<!-- Load Anchor JS -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+<script>
+  anchors.options.visible = "hover";
+  anchors.add("article h2, article h3, article h4, article h5, article h6");
+</script>
+ 
+<!-- Adjust LaTeX JS -->
+<script src="/dgm-fall-2026/assets/js/latex.js"></script>
+
+
+<!-- Include custom icon fonts -->
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2026/assets/css/fontawesome-all.min.css"
+/>
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2026/assets/css/academicons.min.css"
+/>
+
+<!-- Google Analytics -->
+<script>
+  (function (i, s, o, g, r, a, m) {
+    i["GoogleAnalyticsObject"] = r;
+    ((i[r] =
+      i[r] ||
+      function () {
+        (i[r].q = i[r].q || []).push(arguments);
+      }),
+      (i[r].l = 1 * new Date()));
+    ((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
+    a.async = 1;
+    a.src = g;
+    m.parentNode.insertBefore(a, m);
+  })(
+    window,
+    document,
+    "script",
+    "//www.google-analytics.com/analytics.js",
+    "ga",
+  );
+
+  ga("create", "", "auto");
+  ga("send", "pageview");
+</script>
+
+</html>
