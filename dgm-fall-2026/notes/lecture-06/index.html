@@ -1,0 +1,802 @@
+<!doctype html>
+<html>
+  <head>
+    <head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="content-language" content="en" />
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <title>
+    STAT 453 | Lecture 06: Automatic Differentiation with PyTorch and Project Discussion
+  </title>
+  <meta name="description" content="STAT 453 - University of Wisconsin-Madison - Fall 2026
+" />
+
+  <link
+    rel="shortcut icon"
+    href="/dgm-fall-2026/assets/img/favicon.ico"
+  />
+
+  <link rel="stylesheet" href="/dgm-fall-2026/assets/css/main.css" />
+  <link
+    rel="canonical"
+    href="/dgm-fall-2026/notes/lecture-06/"
+  />
+
+  
+  <!-- Load Latex JS -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+  
+</head>
+
+    <script src="/dgm-fall-2026/assets/js/distillpub/template.v2.js"></script>
+    <script src="/dgm-fall-2026/assets/js/distillpub/transforms.v2.js"></script>
+  </head>
+
+  <d-front-matter>
+    <script type="text/json">
+      {
+            "title": "Lecture 06: Automatic Differentiation with PyTorch and Project Discussion",
+            "description": "From Bernoulli likelihoods to loss functions, PyTorch autograd, model construction, training and evaluation loops, debugging with hooks, and final-project planning.",
+            "published": "September 22, 2026",
+            "lecturers": [
+              
+              {
+                "lecturer": "Ben Lengerich",
+                "lecturerURL": "https://adaptinfer.org"
+              }
+              
+            ],
+            "authors": [
+              
+              {
+                "author": "Jiarui Gong"
+              },
+              
+              {
+                "author": "Yufei Zhou"
+              },
+              
+              {
+                "author": "Enyi Hu"
+              }
+              
+            ],
+            "editors": [
+              
+              {
+                "editor": "None"
+              }
+              
+            ],
+            "katex": {
+              "delimiters": [
+                {
+                  "left": "$",
+                  "right": "$",
+                  "display": false
+                },
+                {
+                  "left": "$$",
+                  "right": "$$",
+                  "display": true
+                }
+              ]
+            }
+          }
+    </script>
+  </d-front-matter>
+
+  <body>
+    <header class="site-header">
+  <div class="wrapper">
+    <span class="site-title">
+      <a class="page-link" href="https://adaptinfer.org/dgm-fall-2026/"
+        >STAT 453</a
+      >
+    </span>
+
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path
+              fill="#424242"
+              d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
+            />
+            <path
+              fill="#424242"
+              d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
+            />
+            <path
+              fill="#424242"
+              d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
+            />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger">
+        <a class="page-link" href="/dgm-fall-2026/logistics/"
+          >logistics</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/lectures/"
+          >lectures</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/notes/">notes</a>
+        <a class="page-link" href="/dgm-fall-2026/calendar/"
+          >calendar</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/homework/"
+          >homework</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/project/">project</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+      <d-title>
+        <h1>Lecture 06: Automatic Differentiation with PyTorch and Project Discussion</h1>
+        <p>From Bernoulli likelihoods to loss functions, PyTorch autograd, model construction, training and evaluation loops, debugging with hooks, and final-project planning.</p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article> <h2 id="1-todays-roadmap">1. Today’s Roadmap</h2>
+
+<ul>
+  <li>Automatic differentiation in PyTorch</li>
+  <li>A closer look at the PyTorch API</li>
+  <li>Final-project discussion</li>
+</ul>
+
+<p>The main technical idea is that PyTorch records the tensor operations used in a
+forward pass and uses that computation graph to evaluate derivatives during the
+backward pass. This lets us express the model and loss in ordinary tensor code
+instead of deriving and implementing every parameter gradient by hand.</p>
+<d-cite key="lengerich2026"></d-cite>
+
+<hr />
+
+<h2 id="2-pytorch-at-a-glance">2. PyTorch at a Glance</h2>
+
+<p><a href="https://pytorch.org/">PyTorch</a> is a Python-first framework for tensor computation
+and deep learning. Its core features include:</p>
+
+<ul>
+  <li><strong>Automatic differentiation</strong> through <code class="language-plaintext highlighter-rouge">torch.autograd</code></li>
+  <li><strong>Dynamic computation graphs</strong> constructed from the operations actually run</li>
+  <li><strong>GPU acceleration</strong> through CUDA on supported hardware</li>
+  <li><strong>NumPy-like tensor operations</strong> and straightforward NumPy interoperability</li>
+  <li>Neural-network layers, losses, optimizers, data loaders, and other training utilities</li>
+</ul>
+
+<p>PyTorch is implemented with a high-performance C++ core while exposing a Python
+interface for day-to-day model development.</p>
+
+<h3 id="21-installation-and-learning-resources">2.1 Installation and learning resources</h3>
+
+<p>Use the command generated by the official
+<a href="https://pytorch.org/get-started/locally/">PyTorch installation selector</a> because
+the correct build depends on the operating system and compute platform. After
+installation, remember that the package is imported with:</p>
+
+<d-code block="" language="python">
+import torch
+
+print(torch.__version__)
+print(torch.cuda.is_available())
+</d-code>
+
+<p>Useful resources mentioned in lecture include the
+<a href="https://pytorch.org/tutorials/">PyTorch tutorials</a>, the
+<a href="https://discuss.pytorch.org/">PyTorch discussion forum</a>, and the video/tutorial
+<a href="https://docs.pytorch.org/tutorials/beginner/introyt/autogradyt_tutorial.html"><em>The Fundamentals of Autograd</em></a>.</p>
+<d-cite key="pytorch-autograd-fundamentals"></d-cite>
+
+<hr />
+
+<h2 id="3-from-a-distribution-to-a-loss-function">3. From a Distribution to a Loss Function</h2>
+
+<p>The lecture revisited binary classification to show how a statistical model
+becomes an objective that autograd can differentiate.</p>
+
+<p>For an input vector <d-math>\mathbf{x}</d-math>, weights</p>
+<d-math>\mathbf{w}</d-math>
+<p>, and bias <d-math>b</d-math>, define</p>
+
+<d-math block="">
+z = \mathbf{w}^{\top}\mathbf{x} + b,
+\qquad
+\hat{y} = \sigma(z),
+\qquad
+y \mid \mathbf{x} \sim \operatorname{Bernoulli}(\hat{y}).
+</d-math>
+
+<p>Here <d-math>\hat{y}</d-math> is interpreted as</p>
+<d-math>P(y=1\mid\mathbf{x})</d-math>
+<p>. The Bernoulli likelihood for one example is</p>
+
+<d-math block="">
+P(y \mid \mathbf{x})
+= \hat{y}^{,y}(1-\hat{y})^{1-y}.
+</d-math>
+
+<p>Taking the logarithm turns the product into a sum:</p>
+
+<d-math block="">
+\log P(y \mid \mathbf{x})
+= y\log\hat{y} + (1-y)\log(1-\hat{y}).
+</d-math>
+
+<p>Training code typically minimizes a loss, so we negate the log-likelihood:</p>
+
+<d-math block="">
+\mathcal{L}_{\mathrm{BCE}}
+= -\left[y\log\hat{y} + (1-y)\log(1-\hat{y})\right].
+</d-math>
+
+<p>This is <strong>binary cross-entropy</strong>. In the lecture notebook, the direct formula,
+<code class="language-plaintext highlighter-rouge">torch.distributions.Bernoulli(probs=y_hat).log_prob(y)</code>, and <code class="language-plaintext highlighter-rouge">nn.BCELoss()</code>
+produce the same per-example quantity after accounting for the minus sign and
+the chosen reduction.</p>
+
+<h3 id="31-a-numerically-safer-implementation">3.1 A numerically safer implementation</h3>
+
+<p>When the model returns a raw logit <d-math>z</d-math>, prefer
+<code class="language-plaintext highlighter-rouge">nn.BCEWithLogitsLoss()</code> over applying a sigmoid and then calling <code class="language-plaintext highlighter-rouge">nn.BCELoss()</code>.
+The combined function computes the same objective but uses a numerically stable
+implementation.</p>
+
+<d-code block="" language="python">
+logits = model(features)
+loss = torch.nn.functional.binary_cross_entropy_with_logits(
+    logits,
+    targets.float(),
+)
+</d-code>
+
+<p>For mutually exclusive classes, use <code class="language-plaintext highlighter-rouge">F.cross_entropy(logits, targets)</code>. It expects
+<strong>raw, unnormalized logits</strong>, not probabilities and not a separately computed
+softmax.</p>
+
+<hr />
+
+<h2 id="4-how-autograd-works">4. How Autograd Works</h2>
+
+<p>Autograd is PyTorch’s automatic differentiation engine. During the forward pass,
+operations involving tensors that require gradients are recorded in a directed
+acyclic computation graph. Calling <code class="language-plaintext highlighter-rouge">.backward()</code> traverses that graph in reverse,
+applies the chain rule, and accumulates derivatives in the <code class="language-plaintext highlighter-rouge">.grad</code> fields of leaf
+tensors such as model parameters. <d-cite key="pytorch-autograd-mechanics"></d-cite></p>
+
+<p>Consider the scalar computation</p>
+
+<d-math block="">
+x \xrightarrow{\;z=wx+b\;} z
+\xrightarrow{\;a=\sigma(z)\;} a
+\xrightarrow{\;\mathcal{L}=\operatorname{BCE}(a,y)\;} \mathcal{L}.
+</d-math>
+
+<p>The chain rule gives</p>
+
+<d-math block="">
+\frac{\partial \mathcal{L}}{\partial w}
+=
+\frac{\partial \mathcal{L}}{\partial a}
+\frac{\partial a}{\partial z}
+\frac{\partial z}{\partial w}.
+</d-math>
+
+<p>PyTorch performs this bookkeeping automatically:</p>
+
+<d-code block="" language="python">
+import torch
+
+x = torch.tensor(2.0)
+y = torch.tensor(1.0)
+w = torch.tensor(0.5, requires_grad=True)
+b = torch.tensor(0.0, requires_grad=True)
+
+z = w * x + b
+loss = torch.nn.functional.binary_cross_entropy_with_logits(z, y)
+loss.backward()
+
+print(w.grad)  # d(loss) / d(w)
+print(b.grad)  # d(loss) / d(b)
+</d-code>
+
+<h3 id="41-dynamic-graphs">4.1 Dynamic graphs</h3>
+
+<p>PyTorch rebuilds the computation graph on each forward pass. Consequently,
+ordinary Python control flow can change the operations executed from one pass to
+the next. After a normal backward pass, the graph is released; requesting another
+backward pass through the same graph requires <code class="language-plaintext highlighter-rouge">retain_graph=True</code>, which should be
+used only when the algorithm genuinely needs it.</p>
+
+<h3 id="42-gradients-accumulate">4.2 Gradients accumulate</h3>
+
+<p>Calling <code class="language-plaintext highlighter-rouge">.backward()</code> <strong>adds</strong> newly computed gradients to existing <code class="language-plaintext highlighter-rouge">.grad</code>
+values. It does not overwrite them. This behavior is useful when deliberately
+accumulating gradients over several minibatches, but a standard training loop
+must clear the old gradients before each backward pass:</p>
+
+<d-code block="" language="python">
+optimizer.zero_grad()
+loss.backward()
+optimizer.step()
+</d-code>
+
+<p>In current PyTorch versions, <code class="language-plaintext highlighter-rouge">optimizer.zero_grad()</code> may set gradients to <code class="language-plaintext highlighter-rouge">None</code>
+rather than filling them with numerical zeros. The training-loop meaning is the
+same: stale gradients will not be added to the next minibatch’s gradients.</p>
+<d-cite key="pytorch-zero-grad"></d-cite>
+
+<hr />
+
+<h2 id="5-the-pytorch-workflow">5. The PyTorch Workflow</h2>
+
+<p>The lecture organized ordinary PyTorch usage into three steps: <strong>definition</strong>,
+<strong>creation</strong>, and <strong>training</strong>.</p>
+
+<h3 id="51-step-1-define-the-model">5.1 Step 1: define the model</h3>
+
+<p>A model usually subclasses <code class="language-plaintext highlighter-rouge">torch.nn.Module</code>. Layers assigned as attributes in
+<code class="language-plaintext highlighter-rouge">__init__</code> are registered as submodules, and their trainable tensors become model
+parameters. The <code class="language-plaintext highlighter-rouge">forward</code> method specifies how those layers are used.</p>
+
+<d-code block="" language="python">
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+
+class MultilayerPerceptron(nn.Module):
+    def __init__(self, num_features, num_classes, num_h1=128, num_h2=256):
+        super().__init__()
+        self.linear_1 = nn.Linear(num_features, num_h1)
+        self.linear_2 = nn.Linear(num_h1, num_h2)
+        self.linear_out = nn.Linear(num_h2, num_classes)
+
+    def forward(self, x):
+        x = F.relu(self.linear_1(x))
+        x = F.relu(self.linear_2(x))
+        logits = self.linear_out(x)
+        return logits
+</d-code>
+
+<p>There is no need to manually implement the backward pass for this network.
+Autograd knows the derivatives of the tensor operations used in <code class="language-plaintext highlighter-rouge">forward</code> and
+constructs the appropriate backward graph at runtime.</p>
+
+<h3 id="52-step-2-create-the-model-and-optimizer">5.2 Step 2: create the model and optimizer</h3>
+
+<p>Instantiating the class creates the model parameters. Move the model to the
+selected device, then give those parameters to an optimizer.</p>
+
+<d-code block="" language="python">
+random_seed = 1
+learning_rate = 0.1
+num_features = 28 * 28
+num_classes = 10
+
+torch.manual_seed(random_seed)
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model = MultilayerPerceptron(num_features, num_classes).to(device)
+
+optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
+</d-code>
+
+<p>The model and every tensor used together must be on the same device. If the model
+is on a GPU, each feature and target minibatch must be moved there as well.</p>
+
+<h3 id="53-step-3-train-the-model">5.3 Step 3: train the model</h3>
+
+<d-code block="" language="python">
+for epoch in range(num_epochs):
+    model.train()
+
+    for features, targets in train_loader:
+        features = features.view(-1, 28 * 28).to(device)
+        targets = targets.to(device)
+
+        # Forward pass and loss
+        logits = model(features)
+        loss = F.cross_entropy(logits, targets)
+
+        # Backward pass and parameter update
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+</d-code>
+
+<p>Each minibatch follows the same cycle:</p>
+
+<ol>
+  <li><strong>Forward:</strong> compute logits from the inputs.</li>
+  <li><strong>Loss:</strong> compare logits with targets.</li>
+  <li><strong>Clear gradients:</strong> remove gradients left by the previous iteration.</li>
+  <li><strong>Backward:</strong> compute new parameter gradients with autograd.</li>
+  <li><strong>Step:</strong> let the optimizer update the parameters.</li>
+</ol>
+
+<p>Calling <code class="language-plaintext highlighter-rouge">model(features)</code> is preferable to calling <code class="language-plaintext highlighter-rouge">model.forward(features)</code>
+directly. The module call machinery invokes <code class="language-plaintext highlighter-rouge">forward</code> while also preserving the
+behavior of registered hooks and other <code class="language-plaintext highlighter-rouge">nn.Module</code> features.</p>
+
+<h3 id="54-evaluate-without-building-a-backward-graph">5.4 Evaluate without building a backward graph</h3>
+
+<d-code block="" language="python">
+model.eval()
+
+num_correct = 0
+num_examples = 0
+
+with torch.no_grad():
+    for features, targets in test_loader:
+        features = features.view(-1, 28 * 28).to(device)
+        targets = targets.to(device)
+
+        logits = model(features)
+        predictions = logits.argmax(dim=1)
+
+        num_correct += (predictions == targets).sum().item()
+        num_examples += targets.size(0)
+
+accuracy = num_correct / num_examples
+</d-code>
+
+<p><code class="language-plaintext highlighter-rouge">model.eval()</code> and <code class="language-plaintext highlighter-rouge">torch.no_grad()</code> solve different problems:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Tool</th>
+      <th>What it changes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">model.eval()</code></td>
+      <td>Switches modules such as Dropout and BatchNorm to evaluation behavior</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">torch.no_grad()</code></td>
+      <td>Prevents operations from being recorded for backward, reducing autograd overhead</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Evaluation code commonly needs both. Calling <code class="language-plaintext highlighter-rouge">model.eval()</code> alone does <strong>not</strong>
+disable gradient tracking. <d-cite key="pytorch-autograd-mechanics"></d-cite></p>
+
+<hr />
+
+<h2 id="6-inspecting-intermediate-activations-with-hooks">6. Inspecting Intermediate Activations with Hooks</h2>
+
+<p>Printing a model shows its module structure, but it does not expose the values
+produced inside a particular layer during a forward pass. A <strong>forward hook</strong> can
+capture those intermediate activations without rewriting the model.</p>
+
+<d-code block="" language="python">
+outputs = []
+
+
+def save_output(module, inputs, output):
+    outputs.append(output.detach())
+
+
+handle = model.linear_2.register_forward_hook(save_output)
+
+_ = model(features)
+second_hidden_layer_output = outputs[-1]
+
+handle.remove()
+</d-code>
+
+<p>The hook receives the module, its inputs, and its output whenever that module is
+called. Detaching the saved tensor prevents the debugging list from retaining an
+unneeded autograd history. Keep the returned handle and remove it after use;
+otherwise repeated registrations can make the hook run multiple times and can
+retain extra memory.</p>
+
+<hr />
+
+<h2 id="7-common-pytorch-pitfalls">7. Common PyTorch Pitfalls</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Symptom</th>
+      <th>Likely cause</th>
+      <th>Fix</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Gradients grow unexpectedly across iterations</td>
+      <td><code class="language-plaintext highlighter-rouge">.backward()</code> accumulates into <code class="language-plaintext highlighter-rouge">.grad</code></td>
+      <td>Call <code class="language-plaintext highlighter-rouge">optimizer.zero_grad()</code> before <code class="language-plaintext highlighter-rouge">loss.backward()</code> unless accumulation is intentional</td>
+    </tr>
+    <tr>
+      <td>Device mismatch error</td>
+      <td>Model and minibatch are on different devices</td>
+      <td>Move the model, features, and targets to the same <code class="language-plaintext highlighter-rouge">device</code></td>
+    </tr>
+    <tr>
+      <td>Cross-entropy behaves incorrectly</td>
+      <td>Probabilities or log-probabilities were passed where logits are expected</td>
+      <td>Pass raw logits to <code class="language-plaintext highlighter-rouge">F.cross_entropy</code></td>
+    </tr>
+    <tr>
+      <td>Evaluation remains stochastic</td>
+      <td>Model is still in training mode</td>
+      <td>Call <code class="language-plaintext highlighter-rouge">model.eval()</code> before validation or testing</td>
+    </tr>
+    <tr>
+      <td>Evaluation uses unnecessary memory</td>
+      <td>Grad tracking is still enabled</td>
+      <td>Use <code class="language-plaintext highlighter-rouge">with torch.no_grad():</code> or an appropriate inference-mode context</td>
+    </tr>
+    <tr>
+      <td>Hooks fire repeatedly</td>
+      <td>Old hook registrations remain active</td>
+      <td>Store the handle and call <code class="language-plaintext highlighter-rouge">handle.remove()</code></td>
+    </tr>
+    <tr>
+      <td>No gradient appears on an intermediate tensor</td>
+      <td>By default, <code class="language-plaintext highlighter-rouge">.grad</code> is retained for leaf tensors</td>
+      <td>Inspect leaf parameters, call <code class="language-plaintext highlighter-rouge">.retain_grad()</code> when appropriate, or register a hook</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h2 id="8-final-project-discussion">8. Final-Project Discussion</h2>
+
+<p>The project is an opportunity to apply or investigate deep generative modeling in
+a focused, reproducible way. Teams should consist of <strong>2–4 students</strong>, with teams
+of <strong>3–4 strongly encouraged</strong>. Once a team is formed, email the instructors.</p>
+
+<h3 id="81-possible-project-directions">8.1 Possible project directions</h3>
+
+<ul>
+  <li>Apply a deep generative model to a new domain or dataset, including research data.</li>
+  <li>Reproduce and extend a result from a paper discussed in class or found in a venue
+such as ICML, NeurIPS, ICLR, or AISTATS.</li>
+  <li>Build and benchmark a tool, such as an evaluation metric, interpretability
+method, or efficient-training technique.</li>
+  <li>Compare architectures or training methods on a shared task.</li>
+</ul>
+
+<p>Examples from prior years included breast-cancer detection from ultrasound with
+an LSTM, DCGAN-generated surrealist art, chest X-ray diagnosis, sentiment
+analysis with BERT, and audio-to-video animation.</p>
+
+<h3 id="82-dataset-sources">8.2 Dataset sources</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Modality</th>
+      <th>Possible sources</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Vision</td>
+      <td>MNIST, CIFAR-10/100 for demonstrations, ImageNet, or a new image dataset</td>
+    </tr>
+    <tr>
+      <td>Text</td>
+      <td>Hugging Face Datasets, OpenWebText, or a new corpus</td>
+    </tr>
+    <tr>
+      <td>Tabular</td>
+      <td>UCI Machine Learning Repository or Kaggle</td>
+    </tr>
+    <tr>
+      <td>Research data</td>
+      <td>A team member’s research-group data, when permitted</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Before committing to a dataset, check its license and any human-subjects, privacy,
+or IRB constraints. The lecture also mentioned <a href="https://summand.com/">Summand</a> as
+an option for exploratory data analysis.</p>
+
+<h3 id="83-deliverables-and-fall-2026-timeline">8.3 Deliverables and Fall 2026 timeline</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Deliverable</th>
+      <th style="text-align: right">Weight</th>
+      <th>Due</th>
+      <th>Expected content</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Proposal</td>
+      <td style="text-align: right">5%</td>
+      <td>Friday, October 9</td>
+      <td>Problem statement, literature review of 4+ papers, dataset, and activity plan</td>
+    </tr>
+    <tr>
+      <td>Midway report</td>
+      <td style="text-align: right">5%</td>
+      <td>Friday, November 6</td>
+      <td>Working implementation and preliminary results, not only a plan</td>
+    </tr>
+    <tr>
+      <td>In-class presentation</td>
+      <td style="text-align: right">5%</td>
+      <td>Tuesday, December 1 or Thursday, December 3</td>
+      <td>Team presentation; graded individually</td>
+    </tr>
+    <tr>
+      <td>Final report</td>
+      <td style="text-align: right">15%</td>
+      <td>Tuesday, December 8</td>
+      <td>Eight-page ICML-format paper with a baseline, ablation study, and error analysis</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="84-a-useful-proposal-checklist">8.4 A useful proposal checklist</h3>
+
+<p>A strong proposal should make the following items concrete:</p>
+
+<ol>
+  <li><strong>Question:</strong> What exact problem or hypothesis will the project address?</li>
+  <li><strong>Prior work:</strong> Which four or more papers define the baseline and opportunity?</li>
+  <li><strong>Data:</strong> Is the dataset accessible, appropriately licensed, and large enough?</li>
+  <li><strong>Method:</strong> What model, comparison, or tool will the team implement?</li>
+  <li><strong>Evaluation:</strong> Which metrics, baselines, ablations, and error analyses will
+determine whether the idea worked?</li>
+  <li><strong>Execution:</strong> Who owns each task, and what must be complete by the midway report?</li>
+</ol>
+
+<hr />
+
+<h2 id="9-key-takeaways">9. Key Takeaways</h2>
+
+<ul>
+  <li>A probabilistic model yields a likelihood; negating its log gives a loss that can
+be minimized.</li>
+  <li>Autograd records forward computations and applies the chain rule in reverse when
+<code class="language-plaintext highlighter-rouge">.backward()</code> is called.</li>
+  <li>Parameter gradients accumulate, so a normal training iteration clears them
+before the backward pass.</li>
+  <li>A complete PyTorch iteration is: forward, loss, zero gradients, backward, step.</li>
+  <li><code class="language-plaintext highlighter-rouge">model.eval()</code> changes layer behavior, while <code class="language-plaintext highlighter-rouge">torch.no_grad()</code> disables gradient
+recording; evaluation commonly uses both.</li>
+  <li>Forward hooks provide a controlled way to inspect intermediate activations.</li>
+  <li>The course project should define a clear question, use a feasible dataset, make
+measurable progress by the midpoint, and include baselines, ablations, and error
+analysis in the final report.</li>
+</ul>
+ </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+    </div>
+
+    <footer class="site-footer">
+  <div class="wrapper">
+    <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Ben Lengerich</li><li>
+            <a class="u-email" href="mailto:lengerich@wisc.edu"
+              >lengerich@wisc.edu</a
+            >
+          </li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li>
+    <a
+      href="https://github.com/AdaptInfer"
+      target="_blank"
+      ><i class="fab fa-github"></i>
+      <span class="username">AdaptInfer</span></a
+    >
+  </li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>
+          &copy; Copyright 2026 University of Wisconsin.
+          <br />
+          
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  </body>
+
+  <d-bibliography
+    src="/dgm-fall-2026/assets/bibliography/2026-09-22-lecture-06.bib"
+  >
+  </d-bibliography>
+
+  <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/dgm-fall-2026/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link
+  rel="stylesheet"
+  href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css"
+/>
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+<script src="/dgm-fall-2026/assets/js/katex.js"></script>
+ 
+<!-- Load Anchor JS -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+<script>
+  anchors.options.visible = "hover";
+  anchors.add("article h2, article h3, article h4, article h5, article h6");
+</script>
+ 
+<!-- Adjust LaTeX JS -->
+<script src="/dgm-fall-2026/assets/js/latex.js"></script>
+
+
+<!-- Include custom icon fonts -->
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2026/assets/css/fontawesome-all.min.css"
+/>
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2026/assets/css/academicons.min.css"
+/>
+
+<!-- Google Analytics -->
+<script>
+  (function (i, s, o, g, r, a, m) {
+    i["GoogleAnalyticsObject"] = r;
+    ((i[r] =
+      i[r] ||
+      function () {
+        (i[r].q = i[r].q || []).push(arguments);
+      }),
+      (i[r].l = 1 * new Date()));
+    ((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
+    a.async = 1;
+    a.src = g;
+    m.parentNode.insertBefore(a, m);
+  })(
+    window,
+    document,
+    "script",
+    "//www.google-analytics.com/analytics.js",
+    "ga",
+  );
+
+  ga("create", "", "auto");
+  ga("send", "pageview");
+</script>
+
+</html>
