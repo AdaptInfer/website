@@ -1,0 +1,414 @@
+<!doctype html>
+<html>
+  <head>
+    <head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="content-language" content="en" />
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <title>
+    STAT 453 | Lecture 04: Single-layer networks
+  </title>
+  <meta name="description" content="STAT 453 - University of Wisconsin-Madison - Fall 2026
+" />
+
+  <link
+    rel="shortcut icon"
+    href="/dgm-fall-2026/assets/img/favicon.ico"
+  />
+
+  <link rel="stylesheet" href="/dgm-fall-2026/assets/css/main.css" />
+  <link
+    rel="canonical"
+    href="/dgm-fall-2026/notes/lecture-04/"
+  />
+
+  
+  <!-- Load Latex JS -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+  
+</head>
+
+    <script src="/dgm-fall-2026/assets/js/distillpub/template.v2.js"></script>
+    <script src="/dgm-fall-2026/assets/js/distillpub/transforms.v2.js"></script>
+  </head>
+
+  <d-front-matter>
+    <script type="text/json">
+      {
+            "title": "Lecture 04: Single-layer networks",
+            "description": "From inputs and weights to the perceptron, decision boundaries, the Perceptron Learning Algorithm, and multi-neuron networks.",
+            "published": "September 15, 2026",
+            "lecturers": [
+              
+              {
+                "lecturer": "Ben Lengerich",
+                "lecturerURL": "https://adaptinfer.org"
+              }
+              
+            ],
+            "authors": [
+              
+              {
+                "author": "Joseph Corritone"
+              },
+              
+              {
+                "author": "Abhijeet Beedikar"
+              }
+              
+            ],
+            "editors": [
+              
+              {
+                "editor": "None"
+              }
+              
+            ],
+            "katex": {
+              "delimiters": [
+                {
+                  "left": "$",
+                  "right": "$",
+                  "display": false
+                },
+                {
+                  "left": "$$",
+                  "right": "$$",
+                  "display": true
+                }
+              ]
+            }
+          }
+    </script>
+  </d-front-matter>
+
+  <body>
+    <header class="site-header">
+  <div class="wrapper">
+    <span class="site-title">
+      <a class="page-link" href="https://adaptinfer.org/dgm-fall-2026/"
+        >STAT 453</a
+      >
+    </span>
+
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path
+              fill="#424242"
+              d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
+            />
+            <path
+              fill="#424242"
+              d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
+            />
+            <path
+              fill="#424242"
+              d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
+            />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger">
+        <a class="page-link" href="/dgm-fall-2026/logistics/"
+          >logistics</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/lectures/"
+          >lectures</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/notes/">notes</a>
+        <a class="page-link" href="/dgm-fall-2026/calendar/"
+          >calendar</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/homework/"
+          >homework</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/project/">project</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+      <d-title>
+        <h1>Lecture 04: Single-layer networks</h1>
+        <p>From inputs and weights to the perceptron, decision boundaries, the Perceptron Learning Algorithm, and multi-neuron networks.</p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article> <h2 id="1-todays-roadmap">1. Today’s Roadmap</h2>
+<ul>
+  <li>Terminology &amp; Notations</li>
+  <li>Perceptrons</li>
+  <li>Threshold Functions</li>
+  <li>Perceptron Learning Algorithm</li>
+  <li>Notational Conventions for Neural Networks</li>
+</ul>
+
+<p>A single-layer network combines inputs using weights and bias, applies an activation function, and produces an output. The perceptron creates a linear decision boundary and the Perceptron Learning Algorithm updates the model for misclassifications.</p>
+
+<hr />
+
+<h2 id="2-terminology--notation">2. Terminology &amp; Notation</h2>
+
+<p>A single-layer network takes an input and computes a <strong>net input</strong>, also called the pre-activation or weighted input:</p>
+
+\[z = \sum_{i=0}^{n} w_i x_i.\]
+
+<p>The net input is passed through an activation function to produce the activation:</p>
+
+\[a = a(z).\]
+
+<p>The activation function determines how the neuron transforms its net input. For example, a perceptron uses a threshold function, while linear regression uses the <strong>identity function</strong>. A non-linear activation function such as the sigmoid can be written as $\sigma(z)$.</p>
+
+<p>The predicted label output is then given by</p>
+
+\[\hat{y} = f(a).\]
+
+<p>The <strong>bias</strong> is included as $w_0$, with the corresponding input $x_0 = 1$.</p>
+
+<h2 id="3-perceptrons">3. Perceptrons</h2>
+
+<h3 id="31-continuous-weighting">3.1 Continuous Weighting</h3>
+
+<p>A perceptron combines many inputs using continuous weights before applying an activation function. The weighted inputs are summed to produce the net input, which is then passed through an activation function to determine the output of the perceptron.</p>
+
+\[net = \sum_{i=0}^{n} w_i x_i.\]
+
+<h3 id="32-activation-function">3.2 Activation Function</h3>
+
+<p>The activation function is applied to the net input of the perceptron. Different activation functions result in different outputs.</p>
+
+<p>In Deep Learning, the outputs are continuous and can take multiple values that signify the strength of a signal, which is why the sigmoid function (see below) applied on the activation makes the perceptron DL.</p>
+
+<p>The sigmoid function:</p>
+
+\[\sigma(net) = \frac{1}{1+e^{-net}}.\]
+
+<p>A perceptron with a sigmoid activation function turns it from linear regression to logistic regression. Instead of providing a class defined by a threshold, it gives the probability of something.</p>
+
+<h3 id="33-separation-boundary">3.3 Separation Boundary</h3>
+
+<p>An optimal estimate for a good separation boundary (with parameters θ) can be found using gradient ascent (MLE).</p>
+<ul>
+  <li>MLE: Maximize log likelihood of observing the data given some parameters</li>
+  <li>Gradient ascent: Shift the parameters in the direction of increasing log likelihood.</li>
+</ul>
+
+<h2 id="4-threshold-functions">4. Threshold Functions</h2>
+
+<p>Threshold functions are used for discrete classification models and lead to the classic perceptron. Instead of continuous, the threshold function determines class by whether the net input reaches a threshold.</p>
+
+<h3 id="41-classic-perceptron-limitations">4.1 Classic Perceptron Limitations</h3>
+
+<p>The classic perceptron is a binary linear classifier.</p>
+<ul>
+  <li>It cannot have non-linear decision boundaries.</li>
+  <li>It cannot solve multi-class problems.</li>
+  <li>It contains multiple (often not optimal) solutions so there is no clear single solution.</li>
+  <li>Does not converge if a linearly separable solution does not exist (but is guaranteed to converge otherwise)</li>
+</ul>
+
+<h2 id="5-perceptron-learning-algorithm">5. Perceptron Learning Algorithm</h2>
+
+<h3 id="51-pseudocode">5.1 Pseudocode</h3>
+
+<p>The <strong>Perceptron Learning Algorithm (PLA)</strong> updates weights based on if the perceptron is correct in classifying each training example.</p>
+
+<p>Let the dataset be</p>
+
+\[D = (\langle x^{[1]}, y^{[1]}\rangle, \langle x^{[2]}, y^{[2]}\rangle, \ldots, \langle x^{[n]}, y^{[n]}\rangle) \in (\mathbb{R}^m \times \{0,1\})^n.\]
+
+<p>Initialize the weight vector to zero:</p>
+
+\[\mathbf{w} \leftarrow \mathbf{0}^m.\]
+
+<p>For every training epoch, the algorithm considers each training example $(\mathbf{x}^{[i]},y^{[i]})$.</p>
+
+<p>The predicted label is calculated using the function:</p>
+
+\[\hat{y}^{[i]} = \sigma(\mathbf{x}^{[i]T}\mathbf{w}).\]
+
+<p>The error is calculated as</p>
+
+\[\mathrm{err} = y^{[i]}-\hat{y}^{[i]}.\]
+
+<p>Finally, the weight vector is set to:</p>
+
+\[\mathbf{w} \leftarrow \mathbf{w}+\mathrm{err}\times\mathbf{x}^{[i]}.\]
+
+<h3 id="52-geometric-intuition">5.2 Geometric Intuition</h3>
+
+<p>The weight vector is perpendicular to the decision boundary.</p>
+
+<ul>
+  <li>Decision boundary line: $wx + b = 0$ for some $x$ on the decision boundary.</li>
+  <li>If we take any two points on it and subtract them, we get a line on the decision boundary. So $(wx_1 + b) - (wx_2 + b) = w(x_1-x_2) = 0$</li>
+  <li>The dot product between the weight and the line along the decision boundary can only be 0 if the weight is perpendicular to the decision boundary.</li>
+</ul>
+
+<p>The intuition behind adding $y_i x_i$ to the weight is to rotate the weight vector toward or away from the misclassified point to get the point closer to the decision boundary.</p>
+
+<p>The intuition behind adding $y_i$ to the bias term is to shift the boundary toward the misclassified point in order to send it to the other side of the line.</p>
+
+<p>If this is done for all points, eventually we reach a boundary that satisfies all points if the data is linearly separable.</p>
+
+<h3 id="53-pla-mle--map">5.3 PLA, MLE &amp; MAP</h3>
+
+<p>The perceptron learning algorithm involves neither MLE nor MAP. This is because:</p>
+
+<ul>
+  <li>The perceptron learning algorithm is not a probabilistic model, rather it is deterministic.</li>
+  <li>If a datapoint lies to one side of the decision boundary, it is definitively classified as either -1 or 1. There is no likelihood or priors involved here.</li>
+  <li>It also does not try to maximize any of its parameters. Several suitable decision boundaries can be found by the PLA for some linearly separable data, but it does not try to find the one that’s the most distant from all neighboring points.</li>
+  <li>You cannot optimize over the threshold function because the gradient is either undefined or 0</li>
+</ul>
+
+<h2 id="6-notational-conventions-for-neural-networks">6. Notational Conventions for Neural Networks</h2>
+
+<h3 id="61-single-connected-layer">6.1 Single Connected Layer</h3>
+
+<p>The inputs are weighted differently based on the node that they are feeding into.</p>
+<ul>
+  <li>A scaled set of inputs may need to result in a certain value for the first component of the output and a different value for the second component of the output. Thus, even though the same inputs may feed into the same activations, the weight vector applied at each neuron may be different.</li>
+</ul>
+
+<p>Example:</p>
+<ul>
+  <li>Assume Input = $[3,4]$ and expected output = $[4,3]$</li>
+  <li>Same weighting would cause Input $[3,4]$, Output $[4,4]$</li>
+</ul>
+
+<p>A fully connected layer converts the outputted activation as inputs to the next layer of neurons having their own associated weights and activations.</p>
+
+<h2 id="7-summary">7. Summary</h2>
+
+<ul>
+  <li><strong>Terminology &amp; Notation</strong>: Single-layer networks combine inputs with weights and bias, then apply an activation function.</li>
+  <li><strong>Perceptrons</strong>: Perceptrons use continuous weighting and activation functions to produce outputs and define a separation boundary.</li>
+  <li><strong>Threshold Functions</strong>: The classic perceptron uses a threshold function for binary classification and is limited to linear decision boundaries.</li>
+  <li><strong>Perceptron Learning Algorithm</strong>: The PLA updates the weights and bias based on misclassified points and converges when the data is linearly separable.</li>
+  <li><strong>Notational Conventions for Neural Networks</strong>: Multiple neurons can apply different weights to the same inputs, and fully connected layers pass activations to the next layer.</li>
+</ul>
+ </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+    </div>
+
+    <footer class="site-footer">
+  <div class="wrapper">
+    <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Ben Lengerich</li><li>
+            <a class="u-email" href="mailto:lengerich@wisc.edu"
+              >lengerich@wisc.edu</a
+            >
+          </li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li>
+    <a
+      href="https://github.com/AdaptInfer"
+      target="_blank"
+      ><i class="fab fa-github"></i>
+      <span class="username">AdaptInfer</span></a
+    >
+  </li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>
+          &copy; Copyright 2026 University of Wisconsin.
+          <br />
+          
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  </body>
+
+  <d-bibliography
+    src="/dgm-fall-2026/assets/bibliography/2026-09-15-lecture-04.bib"
+  >
+  </d-bibliography>
+
+  <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/dgm-fall-2026/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link
+  rel="stylesheet"
+  href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css"
+/>
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+<script src="/dgm-fall-2026/assets/js/katex.js"></script>
+ 
+<!-- Load Anchor JS -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+<script>
+  anchors.options.visible = "hover";
+  anchors.add("article h2, article h3, article h4, article h5, article h6");
+</script>
+ 
+<!-- Adjust LaTeX JS -->
+<script src="/dgm-fall-2026/assets/js/latex.js"></script>
+
+
+<!-- Include custom icon fonts -->
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2026/assets/css/fontawesome-all.min.css"
+/>
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2026/assets/css/academicons.min.css"
+/>
+
+<!-- Google Analytics -->
+<script>
+  (function (i, s, o, g, r, a, m) {
+    i["GoogleAnalyticsObject"] = r;
+    ((i[r] =
+      i[r] ||
+      function () {
+        (i[r].q = i[r].q || []).push(arguments);
+      }),
+      (i[r].l = 1 * new Date()));
+    ((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
+    a.async = 1;
+    a.src = g;
+    m.parentNode.insertBefore(a, m);
+  })(
+    window,
+    document,
+    "script",
+    "//www.google-analytics.com/analytics.js",
+    "ga",
+  );
+
+  ga("create", "", "auto");
+  ga("send", "pageview");
+</script>
+
+</html>

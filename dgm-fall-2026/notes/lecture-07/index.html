@@ -1,0 +1,955 @@
+<!doctype html>
+<html>
+  <head>
+    <head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="content-language" content="en" />
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <title>
+    STAT 453 | Lecture 07: Multi-layer Perceptrons and Backpropagation
+  </title>
+  <meta name="description" content="STAT 453 - University of Wisconsin-Madison - Fall 2026
+" />
+
+  <link
+    rel="shortcut icon"
+    href="/dgm-fall-2026/assets/img/favicon.ico"
+  />
+
+  <link rel="stylesheet" href="/dgm-fall-2026/assets/css/main.css" />
+  <link
+    rel="canonical"
+    href="/dgm-fall-2026/notes/lecture-07/"
+  />
+
+  
+  <!-- Load Latex JS -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+  
+</head>
+
+    <script src="/dgm-fall-2026/assets/js/distillpub/template.v2.js"></script>
+    <script src="/dgm-fall-2026/assets/js/distillpub/transforms.v2.js"></script>
+  </head>
+
+  <d-front-matter>
+    <script type="text/json">
+      {
+            "title": "Lecture 07: Multi-layer Perceptrons and Backpropagation",
+            "description": "From binary to multi-class classification with softmax, stacking fully-connected layers into a multi-layer perceptron, the nonlinear activations that finally solve XOR, and backpropagation in matrix form.",
+            "published": "September 24, 2026",
+            "lecturers": [
+              
+              {
+                "lecturer": "Ben Lengerich",
+                "lecturerURL": "https://lengerichlab.github.io/"
+              }
+              
+            ],
+            "authors": [
+              
+              {
+                "author": "Ruoshi Zhang"
+              },
+              
+              {
+                "author": "Tony Duan"
+              },
+              
+              {
+                "author": "Dharini Venkatesan"
+              }
+              
+            ],
+            "editors": [
+              
+              {
+                "editor": "None"
+              }
+              
+            ],
+            "katex": {
+              "delimiters": [
+                {
+                  "left": "$",
+                  "right": "$",
+                  "display": false
+                },
+                {
+                  "left": "$$",
+                  "right": "$$",
+                  "display": true
+                }
+              ]
+            }
+          }
+    </script>
+  </d-front-matter>
+
+  <body>
+    <header class="site-header">
+  <div class="wrapper">
+    <span class="site-title">
+      <a class="page-link" href="https://adaptinfer.org/dgm-fall-2026/"
+        >STAT 453</a
+      >
+    </span>
+
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path
+              fill="#424242"
+              d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
+            />
+            <path
+              fill="#424242"
+              d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
+            />
+            <path
+              fill="#424242"
+              d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
+            />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger">
+        <a class="page-link" href="/dgm-fall-2026/logistics/"
+          >logistics</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/lectures/"
+          >lectures</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/notes/">notes</a>
+        <a class="page-link" href="/dgm-fall-2026/calendar/"
+          >calendar</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/homework/"
+          >homework</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/project/">project</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+      <d-title>
+        <h1>Lecture 07: Multi-layer Perceptrons and Backpropagation</h1>
+        <p>From binary to multi-class classification with softmax, stacking fully-connected layers into a multi-layer perceptron, the nonlinear activations that finally solve XOR, and backpropagation in matrix form.</p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article> <h2 id="section-1-from-binary-to-multi-class-classification">Section 1: From Binary to Multi-Class Classification</h2>
+
+<h3 id="moving-from-two-classes-to-k-classes">Moving from Two Classes to K Classes</h3>
+
+<p><strong>Binary classification (2 categories).</strong> When deciding between just two things — “spam”
+or “not spam” — we use the sigmoid, which squashes the network’s output into a
+probability between 0 and 1. This is the setup from Lecture 6:</p>
+
+<d-math block="">
+y \mid x \sim \mathrm{Bernoulli}(\hat{y}), \qquad \hat{y} = \sigma(z).
+</d-math>
+
+<p><strong>Multi-class classification (K categories).</strong> With multiple categories, the model
+outputs a raw, unnormalized score — a <strong>logit</strong> — for every category, and the label
+follows a categorical distribution:</p>
+
+<d-math block="">
+y \mid x \sim \mathrm{Categorical}(\hat{y}_1, \dots, \hat{y}_K),
+\qquad \text{one logit } z_k \text{ per class}.
+</d-math>
+
+<h3 id="the-softmax-function">The Softmax Function</h3>
+
+<p>We need a way to turn those raw scores into probabilities. Softmax is a fixed
+mathematical rule — it has no trainable parameters, so it does not “learn” — that makes
+every score positive with an exponential and divides by the total, so the outputs lie
+between 0 and 1 and sum to exactly 1:</p>
+
+<d-math block="">
+\hat{y}_k = \mathrm{softmax}(z)_k = \frac{\exp(z_k)}{\sum_j \exp(z_j)}.
+</d-math>
+
+<p>The sigmoid is exactly the <d-math>K = 2</d-math> special case of softmax, so nothing from Lecture 6 is
+being discarded — it is being generalized.</p>
+
+<h3 id="from-likelihood-to-cross-entropy-loss">From Likelihood to Cross-Entropy Loss</h3>
+
+<p><strong>Likelihood.</strong> This measures the probability the model assigned to the correct answer.
+When the label is a one-hot vector such as <d-math>[0, 1, 0]</d-math>, the likelihood is just the
+predicted score in the correct slot:</p>
+
+<d-math block="">
+P(y \mid x) = \prod_k \hat{y}_k^{\,y_k} = \hat{y}_{\text{true class}}.
+</d-math>
+
+<p>Taking logs turns that product into a sum:</p>
+
+<d-math block="">
+\log P(y \mid x) = \sum_k y_k \log \hat{y}_k.
+</d-math>
+
+<p><strong>Cross-entropy loss.</strong> To train the model we want a loss that goes <em>down</em> as the model
+gets better, so we take the negative log-likelihood:</p>
+
+<d-math block="">
+L = -\sum_k y_k \log \hat{y}_k.
+</d-math>
+
+<p>This is the categorical cross-entropy, and it is the same recipe as Lecture 6 with more
+classes. In PyTorch, <code class="language-plaintext highlighter-rouge">nn.CrossEntropyLoss</code> takes the raw logits directly, just as
+<code class="language-plaintext highlighter-rouge">BCEWithLogitsLoss</code> did — the softmax is applied internally for numerical stability, so
+you should <em>not</em> apply it yourself first.</p>
+
+<h3 id="the-gradient-same-pattern-more-classes">The Gradient: Same Pattern, More Classes</h3>
+
+<p>To fix its errors, the network needs to know how to adjust its raw scores. Softmax
+combined with cross-entropy has a simple closed-form gradient, elementwise in <d-math>k</d-math> with <d-math>y</d-math> one-hot:</p>
+
+<d-math block="">
+\frac{\partial L}{\partial z_k} = \hat{y}_k - y_k,
+\qquad \text{that is} \qquad
+\frac{\partial L}{\partial z} = \mathrm{softmax}(z) - \mathrm{onehot}(y).
+</d-math>
+
+<p>This is the same <d-math>\hat{y} - y</d-math> pattern as the binary case, reached by the same
+derivation strategy: the chain rule through softmax’s own derivative. Section 4 shows
+that this expression is exactly the starting point <d-math>\delta^{(L)}</d-math> of the backward pass.</p>
+
+<h2 id="section-2-multi-layer-perceptron-architecture">Section 2: Multi-layer Perceptron Architecture</h2>
+
+<h3 id="stacking-fully-connected-layers">Stacking Fully-Connected Layers</h3>
+
+<p>An MLP is a computation graph built from multiple fully-connected layers, and as the
+lecture puts it, there is “nothing new, really” in the individual pieces: each layer is
+the same affine map followed by an activation that we have seen since Lecture 4. What is
+new is that the output of one layer becomes the input of the next.</p>
+
+<p>If a network only uses straight-line math, it cannot solve complex, overlapping patterns
+such as the famous XOR problem. We must introduce bends and curves into the math using
+nonlinear activation functions such as ReLU — which is what Section 3 takes up in detail.</p>
+
+<h3 id="counting-the-trainable-parameters">Counting the Trainable Parameters</h3>
+
+<p>A question worth answering carefully, because it recurs every time you design a network:
+how many trainable parameters does an MLP actually have? For a fully-connected layer
+mapping <d-math>n_{\text{in}}</d-math> units to <d-math>n_{\text{out}}</d-math> units, the count is <d-math>n_{\text{in}} \times n_{\text{out}}</d-math> weights plus <d-math>n_{\text{out}}</d-math> biases.</p>
+
+<figure id="figure-mlp-parameters" class="l-body-outset">
+  <div class="row">
+    <div class="col three">
+      <img src="/dgm-fall-2026/assets/img/notes/lecture-07/figure2-mlp-parameters.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Counting parameters in the lecture's network.</strong>
+    Two inputs feed a hidden layer of five units, then a hidden layer of four, then three
+    outputs. Each layer contributes its weight matrix plus one bias per receiving unit.
+  </figcaption>
+</figure>
+
+<p>Applying that rule layer by layer to the network above:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Layer</th>
+      <th>Weights</th>
+      <th>Biases</th>
+      <th>Total</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Layer 1 (<d-math>2 \to 5</d-math>)</td>
+      <td><d-math>2 \times 5 = 10</d-math></td>
+      <td>5</td>
+      <td>15</td>
+    </tr>
+    <tr>
+      <td>Layer 2 (<d-math>5 \to 4</d-math>)</td>
+      <td><d-math>5 \times 4 = 20</d-math></td>
+      <td>4</td>
+      <td>24</td>
+    </tr>
+    <tr>
+      <td>Layer 3 (<d-math>4 \to 3</d-math>)</td>
+      <td><d-math>4 \times 3 = 12</d-math></td>
+      <td>3</td>
+      <td>15</td>
+    </tr>
+    <tr>
+      <td><strong>Total</strong></td>
+      <td><strong>42</strong></td>
+      <td><strong>12</strong></td>
+      <td><strong>54</strong></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>So the network has 54 trainable parameters. Note also that because the three outputs are
+mutually exclusive classes, this is a multi-class problem and the output layer uses the
+softmax of Section 1.</p>
+
+<h3 id="updating-the-early-layers">Updating the Early Layers</h3>
+
+<p>Counting parameters raises the obvious follow-up: how does a weight in the <em>first</em> layer
+get updated, when it only affects the loss indirectly? The network has to account for
+every path along which that weight influences the final prediction, multiplying the local
+derivatives backward through the network with the chain rule and summing over paths.
+Section 4 makes that statement precise and shows that “sum over paths” is exactly a
+matrix multiplication.</p>
+
+<h2 id="section-3-nonlinear-activation-functions">Section 3: Nonlinear Activation Functions</h2>
+
+<h3 id="why-stacking-layers-is-not-enough">Why Stacking Layers Is Not Enough</h3>
+
+<p>Section 2 stacked fully-connected layers into a computation graph, but stacking alone
+buys us nothing. Consider two linear layers with no activation between them:</p>
+
+<d-math block="">
+\begin{aligned}
+z_2 &amp;= W_2 (W_1 x + b_1) + b_2 \\[4pt]
+    &amp;= (W_2 W_1) x + (W_2 b_1 + b_2) \\[4pt]
+    &amp;= \tilde{W} x + \tilde{b}.
+\end{aligned}
+</d-math>
+
+<p>The composition collapses back into a single linear map. A hundred such layers is still
+one linear layer with a more expensive parameterization, so the decision boundary is
+still a single hyperplane — exactly the limitation that the perceptron ran into.</p>
+
+<p>XOR makes the failure concrete. The four clusters alternate labels along both axes, so
+no single line separates them. Training a one-hidden-layer MLP with the identity
+activation produces exactly one straight boundary and misclassifies half the data.
+Swapping the identity for ReLU on the <em>same</em> architecture produces a piecewise-linear
+boundary that bends around the clusters and separates them. The nonlinearity, not the
+depth, is what buys the expressiveness.<d-cite key="lengerich2026"></d-cite></p>
+
+<h3 id="a-selection-of-common-activations">A Selection of Common Activations</h3>
+
+<p>The classical choices are the <strong>identity</strong>, the <strong>logistic sigmoid</strong>, <strong>tanh</strong>, and
+<strong>hard tanh</strong>:</p>
+
+<d-math block="">
+\begin{aligned}
+\sigma(z) &amp;= \frac{1}{1 + e^{-z}}, \\[6pt]
+\tanh(z) &amp;= \frac{\exp(z) - \exp(-z)}{\exp(z) + \exp(-z)}, \\[6pt]
+\mathrm{HardTanh}(z) &amp;= \begin{cases}
+1 &amp; \text{if } z &gt; 1\\
+-1 &amp; \text{if } z &lt; -1\\
+z &amp; \text{otherwise.}
+\end{cases}
+\end{aligned}
+</d-math>
+
+<p>The modern rectifier family replaces saturation on the positive side with a straight
+line:</p>
+
+<d-math block="">
+\begin{aligned}
+\mathrm{ReLU}(z) &amp;= \max(0, z), \\[4pt]
+\mathrm{LeakyReLU}(z) &amp;= \max(0, z) + \alpha \min(0, z), \\[4pt]
+\mathrm{ELU}(z) &amp;= \max(0, z) + \min\big(0, \alpha (e^{z} - 1)\big).
+\end{aligned}
+</d-math>
+
+<p>Leaky ReLU fixes <d-math>\alpha</d-math> (the slides use <d-math>\alpha = 0.025</d-math>); <strong>PReLU</strong> is the same
+formula with <d-math>\alpha</d-math> promoted to a trainable parameter, learned by gradient descent
+alongside the weights.</p>
+
+<figure id="figure-activations" class="l-body-outset">
+  <div class="row">
+    <div class="col three">
+      <img src="/dgm-fall-2026/assets/img/notes/lecture-07/figure1-activations.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Activations and their derivatives.</strong>
+    The top row plots five common activation functions; the bottom row plots their
+    derivatives, which are the factors that backpropagation multiplies together. The
+    sigmoid's derivative never exceeds 0.25 and decays to zero in both tails, while the
+    rectifier family passes a derivative of exactly 1 on the positive side.
+  </figcaption>
+</figure>
+
+<h3 id="why-tanh-is-usually-preferred-over-sigmoid">Why Tanh Is Usually Preferred Over Sigmoid</h3>
+
+<p>Tanh has three advantages over the logistic sigmoid:</p>
+
+<ol>
+  <li><strong>Mean centering.</strong> Tanh is centered at zero, while the sigmoid outputs live in
+    <d-math>(0, 1)</d-math>
+    <p>and so carry a positive bias into the next layer.</p>
+  </li>
+  <li><strong>Positive and negative values.</strong> A unit can push the next layer in either
+direction.</li>
+  <li><strong>Larger gradients.</strong> <d-math>\tanh'(0) = 1</d-math> against <d-math>\sigma'(0) = 0.25</d-math>, so the signal
+that survives a backward pass through a tanh layer is up to four times stronger.</li>
+</ol>
+
+<p>Tanh also has a convenient derivative, expressible in terms of its own output:</p>
+
+<d-math block="">
+\frac{d}{dz}\tanh(z) = 1 - \tanh(z)^2.
+</d-math>
+
+<p>These advantages only pay off if the unit actually operates near zero, where the
+derivative is largest. That is why it matters to <strong>normalize inputs to mean zero</strong> and
+to use <strong>random weight initialization centered at zero</strong>: both keep pre-activations in
+the high-gradient region instead of the flat tails.</p>
+
+<p>The bottom row of the figure above also previews the gradient-flow problem that
+Section 4 makes precise. Backpropagation multiplies one activation derivative per layer,
+and <d-math>\sigma' \le 0.25</d-math> everywhere, so a deep stack of sigmoids shrinks the gradient
+exponentially with depth. ReLU’s derivative of exactly 1 on the positive side is the
+main reason rectifiers replaced saturating activations in deep networks.</p>
+
+<h3 id="the-price-the-loss-is-no-longer-convex">The Price: The Loss Is No Longer Convex</h3>
+
+<p>Every model in the course so far — linear regression, Adaline, logistic regression,
+softmax regression — has a convex loss, so gradient descent converges to <em>the</em> global
+minimum regardless of where it starts. Once nonlinear activations are inserted between
+layers, that guarantee is gone: the deep loss is non-convex almost
+always.<d-cite key="goodfellow2016"></d-cite></p>
+
+<p>The practical consequence is a loss of reproducibility that surprises people the first
+time they see it. Repeat the same training run, changing only the random seed for weight
+initialization or the shuffling of the dataset, and you land in a <em>different</em> local
+minimum with different final weights. Visualizations of deep loss surfaces show a
+landscape of ridges, valleys and basins rather than a single
+bowl.<d-cite key="li2018"></d-cite></p>
+
+<p>This is less alarming than it sounds. As LeCun argued in “Who’s Afraid of Non-Convex
+Loss Functions?”, convexity is overrated: choosing a suitable architecture matters more
+than insisting on a convex objective, particularly when convexity restricts you to
+architectures that cannot express the problem in the first place. Even for shallow
+convex models such as SVMs, swapping in a non-convex loss can improve both accuracy and
+speed.<d-cite key="lecun2007"></d-cite> In practice, different local minima of a deep
+network often achieve comparable loss, so we trade a uniqueness guarantee we cannot have
+for expressiveness we need.</p>
+
+<h3 id="why-we-initialize-randomly-breaking-symmetry">Why We Initialize Randomly: Breaking Symmetry</h3>
+
+<p>A natural question at this point: what happens if we initialize an MLP to all-zero
+weights?</p>
+
+<p>The answer is that <strong>the units stay symmetric forever.</strong> If every unit in a hidden layer
+starts with identical weights, every unit computes the same pre-activation, receives the
+same gradient in the backward pass, and therefore applies the same update. A layer of <d-math>n</d-math> identical units is only as expressive as a layer with one unit, and no amount of
+training breaks the tie, because the update rule itself is symmetric in the units.</p>
+
+<p>This is exactly why we initialize randomly: random initialization breaks the symmetry so
+that different units can specialize on different features. Note the contrast with the
+perceptron of Lecture 4, where all-zero initialization was perfectly fine — a single
+unit has no siblings to be symmetric with. Combined with the requirement above that
+weights stay centered at zero, the constraints on initialization are becoming specific
+enough to deserve their own treatment, which is where principled schemes such as Xavier
+and He initialization come in later in the course.</p>
+
+<h2 id="section-4-backpropagation">Section 4: Backpropagation</h2>
+
+<p>Having introduced multilayer perceptrons and their activation functions, we now consider
+how to learn their parameters. Training requires the gradient of the loss with respect to
+every weight and bias. Backpropagation computes these gradients by applying the chain
+rule backward through the network — the algorithm Rumelhart, Hinton and Williams
+introduced for learning internal representations.<d-cite key="rumelhart1986"></d-cite>
+This section covers the matrix formulation, the XOR example, and gradient
+flow.<d-cite key="lengerich2026"></d-cite></p>
+
+<h3 id="notation-and-the-forward-pass">Notation and the Forward Pass</h3>
+
+<p>Consider a network with <d-math>L</d-math> parameterized layers. For a single example, let <d-math>a^{(0)} = x</d-math>
+and write</p>
+
+<d-math block="">
+z^{(l)} = W^{(l)} a^{(l-1)} + b^{(l)}, \qquad a^{(l)} = \phi_l\left(z^{(l)}\right).
+</d-math>
+
+<p>We use column vectors throughout. If layer <d-math>l</d-math> has <d-math>n_l</d-math> units, then <d-math>W^{(l)} \in \mathbb{R}^{n_l \times n_{l-1}}</d-math>, while <d-math>z^{(l)}</d-math>, <d-math>a^{(l)}</d-math> and <d-math>b^{(l)}</d-math>
+have length <d-math>n_l</d-math>.</p>
+
+<p>During the forward pass we compute the prediction <d-math>\hat{y} = a^{(L)}</d-math> and the scalar loss <d-math>L(\hat{y}, y)</d-math>. We retain the intermediate activations and pre-activations for the later
+backward pass.</p>
+
+<h3 id="propagating-the-loss-gradient-backward">Propagating the Loss Gradient Backward</h3>
+
+<p>Let <d-math>\delta^{(l)}</d-math> denote the gradient of the loss with respect to the pre-activation <d-math>z^{(l)}</d-math>:</p>
+
+<d-math block="">
+\delta^{(l)} = \frac{\partial L}{\partial z^{(l)}}.
+</d-math>
+
+<p>Using the forward equation, each downstream pre-activation is</p>
+
+<d-math block="">
+z_j^{(l+1)} = \sum_i W_{ji}^{(l+1)} a_i^{(l)} + b_j^{(l+1)}.
+</d-math>
+
+<p>Applying the chain rule and summing over every downstream unit the activation reaches,</p>
+
+<d-math block="">
+\frac{\partial L}{\partial a_i^{(l)}}
+= \sum_j \frac{\partial L}{\partial z_j^{(l+1)}}
+         \frac{\partial z_j^{(l+1)}}{\partial a_i^{(l)}}
+= \sum_j W_{ji}^{(l+1)} \delta_j^{(l+1)}.
+</d-math>
+
+<p>This sum over downstream units is precisely a matrix-vector product. Applying the local
+activation derivative yields</p>
+
+<d-math block="">
+\delta^{(l)} = \left[\left(W^{(l+1)}\right)^{\top} \delta^{(l+1)}\right]
+               \odot \phi_l'\left(z^{(l)}\right).
+</d-math>
+
+<p>Here <d-math>\odot</d-math> denotes elementwise multiplication. The dimensions must agree: an <d-math>n_l \times n_{l+1}</d-math> matrix multiplies a vector of length <d-math>n_{l+1}</d-math> to produce a vector of
+length <d-math>n_l</d-math>.</p>
+
+<h3 id="gradients-of-weights-and-biases">Gradients of Weights and Biases</h3>
+
+<p>Within a layer, <d-math>\partial z_i^{(l)} / \partial W_{ij}^{(l)} = a_j^{(l-1)}</d-math>, so the chain
+rule gives</p>
+
+<d-math block="">
+\frac{\partial L}{\partial W_{ij}^{(l)}} = \delta_i^{(l)} a_j^{(l-1)}.
+</d-math>
+
+<p>Collecting these entries gives an outer product:</p>
+
+<d-math block="">
+\begin{aligned}
+\frac{\partial L}{\partial W^{(l)}} &amp;= \delta^{(l)} \left(a^{(l-1)}\right)^{\top}, \\[4pt]
+\frac{\partial L}{\partial b^{(l)}} &amp;= \delta^{(l)}.
+\end{aligned}
+</d-math>
+
+<p>Each weight gradient combines the signal arriving along that connection with the loss
+sensitivity of the receiving unit. The resulting matrix has the same shape as <d-math>W^{(l)}</d-math>.</p>
+
+<h3 id="starting-at-the-output-layer">Starting at the Output Layer</h3>
+
+<p>Assume a binary classification task with a sigmoid output and binary cross-entropy:</p>
+
+<d-math block="">
+\hat{y} = \sigma\left(z^{(L)}\right), \qquad
+L = -y \log \hat{y} - (1 - y) \log (1 - \hat{y}).
+</d-math>
+
+<p>Since <d-math>\sigma'(z) = \sigma(z)\left(1 - \sigma(z)\right)</d-math>, the chain rule simplifies the
+output delta to</p>
+
+<d-math block="">
+\delta^{(L)} = \left(-\frac{y}{\hat{y}} + \frac{1-y}{1-\hat{y}}\right)
+               \hat{y}\left(1 - \hat{y}\right) = \hat{y} - y.
+</d-math>
+
+<p>The same delta holds not only for sigmoid with BCE, but also for softmax with categorical
+cross-entropy, which is the closed form Section 1 arrived at from the categorical
+likelihood.</p>
+
+<h3 id="a-worked-example-forward-and-backward-passes-on-xor">A Worked Example: Forward and Backward Passes on XOR</h3>
+
+<p>Consider the network</p>
+
+<d-math block="">
+x \in \mathbb{R}^2 \;\to\; \left[\mathrm{Linear}(2,2),\ \mathrm{ReLU}\right]
+\;\to\; h \in \mathbb{R}^2 \;\to\;
+\left[\mathrm{Linear}(2,1),\ \mathrm{sigmoid}\right] \;\to\; \hat{y} \in (0,1),
+</d-math>
+
+<p>evaluated with binary cross-entropy. Its parameters and the selected training example are</p>
+
+<d-math block="">
+\begin{aligned}
+W^{(1)} &amp;= \begin{bmatrix} 1 &amp; 1 \\ 1 &amp; 1 \end{bmatrix}, &amp;
+b^{(1)} &amp;= \begin{bmatrix} 0 \\ -1 \end{bmatrix}, \\[4pt]
+W^{(2)} &amp;= \begin{bmatrix} 1 &amp; -2 \end{bmatrix}, &amp;
+b^{(2)} &amp;= -0.5, \\[4pt]
+x &amp;= \begin{bmatrix} 1 \\ 0 \end{bmatrix}, &amp; y &amp;= 1.
+\end{aligned}
+</d-math>
+
+<p>The target is one because exactly one input bit is one. We carry extra decimal places to
+keep the intermediate values consistent.</p>
+
+<p><strong>Forward pass.</strong> The hidden pre-activations and activations are</p>
+
+<d-math block="">
+z^{(1)} = W^{(1)} x + b^{(1)} = \begin{bmatrix} 1 \\ 0 \end{bmatrix}, \qquad
+h = \mathrm{ReLU}\left(z^{(1)}\right) = \begin{bmatrix} 1 \\ 0 \end{bmatrix}.
+</d-math>
+
+<p>Consequently,</p>
+
+<d-math block="">
+z^{(2)} = W^{(2)} h + b^{(2)} = 1(1) - 2(0) - 0.5 = 0.5,
+</d-math>
+
+<d-math block="">
+\hat{y} = \sigma(0.5) \approx 0.622459, \qquad L = -\log \hat{y} \approx 0.474077.
+</d-math>
+
+<p><strong>Backward pass.</strong> At the output,</p>
+
+<d-math block="">
+\delta^{(2)} = \hat{y} - y \approx -0.377541,
+</d-math>
+
+<p>so the output-layer gradients are</p>
+
+<d-math block="">
+\begin{aligned}
+\frac{\partial L}{\partial W^{(2)}} &amp;= \delta^{(2)} h^{\top}
+  \approx \begin{bmatrix} -0.377541 &amp; 0 \end{bmatrix}, \\[4pt]
+\frac{\partial L}{\partial b^{(2)}} &amp;\approx -0.377541.
+\end{aligned}
+</d-math>
+
+<p>Next, propagate through the output weights:</p>
+
+<d-math block="">
+\frac{\partial L}{\partial h}
+= \frac{\partial L}{\partial z^{(2)}} \frac{\partial z^{(2)}}{\partial h}
+= \left(W^{(2)}\right)^{\top} \delta^{(2)}
+\approx \begin{bmatrix} -0.377541 \\ 0.755081 \end{bmatrix}.
+</d-math>
+
+<p>For ReLU the derivative is one at positive inputs and zero at negative inputs, so the
+activation mask is <d-math>(1, 0)^{\top}</d-math>, giving</p>
+
+<d-math block="">
+\delta^{(1)} = \frac{\partial L}{\partial z^{(1)}}
+= \frac{\partial L}{\partial h} \odot \begin{bmatrix} 1 \\ 0 \end{bmatrix}
+\approx \begin{bmatrix} -0.377541 \\ 0 \end{bmatrix}.
+</d-math>
+
+<p>Finally,</p>
+
+<d-math block="">
+\begin{aligned}
+\frac{\partial L}{\partial W^{(1)}} &amp;= \delta^{(1)} x^{\top}
+  \approx \begin{bmatrix} -0.377541 &amp; 0 \\ 0 &amp; 0 \end{bmatrix}, \\[4pt]
+\frac{\partial L}{\partial b^{(1)}}
+  &amp;\approx \begin{bmatrix} -0.377541 \\ 0 \end{bmatrix}.
+\end{aligned}
+</d-math>
+
+<p>There are two distinct reasons for zero weight gradients here. The second input is zero,
+so all gradients in the second column of <d-math>W^{(1)}</d-math> vanish for this example. Separately,
+the second hidden unit’s ReLU mask is zero, so its incoming weights and bias also receive
+zero gradient, and its outgoing weight receives zero gradient because its activation is
+zero.</p>
+
+<h3 id="why-depth-makes-gradients-fragile">Why Depth Makes Gradients Fragile</h3>
+
+<p>Because backpropagation relies on the chain rule, the gradient reaching the first layer
+depends on the product of the local derivatives of every layer that follows:</p>
+
+<d-math block="">
+\frac{\partial L}{\partial z^{(1)}}
+= \frac{\partial L}{\partial z^{(L)}}
+  \frac{\partial z^{(L)}}{\partial z^{(L-1)}} \cdots
+  \frac{\partial z^{(2)}}{\partial z^{(1)}}.
+</d-math>
+
+<p>Each factor describes how one layer’s pre-activation changes with the preceding layer’s,
+including the effect of both the weights and the activation function. To reach an early
+layer, the gradient must pass through all of them.</p>
+
+<p>This is where the problem arises. Repeated multiplication by small factors makes
+gradients in early layers extremely small — the <strong>vanishing-gradient</strong> problem — and
+repeated multiplication by large factors makes them very large — the
+<strong>exploding-gradient</strong> problem. For intuition, a scalar factor of <d-math>0.5</d-math> repeated twenty
+times gives about <d-math>9.5 \times 10^{-7}</d-math>, whereas <d-math>2</d-math> repeated twenty times gives about <d-math>1.05 \times 10^{6}</d-math>.</p>
+
+<p>The activation derivatives plotted in Section 3 explain part of this sensitivity:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Activation</th>
+      <th>Derivative</th>
+      <th>Implication for gradient flow</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Sigmoid</td>
+      <td><d-math>\sigma(z)(1-\sigma(z)) \le 1/4</d-math></td>
+      <td>Can strongly attenuate gradients, especially in saturation.</td>
+    </tr>
+    <tr>
+      <td>Tanh</td>
+      <td><d-math>1 - \tanh^2(z) \le 1</d-math></td>
+      <td>Has derivative one at zero, but still saturates at large magnitudes.</td>
+    </tr>
+    <tr>
+      <td>ReLU</td>
+      <td>One for <d-math>z &gt; 0</d-math>, zero for <d-math>z &lt; 0</d-math></td>
+      <td>Preserves the local gradient on its active branch and blocks it on its inactive branch.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Activation derivatives are only part of the product, though: the weight matrices affect
+both its magnitude and its direction. ReLU therefore does not guarantee stable gradients,
+and tanh does not eliminate vanishing gradients. This motivates the later study of
+initialization and normalization.</p>
+
+<h2 id="section-5-practical-considerations-for-training-mlps">Section 5: Practical Considerations for Training MLPs</h2>
+
+<h3 id="reading-training-and-validation-curves">Reading Training and Validation Curves</h3>
+
+<p>Checking the training and test loss or error is a simple and useful diagnosis. The curves
+carry a lot of information, especially about overfitting and underfitting. A validation
+plateau, or an error that starts increasing, is a sign of overfitting. Minibatch losses
+are noisy, so averaging or smoothing can reveal the underlying trend. The curves also say
+something about the learning rate: if it is too high, the error tends to oscillate.</p>
+
+<p>One caveat worth knowing about is <strong>grokking</strong>: on some small algorithmic tasks, strong
+generalization emerges long after the training data have been
+fit.<d-cite key="power2022"></d-cite> This is an example of delayed validation
+improvement, not a guarantee that every stalled model will improve if trained longer.</p>
+
+<h3 id="parameters-versus-hyperparameters">Parameters versus Hyperparameters</h3>
+
+<p>Parameters are learned from training data through optimization; in the MLP considered
+here they are the entries of the weight matrices and bias vectors. Hyperparameters
+specify the model or the training procedure and are chosen by the practitioner.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Learned parameters</th>
+      <th>Model and training choices</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Weights and biases</td>
+      <td>Hidden-layer count and width; activation and loss functions</td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td>Learning rate, schedule, optimizer, minibatch size, and epoch budget</td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td>Initialization, input normalization, random seed, and regularization settings</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="underfitting-overfitting-and-model-capacity">Underfitting, Overfitting, and Model Capacity</h3>
+
+<p>A low training error is not always a positive signal. Limited capacity prevents a good
+fit to the training data; increasing capacity lowers training error, but excessive
+capacity may increase generalization error, which is usually estimated with test-set
+error. The result is a gap between fitting observed examples and predicting unseen ones:
+as training error falls, the model improves on data it has seen, but that improvement is
+not guaranteed to transfer.</p>
+
+<h3 id="a-practical-training-routine">A Practical Training Routine</h3>
+
+<p>Before a long run, check input values, label encoding, tensor shapes, and whether the
+output is compatible with the loss. Record the configuration and the seed, log loss and
+accuracy, and measure epoch times. If the loss behaves unexpectedly, inspect the setup
+before spending more computation. Change one hyperparameter at a time when diagnosing a
+problem, and repeat promising comparisons across runs.</p>
+
+<p>The lecture summarizes each minibatch update as four steps:</p>
+
+<ol>
+  <li>Clear previously accumulated parameter gradients (<code class="language-plaintext highlighter-rouge">zero_grad()</code>).</li>
+  <li>Run the forward pass and compute the loss.</li>
+  <li>Compute gradients with backpropagation (<code class="language-plaintext highlighter-rouge">backward()</code>).</li>
+  <li>Apply the optimizer update (<code class="language-plaintext highlighter-rouge">step()</code>).</li>
+</ol>
+
+<p>Keeping these roles separate makes debugging easier: the forward pass determines the
+prediction, the backward pass computes sensitivities, and the optimizer changes the
+parameters.</p>
+
+<h3 id="why-deep-instead-of-merely-wide">Why Deep Instead of Merely Wide?</h3>
+
+<p>A classical universal approximation result states that a network with one hidden layer
+and a suitable activation can approximate any continuous function on a compact domain
+arbitrarily well, given sufficient width. Cybenko established such a result for
+continuous sigmoidal activations<d-cite key="cybenko1989"></d-cite>, and related
+approximation bounds were developed by Barron and by
+Csáji.<d-cite key="barron1993"></d-cite><d-cite key="csaji2001"></d-cite> But these
+theorems only say that such a network <em>exists</em>; they do not say that the required width
+is practical.</p>
+
+<p>Depth offers a different route: expressing a function as a composition of simpler
+transformations. Connected layers reuse intermediate features, so the same expressiveness
+can be reached with fewer parameters, and earlier features become the inputs from which
+later ones are built. That composition also acts as a kind of regularization, since later
+layers are constrained by the behavior of earlier ones. This is one reason deep learning
+is concerned with representation learning rather than simply adding layers.</p>
+
+<p>Architecture also introduces an <strong>inductive bias</strong>: assumptions that favor certain
+representations or solutions. A layered composition constrains how later features are
+built from earlier ones. Adding layers does not automatically reduce parameter count,
+computation time, or overfitting — those outcomes depend on layer widths, the target
+task, and the training procedure. Greater depth also lengthens the chain through which
+gradients must pass, creating exactly the optimization difficulties discussed above.</p>
+
+<h3 id="from-fully-connected-layers-to-cnns">From Fully Connected Layers to CNNs</h3>
+
+<p>The next lecture introduces convolutional neural networks. The useful connection is that,
+after arranging inputs and outputs as vectors, a convolutional layer is the <em>same</em>
+equation as a fully-connected one, <d-math>z = W x + b</d-math>.</p>
+
+<p>The difference lies in the structure of <d-math>W</d-math>. Local receptive fields make it sparse: an
+output depends only on a local input region. Weight sharing ties many entries together:
+the same filter coefficients are reused at different spatial positions, and a per-channel
+bias is shared across positions.</p>
+
+<p>The chain rule is unchanged. The gradient with respect to the input of this linear
+operation is still <d-math>\left(W\right)^{\top} \delta</d-math>, so the backward pass carries over
+directly. One thing does change: because a shared weight is used at every position, it
+receives a gradient contribution from each of them, and those contributions are summed —
+the weight-sharing rule from Lecture 5.</p>
+
+<p>Backpropagation therefore connects these architectures through one principle: propagate
+loss sensitivities backward through local operations, and add all contributions when a
+variable or parameter influences the loss through multiple paths.</p>
+
+<h3 id="key-takeaways">Key Takeaways</h3>
+
+<ul>
+  <li>Matrix backpropagation collects the chain rule’s sums over downstream units into
+matrix-vector products.</li>
+  <li>A weight gradient is the receiving unit’s error signal multiplied by the activation
+arriving along that connection.</li>
+  <li>Gradient flow depends on both the activation derivatives and the weight matrices across
+successive layers.</li>
+  <li>Training loss measures fit to observed examples; validation performance helps select
+capacity, hyperparameters, and stopping points.</li>
+</ul>
+ </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+    </div>
+
+    <footer class="site-footer">
+  <div class="wrapper">
+    <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Ben Lengerich</li><li>
+            <a class="u-email" href="mailto:lengerich@wisc.edu"
+              >lengerich@wisc.edu</a
+            >
+          </li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li>
+    <a
+      href="https://github.com/AdaptInfer"
+      target="_blank"
+      ><i class="fab fa-github"></i>
+      <span class="username">AdaptInfer</span></a
+    >
+  </li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>
+          &copy; Copyright 2026 University of Wisconsin.
+          <br />
+          
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  </body>
+
+  <d-bibliography
+    src="/dgm-fall-2026/assets/bibliography/2026-09-24-lecture-07.bib"
+  >
+  </d-bibliography>
+
+  <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/dgm-fall-2026/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link
+  rel="stylesheet"
+  href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css"
+/>
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+<script src="/dgm-fall-2026/assets/js/katex.js"></script>
+ 
+<!-- Load Anchor JS -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+<script>
+  anchors.options.visible = "hover";
+  anchors.add("article h2, article h3, article h4, article h5, article h6");
+</script>
+ 
+<!-- Adjust LaTeX JS -->
+<script src="/dgm-fall-2026/assets/js/latex.js"></script>
+
+
+<!-- Include custom icon fonts -->
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2026/assets/css/fontawesome-all.min.css"
+/>
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2026/assets/css/academicons.min.css"
+/>
+
+<!-- Google Analytics -->
+<script>
+  (function (i, s, o, g, r, a, m) {
+    i["GoogleAnalyticsObject"] = r;
+    ((i[r] =
+      i[r] ||
+      function () {
+        (i[r].q = i[r].q || []).push(arguments);
+      }),
+      (i[r].l = 1 * new Date()));
+    ((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
+    a.async = 1;
+    a.src = g;
+    m.parentNode.insertBefore(a, m);
+  })(
+    window,
+    document,
+    "script",
+    "//www.google-analytics.com/analytics.js",
+    "ga",
+  );
+
+  ga("create", "", "auto");
+  ga("send", "pageview");
+</script>
+
+</html>
