@@ -162,17 +162,23 @@
 
 <p>A single-layer network takes an input and computes a <strong>net input</strong>, also called the pre-activation or weighted input:</p>
 
-\[z = \sum_{i=0}^{n} w_i x_i.\]
+<d-math block="">
+z = \sum_{i=0}^{n} w_i x_i.
+</d-math>
 
 <p>The net input is passed through an activation function to produce the activation:</p>
 
-\[a = a(z).\]
+<d-math block="">
+a = a(z).
+</d-math>
 
 <p>The activation function determines how the neuron transforms its net input. For example, a perceptron uses a threshold function, while linear regression uses the <strong>identity function</strong>. A non-linear activation function such as the sigmoid can be written as $\sigma(z)$.</p>
 
 <p>The predicted label output is then given by</p>
 
-\[\hat{y} = f(a).\]
+<d-math block="">
+\hat{y} = f(a).
+</d-math>
 
 <p>The <strong>bias</strong> is included as $w_0$, with the corresponding input $x_0 = 1$.</p>
 
@@ -182,7 +188,9 @@
 
 <p>A perceptron combines many inputs using continuous weights before applying an activation function. The weighted inputs are summed to produce the net input, which is then passed through an activation function to determine the output of the perceptron.</p>
 
-\[net = \sum_{i=0}^{n} w_i x_i.\]
+<d-math block="">
+net = \sum_{i=0}^{n} w_i x_i.
+</d-math>
 
 <h3 id="32-activation-function">3.2 Activation Function</h3>
 
@@ -192,9 +200,11 @@
 
 <p>The sigmoid function:</p>
 
-\[\sigma(net) = \frac{1}{1+e^{-net}}.\]
+<d-math block="">
+\sigma(net) = \frac{1}{1+e^{-net}}.
+</d-math>
 
-<p>A perceptron with a sigmoid activation function turns it from linear regression to logistic regression. Instead of providing a class defined by a threshold, it gives the probability of something.</p>
+<p>Replacing the perceptron’s threshold with a sigmoid activation turns the model into logistic regression. Instead of outputting a hard class label, it outputs a probability.</p>
 
 <h3 id="33-separation-boundary">3.3 Separation Boundary</h3>
 
@@ -226,25 +236,35 @@
 
 <p>Let the dataset be</p>
 
-\[D = (\langle x^{[1]}, y^{[1]}\rangle, \langle x^{[2]}, y^{[2]}\rangle, \ldots, \langle x^{[n]}, y^{[n]}\rangle) \in (\mathbb{R}^m \times \{0,1\})^n.\]
+<d-math block="">
+D = (\langle x^{[1]}, y^{[1]}\rangle, \langle x^{[2]}, y^{[2]}\rangle, \ldots, \langle x^{[n]}, y^{[n]}\rangle) \in (\mathbb{R}^m \times \{0,1\})^n.
+</d-math>
 
 <p>Initialize the weight vector to zero:</p>
 
-\[\mathbf{w} \leftarrow \mathbf{0}^m.\]
+<d-math block="">
+\mathbf{w} \leftarrow \mathbf{0}^m.
+</d-math>
 
 <p>For every training epoch, the algorithm considers each training example $(\mathbf{x}^{[i]},y^{[i]})$.</p>
 
-<p>The predicted label is calculated using the function:</p>
+<p>The predicted label is calculated with the threshold function. Note that in the perceptron, $\sigma$ denotes the <strong>step function</strong>, not the sigmoid from Section 3.2: it outputs 1 when the net input is non-negative and 0 otherwise, so $\hat{y}^{[i]}$ is always 0 or 1.</p>
 
-\[\hat{y}^{[i]} = \sigma(\mathbf{x}^{[i]T}\mathbf{w}).\]
+<d-math block="">
+\hat{y}^{[i]} = \sigma(\mathbf{x}^{[i]T}\mathbf{w}).
+</d-math>
 
-<p>The error is calculated as</p>
+<p>The error is calculated as follows. Since both $y^{[i]}$ and $\hat{y}^{[i]}$ are 0 or 1, the error can only be $-1$, $0$, or $1$:</p>
 
-\[\mathrm{err} = y^{[i]}-\hat{y}^{[i]}.\]
+<d-math block="">
+\mathrm{err} = y^{[i]}-\hat{y}^{[i]}.
+</d-math>
 
 <p>Finally, the weight vector is set to:</p>
 
-\[\mathbf{w} \leftarrow \mathbf{w}+\mathrm{err}\times\mathbf{x}^{[i]}.\]
+<d-math block="">
+\mathbf{w} \leftarrow \mathbf{w}+\mathrm{err}\times\mathbf{x}^{[i]}.
+</d-math>
 
 <h3 id="52-geometric-intuition">5.2 Geometric Intuition</h3>
 
@@ -256,9 +276,9 @@
   <li>The dot product between the weight and the line along the decision boundary can only be 0 if the weight is perpendicular to the decision boundary.</li>
 </ul>
 
-<p>The intuition behind adding $y_i x_i$ to the weight is to rotate the weight vector toward or away from the misclassified point to get the point closer to the decision boundary.</p>
+<p>The update $\mathbf{w} \leftarrow \mathbf{w} + \mathrm{err} \times \mathbf{x}^{[i]}$ has a geometric reading. If the perceptron outputs 0 for a point whose target is 1, the error is $+1$ and the input vector is <strong>added</strong> to the weights, rotating $\mathbf{w}$ toward the point. If it outputs 1 for a point whose target is 0, the error is $-1$ and the input vector is <strong>subtracted</strong>, rotating $\mathbf{w}$ away from it. Correctly classified points give an error of 0 and leave the weights unchanged.</p>
 
-<p>The intuition behind adding $y_i$ to the bias term is to shift the boundary toward the misclassified point in order to send it to the other side of the line.</p>
+<p>Because the bias is folded into the weight vector as $w_0$ with $x_0 = 1$, the same update adds or subtracts 1 from the bias, shifting the boundary so that the misclassified point moves toward the correct side.</p>
 
 <p>If this is done for all points, eventually we reach a boundary that satisfies all points if the data is linearly separable.</p>
 
@@ -268,7 +288,7 @@
 
 <ul>
   <li>The perceptron learning algorithm is not a probabilistic model, rather it is deterministic.</li>
-  <li>If a datapoint lies to one side of the decision boundary, it is definitively classified as either -1 or 1. There is no likelihood or priors involved here.</li>
+  <li>If a datapoint lies to one side of the decision boundary, it is definitively classified as either 0 or 1. There is no likelihood or priors involved here.</li>
   <li>It also does not try to maximize any of its parameters. Several suitable decision boundaries can be found by the PLA for some linearly separable data, but it does not try to find the one that’s the most distant from all neighboring points.</li>
   <li>You cannot optimize over the threshold function because the gradient is either undefined or 0</li>
 </ul>
