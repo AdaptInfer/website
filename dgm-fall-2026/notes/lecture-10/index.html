@@ -1,0 +1,699 @@
+<!doctype html>
+<html>
+  <head>
+    <head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="content-language" content="en" />
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <title>
+    STAT 453 | Lecture 10: Normalization / Initialization
+  </title>
+  <meta name="description" content="STAT 453 - University of Wisconsin-Madison - Fall 2026
+" />
+
+  <link
+    rel="shortcut icon"
+    href="/dgm-fall-2026/assets/img/favicon.ico"
+  />
+
+  <link rel="stylesheet" href="/dgm-fall-2026/assets/css/main.css" />
+  <link
+    rel="canonical"
+    href="/dgm-fall-2026/notes/lecture-10/"
+  />
+
+  
+  <!-- Load Latex JS -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+  
+</head>
+
+    <script src="/dgm-fall-2026/assets/js/distillpub/template.v2.js"></script>
+    <script src="/dgm-fall-2026/assets/js/distillpub/transforms.v2.js"></script>
+  </head>
+
+  <d-front-matter>
+    <script type="text/json">
+      {
+            "title": "Lecture 10: Normalization / Initialization",
+            "description": "Input normalization, batch normalization, and weight initialization.",
+            "published": "October 6, 2026",
+            "lecturers": [
+              
+              {
+                "lecturer": "Ben Lengerich",
+                "lecturerURL": "https://adaptinfer.org"
+              }
+              
+            ],
+            "authors": [
+              
+              {
+                "author": "Bella Ren"
+              },
+              
+              {
+                "author": "Jenifer Qin"
+              },
+              
+              {
+                "author": "Olivia Xinya Ma"
+              },
+              
+              {
+                "author": "Tong Zhen"
+              }
+              
+            ],
+            "editors": [
+              
+            ],
+            "katex": {
+              "delimiters": [
+                {
+                  "left": "$",
+                  "right": "$",
+                  "display": false
+                },
+                {
+                  "left": "$$",
+                  "right": "$$",
+                  "display": true
+                }
+              ]
+            }
+          }
+    </script>
+  </d-front-matter>
+
+  <body>
+    <header class="site-header">
+  <div class="wrapper">
+    <span class="site-title">
+      <a class="page-link" href="https://adaptinfer.org/dgm-fall-2026/"
+        >STAT 453</a
+      >
+    </span>
+
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path
+              fill="#424242"
+              d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
+            />
+            <path
+              fill="#424242"
+              d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
+            />
+            <path
+              fill="#424242"
+              d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
+            />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger">
+        <a class="page-link" href="/dgm-fall-2026/logistics/"
+          >logistics</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/lectures/"
+          >lectures</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/notes/">notes</a>
+        <a class="page-link" href="/dgm-fall-2026/calendar/"
+          >calendar</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/homework/"
+          >homework</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/project/">project</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+      <d-title>
+        <h1>Lecture 10: Normalization / Initialization</h1>
+        <p>Input normalization, batch normalization, and weight initialization.</p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article> <h2 id="1-input-normalization">1. Input Normalization</h2>
+
+<h3 id="normalization-and-gradient-descent">Normalization and Gradient Descent</h3>
+
+<ul>
+  <li><strong>Problem:</strong> When input features have very different scales, the cost function may have elongated elliptical contours, causing gradient descent to zigzag toward the minimum.</li>
+  <li><strong>Why:</strong> Gradient descent uses the same learning rate for all weights. Differences in feature scales can cause some weights to receive much larger updates than others.</li>
+  <li><strong>Goal:</strong> Scale input features so that weights such as $w_1$ and $w_2$ have more balanced effects on optimization, allowing gradient descent to approach the minimum more directly.</li>
+</ul>
+
+<h4 id="standardization-of-input-features">Standardization of Input Features</h4>
+
+<d-math block="">
+x_j^{[i]} = \frac{x_j^{[i]}-\mu_j}{\sigma_j}
+</d-math>
+
+<ul>
+  <li>Scaled features will have zero mean and unit variance.</li>
+</ul>
+
+<h3 id="in-deep-models">In Deep Models…</h3>
+
+<p>Normalizing the inputs only affects the first hidden layer… what about the rest?</p>
+
+<h2 id="2-batch-normalization">2. Batch Normalization</h2>
+
+<p>Input normalization gives the first hidden layer well-scaled data, but it does not
+directly control the values produced inside a deep network. <strong>Batch normalization
+(BatchNorm)</strong> applies the same basic idea to a hidden layer: for each hidden unit (or
+feature), it uses the current mini-batch to standardize that unit’s pre-activations,
+then learns a scale and shift.<d-cite key="ioffe2015batchnorm"></d-cite>
+Keeping intermediate values on a controlled scale can make deep networks easier and
+more stable to optimize; Section 4 examines the competing explanations for why this
+works.</p>
+
+<p>The word <em>batch</em> matters. BatchNorm compares one feature <strong>across examples in the
+mini-batch</strong>. It does not combine different features of one example. Later sections
+contrast this with LayerNorm, which normalizes within each example.</p>
+
+<h3 id="what-exactly-is-being-normalized">What Exactly Is Being Normalized?</h3>
+
+<p>Suppose a mini-batch contains $n$ examples. Let $z_j^{[i]}$ be the net input, or
+<strong>pre-activation</strong>, of hidden unit $j$ for example $i$. For instance, in a fully
+connected layer,</p>
+
+<d-math block="">
+z^{[i]} = W a^{[i]} + b.
+</d-math>
+
+<p>Fix one unit $j$. BatchNorm looks at the $n$ numbers
+$z_j^{[1]},\ldots,z_j^{[n]}$. Every hidden unit is normalized separately, so unit
+$j$ has its own statistics and its own learned parameters.</p>
+
+<figure id="figure-batchnorm-pipeline" class="l-body-outset">
+  <div class="row">
+    <div class="col three">
+      <img src="/dgm-fall-2026/assets/img/notes/lecture-10/batchnorm-pipeline.svg" alt="Four-stage BatchNorm pipeline: collect one feature across a mini-batch, compute its mean and variance, normalize it, then apply learned scale and shift before the activation." />
+    </div>
+  </div>
+  <figcaption>
+    <strong>The BatchNorm pipeline for one hidden feature.</strong>
+    The same two-step transformation is applied independently to every feature. The
+    mini-batch supplies the statistics; gradient descent learns the scale and shift.
+  </figcaption>
+</figure>
+
+<h3 id="step-1-standardize-with-mini-batch-statistics">Step 1: Standardize with Mini-Batch Statistics</h3>
+
+<p>First compute the mini-batch mean and variance for feature $j$:</p>
+
+<d-math block="">
+\mu_j = \frac{1}{n}\sum_{i=1}^{n}z_j^{[i]},
+\qquad
+\sigma_j^2 = \frac{1}{n}\sum_{i=1}^{n}\left(z_j^{[i]}-\mu_j\right)^2.
+</d-math>
+
+<p>Then standardize each example:</p>
+
+<d-math block="">
+\widehat{z}_j^{[i]}
+= \frac{z_j^{[i]}-\mu_j}{\sqrt{\sigma_j^2+\epsilon}}.
+</d-math>
+
+<p>The small constant $\epsilon$ (often around $10^{-5}$) prevents division by zero and
+improves numerical stability. Within the current mini-batch, the normalized values have
+mean approximately zero and variance approximately one. The variance here uses $1/n$:
+BatchNorm is describing this batch, not constructing an unbiased population estimator.</p>
+
+<h3 id="step-2-learn-the-useful-scale-and-location">Step 2: Learn the Useful Scale and Location</h3>
+
+<p>Forcing every hidden feature to remain at exactly zero mean and unit variance would be
+too restrictive. BatchNorm therefore follows standardization with a learned affine
+transformation:</p>
+
+<d-math block="">
+u_j^{[i]} = \gamma_j\widehat{z}_j^{[i]} + \beta_j,
+\qquad
+a_j^{[i]} = \phi\!\left(u_j^{[i]}\right).
+</d-math>
+
+<ul>
+  <li>$\gamma_j$ controls the feature’s <strong>scale</strong> or spread.</li>
+  <li>$\beta_j$ controls the feature’s <strong>location</strong> or mean.</li>
+  <li>Both are trainable parameters, shared across all examples but different for each
+feature.</li>
+</ul>
+
+<p>This second step means BatchNorm can learn more than plain standardization. If the
+network needs a different scale or offset, $\gamma_j$ and $\beta_j$ can restore it. In
+particular, $\beta_j$ usually makes the bias in the preceding linear layer redundant:
+adding the same bias to every example is canceled when the batch mean is subtracted.
+That is why a common pattern is
+<code class="language-plaintext highlighter-rouge">Linear(..., bias=False) -&gt; BatchNorm -&gt; activation</code>.</p>
+
+<h3 id="a-small-numerical-example">A Small Numerical Example</h3>
+
+<p>Suppose one hidden unit produces the three pre-activations $[1,2,3]$. Ignoring the tiny
+$\epsilon$ for readability,</p>
+
+<d-math block="">
+\mu = 2, \qquad \sigma^2 = \frac{2}{3}, \qquad
+\widehat{z} \approx [-1.225,\ 0,\ 1.225].
+</d-math>
+
+<p>If the layer learns $\gamma=0.5$ and $\beta=1$, its output before the activation is</p>
+
+<d-math block="">
+u = 0.5\widehat{z}+1 \approx [0.388,\ 1,\ 1.612].
+</d-math>
+
+<p>The example separates the two jobs clearly: the batch statistics standardize the three
+values, while the learned parameters choose the scale and center that the network finds
+useful.</p>
+
+<h3 id="batchnorm-is-differentiable">BatchNorm Is Differentiable</h3>
+
+<p>The batch mean, variance, standardization, scale, and shift are all differentiable, so
+the whole layer can be trained with backpropagation. If
+$g_j^{[i]}=\partial L/\partial u_j^{[i]}$ is the gradient arriving from the next
+operation, the learned parameters have especially simple gradients:</p>
+
+<d-math block="">
+\frac{\partial L}{\partial \beta_j}
+= \sum_{i=1}^{n} g_j^{[i]},
+\qquad
+\frac{\partial L}{\partial \gamma_j}
+= \sum_{i=1}^{n} g_j^{[i]}\widehat{z}_j^{[i]}.
+</d-math>
+
+<p>The gradient with respect to an input $z_j^{[i]}$ has more paths. That value affects its
+own normalized output directly, but it also changes $\mu_j$ and $\sigma_j^2$, which are
+used to normalize <strong>every</strong> example in the batch. The multivariable chain rule therefore
+has the structure</p>
+
+<d-math block="">
+\frac{\partial L}{\partial z_j^{[i]}}
+=
+\frac{\partial L}{\partial \widehat{z}_j^{[i]}}
+\frac{1}{\sqrt{\sigma_j^2+\epsilon}}
++
+\frac{\partial L}{\partial \mu_j}\frac{1}{n}
++
+\frac{\partial L}{\partial \sigma_j^2}
+\frac{2\left(z_j^{[i]}-\mu_j\right)}{n}.
+</d-math>
+
+<p>The main intuition is more important than memorizing this expression: <strong>examples in the
+same mini-batch become coupled through their shared mean and variance</strong>. Autograd keeps
+track of these paths automatically.</p>
+
+<h3 id="what-to-remember">What to Remember</h3>
+
+<ol>
+  <li>BatchNorm normalizes one hidden feature across the examples in a mini-batch.</li>
+  <li>Standardization uses the batch mean, batch variance, and a small $\epsilon$.</li>
+  <li>The learned $\gamma$ and $\beta$ parameters restore whatever scale and offset are
+useful.</li>
+  <li>Because the statistics depend on the whole batch, one example can affect the
+normalized values and gradients of the others.</li>
+</ol>
+
+<p>The next section turns this mathematical layer into PyTorch code. Later sections explain
+what changes at test time and why BatchNorm can help optimization.</p>
+
+<h2 id="3-batchnorm-in-pytorch">3. BatchNorm in PyTorch</h2>
+
+<h3 id="batchnorm-in-pytorch">BatchNorm in PyTorch</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">MultilayerPerceptron</span><span class="p">(</span><span class="n">torch</span><span class="p">.</span><span class="n">nn</span><span class="p">.</span><span class="n">Module</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_features</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">,</span> <span class="n">drop_proba</span><span class="p">,</span>
+                 <span class="n">num_hidden_1</span><span class="p">,</span> <span class="n">num_hidden_2</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">().</span><span class="n">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="p">.</span><span class="n">my_network</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">nn</span><span class="p">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="c1"># 1st hidden layer
+</span>            <span class="n">torch</span><span class="p">.</span><span class="n">nn</span><span class="p">.</span><span class="n">Flatten</span><span class="p">(),</span>
+            <span class="n">torch</span><span class="p">.</span><span class="n">nn</span><span class="p">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">num_features</span><span class="p">,</span> <span class="n">num_hidden_1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="bp">False</span><span class="p">),</span>
+            <span class="n">torch</span><span class="p">.</span><span class="n">nn</span><span class="p">.</span><span class="n">BatchNorm1d</span><span class="p">(</span><span class="n">num_hidden_1</span><span class="p">),</span>
+            <span class="n">torch</span><span class="p">.</span><span class="n">nn</span><span class="p">.</span><span class="n">ReLU</span><span class="p">(),</span>
+
+            <span class="c1"># 2nd hidden layer
+</span>            <span class="n">torch</span><span class="p">.</span><span class="n">nn</span><span class="p">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">num_hidden_1</span><span class="p">,</span> <span class="n">num_hidden_2</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="bp">False</span><span class="p">),</span>
+            <span class="n">torch</span><span class="p">.</span><span class="n">nn</span><span class="p">.</span><span class="n">BatchNorm1d</span><span class="p">(</span><span class="n">num_hidden_2</span><span class="p">),</span>
+            <span class="n">torch</span><span class="p">.</span><span class="n">nn</span><span class="p">.</span><span class="n">ReLU</span><span class="p">(),</span>
+
+            <span class="c1"># output layer
+</span>            <span class="n">torch</span><span class="p">.</span><span class="n">nn</span><span class="p">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">num_hidden_2</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">logits</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">my_network</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">logits</span>
+</code></pre></div></div>
+
+<p>Source: https://github.com/rasbt/stat453-deep-learningss21/blob/main/L11/code/batchnorm.ipynb</p>
+
+<h3 id="training-and-testing">Training and Testing</h3>
+
+<p>Don’t forget <code class="language-plaintext highlighter-rouge">model.train()</code> and <code class="language-plaintext highlighter-rouge">model.eval()</code> in training and test loops.</p>
+
+<h3 id="batchnorm-at-test-time">BatchNorm at Test-Time</h3>
+
+<ul>
+  <li>Use exponentially weighted average (moving average) of mean and variance.</li>
+</ul>
+
+<p>running_mean = momentum * running_mean + (1 - momentum) * sample_mean</p>
+
+<ul>
+  <li>Where momentum is typically ~0.1; same for variance.</li>
+  <li>Alternatively, can also use global training set mean and variance.</li>
+</ul>
+
+<h2 id="4-why-does-batchnorm-work">4. Why Does BatchNorm Work?</h2>
+
+<p>Batch normalization can improve training speed and stability. However, researchers have proposed several explanations for its effectiveness.</p>
+
+<h3 id="internal-covariate-shift">Internal Covariate Shift</h3>
+
+<p>Ioffe and Szegedy (2015) originally introduced BatchNorm to <strong>reduce internal covariate shift</strong>. During training, updates to earlier layers change the distribution of inputs received by later layers. Normalizing these inputs was intended to reduce these distributional changes and make training easier.</p>
+
+<p>Later research questioned whether reducing internal covariate shift is the main reason BatchNorm works.</p>
+
+<h3 id="smoother-optimization-and-larger-learning-rates">Smoother Optimization and Larger Learning Rates</h3>
+
+<p>Santurkar et al. (2018) argued that BatchNorm makes the optimization landscape smoother. This produces more predictable and stable gradients, allowing faster training and larger learning rates.</p>
+
+<p>The lecture presents two experiments supporting this interpretation:</p>
+
+<ul>
+  <li>A VGG network trained on CIFAR-10 with BatchNorm trained faster and tolerated a larger learning rate than the network without BatchNorm.</li>
+  <li>Adding time-varying noise to BatchNorm outputs made their distributions less stable, but the model still trained nearly as well as the standard BatchNorm model.</li>
+</ul>
+
+<p>These results suggest that stable layer input distributions are not necessary for BatchNorm’s training benefits.</p>
+
+<h3 id="other-interpretations-and-limitations">Other Interpretations and Limitations</h3>
+
+<p>The lecture discusses several additional findings:</p>
+
+<ul>
+  <li><strong>Reduced reliance on individual directions:</strong> Morcos et al. (2018) found that BatchNorm implicitly discourages reliance on individual units or particular linear combinations of units.</li>
+  <li><strong>Implicit regularization:</strong> Luo et al. (2018) studied how BatchNorm can act as a regularizer and improve generalization.</li>
+  <li><strong>Potential gradient instability:</strong> Yang et al. (2019) showed that BatchNorm can cause exploding gradients in deep networks without skip connections. Careful tuning may therefore still be necessary.</li>
+</ul>
+
+<p>BatchNorm’s effectiveness should not be attributed solely to reducing internal covariate shift.</p>
+
+<h3 id="practical-considerations">Practical Considerations</h3>
+
+<p>BatchNorm estimates the mean and variance from each mini-batch. Larger batches generally provide more stable estimates. With very small batches, such as four or fewer examples, these estimates can become noisy. This is relevant during fine-tuning or when memory constraints limit the batch size.</p>
+
+<p>Two common approaches are:</p>
+
+<ol>
+  <li><strong>Freeze BatchNorm:</strong> Use stored running statistics instead of recomputing statistics from the current small batch.</li>
+  <li><strong>Use GroupNorm:</strong> Normalize groups of channels within each example, avoiding dependence on batch size.</li>
+</ol>
+
+<p>GroupNorm connects related normalization methods: one group corresponds to LayerNorm over the same dimensions, while one channel per group corresponds to InstanceNorm.</p>
+
+<p>Unlike BatchNorm, which computes statistics across examples in a mini-batch, LayerNorm computes statistics across features within an example. LayerNorm is commonly used in Transformers.</p>
+
+<p>The lecture also raises the question of whether BatchNorm should be placed before or after the activation function. This is a design consideration when choosing a network architecture.</p>
+
+<h2 id="5-weight-initialization-why-do-we-care">5. Weight Initialization: Why Do We Care?</h2>
+
+<p>Weight initialization determines the starting values of a neural network’s parameters. Two important considerations are breaking symmetry between neurons and choosing an appropriate weight scale.</p>
+
+<h2 id="6-xavier--he-initialization">6. Xavier &amp; He Initialization</h2>
+
+<p>Proper weight initialization helps maintain stable activations and gradients as information passes through multiple layers of a neural network. Two commonly used initialization methods are Xavier initialization and He initialization.</p>
+
+<h3 id="61-xavier-initialization">6.1 Xavier Initialization</h3>
+
+<p>Xavier initialization, also known as Glorot initialization, was introduced by Glorot and Bengio (2010). Its main goal is to keep the variance of activations during the forward pass and gradients during the backward pass approximately stable across layers.</p>
+
+<p>The method consists of two steps:</p>
+
+<ol>
+  <li>Initialize the weights randomly using a Gaussian or uniform distribution.</li>
+  <li>Scale the weights according to both the number of inputs (<strong>fan-in</strong>) and outputs (<strong>fan-out</strong>) of the layer.</li>
+</ol>
+
+<p>For Xavier initialization, the weight variance is:</p>
+
+<d-math block="">
+\operatorname{Var}(W) = \frac{2}{n_{\text{in}} + n_{\text{out}}}
+</d-math>
+
+<p>Here:</p>
+
+<ul>
+  <li><strong>fan-in</strong> ($n_{\mathrm{in}}$): Number of input connections to the layer.</li>
+  <li><strong>fan-out</strong> ($n_{\mathrm{out}}$): Number of output connections from the layer.</li>
+  <li><strong>Var(W):</strong> Variance of the initialized weights.</li>
+</ul>
+
+<p>By accounting for both input and output dimensions, Xavier initialization aims to prevent activation and gradient magnitudes from becoming excessively large or small as they propagate through a deep neural network.</p>
+
+<h3 id="62-derivation-of-the-forward-pass-variance">6.2 Derivation of the Forward-Pass Variance</h3>
+
+<p>To understand why the initialization scale depends on the number of inputs, consider the pre-activation of neuron $j$ in layer $l$:</p>
+
+<d-math block="">
+z_j^{(l)} = \sum_{k=1}^{m^{(l-1)}} W_{jk}^{(l)} \, a_k^{(l-1)}
+</d-math>
+
+<p>where:</p>
+
+<ul>
+  <li>$W_{jk}^{(l)}$ is the weight connecting neuron $k$ in the previous layer to neuron $j$ in the current layer.</li>
+  <li>$a_k^{(l-1)}$ is the activation of neuron $k$ in the previous layer.</li>
+  <li>$m^{(l-1)}$ is the number of neurons in the previous layer, corresponding to fan-in.</li>
+</ul>
+
+<p>Assuming independent terms, zero-mean weights and activations, and common weight and activation variances across their respective indices, we obtain:</p>
+
+<d-math block="">
+\operatorname{Var}\left(z_j^{(l)}\right) = m^{(l-1)} \cdot \operatorname{Var}\left(W^{(l)}\right) \cdot \operatorname{Var}\left(a^{(l-1)}\right)
+</d-math>
+
+<p>This shows that the variance of the pre-activation increases with the number of inputs if the weight variance remains constant.</p>
+
+<p>To preserve approximately the same variance during the forward pass, we therefore want:</p>
+
+<d-math block="">
+\operatorname{Var}\left(W^{(l)}\right) \approx \frac{1}{m^{(l-1)}}
+</d-math>
+
+<p>This simplified derivation considers only forward propagation, so it depends on fan-in alone. When backward propagation is also considered, fan-out becomes important, leading to the full Xavier initialization formula introduced above.</p>
+
+<h3 id="63-he-initialization">6.3 He Initialization</h3>
+
+<p>He initialization, also called Kaiming initialization, was introduced by He et al. (2015). It is designed particularly for neural networks that use the <strong>ReLU activation function</strong>.</p>
+
+<p>Xavier initialization relies on assumptions that are more suitable for activations such as tanh. However, ReLU behaves differently:</p>
+
+<d-math block="">
+\mathrm{ReLU}(x)=\max(0,x)
+</d-math>
+
+<p>ReLU sets negative inputs to zero. When the inputs are approximately symmetrically distributed around zero, roughly half of them are set to zero.</p>
+
+<p>To account for this behavior, He initialization uses a larger weight variance:</p>
+
+<d-math block="">
+\mathrm{Var}(W)=\frac{2}{n_{\mathrm{in}}}
+</d-math>
+
+<p>Equivalently, starting from random weights with unit variance, the weights can be scaled by:</p>
+
+<d-math block="">
+W^{(l)}\leftarrow W^{(l)}
+\sqrt{\frac{2}{m^{(l-1)}}}
+</d-math>
+
+<p>Compared with the forward-only scaling derived earlier, He initialization introduces an additional factor of $\sqrt{2}$ to compensate for the effect of ReLU.</p>
+
+<p><strong>The main distinction:</strong> Xavier initialization considers both fan-in and fan-out to balance signal propagation, while He initialization uses a ReLU-specific scaling primarily based on fan-in.</p>
+
+<h3 id="64-initialization-beyond-xavier-and-he">6.4 Initialization Beyond Xavier and He</h3>
+
+<p>The appropriate initialization strategy depends on the neural network architecture. As neural network models evolve, initialization methods may also need to change.</p>
+
+<p>For example, Transformer architectures may require different initialization considerations. Research on extremely deep neural networks also studies the spectrum of weight matrices and uses ideas from random matrix theory to develop initialization methods for networks with thousands of layers.</p>
+
+<h2 id="7-weight-initialization-schemes-in-pytorch">7. Weight Initialization Schemes in PyTorch</h2>
+
+<p>PyTorch provides built-in initialization methods that automatically initialize neural network parameters.</p>
+
+<h3 id="71-default-weight-initialization-in-pytorch">7.1 Default Weight Initialization in PyTorch</h3>
+
+<p>When a <code class="language-plaintext highlighter-rouge">torch.nn.Linear</code> layer is created, PyTorch initializes its weights and biases through the <code class="language-plaintext highlighter-rouge">reset_parameters()</code> method.</p>
+
+<p>The implementation shown in the lecture is:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">reset_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">init</span><span class="p">.</span><span class="n">kaiming_uniform_</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="n">math</span><span class="p">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="p">.</span><span class="n">bias</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">fan_in</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">init</span><span class="p">.</span><span class="n">_calculate_fan_in_and_fan_out</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">weight</span><span class="p">)</span>
+        <span class="n">bound</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">math</span><span class="p">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">fan_in</span><span class="p">)</span> <span class="k">if</span> <span class="n">fan_in</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">init</span><span class="p">.</span><span class="n">uniform_</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">bias</span><span class="p">,</span> <span class="o">-</span><span class="n">bound</span><span class="p">,</span> <span class="n">bound</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>The initialization process includes:</p>
+
+<ol>
+  <li><strong>Weights:</strong> <code class="language-plaintext highlighter-rouge">kaiming_uniform_()</code> initializes the weight matrix.</li>
+  <li><strong>Fan-in:</strong> PyTorch calculates the number of input connections.</li>
+  <li><strong>Biases:</strong> Bias values are sampled from a uniform distribution based on fan-in.</li>
+</ol>
+
+<p>Note that <code class="language-plaintext highlighter-rouge">a=math.sqrt(5)</code> makes PyTorch’s default initialization different from the standard ReLU-specific He initialization discussed in Section 6.3.</p>
+
+<h3 id="72-key-takeaway">7.2 Key Takeaway</h3>
+
+<p>Xavier and He initialization help maintain stable signal propagation across network layers. PyTorch provides built-in methods to initialize weights automatically, making deep neural networks easier to train.</p>
+
+<h3 id="breaking-symmetry">Breaking Symmetry</h3>
+
+<p>Initializing all weights to zero creates a <strong>symmetry problem</strong>. Neurons in the same hidden layer begin with identical parameters, produce identical outputs, and receive identical updates. They therefore fail to learn different features.</p>
+
+<p>Random initialization breaks this symmetry by giving neurons different starting weights.</p>
+
+<h3 id="choosing-the-weight-scale">Choosing the Weight Scale</h3>
+
+<p>The lecture emphasizes starting with relatively small weights. Traditional initialization methods include:</p>
+
+<ul>
+  <li>Sampling from a uniform distribution, such as <code class="language-plaintext highlighter-rouge">[0, 1]</code>, or preferably a distribution centered around zero, such as <code class="language-plaintext highlighter-rouge">[-0.5, 0.5]</code>.</li>
+  <li>Sampling from a Gaussian distribution with mean zero and a small variance, such as <code class="language-plaintext highlighter-rouge">0.1</code> or <code class="language-plaintext highlighter-rouge">0.01</code>.</li>
+</ul>
+
+ </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+    </div>
+
+    <footer class="site-footer">
+  <div class="wrapper">
+    <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Ben Lengerich</li><li>
+            <a class="u-email" href="mailto:lengerich@wisc.edu"
+              >lengerich@wisc.edu</a
+            >
+          </li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li>
+    <a
+      href="https://github.com/AdaptInfer"
+      target="_blank"
+      ><i class="fab fa-github"></i>
+      <span class="username">AdaptInfer</span></a
+    >
+  </li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>
+          &copy; Copyright 2026 University of Wisconsin.
+          <br />
+          
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  </body>
+
+  <d-bibliography
+    src="/dgm-fall-2026/assets/bibliography/2026-10-06-lecture-10.bib"
+  >
+  </d-bibliography>
+
+  <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/dgm-fall-2026/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link
+  rel="stylesheet"
+  href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css"
+/>
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+<script src="/dgm-fall-2026/assets/js/katex.js"></script>
+ 
+<!-- Load Anchor JS -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+<script>
+  anchors.options.visible = "hover";
+  anchors.add("article h2, article h3, article h4, article h5, article h6");
+</script>
+ 
+<!-- Adjust LaTeX JS -->
+<script src="/dgm-fall-2026/assets/js/latex.js"></script>
+
+
+<!-- Include custom icon fonts -->
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2026/assets/css/fontawesome-all.min.css"
+/>
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2026/assets/css/academicons.min.css"
+/>
+
+<!-- Google Analytics -->
+<script>
+  (function (i, s, o, g, r, a, m) {
+    i["GoogleAnalyticsObject"] = r;
+    ((i[r] =
+      i[r] ||
+      function () {
+        (i[r].q = i[r].q || []).push(arguments);
+      }),
+      (i[r].l = 1 * new Date()));
+    ((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
+    a.async = 1;
+    a.src = g;
+    m.parentNode.insertBefore(a, m);
+  })(
+    window,
+    document,
+    "script",
+    "//www.google-analytics.com/analytics.js",
+    "ga",
+  );
+
+  ga("create", "", "auto");
+  ga("send", "pageview");
+</script>
+
+</html>

@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="350" viewBox="0 0 1200 350" role="img" aria-labelledby="title desc">
+  <title id="title">Batch normalization pipeline</title>
+  <desc id="desc">One hidden feature is collected across a mini-batch, standardized using the batch mean and variance, then transformed by learned gamma and beta before activation.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#5b5b5b"/>
+    </marker>
+    <style>
+      .box { fill: #ffffff; stroke: #c5050c; stroke-width: 3; rx: 18; }
+      .soft { fill: #f7f7f7; stroke: #646569; stroke-width: 2; rx: 12; }
+      .title { font: 700 25px Arial, sans-serif; fill: #282728; }
+      .text { font: 20px Arial, sans-serif; fill: #282728; }
+      .math { font: italic 22px Georgia, serif; fill: #282728; }
+      .small-title { font: 700 22px Arial, sans-serif; fill: #282728; }
+      .arrow { stroke: #5b5b5b; stroke-width: 4; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect width="1200" height="350" fill="#ffffff"/>
+
+  <rect x="25" y="65" width="235" height="220" class="box"/>
+  <text x="142" y="103" text-anchor="middle" class="title">One feature</text>
+  <text x="142" y="132" text-anchor="middle" class="text">across the batch</text>
+  <rect x="70" y="155" width="145" height="42" class="soft"/>
+  <rect x="70" y="207" width="145" height="42" class="soft"/>
+  <text x="142" y="183" text-anchor="middle" class="math">zⱼ⁽¹⁾</text>
+  <text x="142" y="235" text-anchor="middle" class="math">zⱼ⁽ⁿ⁾</text>
+  <text x="142" y="211" text-anchor="middle" class="text">⋮</text>
+
+  <path d="M270 175 H330" class="arrow"/>
+
+  <rect x="340" y="65" width="235" height="220" class="box"/>
+  <text x="457" y="103" text-anchor="middle" class="title">Compute statistics</text>
+  <text x="457" y="166" text-anchor="middle" class="math">μⱼ = batch mean</text>
+  <text x="457" y="210" text-anchor="middle" class="math">σⱼ² = batch variance</text>
+  <text x="457" y="252" text-anchor="middle" class="text">not trainable</text>
+
+  <path d="M585 175 H645" class="arrow"/>
+
+  <rect x="655" y="65" width="235" height="220" class="box"/>
+  <text x="772" y="103" text-anchor="middle" class="title">Standardize</text>
+  <text x="772" y="165" text-anchor="middle" class="math">ẑⱼ = (zⱼ - μⱼ)</text>
+  <text x="772" y="197" text-anchor="middle" class="math">÷ √(σⱼ² + ε)</text>
+  <text x="772" y="246" text-anchor="middle" class="text">mean ≈ 0, variance ≈ 1</text>
+
+  <path d="M900 175 H960" class="arrow"/>
+
+  <rect x="970" y="65" width="205" height="220" class="box"/>
+  <text x="1072" y="103" text-anchor="middle" class="small-title">Learn and activate</text>
+  <text x="1072" y="162" text-anchor="middle" class="math">uⱼ = γⱼẑⱼ + βⱼ</text>
+  <text x="1072" y="207" text-anchor="middle" class="math">aⱼ = ϕ(uⱼ)</text>
+  <text x="1072" y="252" text-anchor="middle" class="text">γⱼ, βⱼ are trainable</text>
+</svg>
