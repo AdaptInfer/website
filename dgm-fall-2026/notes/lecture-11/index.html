@@ -1,0 +1,580 @@
+<!doctype html>
+<html>
+  <head>
+    <head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="content-language" content="en" />
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <title>
+    STAT 453 | Lecture 11: Optimization and Learning Rates
+  </title>
+  <meta name="description" content="STAT 453 - University of Wisconsin-Madison - Fall 2026
+" />
+
+  <link
+    rel="shortcut icon"
+    href="/dgm-fall-2026/assets/img/favicon.ico"
+  />
+
+  <link rel="stylesheet" href="/dgm-fall-2026/assets/css/main.css" />
+  <link
+    rel="canonical"
+    href="/dgm-fall-2026/notes/lecture-11/"
+  />
+
+  
+  <!-- Load Latex JS -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+  
+</head>
+
+    <script src="/dgm-fall-2026/assets/js/distillpub/template.v2.js"></script>
+    <script src="/dgm-fall-2026/assets/js/distillpub/transforms.v2.js"></script>
+  </head>
+
+  <d-front-matter>
+    <script type="text/json">
+      {
+            "title": "Lecture 11: Optimization and Learning Rates",
+            "description": "Lecture notes on optimization methods, learning rate schedules, momentum, and adaptive optimizers in deep learning.",
+            "published": "October 8, 2026",
+            "lecturers": [
+              
+              {
+                "lecturer": "Ben Lengerich",
+                "lecturerURL": "https://adaptinfer.org"
+              }
+              
+            ],
+            "authors": [
+              
+              {
+                "author": "Shuoping Ma"
+              }
+              
+            ],
+            "editors": [
+              
+            ],
+            "katex": {
+              "delimiters": [
+                {
+                  "left": "$",
+                  "right": "$",
+                  "display": false
+                },
+                {
+                  "left": "$$",
+                  "right": "$$",
+                  "display": true
+                }
+              ]
+            }
+          }
+    </script>
+  </d-front-matter>
+
+  <body>
+    <header class="site-header">
+  <div class="wrapper">
+    <span class="site-title">
+      <a class="page-link" href="https://adaptinfer.org/dgm-fall-2026/"
+        >STAT 453</a
+      >
+    </span>
+
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path
+              fill="#424242"
+              d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
+            />
+            <path
+              fill="#424242"
+              d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
+            />
+            <path
+              fill="#424242"
+              d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
+            />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger">
+        <a class="page-link" href="/dgm-fall-2026/logistics/"
+          >logistics</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/lectures/"
+          >lectures</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/notes/">notes</a>
+        <a class="page-link" href="/dgm-fall-2026/calendar/"
+          >calendar</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/homework/"
+          >homework</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/project/">project</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+      <d-title>
+        <h1>Lecture 11: Optimization and Learning Rates</h1>
+        <p>Lecture notes on optimization methods, learning rate schedules, momentum, and adaptive optimizers in deep learning.</p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article> <h2 id="1-introduction-to-optimization">1. Introduction to Optimization</h2>
+
+<p>Training a deep neural network involves finding model parameters that minimize a loss function. Optimization algorithms update these parameters iteratively using gradients computed through backpropagation.</p>
+
+<p>The basic gradient descent update is</p>
+<d-math block="">
+\theta_{t+1} = \theta_t - \eta_t \nabla_\theta L(\theta_t)
+</d-math>
+<p>where:</p>
+<ul>
+  <li>
+    <d-math>\theta_t</d-math>
+    <p>represents the model parameters at iteration <d-math>t</d-math>.</p>
+  </li>
+  <li>
+    <d-math>\eta_t</d-math>
+    <p>is the learning rate.</p>
+  </li>
+  <li>
+    <d-math>\nabla_\theta L(\theta_t)</d-math>
+    <p>is the gradient of the loss function.</p>
+  </li>
+</ul>
+
+<p>The learning rate determines how far the parameters move in the direction opposite to the gradient.</p>
+
+<h3 id="11-challenges-in-deep-learning-optimization">1.1 Challenges in Deep Learning Optimization</h3>
+
+<p>Deep neural networks typically have non-convex loss functions. This makes optimization challenging because the loss surface may contain saddle points, flat regions, and regions with very different curvatures.</p>
+
+<p>A learning rate that is too large can cause unstable updates or oscillations. A learning rate that is too small can make training unnecessarily slow.</p>
+
+<p>Choosing an appropriate optimization algorithm and learning rate schedule is therefore important for efficient training.</p>
+
+<h2 id="2-batch-size-and-learning-rate">2. Batch Size and Learning Rate</h2>
+
+<p>In deep learning, the batch size determines how many training examples are used to estimate the gradient before updating the model parameters. The choice of batch size affects the stability, computational efficiency, and behavior of the optimization process.</p>
+
+<h3 id="21-full-batch-stochastic-and-mini-batch-gradient-descent">2.1 Full-Batch, Stochastic, and Mini-Batch Gradient Descent</h3>
+
+<p>There are three common approaches to computing gradients:</p>
+
+<ul>
+  <li><strong>Full-batch gradient descent:</strong> Uses the entire training dataset to compute each gradient update. It provides an accurate gradient estimate but can be computationally expensive.</li>
+  <li><strong>Stochastic gradient descent (SGD):</strong> Uses one training example per update. Its gradients are noisy, but updates are computationally inexpensive.</li>
+  <li><strong>Mini-batch gradient descent:</strong> Uses a subset of the training data for each update. This is the most common approach in modern deep learning because it balances computational efficiency and gradient stability.</li>
+</ul>
+
+<p>For a mini-batch of size <d-math>B</d-math>, the gradient estimate is</p>
+<d-math block="">
+g_t = \frac{1}{B}\sum_{i=1}^{B}
+\nabla_\theta \ell_i(\theta_t)
+</d-math>
+<p>where <d-math>\ell_i</d-math> is the loss for training example <d-math>i</d-math> in the mini-batch.</p>
+
+<p>The parameter update becomes</p>
+<d-math block="">
+\theta_{t+1} = \theta_t - \eta_t g_t
+</d-math>
+<h3 id="22-how-batch-size-affects-optimization">2.2 How Batch Size Affects Optimization</h3>
+
+<p>Smaller batches generally produce noisier gradient estimates. This noise can help the optimizer explore the loss surface, but it can also cause fluctuations during training.</p>
+
+<p>Larger batches generally produce more stable gradient estimates and can take advantage of parallel computation on GPUs. However, they require more memory and may provide fewer parameter updates per epoch.</p>
+
+<h3 id="23-relationship-between-batch-size-and-learning-rate">2.3 Relationship Between Batch Size and Learning Rate</h3>
+
+<p>Batch size and learning rate are closely related. When the batch size increases, the gradient estimate often becomes less noisy, which may allow a larger learning rate.</p>
+
+<p>However, increasing the learning rate proportionally with batch size is not always optimal. The appropriate learning rate depends on the model architecture, optimizer, dataset, and training conditions.</p>
+
+<p>In practice, batch size and learning rate should be tuned together rather than independently.</p>
+
+<h2 id="3-learning-rate-schedules">3. Learning Rate Schedules</h2>
+
+<p>The learning rate controls the size of each parameter update during optimization. Instead of using a constant learning rate throughout training, we can adjust it over time using a learning rate schedule.</p>
+
+<p>A relatively large learning rate can help the model make faster progress early in training, while a smaller learning rate can help stabilize training and refine the parameters later.</p>
+
+<h3 id="31-exponential-decay">3.1 Exponential Decay</h3>
+
+<p>Exponential decay gradually reduces the learning rate by multiplying it by a constant factor:</p>
+<d-math block="">
+\eta_t = \eta_0 \gamma^t
+</d-math>
+<p>where <d-math>\eta_0</d-math> is the initial learning rate and <d-math>0 &lt; \gamma &lt; 1</d-math> is the decay factor.</p>
+
+<p>This schedule produces a smooth decrease in the learning rate over time.</p>
+
+<h3 id="32-step-decay">3.2 Step Decay</h3>
+
+<p>Step decay reduces the learning rate at specific intervals rather than continuously.</p>
+
+<p>For example, the learning rate can be halved every <d-math>K</d-math> epochs:</p>
+<d-math block="">
+\eta_t = \eta_0 \left(\frac{1}{2}\right)^{\lfloor t/K \rfloor}
+</d-math>
+
+<p>This allows the optimizer to make larger updates initially and smaller updates later.</p>
+
+<h3 id="33-inverse-time-decay">3.3 Inverse Time Decay</h3>
+
+<p>Inverse time decay decreases the learning rate according to</p>
+<d-math block="">
+\eta_t = \frac{\eta_0}{1 + kt}
+</d-math>
+<p>where <d-math>k &gt; 0</d-math> controls how quickly the learning rate decreases.</p>
+
+<p>Unlike exponential decay, inverse time decay decreases more slowly during later stages of training.</p>
+
+<h3 id="34-cyclical-learning-rates">3.4 Cyclical Learning Rates</h3>
+
+<p>Cyclical learning rate schedules periodically increase and decrease the learning rate between predefined bounds.</p>
+
+<p>The purpose is to allow the optimizer to explore different regions of the loss surface instead of continuously decreasing the step size.</p>
+
+<p>A larger learning rate can encourage exploration, while a smaller learning rate allows more careful parameter updates.</p>
+
+<h3 id="35-cosine-annealing">3.5 Cosine Annealing</h3>
+
+<p>Cosine annealing decreases the learning rate following a cosine-shaped curve:</p>
+<d-math block="">
+\eta_t = \eta_{\min} + \frac{1}{2}(\eta_{\max}-\eta_{\min})\left(1+\cos\left(\frac{\pi t}{T}\right)\right)
+</d-math>
+<p>where <d-math>T</d-math> is the duration of the schedule, and <d-math>\eta_{\max}</d-math> and <d-math>\eta_{\min}</d-math> are the maximum and minimum learning rates.</p>
+
+<p>This schedule smoothly decreases the learning rate toward its minimum value.</p>
+
+<h3 id="36-learning-rate-warmup">3.6 Learning Rate Warmup</h3>
+
+<p>Learning rate warmup starts training with a small learning rate and gradually increases it to the target value.</p>
+
+<p>A simple linear warmup schedule is</p>
+<d-math block="">
+\eta_t = \eta_{\max}\frac{t}{T_w}
+</d-math>
+<p>for <d-math>0 \leq t \leq T_w</d-math>, where <d-math>T_w</d-math> is the number of warmup steps.
+Warmup can help prevent unstable parameter updates at the beginning of training, particularly when using large batch sizes.</p>
+
+<p>After warmup, another learning rate schedule, such as cosine annealing, is often applied.</p>
+
+<h3 id="37-early-stopping">3.7 Early Stopping</h3>
+
+<p>Early stopping is another practical strategy for controlling training.</p>
+
+<p>Instead of choosing a fixed number of training epochs, we monitor performance on a validation dataset and stop training when validation performance no longer improves.</p>
+
+<p>Early stopping can reduce unnecessary computation and help prevent overfitting. Unlike learning rate decay, it determines when training should stop rather than changing the step size.</p>
+
+<h2 id="4-momentum-and-stochastic-gradient-descent">4. Momentum and Stochastic Gradient Descent</h2>
+
+<h3 id="41-limitations-of-standard-sgd">4.1 Limitations of Standard SGD</h3>
+
+<p>Stochastic Gradient Descent (SGD) updates model parameters in the opposite direction of the gradient:</p>
+<d-math block="">
+\theta_{t+1} = \theta_t - \eta \nabla L(\theta_t)
+</d-math>
+
+<p>Although SGD is simple and widely used, it can be inefficient when the loss surface has different curvatures in different directions.</p>
+
+<p>For example, consider a narrow valley in the loss landscape. The gradient may point toward the opposite side of the valley rather than along the valley toward the minimum. As a result, SGD can oscillate from one side to the other, slowing down convergence.</p>
+
+<h3 id="42-momentum">4.2 Momentum</h3>
+
+<p>Momentum improves SGD by incorporating information from previous gradient updates. Instead of relying only on the current gradient, it maintains a running average of past gradients.</p>
+
+<p>A common formulation is:</p>
+<d-math block="">
+v_t = \mu v_{t-1} + g_t
+</d-math>
+<d-math block="">
+\theta_{t+1} = \theta_t - \eta v_t
+</d-math>
+<p>where:</p>
+
+<ul>
+  <li>
+    <d-math>v_t</d-math>
+    <p>is the accumulated gradient direction.</p>
+  </li>
+  <li>
+    <d-math>\mu</d-math>
+    <p>is the momentum coefficient, typically between 0.9 and 0.99.</p>
+  </li>
+  <li>
+    <d-math>g_t = \nabla L(\theta_t)</d-math>
+    <p>is the current gradient.</p>
+  </li>
+  <li>
+    <d-math>\eta</d-math>
+    <p>is the learning rate.</p>
+  </li>
+</ul>
+
+<p>Momentum reduces oscillations by combining gradient information across iterations. In a narrow valley, gradient components pointing across the valley tend to cancel, while components pointing along the valley accumulate.</p>
+
+<p>This allows the optimizer to move more efficiently toward the minimum.</p>
+
+<h3 id="43-momentum-in-pytorch">4.3 Momentum in PyTorch</h3>
+
+<p>PyTorch supports momentum through the SGD optimizer:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">optim</span><span class="p">.</span><span class="n">SGD</span><span class="p">(</span>
+    <span class="n">model</span><span class="p">.</span><span class="n">parameters</span><span class="p">(),</span>
+    <span class="n">lr</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+    <span class="n">momentum</span><span class="o">=</span><span class="mf">0.9</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">momentum</code> parameter controls how strongly previous gradient updates influence the current update.</p>
+
+<p>PyTorch also provides a <code class="language-plaintext highlighter-rouge">dampening</code> parameter, which modifies the contribution of new gradients to the momentum buffer.</p>
+
+<h2 id="5-adaptive-optimization-methods">5. Adaptive Optimization Methods</h2>
+
+<h3 id="51-why-adaptive-learning-rates">5.1 Why Adaptive Learning Rates?</h3>
+
+<p>Standard SGD uses the same learning rate for all model parameters. However, different parameters may have gradients of different magnitudes.</p>
+
+<p>Adaptive optimization methods address this problem by adjusting the effective learning rate for each parameter based on its gradient history.</p>
+
+<p>These methods can improve training efficiency and reduce the need for manually tuning a single learning rate.</p>
+
+<h3 id="52-adagrad">5.2 AdaGrad</h3>
+
+<p>AdaGrad adapts the learning rate using the accumulated squared gradients.</p>
+
+<p>Let <d-math>g_t</d-math> be the gradient at iteration <d-math>t</d-math>. The accumulated squared gradient is</p>
+<d-math block="">
+G_t = G_{t-1} + g_t^2
+</d-math>
+<p>The parameter update is</p>
+<d-math block="">
+\theta_{t+1} = \theta_t - \frac{\eta}{\sqrt{G_t}+\epsilon}g_t
+</d-math>
+<p>All operations involving <d-math>G_t</d-math> are performed element-wise.</p>
+
+<p>AdaGrad gives smaller effective learning rates to parameters with large accumulated gradients.</p>
+
+<p>However, because <d-math>G_t</d-math> continuously increases, the effective learning rate may become too small during long training runs.</p>
+
+<h3 id="53-rmsprop">5.3 RMSProp</h3>
+
+<p>RMSProp addresses AdaGrad’s continuously decreasing learning rates by using an exponential moving average of squared gradients.</p>
+<d-math block="">
+s_t = \beta s_{t-1} + (1-\beta)g_t^2
+</d-math>
+<p>The parameter update is</p>
+<d-math block="">
+\theta_{t+1} = \theta_t - \frac{\eta}{\sqrt{s_t}+\epsilon}g_t
+</d-math>
+<p>Here, <d-math>\beta</d-math> controls how much information from previous gradients is retained.</p>
+
+<p>Unlike AdaGrad, RMSProp gives more weight to recent gradients rather than accumulating all past squared gradients equally.</p>
+
+<h3 id="54-adam-optimizer">5.4 Adam Optimizer</h3>
+
+<p>Adam stands for Adaptive Moment Estimation. It combines ideas from momentum and adaptive learning rates.</p>
+
+<p>Adam maintains two moving averages:</p>
+
+<ul>
+  <li>The first moment estimates the average gradient.</li>
+  <li>The second moment estimates the average squared gradient.</li>
+</ul>
+<d-math block="">
+m_t = \beta_1 m_{t-1} + (1-\beta_1)g_t
+</d-math>
+<d-math block="">
+v_t = \beta_2 v_{t-1} + (1-\beta_2)g_t^2
+</d-math>
+<p>Because both moving averages are initialized at zero, Adam applies bias correction:</p>
+<d-math block="">
+\hat{m}_t = \frac{m_t}{1-\beta_1^t}
+</d-math>
+<d-math block="">
+\hat{v}_t = \frac{v_t}{1-\beta_2^t}
+</d-math>
+<p>The parameter update is</p>
+<d-math block="">
+\theta_{t+1} = \theta_t - \eta \frac{\hat{m}_t}{\sqrt{\hat{v}_t}+\epsilon}
+</d-math>
+<p>Common default values are:</p>
+
+<ul>
+  <li>
+    <d-math>\beta_1 = 0.9</d-math>
+  </li>
+  <li>
+    <d-math>\beta_2 = 0.999</d-math>
+  </li>
+  <li>
+    <d-math>\epsilon = 10^{-8}</d-math>
+  </li>
+</ul>
+
+<p>Adam uses momentum-like gradient averaging while also scaling updates based on recent squared gradients.</p>
+
+<h3 id="55-sgd-with-momentum-vs-adam">5.5 SGD with Momentum vs. Adam</h3>
+
+<p>SGD with momentum uses accumulated gradient information to reduce oscillations and accelerate optimization.</p>
+
+<p>Adam additionally adapts the effective learning rate for each parameter using estimates of the first and second moments.</p>
+
+<p>Adam often makes rapid progress early in training and can work well with limited learning-rate tuning. However, SGD with momentum can sometimes achieve better generalization, depending on the model and task.</p>
+
+<p>Neither optimizer is universally better.</p>
+
+<h3 id="56-adam-in-pytorch">5.6 Adam in PyTorch</h3>
+
+<p>PyTorch provides Adam through <code class="language-plaintext highlighter-rouge">torch.optim.Adam</code>.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">optim</span><span class="p">.</span><span class="n">Adam</span><span class="p">(</span>
+    <span class="n">model</span><span class="p">.</span><span class="n">parameters</span><span class="p">(),</span>
+    <span class="n">lr</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span>
+    <span class="n">betas</span><span class="o">=</span><span class="p">(</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.999</span><span class="p">),</span>
+    <span class="n">eps</span><span class="o">=</span><span class="mf">1e-8</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">lr</code> parameter specifies the base learning rate, while <code class="language-plaintext highlighter-rouge">betas</code> controls the exponential moving averages of the gradient and squared gradient.</p>
+
+<p>Adam is widely used in deep learning because it combines adaptive parameter updates with momentum-like behavior.</p>
+
+ </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+    </div>
+
+    <footer class="site-footer">
+  <div class="wrapper">
+    <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Ben Lengerich</li><li>
+            <a class="u-email" href="mailto:lengerich@wisc.edu"
+              >lengerich@wisc.edu</a
+            >
+          </li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li>
+    <a
+      href="https://github.com/AdaptInfer"
+      target="_blank"
+      ><i class="fab fa-github"></i>
+      <span class="username">AdaptInfer</span></a
+    >
+  </li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>
+          &copy; Copyright 2026 University of Wisconsin.
+          <br />
+          
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  </body>
+
+  <d-bibliography
+    src="/dgm-fall-2026/assets/bibliography/2026-10-08-lecture-11.bib"
+  >
+  </d-bibliography>
+
+  <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/dgm-fall-2026/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link
+  rel="stylesheet"
+  href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css"
+/>
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+<script src="/dgm-fall-2026/assets/js/katex.js"></script>
+ 
+<!-- Load Anchor JS -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+<script>
+  anchors.options.visible = "hover";
+  anchors.add("article h2, article h3, article h4, article h5, article h6");
+</script>
+ 
+<!-- Adjust LaTeX JS -->
+<script src="/dgm-fall-2026/assets/js/latex.js"></script>
+
+
+<!-- Include custom icon fonts -->
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2026/assets/css/fontawesome-all.min.css"
+/>
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2026/assets/css/academicons.min.css"
+/>
+
+<!-- Google Analytics -->
+<script>
+  (function (i, s, o, g, r, a, m) {
+    i["GoogleAnalyticsObject"] = r;
+    ((i[r] =
+      i[r] ||
+      function () {
+        (i[r].q = i[r].q || []).push(arguments);
+      }),
+      (i[r].l = 1 * new Date()));
+    ((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
+    a.async = 1;
+    a.src = g;
+    m.parentNode.insertBefore(a, m);
+  })(
+    window,
+    document,
+    "script",
+    "//www.google-analytics.com/analytics.js",
+    "ga",
+  );
+
+  ga("create", "", "auto");
+  ga("send", "pageview");
+</script>
+
+</html>

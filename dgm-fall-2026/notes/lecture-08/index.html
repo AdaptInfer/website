@@ -1,0 +1,542 @@
+<!doctype html>
+<html>
+  <head>
+    <head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="content-language" content="en" />
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <title>
+    STAT 453 | Lecture 08: Convolutional Neural Networks
+  </title>
+  <meta name="description" content="STAT 453 - University of Wisconsin-Madison - Fall 2026
+" />
+
+  <link
+    rel="shortcut icon"
+    href="/dgm-fall-2026/assets/img/favicon.ico"
+  />
+
+  <link rel="stylesheet" href="/dgm-fall-2026/assets/css/main.css" />
+  <link
+    rel="canonical"
+    href="/dgm-fall-2026/notes/lecture-08/"
+  />
+
+  
+  <!-- Load Latex JS -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+  
+</head>
+
+    <script src="/dgm-fall-2026/assets/js/distillpub/template.v2.js"></script>
+    <script src="/dgm-fall-2026/assets/js/distillpub/transforms.v2.js"></script>
+  </head>
+
+  <d-front-matter>
+    <script type="text/json">
+      {
+            "title": "Lecture 08: Convolutional Neural Networks",
+            "description": "From image tasks and shared filters to convolution arithmetic, backpropagation, and PyTorch.",
+            "published": "September 29, 2026",
+            "lecturers": [
+              
+              {
+                "lecturer": "Ben Lengerich",
+                "lecturerURL": "https://adaptinfer.org"
+              }
+              
+            ],
+            "authors": [
+              
+              {
+                "author": "Yi Yang"
+              },
+              
+              {
+                "author": "Aurelia Chen"
+              }
+              
+            ],
+            "editors": [
+              
+            ],
+            "katex": {
+              "delimiters": [
+                {
+                  "left": "$",
+                  "right": "$",
+                  "display": false
+                },
+                {
+                  "left": "$$",
+                  "right": "$$",
+                  "display": true
+                }
+              ]
+            }
+          }
+    </script>
+  </d-front-matter>
+
+  <body>
+    <header class="site-header">
+  <div class="wrapper">
+    <span class="site-title">
+      <a class="page-link" href="https://adaptinfer.org/dgm-fall-2026/"
+        >STAT 453</a
+      >
+    </span>
+
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path
+              fill="#424242"
+              d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
+            />
+            <path
+              fill="#424242"
+              d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
+            />
+            <path
+              fill="#424242"
+              d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
+            />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger">
+        <a class="page-link" href="/dgm-fall-2026/logistics/"
+          >logistics</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/lectures/"
+          >lectures</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/notes/">notes</a>
+        <a class="page-link" href="/dgm-fall-2026/calendar/"
+          >calendar</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/homework/"
+          >homework</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/project/">project</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+      <d-title>
+        <h1>Lecture 08: Convolutional Neural Networks</h1>
+        <p>From image tasks and shared filters to convolution arithmetic, backpropagation, and PyTorch.</p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article> <h2 id="1-todays-roadmap">1. Today’s Roadmap</h2>
+
+<ul>
+  <li>
+    <p>What CNNs can do</p>
+  </li>
+  <li>
+    <p>Why images are difficult for fully connected networks</p>
+  </li>
+  <li>
+    <p>Convolutional neural network basics</p>
+  </li>
+  <li>
+    <p>Cross-correlation versus convolution</p>
+  </li>
+  <li>
+    <p>CNNs and backpropagation</p>
+  </li>
+  <li>
+    <p>CNNs in PyTorch</p>
+  </li>
+</ul>
+
+<p>Convolutional Neural Networks (CNNs) replace dense, position-specific connections with small filters that are reused across the input. The lecture emphasizes three main ideas: <strong>sparse connectivity</strong>, <strong>parameter sharing</strong>, and combining local patterns through many layers.</p>
+
+<p><strong>Recap from Lecture 7.</strong> Backpropagation applies the chain rule by summing contributions from every path through which a variable affects the loss. For a linear layer $z=Wa+b$, the input gradient is $\partial L/\partial a=W^\top\delta$, where $\delta=\partial L/\partial z$. Convolutional layers follow the same principle, with local connections and shared weights.</p>
+
+<h2 id="2-what-cnns-can-do">2. What CNNs Can Do</h2>
+
+<p><strong>Image classification</strong> assigns a class or class probability to an entire image. The lecture shows a cat-versus-dog example where the network produces an output such as $p(y=\mathrm{cat})$.</p>
+
+<p><strong>Object detection</strong> identifies multiple objects and their locations in an image, usually by predicting bounding boxes around objects such as cars, people, and trucks.</p>
+
+<p><strong>Object segmentation</strong> predicts which pixels belong to objects or regions, so the model describes object shapes rather than only giving an image-level label or a bounding box.</p>
+
+<h2 id="3-why-images-are-hard">3. Why Images Are Hard</h2>
+
+<p>The same object can appear differently under changes in lighting, contrast, viewpoint, or location. Even a simple translation moves the important pixels to different coordinates. This makes a purely position-specific representation inconvenient for image recognition.</p>
+
+<p>A sufficiently wide fully connected network with suitable nonlinear activations can approximate continuous functions on a bounded, closed input domain. However, this does not tell us how many units or training examples are needed. CNNs introduce architectural assumptions about locality and repeated patterns that are particularly useful for images.</p>
+
+<p>Full connectivity also creates a parameter problem. For a $3\times200\times200$ image, the first hidden-layer neuron would need 120,000 input weights, excluding its bias. A layer with many hidden neurons would multiply this count further. CNNs reduce this burden by connecting each output only to a small local region and by reusing the same weights in many locations. This reduces storage and can help generalization, although CNNs can still overfit.</p>
+
+<h2 id="4-convolutional-neural-network-basics">4. Convolutional Neural Network Basics</h2>
+
+<h3 id="41-filters-kernels-and-weight-sharing">4.1 Filters, Kernels, and Weight Sharing</h3>
+
+<p>A filter (or kernel) is a small set of weights that slides over the input. Instead of learning a different set of weights for every absolute pixel position, the same kernel is reused across many positions. This is <strong>parameter sharing</strong>.</p>
+
+<p>The output of one filter is a <strong>feature map</strong>. The lecture describes a filter as a “feature detector”: a local detector that works in one region may also work when the same pattern appears elsewhere in the image.</p>
+
+<figure>
+  <img src="/dgm-fall-2026/assets/img/notes/lecture-08/weight-sharing.png" alt="A 2 by 2 kernel slides across a 3 by 4 input to produce a 2 by 3 feature map." style="width:100%;height:auto;" />
+  <figcaption><strong>Figure 1. Weight sharing in a convolutional kernel.</strong> The same small set of kernel weights is reused as the filter moves across the input. Reproduced from the lecture slides; the original source credit to Goodfellow et al. (2016) is retained in the image.</figcaption>
+</figure>
+
+<p>In Figure 1, the input has 3 rows and 4 columns, and the kernel has 2 rows and 2 columns. With stride 1 and no padding, the kernel fits in two vertical positions and three horizontal positions, producing a $2\times3$ feature map. Each output sums four input–weight products. The same four kernel weights are used at all six positions; bias is omitted in this illustration.</p>
+
+<h3 id="42-input-and-output-channels">4.2 Input and Output Channels</h3>
+
+<p>CNNs normally learn multiple filters. Each filter produces its own feature map, so a hidden convolutional layer can be viewed as a collection of feature maps produced by different learned detectors.</p>
+
+<p>An RGB image has three input channels. In a standard convolution, each filter contains a separate spatial slice of weights for each input channel. At each location, it sums the weighted values across all three channels, adds its bias, and produces one output value. One filter therefore produces one feature map, not three separate output maps.</p>
+
+<p>For a $32\times32$ grayscale input, six $5\times5$ filters with stride 1 and no padding produce six $28\times28$ feature maps. This layer has one input channel and six output channels.</p>
+
+<h3 id="43-pooling">4.3 Pooling</h3>
+
+<p><strong>Pooling</strong> reduces the spatial size of a representation and is described in the lecture as lossy compression. In <strong>max-pooling</strong>, each region is replaced by its maximum value. In <strong>mean-pooling</strong>, each region is replaced by its average.</p>
+
+<figure>
+  <img src="/dgm-fall-2026/assets/img/notes/lecture-08/pooling.png" alt="Max-pooling and mean-pooling summarize four 3 by 3 regions of a 6 by 6 input into 2 by 2 outputs." style="width:100%;height:auto;" />
+  <figcaption><strong>Figure 2. Max-pooling and mean-pooling.</strong> Different pooling rules summarize a local region into a smaller output. Reproduced from the lecture slides; the original source credit to Raschka and Mirjalili (2019) is retained in the image.</figcaption>
+</figure>
+
+<h3 id="44-sparse-connectivity-parameter-sharing-and-depth">4.4 Sparse Connectivity, Parameter Sharing, and Depth</h3>
+
+<p>The lecture summarizes the main ideas of CNNs as follows:</p>
+
+<ul>
+  <li>
+    <p><strong>Sparse connectivity:</strong> one feature-map element connects only to a small patch of the input rather than to the entire image.</p>
+  </li>
+  <li>
+    <p><strong>Parameter sharing:</strong> the same filter weights are reused for different spatial locations.</p>
+  </li>
+  <li>
+    <p><strong>Many layers:</strong> local patterns extracted in early layers can be combined into larger and more global patterns in deeper layers.</p>
+  </li>
+</ul>
+
+<p><strong>Receptive field</strong> means the part of the original input that can affect a hidden activation. Although one convolutional unit initially sees only a local patch, receptive fields grow with depth because later units combine outputs from earlier local regions.</p>
+
+<h2 id="5-cross-correlation-vs-convolution">5. Cross-Correlation vs. Convolution</h2>
+
+<h3 id="51-convolution-in-probability">5.1 Convolution in Probability</h3>
+
+<p>Let $Z=X+Y$, where $X$ and $Y$ are independent. To obtain a particular sum $z$, every possible value $x$ must be paired with $z-x$. Independence lets us multiply the corresponding densities or probabilities, and we integrate or sum over all possible $x$.</p>
+
+<p>For independent continuous random variables, with densities $f_X$ and $f_Y$,</p>
+
+<d-math block="">
+f_Z(z)=\int_{-\infty}^{\infty} f_X(x)f_Y(z-x)\,dx.
+</d-math>
+
+<p>For independent discrete random variables, the integral becomes a sum. Writing $p_X$, $p_Y$, and $p_Z$ for the probability mass functions,</p>
+
+<d-math block="">
+p_Z(z)=\sum_x p_X(x)p_Y(z-x).
+</d-math>
+
+<p>These operations are called convolutions. The continuous formula gives a density at $z$, not the probability of the single event $Z=z$.</p>
+
+<h3 id="52-the-operation-used-in-cnns">5.2 The Operation Used in CNNs</h3>
+
+<p>A CNN forms an output by sliding a kernel over an activation window, multiplying aligned values, and summing them. The lecture points out an important terminology detail: what deep-learning frameworks usually call “convolution” is technically <strong>cross-correlation</strong> because the kernel is not flipped.</p>
+
+<p>For a single input channel, omitting bias,</p>
+
+<d-math block="">
+\text{Cross-correlation:}\qquad Z[i,j]=\sum_u\sum_v K[u,v]A[i+u,j+v].
+</d-math>
+
+<d-math block="">
+\text{Convolution:}\qquad Z[i,j]=\sum_u\sum_v K[u,v]A[i-u,j-v].
+</d-math>
+
+<p>Here, $A$ is the input activation map, $K$ is the kernel, and $u,v$ index kernel offsets. These expressions describe the operation before restricting it to the desired output positions and choosing a boundary convention.</p>
+
+<p>True convolution flips the kernel horizontally and vertically relative to cross-correlation. In common deep-learning usage, however, the cross-correlation operation is still implemented by layers named convolution.</p>
+
+<h2 id="6-output-size-stride-and-padding">6. Output Size, Stride, and Padding</h2>
+
+<p>The spatial size of a convolution output depends on four quantities: input width $W$, kernel width $K$, padding $P$ on each side, and stride $S$. For the undilated convolution considered here, the lecture gives the output-width formula</p>
+
+<d-math block="">
+O=\frac{W-K+2P}{S}+1.
+</d-math>
+
+<p><strong>Stride</strong> controls how far the kernel moves between neighboring positions. <strong>Padding</strong> adds values around the border of the input, allowing the kernel to operate near the boundary and changing the resulting output size.</p>
+
+<figure>
+  <img src="/dgm-fall-2026/assets/img/notes/lecture-08/output-size.png" alt="Output width equals input width minus kernel width plus twice the padding, divided by stride, plus one, when the division is exact." style="width:100%;height:auto;" />
+  <figcaption><strong>Figure 3. Convolution output size.</strong> The output dimension depends on input width, kernel width, padding, and stride. Reproduced from the lecture slides. See also Dumoulin and Visin for convolution arithmetic. <d-cite key="dumoulin2016"></d-cite></figcaption>
+</figure>
+
+<p>This expression assumes that $(W-K+2P)$ is an integer multiple of $S$; otherwise, round the quotient down before adding 1. Apply the formula separately to height and width.</p>
+
+<p>For a $28\times28$ grayscale input, eight $5\times5$ filters with stride 1 and no padding give $O=(28-5)/1+1=24$. The output shape is $8\times24\times24$, written as channels × height × width and excluding the batch dimension.</p>
+
+<p>The lecture also cautions that CNNs are not automatically invariant to translation, rotation, or scale. Weight sharing lets the same detector be applied at different locations, but the resulting activations can still depend on where and how an object appears.</p>
+
+<p><strong>Data augmentation</strong> trains the model on label-preserving transformations, such as suitable shifts or crops, so it can learn to give consistent predictions across those variations. This encourages robustness but does not guarantee perfect invariance.</p>
+
+<h2 id="7-cnns-and-backpropagation">7. CNNs and Backpropagation</h2>
+
+<p>Backpropagation in CNNs uses the same multivariable chain rule as before, with one additional constraint: weights are shared. Because one kernel weight is reused in multiple positions, the gradient for that weight must collect contributions from every computational path in which the shared weight appears.</p>
+
+<h3 id="71-backpropagation-through-a-1d-convolution">7.1 Backpropagation Through a 1D Convolution</h3>
+
+<p>For a 1D cross-correlation with a kernel of size 2, the lecture defines input activations $a=(a_1,a_2,a_3,a_4)$ and a shared kernel $(w_1,w_2)$. With stride 1, no padding, and no bias, the 1D cross-correlation produces</p>
+
+<d-math block="">
+z_k=w_1a_k+w_2a_{k+1},\qquad k=1,2,3.
+</d-math>
+
+<p>Define the incoming gradient from the rest of the network as</p>
+
+<d-math block="">
+\delta_k=\frac{\partial L}{\partial z_k}.
+</d-math>
+
+<p>It measures how sensitive the final loss is to $z_k$. We use it to compute gradients for this layer’s inputs and weights.</p>
+
+<p>Input $a_2$ appears in $z_1$ with coefficient $w_2$ and in $z_2$ with coefficient $w_1$. The chain rule therefore gives</p>
+
+<d-math block="">
+\frac{\partial L}{\partial a_2}
+=\frac{\partial L}{\partial z_1}\frac{\partial z_1}{\partial a_2}
++\frac{\partial L}{\partial z_2}\frac{\partial z_2}{\partial a_2}
+=\delta_1w_2+\delta_2w_1.
+</d-math>
+
+<p>Applying the same reasoning to all four inputs,</p>
+
+<d-math block="">
+\frac{\partial L}{\partial a_1}=w_1\delta_1,
+</d-math>
+
+<d-math block="">
+\frac{\partial L}{\partial a_2}=w_2\delta_1+w_1\delta_2,
+</d-math>
+
+<d-math block="">
+\frac{\partial L}{\partial a_3}=w_2\delta_2+w_1\delta_3,
+</d-math>
+
+<d-math block="">
+\frac{\partial L}{\partial a_4}=w_2\delta_3.
+</d-math>
+
+<p>Each kernel weight is used at all three output positions, so its gradient sums contributions from all three uses:</p>
+
+<d-math block="">
+\frac{\partial L}{\partial w_1}=\delta_1a_1+\delta_2a_2+\delta_3a_3,
+</d-math>
+
+<d-math block="">
+\frac{\partial L}{\partial w_2}=\delta_1a_2+\delta_2a_3+\delta_3a_4.
+</d-math>
+
+<p>The optimizer uses these weight gradients to update the kernel. Weight sharing changes which contributions must be added; it does not change the chain rule.</p>
+
+<h3 id="72-numerical-example">7.2 Numerical Example</h3>
+
+<p>Using $w=(2,-1)$ and $\delta=(1,3,-2)$, the lecture obtains</p>
+
+<d-math block="">
+\frac{\partial L}{\partial a}=(2,5,-7,2).
+</d-math>
+
+<p>The same result can be viewed as zero-padding $\delta$ to $(0,1,3,-2,0)$ and cross-correlating it with the flipped kernel $(-1,2)$. This connects the backward calculation to another convolution-like operation rather than treating it as a completely different procedure.</p>
+
+<h2 id="8-cnns-in-pytorch">8. CNNs in PyTorch</h2>
+
+<p>The lecture shows a LeNet-style network in PyTorch. <d-cite key="lecun1998"></d-cite> Its feature extractor alternates convolution, nonlinear activation, and max-pooling; the resulting feature maps are then flattened and passed to fully connected layers for classification.</p>
+
+<p>The following is an <strong>architecture sketch, not a complete executable program</strong>:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">nn</span><span class="p">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="n">in_channels</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">nn</span><span class="p">.</span><span class="n">Tanh</span><span class="p">()</span>
+<span class="n">nn</span><span class="p">.</span><span class="n">MaxPool2d</span><span class="p">(</span><span class="n">kernel_size</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">nn</span><span class="p">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">nn</span><span class="p">.</span><span class="n">Tanh</span><span class="p">()</span>
+<span class="n">nn</span><span class="p">.</span><span class="n">MaxPool2d</span><span class="p">(</span><span class="n">kernel_size</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">torch</span><span class="p">.</span><span class="n">flatten</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">nn</span><span class="p">.</span><span class="n">Linear</span><span class="p">(...),</span> <span class="n">nn</span><span class="p">.</span><span class="n">Tanh</span><span class="p">(),</span> <span class="n">nn</span><span class="p">.</span><span class="n">Linear</span><span class="p">(...)</span>
+</code></pre></div></div>
+
+<p>The key idea is structural: convolution and pooling perform the spatial feature extraction, while the final fully connected layers use those learned features to produce class outputs.</p>
+
+<h2 id="9-convolutions-beyond-images">9. Convolutions Beyond Images</h2>
+
+<p>The lecture closes by asking whether convolution-like ideas can be used for non-image data and briefly introduces Graph Convolutional Networks. Images have a regular grid structure, but other datasets have irregular connections, such as cities connected by roads. This extends the general idea of exploiting local structure and shared operations to graph-structured inputs.</p>
+
+<h2 id="10-summary">10. Summary</h2>
+
+<ul>
+  <li>
+    <p>CNNs can be used for image classification, object detection, and object segmentation.</p>
+  </li>
+  <li>
+    <p>Fully connected image models can require very large numbers of parameters.</p>
+  </li>
+  <li>
+    <p>A convolutional filter is a small set of weights reused across spatial locations.</p>
+  </li>
+  <li>
+    <p>Sparse connectivity and parameter sharing are central structural ideas in CNNs.</p>
+  </li>
+  <li>
+    <p>Multiple filters produce multiple feature maps, and receptive fields grow through depth.</p>
+  </li>
+  <li>
+    <p>Pooling reduces spatial resolution using summaries such as a maximum or mean.</p>
+  </li>
+  <li>
+    <p>Deep-learning “convolution” layers usually compute cross-correlation rather than a mathematically flipped convolution.</p>
+  </li>
+  <li>
+    <p>Output size depends on input size, kernel size, padding, and stride.</p>
+  </li>
+  <li>
+    <p>CNN backpropagation still uses the chain rule, while accounting for shared weights and multiple gradient paths.</p>
+  </li>
+  <li>
+    <p>PyTorch combines convolution, activation, pooling, flattening, and fully connected layers to build CNNs.</p>
+  </li>
+  <li>
+    <p>CNNs still require architectural choices and can overfit; weight sharing alone does not guarantee invariance.</p>
+  </li>
+</ul>
+
+<h2 id="lecture-source">Lecture Source</h2>
+
+<p>Lengerich, B. STAT 453 Lecture 08 slides, September 29, 2026.</p>
+ </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+    </div>
+
+    <footer class="site-footer">
+  <div class="wrapper">
+    <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Ben Lengerich</li><li>
+            <a class="u-email" href="mailto:lengerich@wisc.edu"
+              >lengerich@wisc.edu</a
+            >
+          </li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li>
+    <a
+      href="https://github.com/AdaptInfer"
+      target="_blank"
+      ><i class="fab fa-github"></i>
+      <span class="username">AdaptInfer</span></a
+    >
+  </li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>
+          &copy; Copyright 2026 University of Wisconsin.
+          <br />
+          
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  </body>
+
+  <d-bibliography
+    src="/dgm-fall-2026/assets/bibliography/2026-09-29-lecture-08.bib"
+  >
+  </d-bibliography>
+
+  <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/dgm-fall-2026/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link
+  rel="stylesheet"
+  href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css"
+/>
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+<script src="/dgm-fall-2026/assets/js/katex.js"></script>
+ 
+<!-- Load Anchor JS -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+<script>
+  anchors.options.visible = "hover";
+  anchors.add("article h2, article h3, article h4, article h5, article h6");
+</script>
+ 
+<!-- Adjust LaTeX JS -->
+<script src="/dgm-fall-2026/assets/js/latex.js"></script>
+
+
+<!-- Include custom icon fonts -->
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2026/assets/css/fontawesome-all.min.css"
+/>
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2026/assets/css/academicons.min.css"
+/>
+
+<!-- Google Analytics -->
+<script>
+  (function (i, s, o, g, r, a, m) {
+    i["GoogleAnalyticsObject"] = r;
+    ((i[r] =
+      i[r] ||
+      function () {
+        (i[r].q = i[r].q || []).push(arguments);
+      }),
+      (i[r].l = 1 * new Date()));
+    ((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
+    a.async = 1;
+    a.src = g;
+    m.parentNode.insertBefore(a, m);
+  })(
+    window,
+    document,
+    "script",
+    "//www.google-analytics.com/analytics.js",
+    "ga",
+  );
+
+  ga("create", "", "auto");
+  ga("send", "pageview");
+</script>
+
+</html>
