@@ -152,6 +152,7 @@
   <li>Threshold Functions</li>
   <li>Perceptron Learning Algorithm</li>
   <li>Notational Conventions for Neural Networks</li>
+  <li>A Fully-Connected (Linear) Layer in PyTorch</li>
 </ul>
 
 <p>A single-layer network combines inputs using weights and bias, applies an activation function, and produces an output. The perceptron creates a linear decision boundary and the Perceptron Learning Algorithm updates the model for misclassifications.</p>
@@ -220,12 +221,12 @@ net = \sum_{i=0}^{n} w_i x_i.
 
 <h3 id="41-classic-perceptron-limitations">4.1 Classic Perceptron Limitations</h3>
 
-<p>The classic perceptron is a binary linear classifier.</p>
+<p>The classic perceptron has several limitations:</p>
 <ul>
-  <li>It cannot have non-linear decision boundaries.</li>
-  <li>It cannot solve multi-class problems.</li>
-  <li>It contains multiple (often not optimal) solutions so there is no clear single solution.</li>
-  <li>Does not converge if a linearly separable solution does not exist (but is guaranteed to converge otherwise)</li>
+  <li>It is a <strong>linear</strong> classifier, so it cannot have non-linear decision boundaries.</li>
+  <li>It is a <strong>binary</strong> classifier with a single linear boundary, so it cannot solve the XOR problem.</li>
+  <li>It does not converge if the classes are not linearly separable (but is guaranteed to converge otherwise).</li>
+  <li>There are many “optimal” solutions in terms of 0/1 loss on the training data, and most of them will not be optimal in terms of generalization performance.</li>
 </ul>
 
 <h2 id="5-perceptron-learning-algorithm">5. Perceptron Learning Algorithm</h2>
@@ -295,29 +296,132 @@ D = (\langle x^{[1]}, y^{[1]}\rangle, \langle x^{[2]}, y^{[2]}\rangle, \ldots, \
 
 <h2 id="6-notational-conventions-for-neural-networks">6. Notational Conventions for Neural Networks</h2>
 
-<h3 id="61-single-connected-layer">6.1 Single Connected Layer</h3>
+<h3 id="61-from-one-neuron-to-many-training-examples">6.1 From one neuron to many training examples</h3>
 
-<p>The inputs are weighted differently based on the node that they are feeding into.</p>
-<ul>
-  <li>A scaled set of inputs may need to result in a certain value for the first component of the output and a different value for the second component of the output. Thus, even though the same inputs may feed into the same activations, the weight vector applied at each neuron may be different.</li>
-</ul>
+<p>So far we have a single neuron. For one training example $\mathbf{x} \in \mathbb{R}^{m}$, the net input is</p>
 
-<p>Example:</p>
-<ul>
-  <li>Assume Input = $[3,4]$ and expected output = $[4,3]$</li>
-  <li>Same weighting would cause Input $[3,4]$, Output $[4,4]$</li>
-</ul>
+<d-math block="">
+z = \mathbf{x}^\top \mathbf{w} + b.
+</d-math>
 
-<p>A fully connected layer converts the outputted activation as inputs to the next layer of neurons having their own associated weights and activations.</p>
+<p>If we have $n$ training examples stacked as the rows of the design matrix $\mathbf{X} \in \mathbb{R}^{n \times m}$, the same computation for all examples at once is</p>
 
-<h2 id="7-summary">7. Summary</h2>
+<d-math block="">
+\mathbf{z} = \mathbf{X}\mathbf{w} + b, \qquad \mathbf{z} \in \mathbb{R}^{n \times 1},
+</d-math>
+
+<p>where the scalar $b$ is added to every entry. Computing the prediction for one example is what is now often called “inference” in deep learning.</p>
+
+<h3 id="62-a-fully-connected-layer">6.2 A fully-connected layer</h3>
+
+<p>Next we put $h$ neurons side by side. Every input feeds every neuron, which is why the layer is called <strong>fully connected</strong>. The inputs are weighted differently for each neuron: each neuron has its own weight vector, so even though all neurons see the same inputs, they can compute different outputs. Collecting the $h$ weight vectors as the rows of a matrix gives</p>
+
+<d-math block="">
+\mathbf{x} = \begin{bmatrix} x_1 \\ x_2 \\ \vdots \\ x_m \end{bmatrix},
+\qquad
+\mathbf{W} = \begin{bmatrix}
+w_{1,1} &amp; w_{1,2} &amp; \cdots &amp; w_{1,m} \\
+w_{2,1} &amp; w_{2,2} &amp; \cdots &amp; w_{2,m} \\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+w_{h,1} &amp; w_{h,2} &amp; \cdots &amp; w_{h,m}
+\end{bmatrix} \in \mathbb{R}^{h \times m}.
+</d-math>
+
+<p>Note the indexing convention: $w_{i,j}$ is the weight connecting the $j$-th <strong>input</strong> to the $i$-th <strong>output</strong>. Row $i$ of $\mathbf{W}$ is the weight vector of neuron $i$.</p>
+
+<p>For <strong>one training example</strong>, the layer activations are</p>
+
+<d-math block="">
+\mathbf{a} = \sigma\left(\mathbf{W}\mathbf{x} + \mathbf{b}\right), \qquad \mathbf{a} \in \mathbb{R}^{h \times 1},
+</d-math>
+
+<p>where $\mathbf{b} \in \mathbb{R}^{h}$ holds one bias per neuron and $\sigma$ is applied elementwise.</p>
+
+<p>For <strong>$n$ training examples</strong> stored in $\mathbf{X} \in \mathbb{R}^{n \times m}$, we transpose $\mathbf{X}$ so the examples become columns, and transpose the result back so that each row is again one example:</p>
+
+<d-math block="">
+\mathbf{A} = \sigma\left(\left[\mathbf{W}\mathbf{X}^\top + \mathbf{b}\right]^\top\right), \qquad \mathbf{A} \in \mathbb{R}^{n \times h}.
+</d-math>
+
+<p>Here $\mathbf{W}\mathbf{X}^\top$ is $h \times n$ and $\mathbf{b}$ is added to every column. Stacking several such layers, where the activations $\mathbf{a}^{(1)}$ of one layer become the inputs of the next, gives the multilayer networks of the coming lectures.</p>
+
+<h3 id="63-why-the-mathbfwmathbfx-notation-is-intuitive">6.3 Why the $\mathbf{W}\mathbf{x}$ notation is intuitive</h3>
+
+<p>A matrix-vector product is a linear transformation of the input vector. The identity matrix leaves the input unchanged:</p>
+
+<d-math block="">
+\begin{bmatrix} 1 &amp; 0 \\ 0 &amp; 1 \end{bmatrix}
+\begin{bmatrix} x_1 \\ x_2 \end{bmatrix}
+=
+\begin{bmatrix} x_1 \\ x_2 \end{bmatrix}.
+</d-math>
+
+<p>In general, the product is a weighted sum of the columns of the matrix:</p>
+
+<d-math block="">
+\begin{bmatrix} a &amp; b \\ c &amp; d \end{bmatrix}
+\begin{bmatrix} x \\ y \end{bmatrix}
+= x \begin{bmatrix} a \\ c \end{bmatrix} + y \begin{bmatrix} b \\ d \end{bmatrix}.
+</d-math>
+
+<p>The diagonal entries $a$ and $d$ scale the $x$ and $y$ coordinates, while the off-diagonal entries move $x$ into the $y$ direction ($c$) and $y$ into the $x$ direction ($b$). For example, the diagonal matrices below stretch the axes:</p>
+
+<d-math block="">
+\begin{bmatrix} 3 &amp; 0 \\ 0 &amp; 1 \end{bmatrix}\begin{bmatrix} x \\ y \end{bmatrix} = \begin{bmatrix} 3x \\ y \end{bmatrix},
+\qquad
+\begin{bmatrix} 1 &amp; 0 \\ 0 &amp; 2 \end{bmatrix}\begin{bmatrix} x \\ y \end{bmatrix} = \begin{bmatrix} x \\ 2y \end{bmatrix},
+\qquad
+\begin{bmatrix} 3 &amp; 0 \\ 0 &amp; 2 \end{bmatrix}\begin{bmatrix} x \\ y \end{bmatrix} = \begin{bmatrix} 3x \\ 2y \end{bmatrix}.
+</d-math>
+
+<p>So a layer $\mathbf{W}\mathbf{x}$ maps the input space to a new space, one output coordinate per neuron.</p>
+
+<h2 id="7-a-fully-connected-linear-layer-in-pytorch">7. A Fully-Connected (Linear) Layer in PyTorch</h2>
+
+<p>In PyTorch a fully-connected layer is <code class="language-plaintext highlighter-rouge">torch.nn.Linear</code>. The lecture example uses 10 training examples with 5 features each and a layer with 3 outputs:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="n">X</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="p">.</span><span class="nb">float</span><span class="p">).</span><span class="n">view</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>   <span class="c1"># .view() and .reshape() are equivalent here
+</span><span class="n">fc_layer</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">nn</span><span class="p">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">out_features</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s">'X dim:'</span><span class="p">,</span> <span class="n">X</span><span class="p">.</span><span class="n">size</span><span class="p">())</span>                  <span class="c1"># torch.Size([10, 5])
+</span><span class="k">print</span><span class="p">(</span><span class="s">'W dim:'</span><span class="p">,</span> <span class="n">fc_layer</span><span class="p">.</span><span class="n">weight</span><span class="p">.</span><span class="n">size</span><span class="p">())</span>    <span class="c1"># torch.Size([3, 5])
+</span><span class="k">print</span><span class="p">(</span><span class="s">'b dim:'</span><span class="p">,</span> <span class="n">fc_layer</span><span class="p">.</span><span class="n">bias</span><span class="p">.</span><span class="n">size</span><span class="p">())</span>      <span class="c1"># torch.Size([3])
+</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">fc_layer</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>                            <span class="c1"># .size() is equivalent to .shape
+</span><span class="k">print</span><span class="p">(</span><span class="s">'A dim:'</span><span class="p">,</span> <span class="n">A</span><span class="p">.</span><span class="n">size</span><span class="p">())</span>                  <span class="c1"># torch.Size([10, 3])
+</span></code></pre></div></div>
+
+<p>The weight matrix is stored as <code class="language-plaintext highlighter-rouge">(out_features, in_features)</code>, exactly the $h \times m$ shape of $\mathbf{W}$ above, and the weights and bias are initialized randomly with <code class="language-plaintext highlighter-rouge">requires_grad=True</code>. Since the input follows the design-matrix convention (one row per example), PyTorch computes</p>
+
+<d-math block="">
+\mathbf{A} = \mathbf{X}\mathbf{W}^\top + \mathbf{b},
+</d-math>
+
+<p>which is the same as $\left[\mathbf{W}\mathbf{X}^\top + \mathbf{b}\right]^\top$ from Section 6.2 before the activation. Note that <code class="language-plaintext highlighter-rouge">nn.Linear</code> is only the affine part; the activation function is a separate layer.</p>
+
+<h3 id="71-about-notation">7.1 About notation</h3>
+
+<p>ML culture is a mix of implementation and model development, and these do not always suggest the same notation. Theory usually writes $\mathbf{W}\mathbf{x}$ with column vectors, while code works with batches stored as rows. A useful tip is to think about how the dot products are computed when writing and implementing matrix multiplication. When switching between theory and code, these rules help:</p>
+
+<d-math block="">
+\mathbf{A}\mathbf{B} = \left(\mathbf{B}^\top\mathbf{A}^\top\right)^\top,
+\qquad
+\left(\mathbf{A}\mathbf{B}\right)^\top = \mathbf{B}^\top\mathbf{A}^\top.
+</d-math>
+
+<p>Be cautious of this when debugging, since it is very easy to make mistakes with shapes. Checking that the inner dimensions match ($n \times m$ times $m \times h$) is usually the fastest way to find the bug.</p>
+
+<h2 id="8-summary">8. Summary</h2>
 
 <ul>
   <li><strong>Terminology &amp; Notation</strong>: Single-layer networks combine inputs with weights and bias, then apply an activation function.</li>
   <li><strong>Perceptrons</strong>: Perceptrons use continuous weighting and activation functions to produce outputs and define a separation boundary.</li>
   <li><strong>Threshold Functions</strong>: The classic perceptron uses a threshold function for binary classification and is limited to linear decision boundaries.</li>
   <li><strong>Perceptron Learning Algorithm</strong>: The PLA updates the weights and bias based on misclassified points and converges when the data is linearly separable.</li>
-  <li><strong>Notational Conventions for Neural Networks</strong>: Multiple neurons can apply different weights to the same inputs, and fully connected layers pass activations to the next layer.</li>
+  <li><strong>Notational Conventions for Neural Networks</strong>: A fully-connected layer with $h$ neurons and $m$ inputs has $\mathbf{W} \in \mathbb{R}^{h \times m}$, where $w_{i,j}$ connects input $j$ to output $i$. For one example $\mathbf{a} = \sigma(\mathbf{W}\mathbf{x} + \mathbf{b})$; for $n$ examples $\mathbf{A} = \sigma([\mathbf{W}\mathbf{X}^\top + \mathbf{b}]^\top) \in \mathbb{R}^{n \times h}$.</li>
+  <li><strong>PyTorch</strong>: <code class="language-plaintext highlighter-rouge">nn.Linear(in_features, out_features)</code> stores its weight as <code class="language-plaintext highlighter-rouge">(out_features, in_features)</code> and computes $\mathbf{X}\mathbf{W}^\top + \mathbf{b}$ on a batch. Use the transpose rules to move between theory and code.</li>
 </ul>
  </d-article>
 

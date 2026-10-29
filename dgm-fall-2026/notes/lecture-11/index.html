@@ -286,6 +286,52 @@ Warmup can help prevent unstable parameter updates at the beginning of training,
 
 <p>Early stopping can reduce unnecessary computation and help prevent overfitting. Unlike learning rate decay, it determines when training should stop rather than changing the step size.</p>
 
+<h3 id="38-learning-rate-schedulers-in-pytorch">3.8 Learning Rate Schedulers in PyTorch</h3>
+
+<p>PyTorch provides built-in learning rate schedulers that automatically adjust the learning rate during training. Instead of manually updating the learning rate, we can define a schedule and apply it throughout the training process.</p>
+
+<p>One useful option is <code class="language-plaintext highlighter-rouge">torch.optim.lr_scheduler.LambdaLR</code>, which allows us to specify a custom function that determines the learning rate multiplier.</p>
+
+<p>For example, suppose we want to reduce the learning rate by half every 10 epochs:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">optim</span><span class="p">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">model</span><span class="p">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+
+<span class="n">scheduler</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">optim</span><span class="p">.</span><span class="n">lr_scheduler</span><span class="p">.</span><span class="n">LambdaLR</span><span class="p">(</span>
+    <span class="n">optimizer</span><span class="p">,</span>
+    <span class="n">lr_lambda</span><span class="o">=</span><span class="k">lambda</span> <span class="n">epoch</span><span class="p">:</span> <span class="mf">0.5</span> <span class="o">**</span> <span class="p">(</span><span class="n">epoch</span> <span class="o">//</span> <span class="mi">10</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">30</span><span class="p">):</span>
+    <span class="n">model</span><span class="p">.</span><span class="n">train</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">targets</span> <span class="ow">in</span> <span class="n">train_loader</span><span class="p">:</span>
+        <span class="n">optimizer</span><span class="p">.</span><span class="n">zero_grad</span><span class="p">()</span>
+        <span class="n">outputs</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">targets</span><span class="p">)</span>
+        <span class="n">loss</span><span class="p">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="n">optimizer</span><span class="p">.</span><span class="n">step</span><span class="p">()</span>
+
+    <span class="n">scheduler</span><span class="p">.</span><span class="n">step</span><span class="p">()</span>
+    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Epoch </span><span class="si">{</span><span class="n">epoch</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s">: LR = </span><span class="si">{</span><span class="n">scheduler</span><span class="p">.</span><span class="n">get_last_lr</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="p">.</span><span class="mi">5</span><span class="n">f</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>In this example, the learning rate starts at 0.1 and decreases by a factor of 0.5 every 10 epochs. The <code class="language-plaintext highlighter-rouge">scheduler.step()</code> method is called after the training updates for each epoch.</p>
+
+<p>PyTorch also provides other schedulers, such as <code class="language-plaintext highlighter-rouge">StepLR</code>, <code class="language-plaintext highlighter-rouge">ExponentialLR</code>, and <code class="language-plaintext highlighter-rouge">CosineAnnealingLR</code>.</p>
+
+<p>An important practical consideration is that the scheduler’s state should be saved along with the model and optimizer when training needs to be resumed:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">torch</span><span class="p">.</span><span class="n">save</span><span class="p">({</span>
+    <span class="s">'model_state_dict'</span><span class="p">:</span> <span class="n">model</span><span class="p">.</span><span class="n">state_dict</span><span class="p">(),</span>
+    <span class="s">'optimizer_state_dict'</span><span class="p">:</span> <span class="n">optimizer</span><span class="p">.</span><span class="n">state_dict</span><span class="p">(),</span>
+    <span class="s">'scheduler_state_dict'</span><span class="p">:</span> <span class="n">scheduler</span><span class="p">.</span><span class="n">state_dict</span><span class="p">()</span>
+<span class="p">},</span> <span class="s">'checkpoint.pth'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Saving these states allows training to resume with the correct parameters, optimizer history, and learning rate schedule.</p>
+
 <h2 id="4-momentum-and-stochastic-gradient-descent">4. Momentum and Stochastic Gradient Descent</h2>
 
 <h3 id="41-limitations-of-standard-sgd">4.1 Limitations of Standard SGD</h3>
@@ -351,6 +397,133 @@ v_t = \mu v_{t-1} + g_t
 <p>The <code class="language-plaintext highlighter-rouge">momentum</code> parameter controls how strongly previous gradient updates influence the current update.</p>
 
 <p>PyTorch also provides a <code class="language-plaintext highlighter-rouge">dampening</code> parameter, which modifies the contribution of new gradients to the momentum buffer.</p>
+
+<h3 id="44-nesterov-momentum">4.4 Nesterov Momentum</h3>
+
+<p>Nesterov Accelerated Gradient (NAG) is an extension of classical momentum that uses a look-ahead strategy to improve the direction of parameter updates.</p>
+
+<p>In classical momentum, the optimizer combines the current gradient with accumulated information from previous iterations. However, the gradient is evaluated at the current parameter position.</p>
+
+<p>Nesterov momentum instead considers where the previous momentum would move the parameters before evaluating the gradient. This allows the optimizer to anticipate the effect of momentum and make a correction earlier.</p>
+
+<p>Using the parameter-displacement formulation, the update can be written as:</p>
+
+<d-math block="">
+v_t = \mu v_{t-1} + \eta \nabla_\theta L(\theta_t - \mu v_{t-1})
+</d-math>
+
+<d-math block="">
+\theta_{t+1} = \theta_t - v_t
+</d-math>
+
+<p>where:</p>
+
+<ul>
+  <li>
+    <d-math>v_t</d-math>
+    <p>is the parameter displacement accumulated at iteration <d-math>t</d-math>.</p>
+  </li>
+  <li>
+    <d-math>\mu</d-math>
+    <p>is the momentum coefficient.</p>
+  </li>
+  <li>
+    <d-math>\eta</d-math>
+    <p>is the learning rate.</p>
+  </li>
+  <li>
+    <d-math>\theta_t - \mu v_{t-1}</d-math>
+    <p>is the look-ahead position used to evaluate the gradient.</p>
+  </li>
+</ul>
+
+<p>The main difference between classical momentum and Nesterov momentum is the location at which the gradient is evaluated.</p>
+
+<ul>
+  <li><strong>Classical momentum:</strong> Computes the gradient at the current position.</li>
+  <li><strong>Nesterov momentum:</strong> Uses a gradient evaluated at the anticipated position after the previous momentum contribution.</li>
+</ul>
+
+<p>This look-ahead correction can reduce overshooting and improve convergence in some optimization problems.</p>
+
+<p>PyTorch supports Nesterov momentum through the SGD optimizer:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">optim</span><span class="p">.</span><span class="n">SGD</span><span class="p">(</span>
+    <span class="n">model</span><span class="p">.</span><span class="n">parameters</span><span class="p">(),</span>
+    <span class="n">lr</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+    <span class="n">momentum</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+    <span class="n">nesterov</span><span class="o">=</span><span class="bp">True</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>Note that PyTorch uses an algebraically related implementation of Nesterov momentum rather than explicitly evaluating the gradient at a separate look-ahead position.</p>
+
+<h3 id="45-gradient-clipping">4.5 Gradient Clipping</h3>
+
+<p>Gradient clipping is a technique used to prevent excessively large gradients from causing unstable parameter updates during neural network training.</p>
+
+<p>Deep neural networks can sometimes experience exploding gradients, especially when gradients are propagated through many layers or time steps. Large gradients may cause the optimizer to take excessively large steps, leading to unstable training.</p>
+
+<p>One common approach is <strong>gradient norm clipping</strong>, which rescales the gradient vector when its norm exceeds a predefined threshold.</p>
+
+<p>Let <d-math>g</d-math> represent the gradient vector and <d-math>c</d-math> represent the maximum allowed norm.</p>
+
+<p>The clipped gradient is defined as:</p>
+
+<d-math block="">
+g_{\text{clipped}} =
+\begin{cases}
+g, &amp; \|g\|_2 \leq c \\
+\frac{c}{\|g\|_2}g, &amp; \|g\|_2 &gt; c
+\end{cases}
+</d-math>
+
+<p>This operation preserves the direction of the gradient while reducing its magnitude when necessary.</p>
+
+<p>For example, suppose the gradient vector is:</p>
+
+<d-math block="">
+g = (6,8)
+</d-math>
+
+<p>Its L2 norm is:</p>
+
+<d-math block="">
+\|g\|_2 = \sqrt{6^2+8^2}=10
+</d-math>
+
+<p>If the clipping threshold is <d-math>c=5</d-math>, the gradient becomes:</p>
+
+<d-math block="">
+g_{\text{clipped}} = \frac{5}{10}(6,8)=(3,4)
+</d-math>
+
+<p>The direction remains unchanged, but the norm is reduced from 10 to 5.</p>
+
+<p>In PyTorch, gradient clipping can be implemented using <code class="language-plaintext highlighter-rouge">torch.nn.utils.clip_grad_norm_()</code>:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="n">optimizer</span><span class="p">.</span><span class="n">zero_grad</span><span class="p">()</span>
+
+<span class="n">outputs</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+<span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">targets</span><span class="p">)</span>
+
+<span class="n">loss</span><span class="p">.</span><span class="n">backward</span><span class="p">()</span>
+
+<span class="n">torch</span><span class="p">.</span><span class="n">nn</span><span class="p">.</span><span class="n">utils</span><span class="p">.</span><span class="n">clip_grad_norm_</span><span class="p">(</span>
+    <span class="n">model</span><span class="p">.</span><span class="n">parameters</span><span class="p">(),</span>
+    <span class="n">max_norm</span><span class="o">=</span><span class="mf">1.0</span>
+<span class="p">)</span>
+
+<span class="n">optimizer</span><span class="p">.</span><span class="n">step</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>Gradient clipping should be applied after <code class="language-plaintext highlighter-rouge">loss.backward()</code> and before <code class="language-plaintext highlighter-rouge">optimizer.step()</code>, so that the gradients are limited before the optimizer updates the parameters.</p>
+
+<p>Unlike learning rate scheduling, gradient clipping does not directly change the learning rate. Instead, it limits the magnitude of unusually large gradients to improve training stability.</p>
 
 <h2 id="5-adaptive-optimization-methods">5. Adaptive Optimization Methods</h2>
 

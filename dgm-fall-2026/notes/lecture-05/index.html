@@ -162,7 +162,7 @@
   <li>Backpropagation and computation graphs</li>
 </ul>
 
-<p>The thread running through all four: a hard threshold gives us no way to learn from data, so we swap in a smooth activation function, turn the model into a likelihood we can maximize, and then walk up that likelihood with gradient descent. Applying gradient descent to a deep model is backpropagation. <d-cite key="lengerich2026"></d-cite></p>
+<p>The thread running through all four: a hard threshold gives us no way to learn from data, so we swap in a smooth activation function, turn the model into a likelihood we can maximize, and then climb that likelihood (equivalently, descend the negative log-likelihood) with gradient descent. In a deep model, backpropagation is how we compute the gradients that gradient descent needs. <d-cite key="lengerich2026"></d-cite></p>
 
 <hr />
 
@@ -320,23 +320,31 @@ P(y \mid \mathbf{x}) = \begin{cases} h(\mathbf{x}) &amp; \text{if } y = 1 \\ 1 -
 P(y \mid \mathbf{x}) = a^{y}(1-a)^{(1-y)}.
 </d-math>
 
-<p>Once we have a probabilistic model we have a likelihood function, and we can optimize it in different ways. Optimizing it by gradient descent is what gives us backpropagation.</p>
+<p>Once we have a probabilistic model we have a likelihood function, and we can optimize it in different ways. Here we use gradient descent, which needs the gradient of this objective with respect to the weights; in deep models those gradients are computed by backpropagation.</p>
 
 <h3 id="43-likelihood-and-log-likelihood">4.3 Likelihood and log-likelihood</h3>
 
 <p>Under MLE we would like to maximize the multi-sample likelihood:</p>
 
 <d-math block="">
-P\left(y^{[i]}, \ldots, y^{[n]} \mid \mathbf{x}^{[1]}, \ldots, \mathbf{x}^{[n]}\right) = \prod_{i=1}^{n} P\left(y^{[i]} \mid \mathbf{x}^{[i]}\right) = \prod_{i=1}^{n}\left(\sigma(z^{(i)})\right)^{y^{(i)}}\left(1 - \sigma(z^{(i)})\right)^{1 - y^{(i)}}.
+P\left(y^{[1]}, \ldots, y^{[n]} \mid \mathbf{x}^{[1]}, \ldots, \mathbf{x}^{[n]}\right) = \prod_{i=1}^{n} P\left(y^{[i]} \mid \mathbf{x}^{[i]}\right) = \prod_{i=1}^{n}\left(\sigma(z^{[i]})\right)^{y^{[i]}}\left(1 - \sigma(z^{[i]})\right)^{1 - y^{[i]}}.
 </d-math>
 
 <p>Since we are going to optimize via gradient descent, we apply the logarithm to separate the components. The <strong>maximizer of the likelihood is also the maximizer of the log-likelihood</strong>, so nothing is lost:</p>
 
 <d-math block="">
-l(\mathbf{w}) = \log L(\mathbf{w}) = \sum_{i=1}^{n}\left[y^{(i)}\log\left(\sigma(z^{(i)})\right) + \left(1 - y^{(i)}\right)\log\left(1 - \sigma(z^{(i)})\right)\right].
+l(\mathbf{w}) = \log L(\mathbf{w}) = \sum_{i=1}^{n}\left[y^{[i]}\log\left(\sigma(z^{[i]})\right) + \left(1 - y^{[i]}\right)\log\left(1 - \sigma(z^{[i]})\right)\right].
 </d-math>
 
 <p>The log turns a product into a sum, which makes the derivative of each component much easier to compute.</p>
+
+<p><strong>From log-likelihood to loss.</strong> Gradient descent minimizes, so instead of maximizing <d-math>l(\mathbf{w})</d-math> we minimize its negative. For a single training example with activation <d-math>a = \sigma(z)</d-math>, the loss is the negative log-likelihood, which is the <strong>binary cross-entropy</strong>:</p>
+
+<d-math block="">
+\mathcal{L}(\mathbf{w}) = -\left[y\log a + (1 - y)\log(1 - a)\right]
+</d-math>
+
+<p>(the calligraphic <d-math>\mathcal{L}</d-math> is the loss, not to be confused with the likelihood <d-math>L(\mathbf{w})</d-math> above). Summed over the training set, the total loss is <d-math>\sum_i \mathcal{L}^{[i]} = -l(\mathbf{w})</d-math>, so maximizing <d-math>l</d-math> and minimizing the total loss give the same weights. The gradients below are for the per-example loss <d-math>\mathcal{L}</d-math>.</p>
 
 <h3 id="44-deriving-the-gradient-piece-by-piece">4.4 Deriving the gradient piece by piece</h3>
 
@@ -354,10 +362,28 @@ l(\mathbf{w}) = \log L(\mathbf{w}) = \sum_{i=1}^{n}\left[y^{(i)}\log\left(\sigma
 \frac{\partial z}{\partial w_j} = x_j.
 </d-math>
 
-<p>Multiplying them through, the messy denominator cancels:</p>
+<p>Each piece follows from a short calculation.</p>
+
+<p><em>Loss with respect to the activation.</em> Differentiating the binary cross-entropy with respect to <d-math>a</d-math>,</p>
 
 <d-math block="">
-\frac{\partial \mathcal{L}}{\partial z} = a - y \qquad \Longrightarrow \qquad \frac{\partial \mathcal{L}}{\partial w_j} = (a - y)x_j.
+\frac{\partial \mathcal{L}}{\partial a} = -\frac{y}{a} + \frac{1 - y}{1 - a} = \frac{-y(1 - a) + (1 - y)a}{a(1 - a)} = \frac{a - y}{a - a^2}.
+</d-math>
+
+<p><em>Sigmoid derivative.</em> Writing <d-math>\sigma(z) = (1 + e^{-z})^{-1}</d-math>,</p>
+
+<d-math block="">
+\frac{da}{dz} = \frac{e^{-z}}{(1 + e^{-z})^2} = \frac{1}{1 + e^{-z}}\cdot\frac{e^{-z}}{1 + e^{-z}} = \sigma(z)\left(1 - \sigma(z)\right) = a(1 - a),
+</d-math>
+
+<p>using <d-math>\frac{e^{-z}}{1 + e^{-z}} = 1 - \frac{1}{1 + e^{-z}}</d-math>.</p>
+
+<p><em>Net input with respect to a weight.</em> Since <d-math>z = \sum_i w_i x_i + b</d-math>, only the <d-math>j</d-math>-th term depends on <d-math>w_j</d-math>, so <d-math>\partial z / \partial w_j = x_j</d-math> (and <d-math>\partial z / \partial b = 1</d-math>).</p>
+
+<p>Multiplying them through, the denominator <d-math>a - a^2 = a(1 - a)</d-math> cancels exactly against the sigmoid derivative:</p>
+
+<d-math block="">
+\frac{\partial \mathcal{L}}{\partial z} = \frac{a - y}{a(1 - a)}\cdot a(1 - a) = a - y \qquad \Longrightarrow \qquad \frac{\partial \mathcal{L}}{\partial w_j} = (a - y)x_j, \qquad \frac{\partial \mathcal{L}}{\partial b} = a - y.
 </d-math>
 
 <p><strong>In lecture.</strong> If the post-activation value is very far away from the target, we make a bigger update to our weight. If it is very close, we make a very little weight update. The perceptron could not do this, since its error was only <d-math>-1</d-math>, 0, or 1.</p>
@@ -368,9 +394,16 @@ l(\mathbf{w}) = \log L(\mathbf{w}) = \sum_{i=1}^{n}\left[y^{(i)}\log\left(\sigma
 
 <h3 id="51-why-we-take-steps-instead-of-solving">5.1 Why we take steps instead of solving</h3>
 
-<p>If we want the best weights for our data, we want to maximize the likelihood. If we could set the derivative to zero and solve, we would, but for most deep learning functions we can’t. Instead we take steps in the direction of the gradient (the slope) to reach a local maximum. We can’t guarantee a global maximum, but we can find a local one by walking up the gradient.</p>
+<p>If we want the best weights for our data, we want to maximize the likelihood. If we could set the derivative to zero and solve, we would, but for most deep learning functions we can’t. Instead we take small steps. Two equivalent views:</p>
 
-<p>So the recipe is: take the derivative first, then walk up the gradient to find the maximizer. <d-cite key="goodfellow2016"></d-cite></p>
+<ul>
+  <li><strong>Gradient ascent</strong> on the log-likelihood <d-math>l</d-math>: step in the direction of <d-math>+\nabla l</d-math>, walking uphill toward a local maximum.</li>
+  <li><strong>Gradient descent</strong> on the total loss <d-math>\sum_i \mathcal{L}^{[i]} = -l</d-math>: step in the direction of <d-math>-\nabla\sum_i \mathcal{L}^{[i]}</d-math>, walking downhill toward a local minimum.</li>
+</ul>
+
+<p>Since <d-math>-\nabla\sum_i \mathcal{L}^{[i]} = \nabla l</d-math>, these are exactly the same update. Stochastic gradient descent (below) uses one example’s <d-math>\mathcal{L}^{[i]}</d-math> at a time instead of the full sum. In general we can’t guarantee a global optimum, only a local one. (For logistic regression itself the loss happens to be convex, so any local minimum is also a global one; this is no longer true once we stack nonlinear layers.)</p>
+
+<p>So the recipe is: take the derivative first, then step against the gradient of the loss to find the minimizer. <d-cite key="goodfellow2016"></d-cite></p>
 
 <h3 id="52-stochastic-gradient-descent">5.2 Stochastic gradient descent</h3>
 
@@ -397,7 +430,7 @@ l(\mathbf{w}) = \log L(\mathbf{w}) = \sum_{i=1}^{n}\left[y^{(i)}\log\left(\sigma
 a - y \iff -\left(y^{[i]} - \hat{y}^{[i]}\right).
 </d-math>
 
-<p>Using the negative versus the positive gradient is what changes whether we are descending or ascending. We iteratively take steps in the direction of the gradient, which is the slope, and that steps us toward the optimum in a greedy fashion.</p>
+<p>Using the negative versus the positive gradient is what changes whether we are descending or ascending. Here we descend on the loss: each update moves the weights in the direction of the <strong>negative</strong> gradient of <d-math>\mathcal{L}</d-math>, which is the direction in which the loss decreases fastest, and that steps us toward a minimum in a greedy fashion. Written out, the update is <d-math>\mathbf{w} := \mathbf{w} + \eta\,(y^{[i]} - \hat{y}^{[i]})\,\mathbf{x}^{[i]}</d-math>, which looks just like the perceptron rule, except that the error <d-math>y - \hat{y}</d-math> is now a real number in <d-math>(-1, 1)</d-math> rather than only <d-math>-1</d-math>, 0, or 1.</p>
 
 <hr />
 
@@ -434,10 +467,10 @@ F(x) = f(g(x)) = z \qquad \Longrightarrow \qquad F'(x) = f'(g(x))\,g'(x) = z'.
 <p>Neural networks are function compositions that can be represented as computation graphs. By applying the chain rule and working in reverse order, we get</p>
 
 <d-math block="">
-\frac{\partial f_n}{\partial x} = \sum_{i_1 \in \pi(n)} \frac{\partial f_n}{\partial f_{i_1}}\frac{\partial f_{i_1}}{\partial x} = \sum_{i_1 \in \pi(n)} \frac{\partial f_n}{\partial f_{i_1}} \sum_{i_2 \in \pi(i_1)} \frac{\partial f_{i_1}}{\partial f_{i_2}}\frac{\partial f_{i_1}}{\partial x} = \cdots
+\frac{\partial f_n}{\partial x} = \sum_{i_1 \in \pi(n)} \frac{\partial f_n}{\partial f_{i_1}}\frac{\partial f_{i_1}}{\partial x} = \sum_{i_1 \in \pi(n)} \frac{\partial f_n}{\partial f_{i_1}} \sum_{i_2 \in \pi(i_1)} \frac{\partial f_{i_1}}{\partial f_{i_2}}\frac{\partial f_{i_2}}{\partial x} = \cdots
 </d-math>
 
-<p>where <d-math>\pi(n)</d-math> denotes the parents of node <d-math>n</d-math> in the graph. In practice: take the gradient of the output, then move back and take the gradient with respect to those inputs, and keep moving back.</p>
+<p>where <d-math>\pi(n)</d-math> denotes the parents of node <d-math>n</d-math> in the graph. Each step expands the last factor <d-math>\partial f_{i_k}/\partial x</d-math> one level further back through the graph, until we reach <d-math>x</d-math>.<d-footnote>On the slide, the last factor of the second expression reads ∂f<sub>i<sub>1</sub></sub>/∂x. It should be ∂f<sub>i<sub>2</sub></sub>/∂x, since ∂f<sub>i<sub>1</sub></sub>/∂x is exactly what the inner sum is expanding.</d-footnote> In practice: take the gradient of the output, then move back and take the gradient with respect to those inputs, and keep moving back.</p>
 
 <h3 id="72-quick-calculus-refresher">7.2 Quick calculus refresher</h3>
 

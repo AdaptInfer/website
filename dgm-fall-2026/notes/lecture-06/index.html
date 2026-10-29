@@ -208,25 +208,21 @@ print(torch.cuda.is_available())
 <p>The lecture revisited binary classification to show how a statistical model
 becomes an objective that autograd can differentiate.</p>
 
-<p>For an input vector <d-math>\mathbf{x}</d-math>, weights</p>
-<d-math>\mathbf{w}</d-math>
-<p>, and bias <d-math>b</d-math>, define</p>
+<p>For an input vector <d-math>\mathbf{x}</d-math>, weights <d-math>\mathbf{w}</d-math>, and bias <d-math>b</d-math>, define</p>
 
 <d-math block="">
 z = \mathbf{w}^{\top}\mathbf{x} + b,
 \qquad
 \hat{y} = \sigma(z),
 \qquad
-y \mid \mathbf{x} \sim \operatorname{Bernoulli}(\hat{y}).
+y \mid \mathbf{x} \sim \mathrm{Bernoulli}(\hat{y}).
 </d-math>
 
-<p>Here <d-math>\hat{y}</d-math> is interpreted as</p>
-<d-math>P(y=1\mid\mathbf{x})</d-math>
-<p>. The Bernoulli likelihood for one example is</p>
+<p>Here <d-math>\hat{y}</d-math> is interpreted as <d-math>P(y=1\mid\mathbf{x})</d-math>. The Bernoulli likelihood for one example is</p>
 
 <d-math block="">
 P(y \mid \mathbf{x})
-= \hat{y}^{,y}(1-\hat{y})^{1-y}.
+= \hat{y}^{\,y}(1-\hat{y})^{1-y}.
 </d-math>
 
 <p>Taking the logarithm turns the product into a sum:</p>
@@ -282,7 +278,7 @@ tensors such as model parameters. <d-cite key="pytorch-autograd-mechanics"></d-c
 <d-math block="">
 x \xrightarrow{\;z=wx+b\;} z
 \xrightarrow{\;a=\sigma(z)\;} a
-\xrightarrow{\;\mathcal{L}=\operatorname{BCE}(a,y)\;} \mathcal{L}.
+\xrightarrow{\;\mathcal{L}=\mathrm{BCE}(a,y)\;} \mathcal{L}.
 </d-math>
 
 <p>The chain rule gives</p>
@@ -295,7 +291,28 @@ x \xrightarrow{\;z=wx+b\;} z
 \frac{\partial z}{\partial w}.
 </d-math>
 
-<p>PyTorch performs this bookkeeping automatically:</p>
+<p>Each factor is simple. Differentiating the BCE loss with respect to <d-math>a</d-math>, and using the sigmoid derivative <d-math>\sigma'(z) = \sigma(z)\left(1-\sigma(z)\right)</d-math>:</p>
+
+<d-math block="">
+\frac{\partial \mathcal{L}}{\partial a} = -\frac{y}{a} + \frac{1-y}{1-a},
+\qquad
+\frac{\partial a}{\partial z} = a(1-a),
+\qquad
+\frac{\partial z}{\partial w} = x.
+</d-math>
+
+<p>The first two factors collapse to a strikingly simple expression, writing <d-math>a = \hat{y}</d-math>:</p>
+
+<d-math block="">
+\begin{aligned}
+\frac{\partial \mathcal{L}}{\partial z}
+&amp;= \left[-\frac{y}{\hat{y}} + \frac{1-y}{1-\hat{y}}\right]\hat{y}(1-\hat{y}) \\
+&amp;= -y(1-\hat{y}) + (1-y)\,\hat{y} \\
+&amp;= \hat{y} - y.
+\end{aligned}
+</d-math>
+
+<p>So <d-math>\partial \mathcal{L}/\partial w = (\hat{y} - y)\,x</d-math> and <d-math>\partial \mathcal{L}/\partial b = \hat{y} - y</d-math>: the gradient is just the prediction error, scaled by the input. The lecture notebook derives this by hand and then confirms that autograd produces the same numbers. PyTorch performs this bookkeeping automatically:</p>
 
 <d-code block="" language="python">
 import torch
@@ -312,6 +329,8 @@ loss.backward()
 print(w.grad)  # d(loss) / d(w)
 print(b.grad)  # d(loss) / d(b)
 </d-code>
+
+<p>For these values, <d-math>z = 0.5 \cdot 2 + 0 = 1</d-math> and <d-math>\hat{y} = \sigma(1) \approx 0.731059</d-math>. The closed form then predicts <d-math>\partial \mathcal{L}/\partial w = (\hat{y} - y)\,x \approx -0.537883</d-math> and <d-math>\partial \mathcal{L}/\partial b = \hat{y} - y \approx -0.268941</d-math>, which are exactly the values autograd stores in <code class="language-plaintext highlighter-rouge">w.grad</code> and <code class="language-plaintext highlighter-rouge">b.grad</code>.</p>
 
 <h3 id="41-dynamic-graphs">4.1 Dynamic graphs</h3>
 
