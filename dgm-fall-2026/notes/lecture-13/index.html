@@ -1,0 +1,815 @@
+<!doctype html>
+<html>
+  <head>
+    <head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="content-language" content="en" />
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <title>
+    STAT 453 | Lecture 13: A Linear Intro to Generative Models
+  </title>
+  <meta name="description" content="STAT 453 - University of Wisconsin-Madison - Fall 2026
+" />
+
+  <link
+    rel="shortcut icon"
+    href="/dgm-fall-2026/assets/img/favicon.ico"
+  />
+
+  <link rel="stylesheet" href="/dgm-fall-2026/assets/css/main.css" />
+  <link
+    rel="canonical"
+    href="/dgm-fall-2026/notes/lecture-13/"
+  />
+
+  
+  <!-- Load Latex JS -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+  
+</head>
+
+    <script src="/dgm-fall-2026/assets/js/distillpub/template.v2.js"></script>
+    <script src="/dgm-fall-2026/assets/js/distillpub/transforms.v2.js"></script>
+  </head>
+
+  <d-front-matter>
+    <script type="text/json">
+      {
+            "title": "Lecture 13: A Linear Intro to Generative Models",
+            "description": "Generative versus discriminative models through logistic regression and Naive Bayes, then autoencoders and their variants as a first step toward deep generative models.",
+            "published": "October 22, 2026",
+            "lecturers": [
+              
+              {
+                "lecturer": "Ben Lengerich",
+                "lecturerURL": "https://adaptinfer.org"
+              }
+              
+            ],
+            "authors": [
+              
+              {
+                "author": "Yuqi Yi"
+              },
+              
+              {
+                "author": "Haolin Tian"
+              },
+              
+              {
+                "author": "Ryan Lenertz"
+              },
+              
+              {
+                "author": "Bill Yunke Zhang"
+              }
+              
+            ],
+            "editors": [
+              
+              {
+                "editor": "None"
+              }
+              
+            ],
+            "katex": {
+              "delimiters": [
+                {
+                  "left": "$",
+                  "right": "$",
+                  "display": false
+                },
+                {
+                  "left": "$$",
+                  "right": "$$",
+                  "display": true
+                }
+              ]
+            }
+          }
+    </script>
+  </d-front-matter>
+
+  <body>
+    <header class="site-header">
+  <div class="wrapper">
+    <span class="site-title">
+      <a class="page-link" href="https://adaptinfer.org/dgm-fall-2026/"
+        >STAT 453</a
+      >
+    </span>
+
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path
+              fill="#424242"
+              d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
+            />
+            <path
+              fill="#424242"
+              d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
+            />
+            <path
+              fill="#424242"
+              d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
+            />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger">
+        <a class="page-link" href="/dgm-fall-2026/logistics/"
+          >logistics</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/lectures/"
+          >lectures</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/notes/">notes</a>
+        <a class="page-link" href="/dgm-fall-2026/calendar/"
+          >calendar</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/homework/"
+          >homework</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/project/">project</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+      <d-title>
+        <h1>Lecture 13: A Linear Intro to Generative Models</h1>
+        <p>Generative versus discriminative models through logistic regression and Naive Bayes, then autoencoders and their variants as a first step toward deep generative models.</p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article> <h2 id="1-generative-and-discriminative-models">1. Generative and Discriminative Models</h2>
+
+<p><strong>Notation.</strong> Throughout these notes, uppercase <d-math>X</d-math> and <d-math>Y</d-math> denote random variables for an observed input (such as an image or a feature vector) and its class label (such as “cat” or “dog”). Lowercase <d-math>x</d-math> and <d-math>y</d-math> denote particular values of them. Following the slides, the training examples in Section 2 are written <d-math>(X_i, Y_i)</d-math>, with <d-math>i</d-math> indexing examples. When a distribution depends on model parameters <d-math>\theta</d-math>, we write them after a semicolon, as in <d-math>P(Y \mid X; \theta)</d-math>. For a continuous input, <d-math>P(X \mid Y)</d-math> should be read as a density.</p>
+
+<h3 id="11-from-classification-to-generative-modeling">1.1 From Classification to Generative Modeling</h3>
+
+<p>Much of the deep learning material covered earlier in the course focused on <strong>discriminative models</strong>: models that take an observation as input and make a prediction. For example, an image classifier takes an image of an animal and predicts whether it is a cat or a dog. The central question is <strong>“Given this input, what is its label?”</strong></p>
+
+<p>Deep <strong>generative models</strong>, the focus of the second half of the course, offer a different perspective. Instead of learning only how to label an observed example, they aim to learn the probability structure of the data itself. Such a model can be used to produce new examples that resemble its training data, which is what modern generative AI systems such as chatbots and image generators do. Generative AI has become a major technological and economic force, which is part of the motivation for studying these models.</p>
+
+<p>A useful distinction is that <strong>classification</strong> asks which class an existing observation belongs to, whereas <strong>generation</strong> concerns how observations arise and how new observations can be sampled. A generative model can nevertheless be used for classification, as explained below.</p>
+
+<h3 id="12-what-distribution-does-each-approach-model">1.2 What Distribution Does Each Approach Model?</h3>
+
+<p>A <strong>discriminative model</strong> directly learns the <strong>conditional distribution</strong> of the label given the input:</p>
+
+<d-math block="">
+P(Y\mid X).
+</d-math>
+
+<p>For example, <d-math>P(Y=\mathrm{cat}\mid X=x)</d-math> is the probability that a particular image <d-math>x</d-math> depicts a cat. This approach focuses on predicting <d-math>Y</d-math> after <d-math>X</d-math> is observed; it does not require a model for the overall distribution of images <d-math>P(X)</d-math>.</p>
+
+<p>A <strong>generative model</strong>, in the supervised setting of this lecture, models the <strong>joint distribution</strong>:</p>
+
+<d-math block="">
+P(X,Y).
+</d-math>
+
+<p>The joint distribution characterizes how inputs and labels occur together. By the product rule of probability, it can be factorized as</p>
+
+<d-math block="">
+P(X,Y)=P(X\mid Y)P(Y).
+</d-math>
+
+<p>Here, <d-math>P(Y)</d-math> is the <strong>prior class probability</strong>, and <d-math>P(X\mid Y)</d-math> describes the distribution of observations within a given class. Learning these quantities provides a route to the conditional probability needed for classification.</p>
+
+<figure id="figure-joint-vs-conditional" class="l-body-outset">
+  <div class="row">
+    <div class="col three">
+      <img src="/dgm-fall-2026/assets/img/notes/lecture-13/figure1-joint-vs-conditional.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Figure 1. Joint versus conditional distributions.</strong>
+    The dashed contour lines show the joint density <d-math>P(X,Y)</d-math>, which here has two clusters. Each solid curve is a conditional distribution <d-math>P(Y\mid X=x)</d-math>: a vertical slice through the joint density at one fixed input value <d-math>x</d-math>. A generative model describes the whole joint density, whereas a discriminative model only describes the slices. <em>Figure from the lecture slides.</em> <d-cite key="lengerich2026"></d-cite>
+  </figcaption>
+</figure>
+
+<h3 id="13-two-paths-to-the-same-posterior-probability">1.3 Two Paths to the Same Posterior Probability</h3>
+
+<p>Suppose the training data contain observed input–label pairs <d-math>(X, Y)</d-math>. Both approaches can produce a posterior probability <d-math>P(Y\mid X)</d-math>, but they obtain it in different ways.</p>
+
+<p><strong>Discriminative route:</strong> Learn <d-math>P(Y\mid X)</d-math> directly from labeled observations. No explicit model of <d-math>P(X)</d-math> is required.</p>
+
+<p><strong>Generative route:</strong> Learn the class-conditional distribution <d-math>P(X\mid Y)</d-math> and the class prior <d-math>P(Y)</d-math>, then apply <strong>Bayes’ theorem</strong>:</p>
+
+<d-math block="">
+P(Y\mid X)=\frac{P(X\mid Y)P(Y)}{P(X)}.
+</d-math>
+
+<p>In this expression:</p>
+
+<ul>
+  <li>
+    <d-math>P(Y\mid X)</d-math>
+    <p>is the <strong>posterior probability</strong> of the label after observing the input.</p>
+  </li>
+  <li>
+    <d-math>P(X\mid Y)</d-math>
+    <p>is the <strong>likelihood</strong> of the input under the class.</p>
+  </li>
+  <li>
+    <d-math>P(Y)</d-math>
+    <p>is the <strong>prior probability</strong> of that class.</p>
+  </li>
+  <li>
+    <d-math>P(X)</d-math>
+    <p>is the <strong>marginal probability</strong> (or evidence) of the observed input, which normalizes the posterior probabilities.</p>
+  </li>
+</ul>
+
+<p>For a discrete set of possible labels <d-math>\mathcal{Y}</d-math>, the denominator is obtained by summing the joint distribution over the labels:</p>
+
+<d-math block="">
+P(X)=\sum_{y\in\mathcal{Y}}P(X\mid Y=y)P(Y=y).
+</d-math>
+
+<p>The lecture writes this marginalization in its general form as an integral, <d-math>P(X)=\int_Y P(X,Y)\,dY</d-math>, which is what one would use if <d-math>Y</d-math> were continuous. For a classification problem such as cat versus dog, <d-math>Y</d-math> is discrete and the integral becomes the sum above. In either case, the denominator ensures that the resulting posterior distribution is properly normalized.</p>
+
+<h3 id="14-two-paths-to-classification">1.4 Two Paths to Classification</h3>
+
+<p>Once a model can evaluate class probabilities, it can select a predicted label <d-math>\hat{Y}</d-math>. Here, <strong>argmax</strong> means the label that makes the given expression largest.</p>
+
+<p>For a discriminative model, the classification rule is</p>
+
+<d-math block="">
+\hat{Y}=\underset{y\in\mathcal{Y}}{\mathop{\mathrm{argmax}}}\;P(Y=y\mid X=x).
+</d-math>
+
+<p>For a generative model, substitute Bayes’ theorem:</p>
+
+<d-math block="">
+\hat{Y}=\underset{y\in\mathcal{Y}}{\mathop{\mathrm{argmax}}}\;\frac{P(X=x\mid Y=y)P(Y=y)}{P(X=x)}.
+</d-math>
+
+<p>For a fixed observed input <d-math>x</d-math>, the denominator <d-math>P(X=x)</d-math> is the same for every candidate class <d-math>y</d-math>. Therefore, it does not affect which class has the highest score, and the rule simplifies to</p>
+
+<d-math block="">
+\boxed{\hat{Y}=\underset{y\in\mathcal{Y}}{\mathop{\mathrm{argmax}}}\;P(X=x\mid Y=y)P(Y=y).}
+</d-math>
+
+<p>This is why, in the lecture, the step “calculate <d-math>P(X)</d-math>” is crossed out on the generative path to classification. It explains an important distinction between <strong>computing a normalized posterior</strong> and <strong>choosing the most likely class</strong>: calculating <d-math>P(Y\mid X)</d-math> requires the normalization term, but identifying the class with the greatest posterior probability does not.</p>
+
+<p><strong>Illustrative example (added to clarify the lecture):</strong> Suppose an image <d-math>x</d-math> has class-conditional scores <d-math>P(x\mid \mathrm{cat})=0.6</d-math> and <d-math>P(x\mid \mathrm{dog})=0.3</d-math>, with prior probabilities <d-math>P(\mathrm{cat})=0.4</d-math> and <d-math>P(\mathrm{dog})=0.6</d-math>. The unnormalized posterior scores are</p>
+
+<d-math block="">
+\begin{aligned}
+\mathrm{Cat:}\quad &amp;0.6\times 0.4=0.24,\\
+\mathrm{Dog:}\quad &amp;0.3\times 0.6=0.18.
+\end{aligned}
+</d-math>
+
+<p>Since <d-math>0.24&gt;0.18</d-math>, the generative classifier predicts <strong>cat</strong>. If normalized class probabilities are needed, the scores sum to <d-math>0.42</d-math>, giving <d-math>P(\mathrm{cat}\mid x)=0.24/0.42\approx0.571</d-math> and <d-math>P(\mathrm{dog}\mid x)=0.18/0.42\approx0.429</d-math>. These numbers are an explanatory example, not values from the lecture; for a continuous input they can be interpreted as probability densities.</p>
+
+<h3 id="15-key-takeaways">1.5 Key Takeaways</h3>
+
+<ul>
+  <li><strong>Discriminative models</strong> directly learn <d-math>P(Y\mid X)</d-math>, making them natural tools for predicting labels.</li>
+  <li><strong>Generative models</strong> describe <d-math>P(X,Y)</d-math>, often through <d-math>P(X\mid Y)P(Y)</d-math>, and can obtain class probabilities using Bayes’ theorem.</li>
+  <li>Both approaches can perform classification, but their learning objectives and the distributions they explicitly represent differ.</li>
+  <li>When predicting the most probable class with a generative model, the common normalization factor <d-math>P(X)</d-math> can be omitted inside the <d-math>\mathop{\mathrm{argmax}}</d-math>.</li>
+</ul>
+
+<h2 id="2-logistic-regression-vs-naive-bayes">2. Logistic Regression vs. Naive Bayes</h2>
+
+<p>Section 1 described two routes to the posterior <d-math>P(Y \mid X)</d-math>. This section makes each route concrete with a classic example: <strong>logistic regression</strong> for the discriminative route and <strong>Gaussian Naive Bayes</strong> for the generative route. For simplicity we use a binary label <d-math>Y \in \lbrace 0, 1 \rbrace</d-math> and a feature vector <d-math>X = (X_1, \ldots, X_d)^T \in \mathbb{R}^d</d-math>. The training set consists of pairs <d-math>(X_i, Y_i)</d-math> for <d-math>i = 1, \ldots, n</d-math>, where the subscript <d-math>i</d-math> indexes training examples and the subscript <d-math>j</d-math> (used below) indexes features.</p>
+
+<h3 id="21-a-discriminative-model-logistic-regression">2.1 A Discriminative Model: Logistic Regression</h3>
+
+<p>Logistic regression follows the discriminative route: observe <d-math>(X, Y)</d-math> and learn <d-math>P(Y \mid X)</d-math> directly.</p>
+
+<p><strong>Parameterization.</strong> The model assigns</p>
+
+<d-math block="">
+P(Y = 1 \mid X) = \sigma(\theta^T X), \qquad P(Y = 0 \mid X) = 1 - P(Y = 1 \mid X),
+</d-math>
+
+<p>where <d-math>\theta \in \mathbb{R}^d</d-math> is the weight vector, <d-math>\theta^T X = \sum_{j=1}^{d} \theta_j X_j</d-math> is a linear score, and</p>
+
+<d-math block="">
+\sigma(z) = \frac{1}{1 + e^{-z}}
+</d-math>
+
+<p>is the <strong>sigmoid</strong> (logistic) function. The sigmoid maps any real number <d-math>z</d-math> to the interval <d-math>(0, 1)</d-math>, so its output can be read as a probability. A bias (intercept) term is included by treating one of the <d-math>d</d-math> features as the constant <d-math>X_0 = 1</d-math>, so it does not need separate notation.</p>
+
+<p><strong>Why this parameterization?</strong> The sigmoid is not an arbitrary choice. Take the <strong>log-odds</strong> of the positive class, i.e., the log of the ratio between the probabilities of the two classes. Writing <d-math>s = \theta^T X</d-math>,</p>
+
+<d-math block="">
+\begin{aligned}
+\log \frac{P(Y=1 \mid X)}{P(Y=0 \mid X)}
+&amp;= \log \frac{\sigma(s)}{1 - \sigma(s)}
+= \log \frac{\dfrac{1}{1+e^{-s}}}{1 - \dfrac{1}{1+e^{-s}}}
+= \log \frac{\dfrac{1}{1+e^{-s}}}{\dfrac{e^{-s}}{1+e^{-s}}} \\[4pt]
+&amp;= \log \frac{1}{e^{-s}} = \log e^{s} = \theta^T X.
+\end{aligned}
+</d-math>
+
+<p>So logistic regression is exactly the model in which the <strong>log-odds are a linear function of the features</strong>. Each weight <d-math>\theta_j</d-math> is the change in the log-odds when feature <d-math>X_j</d-math> increases by one unit with the other features held fixed. The decision boundary <d-math>P(Y=1 \mid X) = 0.5</d-math> is the hyperplane <d-math>\theta^T X = 0</d-math>, so logistic regression is a linear classifier.</p>
+
+<h3 id="22-estimating-logistic-regression">2.2 Estimating Logistic Regression</h3>
+
+<p><strong>Maximum likelihood.</strong> The parameters are fit by maximizing the <strong>conditional likelihood</strong> of the observed labels given the observed features. Assuming the training examples are independent,</p>
+
+<d-math block="">
+\hat{\theta} = \underset{\theta}{\mathop{\mathrm{argmax}}} \prod_{i=1}^{n} P(Y_i \mid X_i; \theta).
+</d-math>
+
+<p>Because <d-math>Y_i</d-math> is 0 or 1, the two cases of the model can be written as one Bernoulli expression, <d-math>P(Y_i \mid X_i; \theta) = \sigma(\theta^T X_i)^{Y_i} \, \big(1 - \sigma(\theta^T X_i)\big)^{1 - Y_i}</d-math>. Taking the logarithm (which is increasing, so it does not change the argmax) turns the product into a sum:</p>
+
+<d-math block="">
+\hat{\theta} = \underset{\theta}{\mathop{\mathrm{argmax}}} \sum_{i=1}^{n} \Big[ Y_i \log \sigma(\theta^T X_i) + (1 - Y_i) \log\big(1 - \sigma(\theta^T X_i)\big) \Big].
+</d-math>
+
+<p>The bracketed term is the negative of the <strong>binary cross-entropy loss</strong>, so maximizing this log-likelihood is the same as minimizing the cross-entropy loss used to train classifiers earlier in the course.</p>
+
+<p>There is no closed-form solution for <d-math>\hat{\theta}</d-math>. The log-likelihood is concave in <d-math>\theta</d-math>, though, so gradient-based methods find the global optimum. Its gradient has a simple form (a standard result, added here for completeness):</p>
+
+<d-math block="">
+\nabla_\theta \, \ell(\theta) = \sum_{i=1}^{n} \big( Y_i - \sigma(\theta^T X_i) \big) X_i,
+</d-math>
+
+<p>where <d-math>\ell(\theta)</d-math> is the log-likelihood above. Each example pushes <d-math>\theta</d-math> in the direction of its features, scaled by its prediction error <d-math>Y_i - \sigma(\theta^T X_i)</d-math>.</p>
+
+<p><strong>Prediction.</strong> For a new input <d-math>X</d-math>, compute <d-math>P(Y=1 \mid X) = \sigma(\hat{\theta}^T X)</d-math> directly. No model of <d-math>X</d-math> itself and no Bayes’ theorem are involved.</p>
+
+<h3 id="23-a-generative-model-naive-bayes">2.3 A Generative Model: Naive Bayes</h3>
+
+<p>Naive Bayes follows the generative route: learn the class-conditional distribution <d-math>P(X \mid Y)</d-math> and the class prior <d-math>P(Y)</d-math>, then obtain the posterior with Bayes’ theorem,</p>
+
+<d-math block="">
+P(Y \mid X) = \frac{P(X \mid Y) \, P(Y)}{P(X)}.
+</d-math>
+
+<p><strong>The “naive” assumption.</strong> Modeling <d-math>P(X \mid Y)</d-math> for a <d-math>d</d-math>-dimensional <d-math>X</d-math> is hard in general, because the features can depend on each other in complicated ways. Naive Bayes assumes the features are <strong>conditionally independent given the class</strong>:</p>
+
+<d-math block="">
+P(X \mid Y) = \prod_{j=1}^{d} P(X_j \mid Y).
+</d-math>
+
+<p>As a graphical model, the label <d-math>Y</d-math> is the single parent of every feature node <d-math>X_1, \ldots, X_d</d-math>, with no edges between features (<d-math>Y \to X_1, \; \ldots, \; Y \to X_d</d-math>). Once the class is known, learning the value of one feature tells us nothing more about any other feature. This is rarely exactly true (for example, neighboring pixels in an image are strongly correlated even within one class), but it reduces one <d-math>d</d-math>-dimensional estimation problem to <d-math>d</d-math> one-dimensional ones.</p>
+
+<p><strong>Class-conditional distributions.</strong> For continuous features, the lecture uses a Gaussian for each feature in each class (<strong>Gaussian Naive Bayes</strong>):</p>
+
+<d-math block="">
+P(X_j \mid Y = k) = \mathcal{N}(X_j; \mu_{jk}, \sigma_{jk}^2) = \frac{1}{\sqrt{2\pi\sigma_{jk}^2}} \exp\!\left( -\frac{(X_j - \mu_{jk})^2}{2\sigma_{jk}^2} \right),
+</d-math>
+
+<p>where <d-math>\mu_{jk}</d-math> and <d-math>\sigma_{jk}^2</d-math> are the mean and variance of feature <d-math>j</d-math> among examples of class <d-math>k</d-math>. (Here <d-math>\sigma_{jk}</d-math> is a standard deviation, not the sigmoid function of Section 2.1.)</p>
+
+<p><strong>Class prior.</strong> The prior is the frequency of each label in the training data:</p>
+
+<d-math block="">
+P(Y = k) = \frac{\#\lbrace\text{samples with } Y = k\rbrace}{\text{total number of samples}} = \frac{n_k}{n}.
+</d-math>
+
+<h3 id="24-estimating-naive-bayes">2.4 Estimating Naive Bayes</h3>
+
+<p><strong>Maximum likelihood.</strong> The lecture writes the estimation step as</p>
+
+<d-math block="">
+\hat{\mu}, \hat{\sigma} = \underset{\mu, \sigma}{\mathop{\mathrm{argmax}}} \; P(X \mid Y),
+</d-math>
+
+<p>i.e., choose the Gaussian parameters that make the observed features most probable given their observed labels. Section 3.2 instead writes the Naive Bayes estimate as maximizing the joint likelihood <d-math>P(X, Y; \theta)</d-math>. The two agree: since <d-math>P(X, Y) = P(X \mid Y) P(Y)</d-math>, and the Gaussian parameters appear only in <d-math>P(X \mid Y)</d-math> while the class probabilities appear only in <d-math>P(Y)</d-math>, maximizing the joint likelihood splits into this fit and the prior estimate <d-math>n_k / n</d-math> from Section 2.3. Because of the factorization, the Gaussian fit itself further decomposes into a separate one-dimensional Gaussian fit for every pair (feature <d-math>j</d-math>, class <d-math>k</d-math>), and each fit has a closed-form solution, the sample mean and sample variance within that class:</p>
+
+<d-math block="">
+\hat{\mu}_{jk} = \frac{1}{n_k} \sum_{i: Y_i = k} X_{ij}, \qquad
+\hat{\sigma}_{jk}^2 = \frac{1}{n_k} \sum_{i: Y_i = k} \big( X_{ij} - \hat{\mu}_{jk} \big)^2,
+</d-math>
+
+<p>where <d-math>X_{ij}</d-math> is the value of feature <d-math>j</d-math> in example <d-math>i</d-math> and <d-math>n_k</d-math> is the number of examples in class <d-math>k</d-math>. The prior estimate <d-math>n_k / n</d-math> from Section 2.3 is likewise the maximum likelihood estimate of a categorical distribution. Training is therefore a single pass over the data with no iterative optimization, in contrast to logistic regression.</p>
+
+<p><strong>Prediction.</strong> Plug the estimates into Bayes’ theorem:</p>
+
+<d-math block="">
+P(Y = 1 \mid X) = \frac{\prod_{j=1}^{d} P(X_j \mid Y = 1) \, P(Y = 1)}{P(X)},
+\qquad
+P(X) = \sum_{k \in \lbrace 0, 1 \rbrace} \prod_{j=1}^{d} P(X_j \mid Y = k) \, P(Y = k).
+</d-math>
+
+<p>As noted in Section 1.4, the denominator <d-math>P(X)</d-math> is needed only to report a normalized probability. To choose the most likely class, it is enough to compare the numerators <d-math>\prod_j P(X_j \mid Y = k) P(Y = k)</d-math> across classes.</p>
+
+<h3 id="25-how-the-two-models-relate">2.5 How the Two Models Relate</h3>
+
+<p>Both models end up producing <d-math>P(Y \mid X)</d-math>, but they get there differently: logistic regression maximizes the conditional likelihood iteratively, while Naive Bayes fits class-conditional Gaussians and label frequencies in closed form and then applies Bayes’ theorem. Section 3.2 gives the lecture’s side-by-side comparison.</p>
+
+<p>The two models are also more closely related than this description suggests. If the Gaussian Naive Bayes variances are shared across classes (<d-math>\sigma_{j0} = \sigma_{j1} = \sigma_j</d-math>), then the log-odds <d-math>\log \frac{P(Y=1 \mid X)}{P(Y=0 \mid X)}</d-math> implied by Naive Bayes is a linear function of <d-math>X</d-math>, so its posterior has exactly the logistic-regression form <d-math>\sigma(\beta^T X)</d-math> for some weight vector <d-math>\beta</d-math> determined by the means, variances and priors. (This result was not covered in lecture; it is added because it explains why the two are a natural pair, and it is the reason Ng and Jordan call them a “generative-discriminative pair”.) <d-cite key="ng2001"></d-cite> The models therefore describe the same family of classifiers, but pick a member of the family in different ways: logistic regression fits <d-math>\theta</d-math> to the labels directly, while Naive Bayes fits the feature distributions and lets the weights follow. Section 3 discusses when each choice gives the better classifier.</p>
+
+<h3 id="26-what-about-map--regularization">2.6 What About MAP / Regularization?</h3>
+
+<p>Maximum likelihood treats the parameters as fixed unknowns and uses only the data. <strong>Maximum a posteriori (MAP)</strong> estimation instead places a <strong>prior distribution</strong> <d-math>P(\theta)</d-math> on the parameters, encoding a belief about which values are plausible before seeing any data (for example, that weights should be small). By Bayes’ theorem, the posterior over the parameters is <d-math>P(\theta \mid \text{data}) \propto P(\text{data} \mid \theta) \, P(\theta)</d-math>, and MAP picks its mode. For logistic regression this means</p>
+
+<d-math block="">
+\hat{\theta}_{\mathrm{MAP}} = \underset{\theta}{\mathop{\mathrm{argmax}}} \; \prod_{i=1}^{n} P(Y_i \mid X_i; \theta) \; P(\theta).
+</d-math>
+
+<p>Taking the logarithm as before,</p>
+
+<d-math block="">
+\hat{\theta}_{\mathrm{MAP}} = \underset{\theta}{\mathop{\mathrm{argmax}}} \sum_{i=1}^{n} \Big[ Y_i \log \sigma(\theta^T X_i) + (1 - Y_i) \log\big(1 - \sigma(\theta^T X_i)\big) \Big] - R(\theta),
+</d-math>
+
+<p>where <d-math>R(\theta) = -\log P(\theta)</d-math> up to an additive constant that does not depend on <d-math>\theta</d-math>. In other words, <strong>a prior on the parameters is the same thing as a regularization penalty</strong>: the log-prior appears in the objective as a penalty term subtracted from the log-likelihood. The model’s form (parameterization and prediction) does not change; only the estimation step does.</p>
+
+<p>Two common priors give the two regularizers seen earlier in the course in Lecture 9 (this derivation is added to make the correspondence explicit):</p>
+
+<ul>
+  <li><strong>Gaussian prior → L2 regularization (weight decay).</strong> If <d-math>\theta \sim \mathcal{N}(0, \tau^2 I)</d-math>, then <d-math>\log P(\theta) = -\frac{1}{2\tau^2} \lVert \theta \rVert_2^2 + \text{const}</d-math>, so</li>
+</ul>
+<d-math block="">
+R(\theta) = \frac{\lambda}{2} \lVert \theta \rVert_2^2, \qquad \lambda = \frac{1}{\tau^2}.
+</d-math>
+<ul>
+  <li><strong>Laplace prior → L1 regularization.</strong> If each <d-math>\theta_j</d-math> independently has density <d-math>\frac{1}{2b} \exp(-\lvert \theta_j \rvert / b)</d-math>, then</li>
+</ul>
+<d-math block="">
+R(\theta) = \lambda \lVert \theta \rVert_1 = \lambda \sum_{j} \lvert \theta_j \rvert, \qquad \lambda = \frac{1}{b}.
+</d-math>
+
+<p>Here <d-math>\tau^2</d-math> is the prior variance, <d-math>b</d-math> is the Laplace scale, and <d-math>\lambda</d-math> is the regularization strength. A narrower prior (small <d-math>\tau^2</d-math> or <d-math>b</d-math>) means a larger <d-math>\lambda</d-math> and a stronger pull of the weights toward zero. The Laplace prior has a kink (a non-differentiable point) at zero, which is why L1 regularization tends to set some weights exactly to zero. As <d-math>n</d-math> grows, the log-likelihood sum grows with <d-math>n</d-math> while the penalty stays fixed, so the data increasingly dominate the prior and the MAP estimate approaches the maximum likelihood estimate.</p>
+
+<p>The lecture attaches the prior to the discriminative model, but the same idea applies to the generative route: placing priors on <d-math>\mu_{jk}</d-math>, <d-math>\sigma_{jk}^2</d-math> or the class probabilities <d-math>P(Y = k)</d-math> gives MAP versions of Naive Bayes.</p>
+
+<h3 id="27-key-takeaways">2.7 Key Takeaways</h3>
+
+<ul>
+  <li><strong>Logistic regression</strong> models <d-math>P(Y=1 \mid X) = \sigma(\theta^T X)</d-math>, which is equivalent to assuming the log-odds are linear in <d-math>X</d-math>. It is fit by maximizing the conditional log-likelihood (minimizing cross-entropy) with gradient-based optimization.</li>
+  <li><strong>Naive Bayes</strong> models <d-math>P(X \mid Y) = \prod_j P(X_j \mid Y)</d-math> and <d-math>P(Y)</d-math>, assuming features are conditionally independent given the class. Its Gaussian version is fit in closed form from class means, class variances and label frequencies, and it predicts with Bayes’ theorem.</li>
+  <li>With class-shared variances, Gaussian Naive Bayes produces a posterior of the same logistic form, so the two methods choose from the same family of linear classifiers by different criteria.</li>
+  <li><strong>MAP estimation adds a prior</strong> <d-math>P(\theta)</d-math> to the likelihood. After taking logs, the prior becomes a penalty <d-math>R(\theta) = -\log P(\theta)</d-math>: a Gaussian prior gives L2 regularization and a Laplace prior gives L1.</li>
+</ul>
+
+<h2 id="3-when-does-each-approach-win">3. When Does Each Approach Win?</h2>
+
+<h3 id="31-two-learning-objectives">3.1 Two Learning Objectives</h3>
+
+<p>Section 1 described what each kind of model represents. Here we look at how their parameters <d-math>\theta</d-math> are learned. A discriminative classifier maximizes the <strong>conditional likelihood</strong> of the labels given the features, while a generative classifier maximizes the <strong>joint likelihood</strong> of features and labels:</p>
+
+<d-math block="">
+\hat{\theta}_{\mathrm{disc}} = \underset{\theta}{\mathop{\mathrm{argmax}}}\; P(Y \mid X; \theta),
+\qquad
+\hat{\theta}_{\mathrm{gen}} = \underset{\theta}{\mathop{\mathrm{argmax}}}\; P(X, Y; \theta).
+</d-math>
+
+<p>Are these the same optimization? By the product rule, the joint distribution factors as</p>
+
+<d-math block="">
+P(X, Y; \theta) = P(Y \mid X; \theta)\, P(X; \theta).
+</d-math>
+
+<p>So the two objectives coincide when <d-math>P(X; \theta)</d-math> does not depend on <d-math>\theta</d-math>, which is the condition stated in the lecture (“same optimization when <d-math>P(X;\theta)</d-math> is invariant to <d-math>\theta</d-math>”). The lecture reaches the same conclusion through the equivalent route <d-math>P(Y \mid X; \theta) = P(X \mid Y; \theta) P(Y; \theta) / P(X; \theta)</d-math>. Otherwise, generative learning also spends effort modeling how the features themselves are distributed.</p>
+
+<h3 id="32-logistic-regression-and-naive-bayes">3.2 Logistic Regression and Naive Bayes</h3>
+
+<p>Logistic regression and Naive Bayes are the classic discriminative–generative pair, introduced in Section 2. The lecture compares them as follows:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th> </th>
+      <th>Logistic regression</th>
+      <th>Naive Bayes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Type</td>
+      <td>Discriminative</td>
+      <td>Generative</td>
+    </tr>
+    <tr>
+      <td>Defines</td>
+      <td><d-math>P(Y \mid X; \theta)</d-math></td>
+      <td><d-math>P(X, Y; \theta)</d-math></td>
+    </tr>
+    <tr>
+      <td>Estimates</td>
+      <td><d-math>\hat{\theta}_{\mathrm{lr}}</d-math> = <d-math>\mathop{\mathrm{argmax}}_{\theta} P(Y \mid X; \theta)</d-math></td>
+      <td><d-math>\hat{\theta}_{\mathrm{nb}}</d-math> = <d-math>\mathop{\mathrm{argmax}}_{\theta} P(X, Y; \theta)</d-math></td>
+    </tr>
+    <tr>
+      <td>Asymptotic classification error</td>
+      <td>Lower</td>
+      <td>Higher</td>
+    </tr>
+    <tr>
+      <td>Convergence in terms of samples</td>
+      <td>Slower</td>
+      <td>Faster</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The last row is about <strong>sample efficiency</strong>, not computation time: Naive Bayes approaches its (higher) limiting error with fewer training examples.</p>
+
+<h3 id="33-the-sample-size-tradeoff">3.3 The Sample-Size Tradeoff</h3>
+
+<p>Ng and Jordan summarize the comparison as follows: “While discriminative learning has lower asymptotic error, a generative classifier may also approach its (higher) asymptotic error much faster.” <d-cite key="ng2001"></d-cite></p>
+
+<figure id="figure-ng-jordan" class="l-body-outset">
+  <div class="row">
+    <div class="col three">
+      <img src="/dgm-fall-2026/assets/img/notes/lecture-13/figure2-ng-jordan-learning-curves.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Figure 2. Learning curves of logistic regression (LR, dotted) and Naive Bayes (NB, solid).</strong>
+    Each panel is one UCI dataset. The horizontal axis <d-math>m</d-math> is the number of training examples and the vertical axis is the test error. Reproduced from Ng and Jordan (2001) <d-cite key="ng2001"></d-cite> as shown in the lecture slides. <d-cite key="lengerich2026"></d-cite>
+  </figcaption>
+</figure>
+
+<p>On pima, adult, boston and ionosphere, Naive Bayes has the lower error when <d-math>m</d-math> is small, and logistic regression crosses below it as <d-math>m</d-math> grows. On the two optdigits tasks, Naive Bayes stays lower over the whole plotted range. In other words, the generative classifier reaches its limiting error quickly, while the discriminative classifier improves more slowly but can end up with a lower error once there is enough data.</p>
+
+<h3 id="34-why-an-assumption-that-does-not-always-hold">3.4 Why? An Assumption That Does Not Always Hold</h3>
+
+<p>The proposition rests on an underlying assumption: generative models of the form <d-math>P(X, Y; \theta)</d-math> make <strong>more simplifying assumptions</strong> than discriminative models of the form <d-math>P(Y \mid X; \theta)</d-math>. Naive Bayes, for example, assumes that the features are conditionally independent given the class (Section 2.3). When such assumptions are roughly right, they reduce the number of quantities that must be estimated, so the model needs fewer examples to reach its best performance. When they are wrong, the model keeps a bias that more data cannot remove, which is why its asymptotic error is higher.</p>
+
+<p>The lecture stresses that this underlying assumption is <strong>not always true</strong>, so the proposition is not a general law. As Xue and Titterington put it, “So far there is no theoretically correct, general criterion for choosing between the discriminative and the generative approaches to classification of an observation <d-math>\mathbf{x}</d-math> into a class <d-math>y</d-math>; the choice depends on the relative confidence we have in the correctness of the specification of either <d-math>p(y \mid \mathbf{x})</d-math> or <d-math>p(\mathbf{x}, y)</d-math> for the data.” <d-cite key="xue2008"></d-cite></p>
+
+<h3 id="35-modern-deep-generative-models">3.5 Modern Deep Generative Models</h3>
+
+<p>Modern deep generative models (DGMs) aim for generative models of the form <d-math>P(X, Y; \theta)</d-math> <strong>without</strong> strong simplifying assumptions, so that they can represent complex, high-dimensional observations. From here on we model the inputs alone, without labels. The key idea is a <strong>hidden (latent) structure</strong> <d-math>z</d-math> that explains a high-dimensional observation <d-math>x</d-math>. The model assumes a process that first samples <d-math>z</d-math> and then generates <d-math>x</d-math> from it:</p>
+
+<d-math block="">
+z \sim p(z), \qquad x \sim p_\theta(x \mid z), \qquad p_\theta(x, z) = p_\theta(x \mid z)\, p(z).
+</d-math>
+
+<p>Following the slides, lowercase <d-math>p_\theta</d-math> denotes these (typically continuous) densities. The latent structure can itself be a hierarchy <d-math>z_1 \to \cdots \to z_k \to x</d-math>; a single <d-math>z</d-math> is used here for simplicity.</p>
+
+<p>Unlike the label <d-math>Y</d-math> earlier, <d-math>z</d-math> is <strong>never observed</strong>. This is the fundamental challenge, and it makes two core computations difficult:</p>
+
+<ul>
+  <li><strong>Marginal likelihood.</strong> To evaluate how probable an observation is, we must integrate over every possible latent value:</li>
+</ul>
+
+<d-math block="">
+p_\theta(x) = \int p_\theta(x, z)\, dz.
+</d-math>
+
+<ul>
+  <li><strong>Posterior inference.</strong> Given an observation, we want to know which latent values could plausibly have produced it:</li>
+</ul>
+
+<d-math block="">
+p_\theta(z \mid x) = \frac{p_\theta(x \mid z)\, p(z)}{p_\theta(x)} \;\propto\; p_\theta(x \mid z)\, p(z).
+</d-math>
+
+<p>The normalizer <d-math>p_\theta(x)</d-math> in the posterior is exactly the integral above, so in high-dimensional models both are generally intractable to compute exactly. Each type of DGM makes a different tradeoff in how it represents the data and carries out these computations.</p>
+
+<h2 id="4-autoencoders">4. Autoencoders</h2>
+
+<h3 id="41-overarching-goals">4.1 Overarching Goals</h3>
+
+<p>The first step toward deep generative models in this part of the course is the <strong>autoencoder</strong>. Unlike the classifiers above, an autoencoder is trained with <strong>unsupervised learning</strong>: it only sees inputs <d-math>x</d-math>, with no labels. Its goals are</p>
+
+<ul>
+  <li>finding the subspace, or manifold, on which the data distribution lies,</li>
+  <li>visualizing data that live in high dimensions, and</li>
+  <li>sampling and generating new examples.</li>
+</ul>
+
+<h3 id="42-encoder-latent-representation-and-decoder">4.2 Encoder, Latent Representation, and Decoder</h3>
+
+<p>An autoencoder has two parts. The <strong>encoder</strong> <d-math>g</d-math> maps an input <d-math>x</d-math> to a <strong>latent feature representation</strong> <d-math>h = g(x)</d-math>. The <strong>decoder</strong> <d-math>f</d-math> maps that representation back to a <strong>reconstructed input</strong>:</p>
+
+<d-math block="">
+\tilde{x} = f(h) = f\big(g(x)\big).
+</d-math>
+
+<p>The network is trained so that the reconstruction <d-math>\tilde{x}</d-math> is close to the original <d-math>x</d-math>. Because the latent representation <d-math>h</d-math> is usually much smaller than <d-math>x</d-math>, the network cannot simply copy its input. It has to learn a compressed description that keeps the information needed to rebuild <d-math>x</d-math>.</p>
+
+<figure id="figure-autoencoder" class="l-body-outset">
+  <div class="row">
+    <div class="col three">
+      <img src="/dgm-fall-2026/assets/img/notes/lecture-13/figure3-autoencoder.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Figure 3. An autoencoder.</strong>
+    The encoder <d-math>g</d-math> compresses an input image into a latent feature representation <d-math>h</d-math>, and the decoder <d-math>f</d-math> reconstructs the input from it, <d-math>\tilde{x} = f(h) = f(g(x))</d-math>. The red arrows (from the lecture) link each symbol to the component it denotes: <d-math>g</d-math> to the encoder, <d-math>h</d-math> to the latent representation, <d-math>f</d-math> to the decoder, and <d-math>\tilde{x}</d-math> to the reconstruction. Adapted from Michelucci (2022) <d-cite key="michelucci2022"></d-cite> as shown in the lecture slides. <d-cite key="lengerich2026"></d-cite>
+  </figcaption>
+</figure>
+
+<h3 id="43-why-reduce-dimensionality">4.3 Why Reduce Dimensionality?</h3>
+
+<p>Learning a low-dimensional representation is useful for several reasons:</p>
+
+<ul>
+  <li><strong>Reduce the computation cost</strong> of downstream tasks, which can work with the small representation <d-math>h</d-math> instead of the full input.</li>
+  <li><strong>Improve the statistical stability</strong> of downstream tasks, since fewer dimensions means fewer quantities to estimate from the same amount of data.</li>
+  <li><strong>Learn to generate samples.</strong> This is the idea behind variational autoencoders (Section 5.4).</li>
+  <li><strong>Denoise observations.</strong> What if we train an autoencoder on data with intentionally added noise? Gondara (2016) does this with medical images: a convolutional autoencoder is given noisy images and learns to output clean ones. <d-cite key="gondara2016"></d-cite> Section 5.1 describes this denoising autoencoder.</li>
+</ul>
+
+<h3 id="44-a-basic-fully-connected-autoencoder">4.4 A Basic Fully-Connected Autoencoder</h3>
+
+<p>The simplest autoencoder is built from fully-connected layers, as in the multilayer perceptrons of earlier lectures. The input layer feeds a narrow hidden layer, the <strong>bottleneck</strong>, which then feeds an output layer of the same size as the input. The bottleneck units go by several names: hidden units, embedded space, latent space, or bottleneck. The outputs are the reconstructed inputs.</p>
+
+<p>The network is trained to minimize the <strong>reconstruction error</strong>, the squared Euclidean distance between the input and its reconstruction:</p>
+
+<d-math block="">
+\mathcal{L}(\mathbf{x}, \tilde{\mathbf{x}}) = \lVert \mathbf{x} - \tilde{\mathbf{x}} \rVert_2^2 = \sum_i (x_i - \tilde{x}_i)^2,
+</d-math>
+
+<p>where bold <d-math>\mathbf{x}</d-math> is the input vector and the sum runs over its components <d-math>x_i</d-math> (here <d-math>i</d-math> indexes input components, not training examples). (The slides write the reconstruction as <d-math>\mathbf{x}'</d-math> here and as <d-math>\tilde{x}</d-math> in Figure 3; they are the same quantity.) Because the target is the input itself, no labels are needed.</p>
+
+<figure id="figure-fc-autoencoder" class="l-body-outset">
+  <div class="row">
+    <div class="col two">
+      <img src="/dgm-fall-2026/assets/img/notes/lecture-13/figure4-fc-autoencoder.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Figure 4. A basic fully-connected autoencoder.</strong>
+    Five inputs are compressed into a two-unit bottleneck by the encoder and expanded back to five outputs by the decoder. The network is trained with the squared reconstruction error shown on top, where <d-math>\mathbf{x}'</d-math> denotes the reconstruction. <em>Figure from the lecture slides.</em> <d-cite key="lengerich2026"></d-cite>
+  </figcaption>
+</figure>
+
+<h3 id="45-using-the-latent-embedding">4.5 Using the Latent Embedding</h3>
+
+<p>Often the decoder is only needed during training. Once the autoencoder has been trained, we can discard the decoder and keep the encoder. The latent embedding <d-math>h = g(x)</d-math> then serves as a compact input for downstream machine learning tasks, such as a classifier.</p>
+
+<h2 id="5-autoencoder-variants">5. Autoencoder Variants</h2>
+
+<p>The basic autoencoder can be modified to encourage representations with useful properties. Each variant below changes either the input, the network, or the loss.</p>
+
+<h3 id="51-denoising-autoencoders">5.1 Denoising Autoencoders</h3>
+
+<p>A <strong>denoising autoencoder</strong> corrupts the input during training, either by adding dropout right after the input layer (randomly setting some input values to zero) or by adding noise to the input. The training target is still the original, clean input. To reconstruct it, the network has to learn to remove the corruption, so it learns to denoise inputs.</p>
+
+<figure id="figure-denoising-autoencoder" class="l-body-outset">
+  <div class="row">
+    <div class="col three">
+      <img src="/dgm-fall-2026/assets/img/notes/lecture-13/figure5-denoising-autoencoder.png" />
+    </div>
+  </div>
+  <figcaption>
+    <strong>Figure 5. A denoising autoencoder.</strong>
+    A clean digit (left) is corrupted by overlaying random black squares (middle) before it enters the encoder. The network is trained to output the clean digit (right). <em>Figure from the lecture slides.</em> <d-cite key="lengerich2026"></d-cite>
+  </figcaption>
+</figure>
+
+<h3 id="52-autoencoders-and-dropout">5.2 Autoencoders and Dropout</h3>
+
+<p>Dropout layers can also be added inside the network. As in Lecture 9, dropout randomly removes units during training, so no single unit can be relied on. This forces the network to learn <strong>redundant features</strong> that still allow a good reconstruction when some units are missing.</p>
+
+<h3 id="53-sparse-autoencoders">5.3 Sparse Autoencoders</h3>
+
+<p>A <strong>sparse autoencoder</strong> adds an L1 penalty on the latent representation to the reconstruction loss. Writing <d-math>Enc</d-math> for the encoder and <d-math>Dec</d-math> for the decoder (the <d-math>g</d-math> and <d-math>f</d-math> of Section 4.2), the loss is</p>
+
+<d-math block="">
+\mathcal{L} = \lVert \mathbf{x} - Dec(Enc(\mathbf{x})) \rVert_2^2 + \sum_i \lvert Enc_i(\mathbf{x}) \rvert,
+</d-math>
+
+<p>where <d-math>Enc_i(\mathbf{x})</d-math> is the <d-math>i</d-math>-th component of the latent representation. As with L1 regularization of weights in Lecture 9, the L1 penalty pushes many of these components to zero (or near zero), so each input is described by only a few active latent features. Sparsity is one kind of prior on the representation, just as the L1 penalty on weights corresponds to MAP estimation with a Laplace prior (Section 2.6).</p>
+
+<p>Sparse representations are useful for <strong>post-hoc interpretability</strong>: because only a few features are active for any input, individual features are easier to inspect and often correspond to a single recognizable concept. A prominent example is Anthropic’s “Scaling Monosemanticity” work, which trained sparse autoencoders on the internal activations of a production large language model and extracted millions of features, many of which are interpretable (for example, a feature that responds to sycophantic praise) and can be used to steer the model’s behavior. <d-cite key="templeton2024"></d-cite></p>
+
+<h3 id="54-preview-variational-autoencoders">5.4 Preview: Variational Autoencoders</h3>
+
+<p>A <strong>variational autoencoder (VAE)</strong> defines the latent dimensions to follow a standard normal distribution, <d-math>p(z) = \mathcal{N}(\mu = 0, \sigma^2 = 1)</d-math>. This is what <strong>enables sampling</strong>: to generate a new example, draw <d-math>z</d-math> from <d-math>p(z)</d-math> and pass it through the decoder. The loss for training example <d-math>x^{[i]}</d-math> is</p>
+
+<d-math block="">
+L^{[i]} = -\mathbb{E}_{z \sim q_w(z \mid x^{[i]})}\left[\log p_w\left(x^{[i]} \mid z\right)\right] + \mathrm{KL}\left(q_w\left(z \mid x^{[i]}\right) \,\Vert\, p(z)\right).
+</d-math>
+
+<p>Unlike the deterministic code <d-math>h = g(x)</d-math> of a plain autoencoder, the VAE treats the latent as a random variable <d-math>z</d-math>, the latent <d-math>z</d-math> of Section 3.5. Here <d-math>q_w(z \mid x^{[i]})</d-math> is the distribution over latent codes produced by the encoder, and <d-math>p_w(x^{[i]} \mid z)</d-math> is the decoder’s distribution over inputs. The symbol <d-math>w</d-math> collects the parameters of both the encoder and the decoder and plays the role of <d-math>\theta</d-math> in Section 3.5. The first term is a reconstruction term: it is small when the decoder assigns high probability to the original input. The second term is the <strong>Kullback–Leibler (KL) divergence</strong>, which measures how far the encoder’s distribution is from the prior <d-math>p(z)</d-math> and keeps the latent codes close to a standard normal. The VAE is one way of handling the latent-variable challenges described in Section 3.5, and it is covered in detail in the next lecture.</p>
+
+<h2 id="6-summary">6. Summary</h2>
+
+<ul>
+  <li><strong>Two routes to classification.</strong> A discriminative model learns <d-math>P(Y \mid X)</d-math> directly. A generative model learns <d-math>P(X, Y) = P(X \mid Y) P(Y)</d-math> and obtains <d-math>P(Y \mid X)</d-math> with Bayes’ theorem (Section 1).</li>
+  <li><strong>Logistic regression vs. Naive Bayes.</strong> Logistic regression maximizes the conditional likelihood <d-math>P(Y \mid X; \theta)</d-math>; Gaussian Naive Bayes maximizes the joint likelihood <d-math>P(X, Y; \theta)</d-math> under the assumption that features are conditionally independent given the class. Adding a prior <d-math>P(\theta)</d-math> turns maximum likelihood into MAP estimation, which is the same as adding a regularization penalty (Section 2).</li>
+  <li><strong>Which one wins.</strong> Ng and Jordan observe that Naive Bayes can approach its (higher) asymptotic error with fewer training examples, while logistic regression improves more slowly but can reach a lower asymptotic error. This rests on the assumption that generative models make more simplifying assumptions than discriminative ones, which is not always true; there is no general criterion, and the choice depends on how confident we are that <d-math>P(Y \mid X)</d-math> or <d-math>P(X, Y)</d-math> is correctly specified. Deep generative models instead posit an unobserved latent variable <d-math>z</d-math>, which makes the marginal likelihood and the posterior hard to compute (Section 3).</li>
+  <li><strong>Autoencoders.</strong> An encoder maps the input to a lower-dimensional latent representation, and a decoder reconstructs the input from it; the network is trained with a reconstruction loss. Often the decoder is discarded after training and the latent embedding is used as input for downstream tasks. A plain autoencoder is a first step toward, but not yet, a deep generative model (Section 4).</li>
+  <li><strong>Variants.</strong> Each variant changes the input, the network, or the loss. Denoising autoencoders corrupt the input (with dropout or noise) and learn to reconstruct the clean version; dropout inside the network forces redundant features; sparse autoencoders add an L1 penalty on the latent code, a prior that favors sparse representations and aids post-hoc interpretability. The variational autoencoder, previewed in Section 5.4 and covered in the next lecture, makes the latent representation a random variable with a standard normal prior, which enables sampling (Section 5).</li>
+</ul>
+ </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+    </div>
+
+    <footer class="site-footer">
+  <div class="wrapper">
+    <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Ben Lengerich</li><li>
+            <a class="u-email" href="mailto:lengerich@wisc.edu"
+              >lengerich@wisc.edu</a
+            >
+          </li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li>
+    <a
+      href="https://github.com/AdaptInfer"
+      target="_blank"
+      ><i class="fab fa-github"></i>
+      <span class="username">AdaptInfer</span></a
+    >
+  </li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>
+          &copy; Copyright 2026 University of Wisconsin.
+          <br />
+          
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  </body>
+
+  <d-bibliography
+    src="/dgm-fall-2026/assets/bibliography/2026-10-22-lecture-13.bib"
+  >
+  </d-bibliography>
+
+  <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/dgm-fall-2026/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link
+  rel="stylesheet"
+  href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css"
+/>
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+<script src="/dgm-fall-2026/assets/js/katex.js"></script>
+ 
+<!-- Load Anchor JS -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+<script>
+  anchors.options.visible = "hover";
+  anchors.add("article h2, article h3, article h4, article h5, article h6");
+</script>
+ 
+<!-- Adjust LaTeX JS -->
+<script src="/dgm-fall-2026/assets/js/latex.js"></script>
+
+
+<!-- Include custom icon fonts -->
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2026/assets/css/fontawesome-all.min.css"
+/>
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2026/assets/css/academicons.min.css"
+/>
+
+<!-- Google Analytics -->
+<script>
+  (function (i, s, o, g, r, a, m) {
+    i["GoogleAnalyticsObject"] = r;
+    ((i[r] =
+      i[r] ||
+      function () {
+        (i[r].q = i[r].q || []).push(arguments);
+      }),
+      (i[r].l = 1 * new Date()));
+    ((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
+    a.async = 1;
+    a.src = g;
+    m.parentNode.insertBefore(a, m);
+  })(
+    window,
+    document,
+    "script",
+    "//www.google-analytics.com/analytics.js",
+    "ga",
+  );
+
+  ga("create", "", "auto");
+  ga("send", "pageview");
+</script>
+
+</html>
