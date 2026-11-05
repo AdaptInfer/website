@@ -68,7 +68,7 @@
             "editors": [
               
               {
-                "editor": "None"
+                "editor": "Yufei Zhou"
               }
               
             ],
@@ -712,11 +712,11 @@ initialization and normalization.</p>
 
 <h3 id="reading-training-and-validation-curves">Reading Training and Validation Curves</h3>
 
-<p>Checking the training and test loss or error is a simple and useful diagnosis. The curves
-carry a lot of information, especially about overfitting and underfitting. A validation
-plateau, or an error that starts increasing, is a sign of overfitting. Minibatch losses
+<p>Checking training and validation loss or error is a simple and useful diagnosis. The curves
+carry a lot of information, especially about overfitting and underfitting. If validation performance
+plateaus or worsens while training performance keeps improving, the model may be overfitting. Minibatch losses
 are noisy, so averaging or smoothing can reveal the underlying trend. The curves also say
-something about the learning rate: if it is too high, the error tends to oscillate.</p>
+something about the learning rate: oscillation can indicate that it is too high. Although the slide labels the second curve “test,” use a validation set while choosing the model or stopping point; keep the test set untouched until final evaluation.</p>
 
 <p>One caveat worth knowing about is <strong>grokking</strong>: on some small algorithmic tasks, strong
 generalization emerges long after the training data have been
@@ -756,7 +756,7 @@ specify the model or the training procedure and are chosen by the practitioner.<
 
 <p>A low training error is not always a positive signal. Limited capacity prevents a good
 fit to the training data; increasing capacity lowers training error, but excessive
-capacity may increase generalization error, which is usually estimated with test-set
+capacity may increase generalization error, which is usually estimated with validation-set
 error. The result is a gap between fitting observed examples and predicting unseen ones:
 as training error falls, the model improves on data it has seen, but that improvement is
 not guaranteed to transfer.</p>

@@ -1,0 +1,556 @@
+<!doctype html>
+<html>
+  <head>
+    <head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="content-language" content="en" />
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <title>
+    STAT 453 | Lecture 15: Diffusion Models
+  </title>
+  <meta name="description" content="STAT 453 - University of Wisconsin-Madison - Fall 2026
+" />
+
+  <link
+    rel="shortcut icon"
+    href="/dgm-fall-2026/assets/img/favicon.ico"
+  />
+
+  <link rel="stylesheet" href="/dgm-fall-2026/assets/css/main.css" />
+  <link
+    rel="canonical"
+    href="/dgm-fall-2026/notes/lecture-15/"
+  />
+
+  
+  <!-- Load Latex JS -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+  
+</head>
+
+    <script src="/dgm-fall-2026/assets/js/distillpub/template.v2.js"></script>
+    <script src="/dgm-fall-2026/assets/js/distillpub/transforms.v2.js"></script>
+  </head>
+
+  <d-front-matter>
+    <script type="text/json">
+      {
+            "title": "Lecture 15: Diffusion Models",
+            "description": "Learning to generate images by reversing noise, from pixel-space diffusion to text-conditioned latent diffusion.",
+            "published": "October 29, 2026",
+            "lecturers": [
+              
+              {
+                "lecturer": "Ben Lengerich",
+                "lecturerURL": "https://adaptinfer.org"
+              }
+              
+            ],
+            "authors": [
+              
+              {
+                "author": "Lang Zhou",
+                "authorURL": "https://github.com/User-Free-Account"
+              }
+              
+            ],
+            "editors": [
+              
+            ],
+            "katex": {
+              "delimiters": [
+                {
+                  "left": "$",
+                  "right": "$",
+                  "display": false
+                },
+                {
+                  "left": "$$",
+                  "right": "$$",
+                  "display": true
+                }
+              ]
+            }
+          }
+    </script>
+  </d-front-matter>
+
+  <body>
+    <header class="site-header">
+  <div class="wrapper">
+    <span class="site-title">
+      <a class="page-link" href="https://adaptinfer.org/dgm-fall-2026/"
+        >STAT 453</a
+      >
+    </span>
+
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path
+              fill="#424242"
+              d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
+            />
+            <path
+              fill="#424242"
+              d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
+            />
+            <path
+              fill="#424242"
+              d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
+            />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger">
+        <a class="page-link" href="/dgm-fall-2026/logistics/"
+          >logistics</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/lectures/"
+          >lectures</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/notes/">notes</a>
+        <a class="page-link" href="/dgm-fall-2026/calendar/"
+          >calendar</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/homework/"
+          >homework</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/project/">project</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+      <d-title>
+        <h1>Lecture 15: Diffusion Models</h1>
+        <p>Learning to generate images by reversing noise, from pixel-space diffusion to text-conditioned latent diffusion.</p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article> <h2 id="1-from-reconstructing-images-to-generating-them">1. From reconstructing images to generating them</h2>
+
+<p>A classifier answers a question about an observed image, such as whether it contains a cat. A generative model instead describes a distribution from which new images can be sampled. In supervised problems this may mean modeling the joint distribution of images and labels; for unconditional image generation, the target is simply the image distribution <d-math>p_{\mathrm{data}}(x)</d-math>.</p>
+
+<p>The lecture begins by revisiting three constructions:</p>
+
+<ul>
+  <li>An <strong>autoencoder</strong> maps an image through an encoder and decoder, <d-math>\hat x=D(E(x))</d-math>. Reconstruction alone does not ensure that arbitrary latent vectors decode to plausible images.</li>
+  <li>A <strong>variational autoencoder (VAE)</strong> specifies a prior and a probabilistic decoder. An approximate posterior makes its likelihood objective tractable through a variational bound. Sampling starts with a draw from the prior.</li>
+  <li>A <strong>generative adversarial network (GAN)</strong> learns a generator through a discriminator’s feedback. Its usual training objective compares generated and real samples without evaluating the image likelihood.</li>
+</ul>
+
+<p>Diffusion offers another route: deliberately corrupt training images through a known process, and learn transitions that run in the opposite direction. A complicated image-generation problem becomes many local denoising problems. Sohl-Dickstein et al. introduced this construction; DDPMs developed a particularly effective Gaussian formulation. <d-cite key="sohldickstein2015,ho2020"></d-cite></p>
+
+<p><strong>Scope.</strong> These notes follow the October 29 lecture slides, particularly slides 4-20. Sections 2-3 formalize the diagrams in the lecture. The closed-form derivations in Sections 4-5 and the optional score interpretation are reading supplements, included to make the training procedure understandable without returning to the slides. <d-cite key="lengerich2026"></d-cite></p>
+
+<h2 id="2-the-forward-process-destroy-structure-in-controlled-steps">2. The forward process: destroy structure in controlled steps</h2>
+
+<p>Let <d-math>x_0\in\mathbb R^d</d-math> be a training image flattened into a vector. Each intermediate <d-math>x_t</d-math> has the same dimension. The subscript <d-math>t</d-math> denotes a noise level, not a training iteration. Choose a number of steps <d-math>T</d-math> and a variance schedule <d-math>0&lt;\beta_t&lt;1</d-math>. The standard Gaussian forward transition is</p>
+
+<d-math block="">
+q(x_t\mid x_{t-1})=
+\mathcal N\!\left(x_t;\sqrt{1-\beta_t}\,x_{t-1},\beta_t I\right).
+</d-math>
+
+<p>Here <d-math>q</d-math> denotes the fixed corruption process, and <d-math>I</d-math> is the <d-math>d\times d</d-math> identity matrix. Equivalently,</p>
+
+<d-math block="">
+x_t=\sqrt{1-\beta_t}\,x_{t-1}+\sqrt{\beta_t}\,\epsilon_t,
+\qquad \epsilon_t\sim\mathcal N(0,I),
+</d-math>
+
+<p>with independent noise at each step. Multiplying the previous signal by <d-math>\sqrt{1-\beta_t}</d-math> attenuates it while the new noise increases uncertainty. The full conditional path distribution factors as</p>
+
+<d-math block="">
+q(x_{1:T}\mid x_0)=\prod_{t=1}^{T}q(x_t\mid x_{t-1}).
+</d-math>
+
+<h3 id="sampling-any-noise-level-directly">Sampling any noise level directly</h3>
+
+<p>Define <d-math>\alpha_t=1-\beta_t</d-math> and <d-math>\bar\alpha_t=\prod_{s=1}^{t}\alpha_s</d-math>, with <d-math>\bar\alpha_0=1</d-math>. Repeatedly substituting the transition gives</p>
+
+<d-math block="">
+\begin{aligned}
+q(x_t\mid x_0)
+&amp;=\mathcal N\!\left(x_t;\sqrt{\bar\alpha_t}\,x_0,
+                   (1-\bar\alpha_t)I\right),\\
+x_t&amp;=\sqrt{\bar\alpha_t}\,x_0+
+       \sqrt{1-\bar\alpha_t}\,\epsilon,
+\qquad \epsilon\sim\mathcal N(0,I).
+\end{aligned}
+</d-math>
+
+<p>To check the variance, suppose the accumulated noise at step <d-math>t-1</d-math> has variance <d-math>1-\bar\alpha_{t-1}</d-math>. The next variance is <d-math>\alpha_t(1-\bar\alpha_{t-1})+\beta_t =1-\bar\alpha_t</d-math>. Independent Gaussian increments remain Gaussian, which proves the formula by induction.</p>
+
+<p>This identity is crucial for efficient training: one can create a noisy example at a randomly selected step without simulating all preceding steps. The single <d-math>\epsilon</d-math> in this formula is the accumulated noise, rather than the last incremental noise <d-math>\epsilon_t</d-math>.</p>
+
+<p>If the schedule makes <d-math>\bar\alpha_T</d-math> sufficiently small, <d-math>x_T</d-math> is approximately standard Gaussian. This is an approximation at a finite number of steps; choosing an inadequate schedule leaves a mismatch between the terminal corrupted distribution and the Gaussian sampling prior.</p>
+
+<figure id="forward-process">
+  <img src="/dgm-fall-2026/assets/img/notes/lecture-15/forward-noising.png" alt="A synthetic geometric image at four progressively lower signal levels, approaching Gaussian noise." style="width:100%;height:auto;" />
+  <figcaption><strong>Figure 1. Controlled loss of signal.</strong>
+  An original synthetic image corrupted with the closed-form forward equation.
+  The panels show selected marginal noise levels, not a reverse-model output
+  or a measured generation result.</figcaption>
+</figure>
+
+<h2 id="3-the-reverse-process-learn-a-distribution-over-cleaner-images">3. The reverse process: learn a distribution over cleaner images</h2>
+
+<p>Knowing how to add noise does not tell us how to remove it from an unknown image. By Bayes’ rule,</p>
+
+<d-math block="">
+q(x_{t-1}\mid x_t)
+=\frac{q(x_t\mid x_{t-1})q(x_{t-1})}{q(x_t)}.
+</d-math>
+
+<p>The marginal distributions in this expression depend on the unknown data distribution. Moreover, several plausible clean images can correspond to a similar noisy observation. Reversal therefore requires learning a conditional distribution, rather than algebraically undoing an individual noise draw.</p>
+
+<p>The model starts from <d-math>p(x_T)=\mathcal N(0,I)</d-math> and defines</p>
+
+<d-math block="">
+\begin{aligned}
+p_\theta(x_{0:T})&amp;=p(x_T)\prod_{t=1}^{T}p_\theta(x_{t-1}\mid x_t),\\
+p_\theta(x_{t-1}\mid x_t)
+&amp;=\mathcal N\!\left(x_{t-1};\mu_\theta(x_t,t),\sigma_t^2 I\right).
+\end{aligned}
+</d-math>
+
+<p>We use a fixed time-dependent variance for this exposition. Other models may learn the covariance. The Gaussian transition is a modeling choice motivated by small forward steps; the exact reverse conditional need not be Gaussian for an arbitrary data distribution and finite step size.</p>
+
+<p>A shared neural network receives both <d-math>x_t</d-math> and an encoding of <d-math>t</d-math>, since the required correction depends on how much noise is present. In the DDPM formulation, this is an image-to-image denoising network, commonly a U-Net. Its output has the same shape as its image input.</p>
+
+<p>The model’s image density is obtained by integrating out the noisy states:</p>
+
+<d-math block="">
+p_\theta(x_0)=\int p_\theta(x_{0:T})\,dx_1\cdots dx_T.
+</d-math>
+
+<p><strong>Generation uses only the learned reverse chain.</strong> Draw a fresh <d-math>x_T</d-math> and sample successively down to <d-math>x_0</d-math>. No training image is supplied at inference time. In particular, an unconditional sample need not reproduce the image from which some training corruption was made.</p>
+
+<h2 id="4-why-training-reduces-to-predicting-noise">4. Why training reduces to predicting noise</h2>
+
+<p>The lecture’s summary links a variational bound with weighted denoising loss. The following derivation supplies the intermediate steps, using the DDPM parameterization. <d-cite key="ho2020"></d-cite></p>
+
+<h3 id="a-tractable-training-target">A tractable training target</h3>
+
+<p>Although <d-math>q(x_{t-1}\mid x_t)</d-math> is unknown, conditioning additionally on the training image gives a tractable Gaussian posterior. For <d-math>t\geq2</d-math>, completing the square in <d-math>q(x_t\mid x_{t-1})q(x_{t-1}\mid x_0)</d-math> yields</p>
+
+<d-math block="">
+q(x_{t-1}\mid x_t,x_0)=
+\mathcal N\!\left(x_{t-1};\tilde\mu_t(x_t,x_0),\tilde\beta_t I\right),
+</d-math>
+
+<d-math block="">
+\begin{aligned}
+\tilde\mu_t(x_t,x_0)
+&amp;=\frac{\sqrt{\bar\alpha_{t-1}}\beta_t}{1-\bar\alpha_t}x_0
+ +\frac{\sqrt{\alpha_t}(1-\bar\alpha_{t-1})}{1-\bar\alpha_t}x_t,\\
+\tilde\beta_t&amp;=\frac{1-\bar\alpha_{t-1}}{1-\bar\alpha_t}\beta_t.
+\end{aligned}
+</d-math>
+
+<p>There is no contradiction: <d-math>x_0</d-math> is available for constructing the training target, but is never an input to the reverse model during generation.</p>
+
+<h3 id="the-variational-bound">The variational bound</h3>
+
+<p>For a fixed training image, Jensen’s inequality gives a lower bound on <d-math>\log p_\theta(x_0)</d-math>. Negating it gives an upper bound on the negative log likelihood (NLL):</p>
+
+<d-math block="">
+\begin{aligned}
+-\log p_\theta(x_0)&amp;\leq\mathcal L_{\mathrm{VLB}}(x_0),\\
+\mathcal L_{\mathrm{VLB}}(x_0)
+&amp;=\mathbb E_{q(x_{1:T}\mid x_0)}
+\left[\log\frac{q(x_{1:T}\mid x_0)}{p_\theta(x_{0:T})}\right].
+\end{aligned}
+</d-math>
+
+<p>Rearranging the chain factors separates three kinds of terms:</p>
+
+<d-math block="">
+\begin{aligned}
+\mathcal L_{\mathrm{VLB}}(x_0)
+={}&amp;D_{\mathrm{KL}}\!\left(q(x_T\mid x_0)\,\|\,p(x_T)\right)\\
+&amp;+\sum_{t=2}^{T}\mathbb E_{q(x_t\mid x_0)}
+ D_{\mathrm{KL}}\!\left(q(x_{t-1}\mid x_t,x_0)\,\|\,
+ p_\theta(x_{t-1}\mid x_t)\right)\\
+&amp;-\mathbb E_{q(x_1\mid x_0)}\log p_\theta(x_0\mid x_1).
+\end{aligned}
+</d-math>
+
+<p>The first term measures terminal-prior mismatch and is constant with respect to <d-math>\theta</d-math> when the schedule is fixed. The middle terms train the reverse transitions. The last term is a reconstruction likelihood at the data boundary. For discrete image intensities, specifying that likelihood requires an appropriate discretized observation model if one wants an actual likelihood evaluation.</p>
+
+<p>For fixed <d-math>\sigma_t^2</d-math>, the part of a middle KL term that depends on the mean is</p>
+
+<d-math block="">
+\frac{1}{2\sigma_t^2}
+\|\tilde\mu_t(x_t,x_0)-\mu_\theta(x_t,t)\|_2^2.
+</d-math>
+
+<h3 id="predict-noise-instead-of-the-reverse-mean">Predict noise instead of the reverse mean</h3>
+
+<p>Use the forward equation to express <d-math>x_0=(x_t-\sqrt{1-\bar\alpha_t}\,\epsilon)/\sqrt{\bar\alpha_t}</d-math>. Substituting this into the posterior mean suggests the parameterization</p>
+
+<d-math block="">
+\mu_\theta(x_t,t)=\frac{1}{\sqrt{\alpha_t}}
+\left(x_t-\frac{\beta_t}{\sqrt{1-\bar\alpha_t}}
+\epsilon_\theta(x_t,t)\right).
+</d-math>
+
+<p>Thus the network predicts the accumulated noise, and a known formula converts that prediction into a reverse mean. Substitution into the preceding squared error gives, for <d-math>t\geq2</d-math>,</p>
+
+<d-math block="">
+\begin{aligned}
+\mathcal L_{t-1}
+&amp;=\mathbb E_{x_0,\epsilon}
+\left[w_t\|\epsilon-\epsilon_\theta(x_t,t)\|_2^2\right]+C_t,\\
+w_t&amp;=\frac{\beta_t^2}
+ {2\sigma_t^2\alpha_t(1-\bar\alpha_t)}.
+\end{aligned}
+</d-math>
+
+<p>Here <d-math>C_t</d-math> does not depend on the network parameters. In practice, the widely used simplified DDPM objective drops this weighting:</p>
+
+<d-math block="">
+\mathcal L_{\mathrm{simple}}=
+\mathbb E_{x_0,t,\epsilon}
+\left[\|\epsilon-\epsilon_\theta(
+\sqrt{\bar\alpha_t}x_0+\sqrt{1-\bar\alpha_t}\epsilon,t)\|_2^2\right].
+</d-math>
+
+<p>Here the image is sampled from the data distribution, the timestep uniformly from <d-math>\{1,\ldots,T\}</d-math>, and the noise from <d-math>\mathcal N(0,I)</d-math>, independently.</p>
+
+<p>This is supervised regression with targets generated automatically from the data. It is a reweighted training objective, not literally the exact NLL or the complete variational bound. The <d-math>t=1</d-math> boundary term must also be distinguished from the interior Gaussian KL terms above.</p>
+
+<h3 id="optional-reading-connection-the-score">Optional reading connection: the score</h3>
+
+<p>The score is the gradient of a log density with respect to its input. For the forward conditional Gaussian,</p>
+
+<d-math block="">
+\nabla_{x_t}\log q(x_t\mid x_0)
+=-\frac{x_t-\sqrt{\bar\alpha_t}x_0}{1-\bar\alpha_t}
+=-\frac{\epsilon}{\sqrt{1-\bar\alpha_t}}.
+</d-math>
+
+<p>At the population squared-error optimum, the noise predictor estimates <d-math>\mathbb E[\epsilon\mid x_t]</d-math>. Averaging the conditional score over <d-math>x_0\mid x_t</d-math> then gives the score of the noisy marginal. This explains the connection between noise prediction and denoising score matching; it does not mean the network can identify the exact noise in every individual corrupted example.</p>
+
+<h2 id="5-training-and-sampling-are-different-computations">5. Training and sampling are different computations</h2>
+
+<p>One training update samples clean images, timesteps, and Gaussian noise, then regresses the predicted noise toward the sampled noise. For batch size <d-math>B</d-math>, a mean-over-examples loss is <d-math>B^{-1}\sum_{i=1}^{B}\|\epsilon_i- \epsilon_\theta(x_{t_i}^{(i)},t_i)\|_2^2</d-math>. Averaging over image coordinates as well changes its scale by <d-math>1/d</d-math>.</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Training update:
+    sample a batch of clean images x0
+    independently sample one timestep t and Gaussian noise epsilon per image
+    xt = sqrt(alpha_bar[t]) * x0 + sqrt(1 - alpha_bar[t]) * epsilon
+    prediction = noise_network(xt, t)
+    loss = batch_mean(sum_over_image_coordinates((epsilon - prediction)^2))
+    backpropagate loss and update network parameters
+</code></pre></div></div>
+
+<p>After training, a basic ancestral sampler uses the reverse mean from Section 4:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Sampling (one simple DDPM convention):
+    x = sample_standard_normal(image_shape)
+    for t = T, T-1, ..., 1:
+        prediction = noise_network(x, t)
+        mean = (x - beta[t] / sqrt(1 - alpha_bar[t]) * prediction)
+               / sqrt(alpha[t])
+        if t &gt; 1:
+            x = mean + sqrt(beta_tilde[t]) * sample_standard_normal(image_shape)
+        else:
+            x = mean
+    return x
+</code></pre></div></div>
+
+<p>This convention uses posterior variance <d-math>\sigma_t^2=\tilde\beta_t</d-math> at interior steps and returns the predicted mean at the final step. It describes a common continuous-valued sampling procedure, rather than implementing the discretized boundary likelihood needed for exact image coding. Other variance choices and samplers are possible.</p>
+
+<p>Training needs only a randomly chosen noise level per example; the basic sampler requires a sequence of network evaluations. That distinction explains why a simple denoising training objective can still lead to expensive generation.</p>
+
+<h2 id="6-latent-diffusion-move-the-repeated-computation-out-of-pixel-space">6. Latent diffusion: move the repeated computation out of pixel space</h2>
+
+<p>Large images make every denoising evaluation expensive. The lecture therefore asks whether diffusion should run directly on pixels. A latent diffusion model first learns a useful compressed representation with an autoencoder, then models the distribution of those representations.</p>
+
+<figure id="latent-pipeline">
+  <img src="/dgm-fall-2026/assets/img/notes/lecture-15/latent-pipeline.svg" alt="Training maps an image through an encoder to a clean latent and then adds noise. Generation starts with latent Gaussian noise, repeatedly denoises with optional text conditioning, and decodes the final latent to an image." style="width:100%;height:auto;" />
+  <figcaption><strong>Figure 2. Two stages of latent diffusion.</strong>
+  The image encoder supplies training latents. New-image generation starts from
+  latent noise; the decoder is applied after the denoising chain. The diagram is
+  an original schematic of the lecture's latent-diffusion construction.</figcaption>
+</figure>
+
+<p>Write <d-math>z_0=E(x)</d-math> and <d-math>\hat x=D(z_0)</d-math>. The same corruption equation now acts on a latent tensor:</p>
+
+<d-math block="">
+z_t=\sqrt{\bar\alpha_t}z_0+\sqrt{1-\bar\alpha_t}\epsilon.
+</d-math>
+
+<p>Generation draws <d-math>z_T</d-math>, denoises to <d-math>z_0</d-math>, and decodes once with <d-math>D</d-math>. The encoder is unnecessary for generating a fresh image from noise. In the two-stage construction, the autoencoder is trained first and held fixed while learning the latent denoiser. Latent scaling must be consistent between training and sampling.</p>
+
+<p>For a dimensional illustration, compressing an RGB <d-math>512\times512</d-math> image to a <d-math>64\times64\times4</d-math> latent changes the number of scalar coordinates from 786,432 to 16,384, a factor of 48. This is a size comparison, not a measured speedup: network width, attention, and sampling steps also determine cost. Compression can discard fine details, so reconstruction quality places a limit on the final decoded result.</p>
+
+<p>Rombach et al. develop this separation between perceptual compression and generative modeling, including conditioning through cross-attention. <d-cite key="rombach2022"></d-cite></p>
+
+<h2 id="7-text-conditioning-and-the-stable-diffusion-idea">7. Text conditioning and the Stable Diffusion idea</h2>
+
+<p>Unconditional diffusion samples from a general learned image distribution. Text-to-image generation instead aims at a conditional distribution, <d-math>p_\theta(x\mid y)</d-math>, where <d-math>y</d-math> is a prompt. A text encoder maps the prompt to conditioning features <d-math>c=\tau(y)</d-math>. The noise predictor receives these features in addition to the noisy latent and timestep:</p>
+
+<d-math block="">
+\epsilon_\theta(z_t,t,c).
+</d-math>
+
+<p>The corresponding training target is still the known noise. What changes is the information available to predict it. In a cross-attention implementation, queries come from image features and keys and values come from text features, letting spatial image features attend to prompt tokens.</p>
+
+<p>At generation time, encode the prompt, draw latent Gaussian noise, run the text-conditioned denoising chain, and decode the final latent. This is the combination emphasized by the lecture’s Stable Diffusion slides: <strong>compressed image representations plus iterative denoising plus text conditioning</strong>. It describes the latent-diffusion architecture discussed in class, without assuming that all image-generation products or model versions use the same internal design.</p>
+
+<h2 id="8-comparing-vae-gan-and-diffusion-objectives">8. Comparing VAE, GAN, and diffusion objectives</h2>
+
+<div style="overflow-x:auto;">
+<table>
+  <thead><tr><th>Property</th><th>VAE</th><th>GAN</th><th>Diffusion</th></tr></thead>
+  <tbody>
+    <tr><td>Construction</td><td>Prior, decoder likelihood, approximate encoder posterior</td><td>Prior and generator, trained against a discriminator</td><td>Fixed corruption process, prior, learned reverse transitions</td></tr>
+    <tr><td>Training signal</td><td>Reconstruction likelihood and posterior-prior KL</td><td>Adversarial discrepancy between real and generated samples</td><td>Variational bound or a reweighted denoising objective</td></tr>
+    <tr><td>Likelihood treatment</td><td>Optimize an evidence lower bound</td><td>Standard objective does not evaluate likelihood</td><td>Bound the likelihood; simple noise MSE changes the weighting</td></tr>
+    <tr><td>Basic generation path</td><td>Sample latent, decode</td><td>Sample latent, run generator</td><td>Sample noise, repeatedly denoise; decode if latent-based</td></tr>
+    <tr><td>Typical concern</td><td>Posterior approximation and reconstruction quality</td><td>Training instability and mode collapse</td><td>Sequential sampling cost and schedule/model approximation</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>The lecture’s labels such as VAE blurriness, GAN realism, or diffusion mode coverage summarize tendencies rather than universal guarantees. Architecture, data, objective, and inference choices affect quality and diversity. A likelihood-based construction does not by itself prove that every data mode will be represented by a fitted model.</p>
+
+<h2 id="9-checks-for-understanding">9. Checks for understanding</h2>
+
+<ol>
+  <li><strong>Which direction is learned?</strong> The reverse transitions are learned. In the formulation here, the forward variance schedule is fixed.</li>
+  <li><strong>Why can training skip forward steps?</strong> Gaussian composition gives the closed-form marginal <d-math>q(x_t\mid x_0)</d-math>.</li>
+  <li><strong>Why can we compute a posterior target but still need a network?</strong> The tractable target also conditions on the training image <d-math>x_0</d-math>, which is unavailable during generation.</li>
+  <li><strong>Is noise MSE the exact likelihood objective?</strong> No. It is a useful reweighting; the full variational bound also contains terminal and reconstruction terms.</li>
+  <li><strong>What does latent diffusion change?</strong> The space in which the chain operates. It still requires learning denoising transitions.</li>
+  <li><strong>What does text conditioning change?</strong> The reverse prediction can depend on a prompt, so samples target a conditional image distribution.</li>
+</ol>
+
+<p>The central construction is to learn generation through a sequence of manageable conditional predictions. The forward process supplies noisy inputs and known training targets; the learned reverse process turns fresh noise into new samples.</p>
+ </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+    </div>
+
+    <footer class="site-footer">
+  <div class="wrapper">
+    <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Ben Lengerich</li><li>
+            <a class="u-email" href="mailto:lengerich@wisc.edu"
+              >lengerich@wisc.edu</a
+            >
+          </li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li>
+    <a
+      href="https://github.com/AdaptInfer"
+      target="_blank"
+      ><i class="fab fa-github"></i>
+      <span class="username">AdaptInfer</span></a
+    >
+  </li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>
+          &copy; Copyright 2026 University of Wisconsin.
+          <br />
+          
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  </body>
+
+  <d-bibliography
+    src="/dgm-fall-2026/assets/bibliography/2026-10-29-lecture-15.bib"
+  >
+  </d-bibliography>
+
+  <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/dgm-fall-2026/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link
+  rel="stylesheet"
+  href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css"
+/>
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+<script src="/dgm-fall-2026/assets/js/katex.js"></script>
+ 
+<!-- Load Anchor JS -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+<script>
+  anchors.options.visible = "hover";
+  anchors.add("article h2, article h3, article h4, article h5, article h6");
+</script>
+ 
+<!-- Adjust LaTeX JS -->
+<script src="/dgm-fall-2026/assets/js/latex.js"></script>
+
+
+<!-- Include custom icon fonts -->
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2026/assets/css/fontawesome-all.min.css"
+/>
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2026/assets/css/academicons.min.css"
+/>
+
+<!-- Google Analytics -->
+<script>
+  (function (i, s, o, g, r, a, m) {
+    i["GoogleAnalyticsObject"] = r;
+    ((i[r] =
+      i[r] ||
+      function () {
+        (i[r].q = i[r].q || []).push(arguments);
+      }),
+      (i[r].l = 1 * new Date()));
+    ((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
+    a.async = 1;
+    a.src = g;
+    m.parentNode.insertBefore(a, m);
+  })(
+    window,
+    document,
+    "script",
+    "//www.google-analytics.com/analytics.js",
+    "ga",
+  );
+
+  ga("create", "", "auto");
+  ga("send", "pageview");
+</script>
+
+</html>

@@ -72,7 +72,11 @@
             "editors": [
               
               {
-                "editor": "None"
+                "editor": "Bill Yunke Zhang"
+              },
+              
+              {
+                "editor": "Bella Ren"
               }
               
             ],
@@ -280,7 +284,14 @@
 
 <p><strong>In lecture.</strong> Depth only buys us something when the activation is nonlinear. Stacking units with identity activations composes linear maps into one linear map, so the stack collapses back to a single linear model. Nonlinear activations are what let a stack of units represent functions a single unit cannot.</p>
 
-<p>Making the activation function smooth is the key move. Once it is differentiable, we can apply gradient descent, and applying gradient descent to a deep learning model is backpropagation.</p>
+<p>Differentiable operations allow us to compute loss gradients using the chain rule. Backpropagation computes these gradients efficiently by
+working backward through the computation graph.
+An optimizer then uses the computed gradients to update the parameters.
+For example, gradient descent applies</p>
+
+\[\theta_{t+1} = \theta_t - \eta \nabla_\theta L(\theta_t).\]
+
+<p>Thus, backpropagation computes the gradients, while gradient descent performs the parameter update. In PyTorch, these correspond to <code class="language-plaintext highlighter-rouge">loss.backward()</code> and <code class="language-plaintext highlighter-rouge">optimizer.step()</code>, respectively.</p>
 
 <hr />
 
