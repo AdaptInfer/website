@@ -6,6 +6,8 @@ description:
 nav: false
 ---
 
+> **Short version:** Please don't email me before you're admitted. I'm not on the admissions committee, so there's nothing I can do for your application. If you do email, expect only a short reply saying I can't help. Instead, apply to one of the [programs I advise in](#programs-i-advise-in) and name me in your application. Your application will get full consideration.
+
 I'm glad you're considering pursuing graduate studies and potentially joining our research community.
 Here is some advice to help you navigate the admissions process effectively and understand the expectations of faculty members during this period.
 
@@ -37,13 +39,13 @@ Here is some advice to help you navigate the admissions process effectively and 
 
 ### My Communication Preferences
 
-While I appreciate your interest in my work, I am unable to respond to individual inquiries from prospective students prior to admission.
+While I appreciate your interest in my work, I am unable to help with individual inquiries from prospective students prior to admission.
 This policy helps ensure a fair evaluation process for all applicants.
 Rest assured, your application will receive full consideration if you mention my name in your application and align your research interests accordingly.
 
 ### Programs I Advise In
 
-I am able to advise students in the [School of Computing, Data & Information Sciences](https://cdis.wisc.edu/academics/graduate/), and co-advise students in [Biomedical Data Science](https://biostat.wiscweb.wisc.edu/education/current-students/phd-bds/).
+I am able to advise students in the [College of Computing & Artificial Intelligence](https://cai.wisc.edu/education/academic-programs/) (including the [Statistics PhD](https://stat.wisc.edu/graduate-admissions/phd-program/) and [Computer Sciences PhD](https://www.cs.wisc.edu/grad/programs/traditional/)), and co-advise students in [Biomedical Data Science](https://biostat.wisc.edu/education/phd-bds/).
 
 ### Frequently Asked Questions
 
@@ -67,4 +69,6 @@ I am able to advise students in the [School of Computing, Data & Information Sci
 
 ---
 
-Please note that while I appreciate your enthusiasm, I am unable to respond to individual inquiries from prospective students prior to admission. I look forward to the possibility of connecting after admissions decisions are made.
+Already at UW-Madison, or interested in a postdoc? See [Joining the Lab](./joining).
+
+I look forward to the possibility of connecting after admissions decisions are made.

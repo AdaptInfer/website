@@ -19,10 +19,11 @@ nav_order: 4
     <img src="/assets/img/fastlm_logo.png" alt="FastLM" width="10%"/>
   </a>
   Tools for large-scale, distributed, parallel, sparsity in LMs. Includes:
-
-  - [FastCache](https://github.com/FastLM/FastCache): Fast Caching for Diffusion Transformer Through Learnable Linear Approximation
-  - [PiKV](https://github.com/FastLM/PiKV): KV Cache Management System for MoE
-  - [GraphSnapShot](https://github.com/FastLM/GraphSnapShot): Caching Local Structure for Fast Graph Learning
+  - [FastCache](https://github.com/NoakLiu/FastCache-xDiT): Fast Caching for Diffusion Transformer Through Learnable Linear Approximation
+  - [PiKV](https://github.com/NoakLiu/PiKV): KV Cache Management System for MoE
+  - [GraphSnapShot](https://github.com/NoakLiu/GraphSnapShot): Caching Local Structure for Fast Graph Learning
+  - [MKA](https://github.com/FastLM/MKA): Memory-Keyed Attention for Efficient Long-Context Reasoning
+  - [CSV-Decode](https://github.com/FastLM/CSV-Decode): Certifiable Sub-Vocabulary Decoding for Efficient LLM Inference
 
 - Explainable Boosting Machines (EBM):
 
@@ -39,7 +40,19 @@ nav_order: 4
 - [Thoughts from my Faculty Application Experience](https://benlengerich.medium.com/38f1a29c715e)
 - [A few lessons learned from a few years in ML research](https://benlengerich.medium.com/a-few-lessons-learned-from-a-few-years-in-ml-research-8f6f88f97e61)
 - [Advice to Prospective Students](./advice/prospective_students)
-- [Advice on Letters of Recommendation](./advice/letters_of_rec)
+- [Joining the Lab](./advice/joining) (current UW-Madison students, postdocs, and collaborators)
+- [Advice on Letters of Recommendation](./advice/letters_of_rec), including how to request a letter from me
+
+<!-- Uncomment when these drafts are published (remove `published: false` from each page):
+- [Working in the Lab](./advice/lab_expectations)
+- [Writing Papers Reviewers Say Yes To](./advice/papers_and_reviews)
+-->
+
+#### Classic reading on doing research
+
+- Richard Hamming, [You and Your Research](https://www.cs.virginia.edu/~robins/YouAndYourResearch.html) (1986)
+- William Shockley, [On the Statistics of Individual Variations of Productivity in Research Laboratories](https://doi.org/10.1109/JRPROC.1957.278364), _Proceedings of the IRE_ (1957)
+- Marian Petre and Gordon Rugg, _The Unwritten Rules of PhD Research_ (Open University Press)
 
 ### Compilations
 
@@ -54,7 +67,7 @@ nav_order: 4
 
 ---
 
-### Internal resources
+### Internal resources (lab members only)
 
 - [Lab user guide](https://docs.google.com/document/d/1HMHeX9qSOq6PFn_cW47b3tzdJKK6QZGE39u25vsA9QA/edit?usp=sharing)
 - [Guide for AWS and remote Jupyter](https://docs.google.com/document/d/1CdVA_doTJZohg9dB8UhPHCgRuOtmLTAvCRV56IqBKvE/edit?usp=sharing)

@@ -19,7 +19,8 @@ Quick links:
 - [Our People](/people)
 - [Our Publications](/publications)
 - [Our Current Projects](/projects)
-- <a href="https://docs.google.com/forms/d/e/1FAIpQLSctsfvSMoNk9YnCYSGWTYE2he-dR3lpD9QOmQaRtCvwH3X7Hg/viewform" class="important-link">Apply to join us</a>
+- <a href="/resources/advice/joining" class="important-link">Apply to join us</a> (current UW-Madison students, postdocs, and collaborators)
+- [Prospective PhD students](/resources/advice/prospective_students): please apply through the department rather than emailing me
 
 <form
   action="https://buttondown.com/api/emails/embed-subscribe/lengerichlab"
@@ -30,7 +31,7 @@ Quick links:
 >
   <label for="bd-email">Subscribe to email updates (semesterly):</label>
   <input type="email" name="email" id="bd-email" />
-  
+
   <input type="submit" value="Subscribe" />
 </form>
 

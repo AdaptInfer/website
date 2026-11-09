@@ -1,6 +1,80 @@
 ---
 ---
 
+@article{rubbi2026contextualized,
+    title = {Contextualized Differential Expression with Latent Cell-State Inference},
+    journal = {Advances in Neural Information Processing Systems (NeurIPS 2026)},
+    author = {Rubbi, Andrea and Salem, Lama M. and Ellington, Caleb N. and Li{\`o}, Pietro and Lotfollahi, Mohammad and Kellis, Manolis and Lengerich, Benjamin J.},
+    abstract = {Standard single-cell differential expression (DE) analysis identifies genes that change across conditions, but it usually overlooks two key sources of heterogeneity that single-cell data are uniquely positioned to reveal: how disease-associated expression varies among cells within a donor, and how expression contrasts depend on cell state or subject-level context. Assigning every cell the diagnosis of its donor can contaminate DE signal when disease penetrance is partial, while modeling each gene with a single disease effect cannot capture heterogeneous responses across cell populations. We present PRISM (Phenotype-Resolved Inference in Single-cell Mixed models), a negative-binomial mixed-effects framework that augments standard DE analysis with three outputs: a context-DE vector $\theta_g$ that tests whether disease effects vary along a biological axis $z_{ij}$ (such as cell state, sex, or age); regularised cell-state responsibilities $q_{ij}$ for a putative disease-associated expression component; and a subject-level state summary $\rho_i$. Naive likelihood-only inference of $q_{ij}$ can align with nuisance variation (batch, cell-cycle, or dominant subtypes) rather than the intended disease axis. We therefore introduce PRISM-OT, a closed-form 1-D Wasserstein-2 projection that regularises the disease-arm posterior toward an affected/unaffected marginal while preserving the likelihood-derived rank ordering of cells. In simulations, PRISM accurately recovers simulated latent-state assignments and detects context-dependent DE at $P_{ctx} = 95.7\%$ while controlling $\mathrm{FPR}_\alpha = 2.0\%$. Applied to 73,830 ROSMAP microglia from 420 subjects, PRISM recovers Alzheimer's-consistent microglial biology in a single joint analysis. On a Perturb-seq benchmark with ground-truth cell-level labels, PRISM transfers without tuning and recovers per-construct penetrance estimates consistent with an independent proxy. PRISM is available on PyPI as prism-de.},
+    year = {2026},
+  selected = {true},
+  bibtex_show = {true},
+  code = {https://pypi.org/project/prism-de/},
+  website = {https://andrearubbi.github.io/PRISM/},
+}
+
+@article{jia2026sleuthbench,
+    title = {SleuthBench: Benchmarking Statistical LLM Evaluation Using Tabular Hidden Signals},
+    journal = {arXiv preprint arXiv:2609.34228},
+    author = {Jia, Jingyun and Remond-Tiedrez, Antoine and Alvarez, Aaron and Shunk, Joshua and Caruana, Rich and Lengerich, Ben},
+    abstract = {Evaluating statistical discovery by large language model (LLM) agents requires verifiable analytical ground truth. Establishing such ground truth for real-world datasets is costly, and prior knowledge of public datasets can influence agent responses. We introduce SLEUTHBENCH, a benchmark that addresses both problems by injecting controlled data-quality problems and feature effects into public tabular datasets: the injected pattern determines the answer, so reference answers are computed automatically and memorized knowledge of the original table is insufficient, while the table keeps its background structure. The injected patterns are modeled on phenomena reported in real data analyses. The benchmark defines 17 question templates in two families: data-quality questions and feature-contribution questions. We evaluate six state-of-the-art LLMs that analyze the data using a Python coding tool, on data-science and business phrasings of 70 validated dataset-template combinations, yielding 1680 graded responses in total. The models detect data-quality problems reliably (83.8\% accuracy) but recover feature contributions poorly (41.9\%). Finding how features shape the target requires searching over both candidate variables and analytical procedures. To address this issue, we propose the Empirical Layer, a set of precomputed statistical artifacts comprising summaries, fitted feature and interaction effects, and dataset descriptions, which exposes candidate patterns for direct inspection. Access to these artifacts raises feature-contribution accuracy from 41.9\% to 68.0\%.},
+    year = {2026},
+  bibtex_show = {true},
+  pdf = {https://arxiv.org/pdf/2609.34228},
+}
+
+@article{yao2026context,
+    title = {Context-Adaptive Inference: A Unified Statistical and Foundation-Model View},
+    journal = {arXiv preprint arXiv:2607.23304},
+    author = {Yao, Yue and Ellington, Caleb N. and Jia, Jingyun and Chen, Baiheng and Liu, Dong and Rao, Rikhil and Wang, Jiaqi and Wales-McGrath, Samuel and Yang, Yixin and Li, Zhiyuan and Xing, Eric P. and Lengerich, Ben},
+    abstract = {Modern predictive systems are expected to adapt their behavior to the specific situation they are facing. A clinical model should not treat every patient the same; a retrieval-augmented model should change its answer when given different evidence; a mixture-of-experts model should route different inputs to different experts. We call this capability context-adaptive inference: before predicting, the system uses information about the current context to specialize its parameters or computation for that instance. This article provides a unified view of context-adaptive inference across three traditions that are usually treated separately: (i) explicit adaptation in statistics (e.g. varying-coefficient models, local regression, hierarchical sharing), (ii) rapid task-specific adaptation in meta-learning and transfer, and (iii) implicit adaptation in large foundation models via prompting, retrieval, and expert routing. We formalize these approaches under a common objective: to map context $c$ to adapted parameters $θ(c)$, then to predict via $f(x; θ(c))$. Under squared loss, linear prediction heads, and fixed features, we prove that explicit parameter adaptation and implicit routing are mathematically equivalent to kernel ridge regression on joint features of inputs and context. Building on this bridge, we propose practical design principles and evaluation metrics including adaptation-efficiency, routing stability, and context-specific robustness to guide when to specialize, how to constrain that specialization, and how to audit context-adaptive models in deployment. Finally, we identify open problems in identifiability, robustness under distribution shift, and efficient large-scale adaptation, outlining design principles for methods that are scalable, reliable, and transparent in real-world settings.},
+    year = {2026},
+  bibtex_show = {true},
+  pdf = {https://arxiv.org/pdf/2607.23304},
+}
+
+@article{mahbub2026retrieval,
+    title = {Retrieval-Augmented Interpretable Learning: Towards Task-Specific Zero-Shot Models in Healthcare},
+    journal = {arXiv preprint arXiv:2607.17508},
+    author = {Mahbub, Sazan and Ellington, Caleb N. and Li, Zhiyuan and Yang, Yixin and Kundu, Souvik and Lengerich, Ben and Xing, Eric P.},
+    abstract = {We introduce Retrieval-Augmented Interpretable Learning (RAIL), a probabilistic meta-learning framework for zero-shot generation of task-specific interpretable models that synthesizes coefficient-space structure from natural-language task descriptions and a memory of previously learned task-specific predictors. RAIL retrieves related source tasks, transfers structure through coefficient space, and generates a new predictor in the original diagnostic-feature space, enabling zero-shot and few-shot clinical procedure prediction with feature-level explanations. Its probabilistic formulation provides uncertainty over retrieval, model coefficients, and predictions, supporting uncertainty-aware deployment: uncertain predictions or unstable explanations can be flagged for additional clinical review rather than treated as automatic decisions. This makes RAIL particularly suited for healthcare settings, where prediction tasks are highly long-tailed, new clinical targets arise frequently, and models must remain inspectable, uncertainty-aware, and compatible with human oversight. Across long-tailed clinical procedure prediction tasks, RAIL improves low-data model generation, benefits from clinically informed task representations, and yields retrieval, uncertainty, and coefficient-level diagnostics that make model behavior more transparent. These results suggest a path toward scalable clinical prediction systems that can adapt to new tasks while preserving interpretability and reliability.},
+    year = {2026},
+  bibtex_show = {true},
+  pdf = {https://arxiv.org/pdf/2607.17508},
+}
+
+@article{jia2026selecting,
+    title = {Selecting Feature Interactions for Generalized Additive Models by Distilling Foundation Models},
+    journal = {arXiv preprint arXiv:2604.13332},
+    author = {Jia, Jingyun and Singh, Chandan and Caruana, Rich and Lengerich, Ben},
+    abstract = {Identifying meaningful feature interactions is a central challenge in building accurate and interpretable models for tabular data. Generalized additive models (GAMs) have shown great success at modeling tabular data, but often rely on heuristic procedures to select interactions, potentially missing higher-order or context-dependent effects. To meet this challenge, we propose TabDistill, a method that leverages tabular foundation models and post-hoc distillation methods. Our key intuition is that tabular foundation models implicitly learn rich, adaptive feature dependencies through large-scale representation learning. Given a dataset, TabDistill first fits a tabular foundation model to the dataset, and then applies a post-hoc interaction attribution method to extract salient feature interactions from it. We evaluate these interactions by then using them as terms in a GAM. Across tasks, we find that interactions identified by TabDistill lead to consistent improvements in downstream GAMs' predictive performance. Our results suggest that tabular foundation models can serve as effective, data-driven guides for interaction discovery, bridging high-capacity models and interpretable additive frameworks.},
+    year = {2026},
+  bibtex_show = {true},
+  pdf = {https://arxiv.org/pdf/2604.13332},
+}
+
+@article{liu2026adacorrection,
+    title = {AdaCorrection: Adaptive Offset Cache Correction for Accurate Diffusion Transformers},
+    journal = {arXiv preprint arXiv:2602.13357},
+    author = {Liu, Dong and Yu, Yanxuan and Lengerich, Ben and Wu, Ying Nian},
+    abstract = {Diffusion Transformers (DiTs) achieve state-of-the-art performance in high-fidelity image and video generation but suffer from expensive inference due to their iterative denoising structure. While prior methods accelerate sampling by caching intermediate features, they rely on static reuse schedules or coarse-grained heuristics, which often lead to temporal drift and cache misalignment that significantly degrade generation quality. We introduce \textbf{AdaCorrection}, an adaptive offset cache correction framework that maintains high generation fidelity while enabling efficient cache reuse across Transformer layers during diffusion inference. At each timestep, AdaCorrection estimates cache validity with lightweight spatio-temporal signals and adaptively blends cached and fresh activations. This correction is computed on-the-fly without additional supervision or retraining. Our approach achieves strong generation quality with minimal computational overhead, maintaining near-original FID while providing moderate acceleration. Experiments on image and video diffusion benchmarks show that AdaCorrection consistently improves generation performance. Our code has been integrated into FastCache-xDiT at https://github.com/NoakLiu/FastCache-xDiT.},
+    year = {2026},
+  bibtex_show = {true},
+  pdf = {https://arxiv.org/pdf/2602.13357},
+}
+
+@article{liu2025csv,
+    title = {CSV-Decode: Certifiable Sub-Vocabulary Decoding for Efficient Large Language Model Inference},
+    journal = {arXiv preprint arXiv:2511.21702},
+    author = {Liu, Dong and Wang, Shu and Yu, Yanxuan and Wang, Haisheng and Lengerich, Ben},
+    abstract = {Large language models face significant computational bottlenecks during inference due to the expensive output layer computation over large vocabularies. We present CSV-Decode, a novel approach that uses geometric upper bounds to construct small sub-vocabularies for each decoding step, enabling efficient sparse computation while maintaining dual correctness guarantees: exact top-$k$ certification and $\varepsilon$-certified softmax approximations. Our method clusters vocabulary embeddings offline and uses centroid-plus-radius bounds to identify which tokens can be safely omitted from computation. We provide a complete system implementation with sparse GEMV kernels, multi-GPU sharding, and CUDA Graph optimization. Experimental results demonstrate significant speedup over full vocabulary decoding while maintaining distributional guarantees and low fallback rates. Our code implementation is available at https://github.com/FastLM/CSV-Decode.},
+  code = {https://github.com/FastLM/CSV-Decode},
+    year = {2025},
+  bibtex_show = {true},
+  pdf = {https://arxiv.org/pdf/2511.21702},
+}
+
+
 @article{liu2026mka,
     title = {MKA: Memory-Keyed Attention for Efficient Long-Context Reasoning},
     journal={ACM International Conference on Computing Frontier (CF 2026)},

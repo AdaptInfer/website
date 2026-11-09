@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Intepretability and Modularity
+title: Interpretability and Modularity
 description: Developing formal understanding of interpretability through structured models, GAMs, and interaction effects.
 img: assets/img/glass.jpeg
 importance: 3

@@ -2,9 +2,9 @@ github_users:
   - blengerich
 
 github_repos:
-  - cnellington/Contextualized
+  - AdaptInfer/Contextualized
   - interpretml/TalkToEBM
-  - LengerichLab/clEHRity
-  - LengerichLab/ebm_utils
-  - LengerichLab/gam_purification
-  - LengerichLab/ConferenceCountdown
+  - AdaptInfer/clehrity
+  - AdaptInfer/ebm_utils
+  - AdaptInfer/gam_purification
+  - AdaptInfer/ConferenceCountdown
