@@ -12,3 +12,5 @@ _posts/2015-10-20-math.md
 # Built/deployed course subsites (generated output, not hand-authored)
 dgm-fall-2026/**
 fm-spring-2026/**
+dgm-fall-2025/**
+_layouts/bib.liquid
