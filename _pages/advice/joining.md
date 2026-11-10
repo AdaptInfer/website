@@ -7,7 +7,7 @@ nav: false
 ---
 
 Thanks for your interest in the Adaptive Inference Lab. This page covers research positions for people who are already at UW-Madison, postdocs, and remote collaborators.
-If you are applying to a PhD program, see [Advice for Prospective Students](./prospective_students) instead. PhD admissions go through the department, not through me.
+If you are applying to a PhD program, see [Advice for Prospective Students](/resources/advice/prospective_students) instead. PhD admissions go through the department, not through me.
 
 **Current status:** I have very limited capacity right now. If you can drive a research project mostly on your own, I'm happy to give some advising along the way. If you're hoping to learn a new area from scratch, this isn't a good time to apply. I try to reply to every application.
 

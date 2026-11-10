@@ -39,13 +39,13 @@ nav_order: 4
 
 - [Thoughts from my Faculty Application Experience](https://benlengerich.medium.com/38f1a29c715e)
 - [A few lessons learned from a few years in ML research](https://benlengerich.medium.com/a-few-lessons-learned-from-a-few-years-in-ml-research-8f6f88f97e61)
-- [Advice to Prospective Students](./advice/prospective_students)
-- [Joining the Lab](./advice/joining) (current UW-Madison students, postdocs, and collaborators)
-- [Advice on Letters of Recommendation](./advice/letters_of_rec), including how to request a letter from me
+- [Advice to Prospective Students](/resources/advice/prospective_students)
+- [Joining the Lab](/resources/advice/joining) (current UW-Madison students, postdocs, and collaborators)
+- [Advice on Letters of Recommendation](/resources/advice/letters_of_rec), including how to request a letter from me
 
 <!-- Uncomment when these drafts are published (remove `published: false` from each page):
-- [Working in the Lab](./advice/lab_expectations)
-- [Writing Papers Reviewers Say Yes To](./advice/papers_and_reviews)
+- [Working in the Lab](/resources/advice/lab_expectations)
+- [Writing Papers Reviewers Say Yes To](/resources/advice/papers_and_reviews)
 -->
 
 #### Classic reading on doing research

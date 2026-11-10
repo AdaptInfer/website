@@ -69,6 +69,6 @@ I am able to advise students in the [College of Computing & Artificial Intellige
 
 ---
 
-Already at UW-Madison, or interested in a postdoc? See [Joining the Lab](./joining).
+Already at UW-Madison, or interested in a postdoc? See [Joining the Lab](/resources/advice/joining).
 
 I look forward to the possibility of connecting after admissions decisions are made.
