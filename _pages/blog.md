@@ -2,7 +2,7 @@
 layout: default
 permalink: /blog/
 title: Blog
-nav: true
+nav: false # Medium feed inactive since Oct 2024; set true to restore
 nav_order: 7
 pagination:
   enabled: true
