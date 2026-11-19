@@ -1,0 +1,687 @@
+<!doctype html>
+<html>
+  <head>
+    <head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="content-language" content="en" />
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <title>
+    STAT 453 | Lecture 16: Sequence Learning with RNNs
+  </title>
+  <meta name="description" content="STAT 453 - University of Wisconsin-Madison - Fall 2026
+" />
+
+  <link
+    rel="shortcut icon"
+    href="/dgm-fall-2026/assets/img/favicon.ico"
+  />
+
+  <link rel="stylesheet" href="/dgm-fall-2026/assets/css/main.css" />
+  <link
+    rel="canonical"
+    href="/dgm-fall-2026/notes/lecture-16/"
+  />
+
+  
+  <!-- Load Latex JS -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+  
+</head>
+
+    <script src="/dgm-fall-2026/assets/js/distillpub/template.v2.js"></script>
+    <script src="/dgm-fall-2026/assets/js/distillpub/transforms.v2.js"></script>
+  </head>
+
+  <d-front-matter>
+    <script type="text/json">
+      {
+            "title": "Lecture 16: Sequence Learning with RNNs",
+            "description": "Turning words into vectors, recurrent neural networks and their variants, backpropagation through time and why its gradients vanish or explode, LSTMs and GRUs, and why recurrence has come back in modern sequence models.",
+            "published": "November 3, 2026",
+            "lecturers": [
+              
+              {
+                "lecturer": "Ben Lengerich",
+                "lecturerURL": "https://adaptinfer.org"
+              }
+              
+            ],
+            "authors": [
+              
+              {
+                "author": "Zhixian He"
+              },
+              
+              {
+                "author": "Shuai Hao"
+              },
+              
+              {
+                "author": "Hongchen Yao"
+              }
+              
+            ],
+            "editors": [
+              
+              {
+                "editor": "None"
+              }
+              
+            ],
+            "katex": {
+              "delimiters": [
+                {
+                  "left": "$",
+                  "right": "$",
+                  "display": false
+                },
+                {
+                  "left": "$$",
+                  "right": "$$",
+                  "display": true
+                }
+              ]
+            }
+          }
+    </script>
+  </d-front-matter>
+
+  <body>
+    <header class="site-header">
+  <div class="wrapper">
+    <span class="site-title">
+      <a class="page-link" href="https://adaptinfer.org/dgm-fall-2026/"
+        >STAT 453</a
+      >
+    </span>
+
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path
+              fill="#424242"
+              d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
+            />
+            <path
+              fill="#424242"
+              d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
+            />
+            <path
+              fill="#424242"
+              d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
+            />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger">
+        <a class="page-link" href="/dgm-fall-2026/logistics/"
+          >logistics</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/lectures/"
+          >lectures</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/notes/">notes</a>
+        <a class="page-link" href="/dgm-fall-2026/calendar/"
+          >calendar</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/homework/"
+          >homework</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/project/">project</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+      <d-title>
+        <h1>Lecture 16: Sequence Learning with RNNs</h1>
+        <p>Turning words into vectors, recurrent neural networks and their variants, backpropagation through time and why its gradients vanish or explode, LSTMs and GRUs, and why recurrence has come back in modern sequence models.</p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article> <p><strong>Scope.</strong> These notes follow the November 3 lecture slides <d-cite key="lengerich2026rnn"></d-cite>. Several diagrams on the slides come from Raschka and Mirjalili <d-cite key="raschka2019python"></d-cite>; the figures here are redrawn or computed for these notes. Material that goes beyond the slides, mostly from the assigned readings <d-cite key="pascanu2013difficulty,goodfellow2016deep,hochreiter1997long"></d-cite>, is marked as a <em>supplement</em>. Every numerical example was checked in Python.</p>
+
+<p><strong>Notation.</strong> We write <d-math>h_t</d-math> for the slides’ <d-math>h^{\langle t\rangle}</d-math>, and likewise for <d-math>x_t</d-math>, <d-math>y_t</d-math> and <d-math>C_t</d-math>. The input dimension is <d-math>d</d-math>, the hidden dimension is <d-math>n</d-math>, the sequence length is <d-math>T</d-math>, and <d-math>\odot</d-math> is elementwise multiplication.</p>
+
+<h2 id="1-two-challenges-with-text">1. Two Challenges with Text</h2>
+
+<p>In the diffusion lecture, a text prompt conditioned the image generator. That raised a question the lecture left open: how does a sentence become numbers that a network can use? Text poses two separate problems <d-cite key="lengerich2026rnn"></d-cite>:</p>
+
+<ol>
+  <li><strong>Turning words into numbers.</strong> We need a representation of words through which activations can flow forward and gradients can flow backward.</li>
+  <li><strong>Modeling sequences.</strong> Sentences have different lengths, and a word can depend on another word far away from it. A model should accept variable-length input and carry context across long ranges.</li>
+</ol>
+
+<p>The rest of the module maps onto these problems. This lecture handles variable-length input with RNNs. Attention and transformers (Lecture 17) address long-range dependencies. GPT architectures (Lecture 18) give a generative model of text, and the remaining lectures cover scale, alignment, reasoning and parameter-efficient fine-tuning.</p>
+
+<p><strong>Where the module is going.</strong> GPT is an autoregressive probabilistic model <d-cite key="radford2018improving"></d-cite>. It factorizes the probability of a sequence into next-token predictions, so that each token depends on all the tokens before it:</p>
+
+<d-math block="">
+P_\theta(X) = \prod_{i}\prod_{t} P_\theta\left(X_{i,t} \mid X_{i,\lt t}\right),
+\qquad
+\max_\theta \sum_i \sum_t \log P_\theta\left(X_{i,t} \mid X_{i,\lt t}\right).
+</d-math>
+
+<p>Here <d-math>i</d-math> indexes training sequences and <d-math>t</d-math> indexes positions. For example, <d-math>P(\text{the sun is shining}) = P(\text{the})\,P(\text{sun}\mid\text{the})\,P(\text{is}\mid\text{the sun})\,P(\text{shining}\mid\text{the sun is})</d-math>. Training maximizes the log-likelihood of observed text. The conditional <d-math>P_\theta(X_{i,t}\mid X_{i,\lt t})</d-math> takes a prefix of any length as input, which is exactly the variable-length problem. The RNN is the first architecture in the course that can represent such a conditional with a fixed number of parameters.</p>
+
+<h2 id="2-three-classic-ways-to-avoid-the-sequence-problem">2. Three Classic Ways to Avoid the Sequence Problem</h2>
+
+<p>Before RNNs, the common approaches did not solve the sequence problem; each made a simplifying assumption that removed it.</p>
+
+<h3 id="21-bag-of-words-discard-the-order">2.1 Bag-of-Words: Discard the Order</h3>
+
+<p>Build a vocabulary, then represent each document by how many times each word occurs. With the vocabulary <code class="language-plaintext highlighter-rouge">and</code>=0, <code class="language-plaintext highlighter-rouge">is</code>=1, <code class="language-plaintext highlighter-rouge">one</code>=2, <code class="language-plaintext highlighter-rouge">shining</code>=3, <code class="language-plaintext highlighter-rouge">sun</code>=4, <code class="language-plaintext highlighter-rouge">sweet</code>=5, <code class="language-plaintext highlighter-rouge">the</code>=6, <code class="language-plaintext highlighter-rouge">two</code>=7, <code class="language-plaintext highlighter-rouge">weather</code>=8, the three training sentences on the slide become rows of a design matrix:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Sentence</th>
+      <th>Count vector</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>“The sun is shining”</td>
+      <td>[0, 1, 0, 1, 1, 0, 1, 0, 0]</td>
+    </tr>
+    <tr>
+      <td>“The weather is sweet”</td>
+      <td>[0, 1, 0, 0, 0, 1, 1, 0, 1]</td>
+    </tr>
+    <tr>
+      <td>“The sun is shining, the weather is sweet, and one and one is two”</td>
+      <td>[2, 3, 2, 1, 1, 1, 2, 1, 1]</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Any classifier, such as logistic regression or an MLP, can be trained on this <d-math>3\times 9</d-math> matrix. The cost of discarding order is that “The movie my friend has <strong>not</strong> seen is good” and “The movie my friend has seen is <strong>not</strong> good” receive the same vector, although they say opposite things.</p>
+
+<h3 id="22-hidden-markov-models-remember-only-the-last-state">2.2 Hidden Markov Models: Remember Only the Last State</h3>
+
+<p>A hidden Markov model assumes the hidden state at each step depends only on the previous state, and each observation depends only on the current state. The slide’s example has hidden weather (rainy or sunny) that follows a Markov chain, and observed activities (walk, shop, clean) that depend on the weather of that day. The Markov assumption removes the need to look further back. Information from many steps ago survives only if it is encoded in the current discrete state, which requires an exponentially large state space for rich histories.</p>
+
+<h3 id="23-convolutional-networks-assume-a-maximum-length">2.3 Convolutional Networks: Assume a Maximum Length</h3>
+
+<p>A one-dimensional CNN slides filters over the sequence. It needs inputs of a fixed size, so every sentence is padded to a maximum length. This assumes a reasonably short maximum exists; longer inputs must be truncated, and each output only sees the positions within its receptive field.</p>
+
+<h2 id="3-word-embeddings-from-words-to-vectors">3. Word Embeddings: From Words to Vectors</h2>
+
+<p>The first challenge is solved in two steps.</p>
+
+<p><strong>Step 1: map each word to an index.</strong> Add two special tokens to the vocabulary: <code class="language-plaintext highlighter-rouge">&lt;unk&gt;</code> for words not in the vocabulary and <code class="language-plaintext highlighter-rouge">&lt;pad&gt;</code> for padding. With <code class="language-plaintext highlighter-rouge">&lt;unk&gt;</code>=0, <code class="language-plaintext highlighter-rouge">and</code>=1, <code class="language-plaintext highlighter-rouge">is</code>=2, <code class="language-plaintext highlighter-rouge">one</code>=3, <code class="language-plaintext highlighter-rouge">shining</code>=4, <code class="language-plaintext highlighter-rouge">sun</code>=5, <code class="language-plaintext highlighter-rouge">sweet</code>=6, <code class="language-plaintext highlighter-rouge">the</code>=7, <code class="language-plaintext highlighter-rouge">two</code>=8, <code class="language-plaintext highlighter-rouge">weather</code>=9 and <code class="language-plaintext highlighter-rouge">&lt;pad&gt;</code>=10, “The sun is shining” becomes <code class="language-plaintext highlighter-rouge">[7, 5, 2, 4, 10, 10, …]</code>, padded to the length of the longest sentence in the batch.</p>
+
+<p><strong>Step 2: map each index to a dense vector.</strong> Write index 7 as a one-hot vector <d-math>e_7\in\mathbb{R}^{11}</d-math> and multiply it by an embedding matrix <d-math>E\in\mathbb{R}^{11\times 4}</d-math>. Because <d-math>e_7</d-math> has a single 1, the product <d-math>e_7^\top E</d-math> is just row 7 of <d-math>E</d-math>; on the slide that row is <d-math>[7.1, 2.5, 1.5, 1.5]</d-math>. Each word is now a 4-dimensional real vector, and gradients can flow into the entries of <d-math>E</d-math>.</p>
+
+<p>The slide leaves an open question: where does <d-math>E</d-math> come from?</p>
+
+<p><em>Supplement.</em> In practice no one forms the one-hot vector. <code class="language-plaintext highlighter-rouge">torch.nn.Embedding(num_embeddings=11, embedding_dim=4)</code> stores <d-math>E</d-math> and returns rows by index, which gives the same result without the multiplication. The matrix is usually either learned from random initialization together with the rest of the network by backpropagation, or initialized from pretrained word vectors (word2vec, GloVe) and then frozen or fine-tuned. In modern language models the embedding table is simply the first layer and is trained with everything else. During training only the rows of words that appear in a batch receive a nonzero gradient.</p>
+
+<h2 id="4-recurrent-neural-networks">4. Recurrent Neural Networks</h2>
+
+<h3 id="41-order-matters">4.1 Order Matters</h3>
+
+<p>The two “movie” sentences in Section 2.1 show that a sequence model must read words in order and remember what it has read. A feedforward network maps <d-math>x\to h\to y</d-math> once. An RNN adds a <strong>recurrent edge</strong>: the hidden state at time <d-math>t</d-math> is computed from the current input <d-math>x_t</d-math> and the previous hidden state <d-math>h_{t-1}</d-math>. Drawing one copy of the network per time step “unfolds” it into a deep feedforward network whose layers all share the same weights (Figure 1).</p>
+
+<figure id="rnn-unrolled">
+  <img src="/dgm-fall-2026/assets/img/notes/lecture-16/rnn-unrolled.svg" alt="Left: an RNN cell with input x_t, hidden state h_t with a self-loop labeled W_hh, and output y_t. Right: the same network unrolled over three time steps, where every step uses the same W_hx, W_hh and W_yh." style="width:100%;height:auto;" />
+  <figcaption><strong>Figure 1. Folded and unrolled views of a single-layer RNN.</strong>
+  The recurrent edge becomes a chain of hidden states. The three weight matrices are
+  shared by every time step, so the same parameters process a sequence of any length.
+  Redrawn after the lecture's figure.</figcaption>
+</figure>
+
+<p>Weight sharing is what solves the variable-length problem. A five-word sentence and a five-hundred-word sentence are processed by the same parameters; the longer one simply runs the recurrence more times. It also builds in an assumption: the rule for updating the state is the same at every position.</p>
+
+<h3 id="42-the-equations">4.2 The Equations</h3>
+
+<p>A single-layer RNN has three weight matrices, shared across time: <d-math>W_{hx}\in\mathbb{R}^{n\times d}</d-math> (input to hidden), <d-math>W_{hh}\in\mathbb{R}^{n\times n}</d-math> (hidden to hidden, the recurrent edge) and <d-math>W_{yh}</d-math> (hidden to output). At each step,</p>
+
+<d-math block="">
+\begin{aligned}
+z_{h,t} &amp;= W_{hx}\,x_t + W_{hh}\,h_{t-1} + b_h, &amp;\qquad h_t &amp;= \sigma_h\!\left(z_{h,t}\right),\\
+z_{y,t} &amp;= W_{yh}\,h_t + b_y, &amp;\qquad y_t &amp;= \sigma_y\!\left(z_{y,t}\right).
+\end{aligned}
+</d-math>
+
+<p>The hidden activation <d-math>\sigma_h</d-math> is usually <d-math>\tanh</d-math>, and <d-math>\sigma_y</d-math> depends on the task, for example a softmax over the vocabulary. The initial state <d-math>h_0</d-math> is usually a zero vector. The slides also write <d-math>W_h=[W_{hh}\,;\,W_{hx}]</d-math>: placing the two matrices side by side and multiplying by the stacked vector <d-math>[h_{t-1}\,;\,x_t]</d-math> gives the same <d-math>z_{h,t}</d-math>, which is how libraries implement it.</p>
+
+<p><strong>Parameter count.</strong> The hidden layer has <d-math>nd + n^2 + n</d-math> parameters, independent of <d-math>T</d-math>. With <d-math>d=4</d-math> and <d-math>n=3</d-math> that is <d-math>12+9+3=24</d-math>. PyTorch’s <code class="language-plaintext highlighter-rouge">nn.RNN(4, 3)</code> reports 27 because it keeps two bias vectors, one for the input term and one for the recurrent term, which are redundant mathematically.</p>
+
+<p><strong>A worked example.</strong> Take one hidden unit with <d-math>W_{hx}=0.5</d-math>, <d-math>W_{hh}=0.8</d-math>, no bias, <d-math>h_0=0</d-math>, and the input sequence <d-math>x=(1,0,0)</d-math>:</p>
+
+<d-math block="">
+\begin{aligned}
+h_1 &amp;= \tanh(0.5\cdot 1 + 0.8\cdot 0) = \tanh(0.5) \approx 0.462,\\
+h_2 &amp;= \tanh(0.5\cdot 0 + 0.8\cdot 0.462) = \tanh(0.370) \approx 0.354,\\
+h_3 &amp;= \tanh(0.8\cdot 0.354) = \tanh(0.283) \approx 0.276.
+\end{aligned}
+</d-math>
+
+<p>The input seen at step 1 still affects the state at step 3, but the trace shrinks at every step because it is multiplied by 0.8 and passed through <d-math>\tanh</d-math>. The same shrinking reappears in Section 5 as the vanishing-gradient problem.</p>
+
+<h3 id="43-multilayer-rnns">4.3 Multilayer RNNs</h3>
+
+<p>RNN layers can be stacked. The hidden state of layer 1 at time <d-math>t</d-math>, <d-math>h^{(1)}_t</d-math>, is the input of layer 2 at the same time step, and each layer keeps its own recurrent connection <d-math>h^{(\ell)}_{t-1}\to h^{(\ell)}_t</d-math>. Stacking adds depth at every time step, in addition to the depth across time that unrolling creates.</p>
+
+<h3 id="44-bidirectional-rnns">4.4 Bidirectional RNNs</h3>
+
+<p>A bidirectional RNN runs one RNN from left to right and a second, separate RNN from right to left, then concatenates their states at each position:</p>
+
+<d-math block="">
+h_t = \left[\overrightarrow{h}_t\,;\,\overleftarrow{h}_t\right].
+</d-math>
+
+<p>Every output now depends on the whole sequence. In “The movie my friend has not seen is good”, the representation of “seen” can use the words “is good” that come after it. This makes bidirectional RNNs a good fit for <strong>encoding</strong> an input that is fully available: tagging each word, classifying a sentence, or the encoder of a translation model (the attention examples in the next lecture use one). They cannot <strong>generate</strong> text, because when the model produces token <d-math>t</d-math>, the tokens after it have not been written, so the backward RNN has nothing to read.</p>
+
+<h3 id="45-types-of-sequence-tasks">4.5 Types of Sequence Tasks</h3>
+
+<p>Recurrence allows several input-output patterns:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Pattern</th>
+      <th>Input and output</th>
+      <th>Example</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Many-to-one</td>
+      <td>A sequence in, one fixed-size vector out</td>
+      <td>Sentiment analysis: text in, class label out</td>
+    </tr>
+    <tr>
+      <td>One-to-many</td>
+      <td>One input (not a sequence) in, a sequence out</td>
+      <td>Image captioning: image in, sentence out</td>
+    </tr>
+    <tr>
+      <td>Many-to-many, direct</td>
+      <td>One output per input step</td>
+      <td>Video captioning frame by frame; tagging each word</td>
+    </tr>
+    <tr>
+      <td>Many-to-many, delayed</td>
+      <td>Read the whole input, then produce an output sequence</td>
+      <td>Machine translation</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="46-encoderdecoder-seq2seq">4.6 Encoder–Decoder (seq2seq)</h3>
+
+<p>The delayed many-to-many pattern is implemented with two RNNs <d-cite key="sutskever2014sequence,cho2014learning"></d-cite>. Consider translating “Where is the library” into “Dónde está la biblioteca”.</p>
+
+<ul>
+  <li>The <strong>encoder</strong> RNN reads the four input words. Its last hidden state <d-math>c=h_4</d-math> is a fixed-length summary of the whole sentence.</li>
+  <li>The <strong>decoder</strong> RNN starts from <d-math>c</d-math> and writes the output one token at a time, feeding each output token back in as the next input: from the start token <code class="language-plaintext highlighter-rouge">&lt;s&gt;</code> it produces “Dónde”, then “está”, “la”, “biblioteca” and finally the end token <code class="language-plaintext highlighter-rouge">&lt;eos&gt;</code>.</li>
+  <li>Because the decoder decides when to stop, input and output lengths can differ. The same design serves translation, summarization and question answering.</li>
+</ul>
+
+<p>The weakness is a <strong>bottleneck</strong>: everything the decoder knows about the source must fit into one fixed-length vector <d-math>c</d-math>, and long sentences suffer. Attention, in the next lecture, lets the decoder look back at every encoder state instead.</p>
+
+<p><em>Supplement.</em> During training the decoder is usually fed the correct previous target word rather than its own prediction (“teacher forcing”), which lets all decoder steps be trained from the reference translation. At test time the decoder only has its own predictions, so early mistakes can compound. The mismatch between the two conditions is known as exposure bias.</p>
+
+<h2 id="5-backpropagation-through-time">5. Backpropagation Through Time</h2>
+
+<h3 id="51-the-gradient">5.1 The Gradient</h3>
+
+<p>To train an RNN we unroll it over the <d-math>T</d-math> steps of a sequence, compute a loss <d-math>L^{(t)}</d-math> at every step that has an output, and add them:</p>
+
+<d-math block="">
+L = \sum_{t=1}^{T} L^{(t)}.
+</d-math>
+
+<p>The unrolled network is an ordinary computation graph, so backpropagation applies unchanged; applied to an unrolled RNN it is called backpropagation through time (BPTT) <d-cite key="werbos1990backpropagation"></d-cite>. The only new feature is weight sharing. The matrix <d-math>W_{hh}</d-math> is used at every step, so, as with shared convolution filters, its gradient is the sum of the contributions from every place it is used. For the loss at step <d-math>t</d-math>, the slides write</p>
+
+<d-math block="">
+\frac{\partial L^{(t)}}{\partial W_{hh}}
+= \frac{\partial L^{(t)}}{\partial y_t}\cdot\frac{\partial y_t}{\partial h_t}\cdot
+\left(\sum_{k=1}^{t}\frac{\partial h_t}{\partial h_k}\cdot\frac{\partial h_k}{\partial W_{hh}}\right),
+</d-math>
+
+<p>where <d-math>\partial h_k/\partial W_{hh}</d-math> means the “immediate” derivative at step <d-math>k</d-math>, treating <d-math>h_{k-1}</d-math> as a constant. The sum runs over every earlier step <d-math>k</d-math> at which <d-math>W_{hh}</d-math> influenced <d-math>h_t</d-math>. The factor that connects step <d-math>k</d-math> to step <d-math>t</d-math> is a product of one Jacobian per intervening step:</p>
+
+<d-math block="">
+\frac{\partial h_t}{\partial h_k} = \prod_{i=k+1}^{t}\frac{\partial h_i}{\partial h_{i-1}}.
+</d-math>
+
+<p>This product is straightforward to compute, and it is where the trouble starts.</p>
+
+<h3 id="52-why-gradients-vanish-or-explode">5.2 Why Gradients Vanish or Explode</h3>
+
+<p>For a <d-math>\tanh</d-math> RNN, differentiating <d-math>h_i=\tanh(W_{hx}x_i + W_{hh}h_{i-1}+b_h)</d-math> gives</p>
+
+<d-math block="">
+\frac{\partial h_i}{\partial h_{i-1}} = \mathrm{diag}\!\left(\tanh'(z_{h,i})\right) W_{hh}
+= \mathrm{diag}\!\left(1-h_i^2\right) W_{hh}.
+</d-math>
+
+<p>A signal from step <d-math>k</d-math> must pass through <d-math>t-k</d-math> of these factors to reach step <d-math>t</d-math>. Scalars give the intuition. If every factor were 0.5, twenty steps would multiply the gradient by <d-math>0.5^{20}\approx 9.5\times 10^{-7}</d-math>: the gradient <strong>vanishes</strong>, and the network gets almost no signal about how the input twenty steps back should have changed. If every factor were 1.5, twenty steps would multiply it by <d-math>1.5^{20}\approx 3.3\times 10^{3}</d-math>: the gradient <strong>explodes</strong>, updates become huge and the loss can turn into <code class="language-plaintext highlighter-rouge">NaN</code>. The same problem appeared for deep feedforward networks in Lecture 7, but here it is worse: an RNN on a 100-word sentence is 100 layers deep with the <em>same</em> matrix at every layer, and dependencies across sentences require far more steps.</p>
+
+<p><em>Supplement (Pascanu et al., this week’s reading).</em> The scalar intuition can be made precise <d-cite key="pascanu2013difficulty,bengio1994learning"></d-cite>. Let <d-math>\lambda_1</d-math> be the largest singular value of <d-math>W_{hh}</d-math> and let <d-math>\gamma</d-math> bound the derivative of the activation (<d-math>\gamma=1</d-math> for <d-math>\tanh</d-math>, <d-math>\gamma=1/4</d-math> for the sigmoid). Then each factor has norm at most <d-math>\gamma\lambda_1</d-math>, so</p>
+
+<d-math block="">
+\left\lVert \frac{\partial h_t}{\partial h_k}\right\rVert \le \left(\gamma\,\lambda_1\right)^{t-k}.
+</d-math>
+
+<p>If <d-math>\lambda_1\lt 1/\gamma</d-math>, long-range gradients are guaranteed to vanish exponentially fast; this is a sufficient condition. Conversely, <d-math>\lambda_1\gt 1/\gamma</d-math> is necessary for gradients to explode, but not sufficient, because saturated units have <d-math>\tanh'\approx 0</d-math> and can absorb the growth. In the worked example of Section 4.2, every factor is <d-math>0.8\,\tanh'(z)\le 0.8</d-math>, so the gradient shrinks at least as fast as <d-math>0.8^{t-k}</d-math>. Pascanu et al. also describe the geometry: exploding gradients appear as steep “cliffs” in the loss surface, where a single gradient step can throw the parameters far away.</p>
+
+<p>Figure 3 (in Section 6.4) shows these regimes in an actual randomly initialized network with 64 hidden units. With all singular values of <d-math>W_{hh}</d-math> equal to 0.9, the Jacobian norm falls by a factor of about 10 every 10 steps. With singular values of 3, it grows by roughly <d-math>10^{8}</d-math> over 60 steps. With singular values of 1.5 it neither vanishes nor explodes, because saturation of <d-math>\tanh</d-math> cancels the growth of <d-math>W_{hh}</d-math>; keeping a plain RNN in that narrow regime during training is hard.</p>
+
+<h3 id="53-fixes">5.3 Fixes</h3>
+
+<p><strong>Gradient clipping.</strong> If the norm of the gradient exceeds a threshold, rescale the gradient down to that norm while keeping its direction. For example, a gradient of norm 50 with threshold 5 is multiplied by <d-math>5/50=0.1</d-math>. Clipping fixes exploding gradients only; it cannot create signal where the gradient has vanished. In PyTorch it is one line between the backward pass and the optimizer step:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">loss</span><span class="p">.</span><span class="n">backward</span><span class="p">()</span>
+<span class="n">torch</span><span class="p">.</span><span class="n">nn</span><span class="p">.</span><span class="n">utils</span><span class="p">.</span><span class="n">clip_grad_norm_</span><span class="p">(</span><span class="n">model</span><span class="p">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">max_norm</span><span class="o">=</span><span class="mf">5.0</span><span class="p">)</span>
+<span class="n">optimizer</span><span class="p">.</span><span class="n">step</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><strong>Truncated backpropagation through time (TBPTT).</strong> Limit how many steps the gradient can travel back after each forward pass. A sequence may have 100 steps while gradients are propagated through only the last 20 or so. This bounds the length of the Jacobian product and the memory needed for stored activations. The cost is that the model cannot learn, through gradients, dependencies longer than the window, although the hidden state itself still carries information forward. In PyTorch, TBPTT means splitting a long sequence into chunks and calling <code class="language-plaintext highlighter-rouge">h = h.detach()</code> between chunks, so the value of the state is kept but the gradient stops there.</p>
+
+<p><strong>Change the architecture.</strong> The third fix, and the one that addresses vanishing gradients, is to give the memory a path along which the gradient is not multiplied by <d-math>W_{hh}</d-math> and squashed by <d-math>\tanh</d-math> at every step. That is the LSTM.</p>
+
+<h2 id="6-long-short-term-memory-lstm">6. Long Short-Term Memory (LSTM)</h2>
+
+<h3 id="61-two-paths-of-memory">6.1 Two Paths of Memory</h3>
+
+<p>The name is not an oxymoron. An LSTM <d-cite key="hochreiter1997long"></d-cite> keeps <strong>two</strong> states. The <strong>cell state</strong> <d-math>C_t</d-math> is the long-term memory; it is updated only by elementwise multiplication and addition. The <strong>hidden state</strong> <d-math>h_t</d-math> is the short-term memory and is what the cell passes to the next layer and the next time step (Figure 2).</p>
+
+<figure id="lstm-cell">
+  <img src="/dgm-fall-2026/assets/img/notes/lecture-16/lstm-cell.svg" alt="An LSTM cell. The cell state runs along the top through an elementwise multiplication with the forget gate and an addition of the input gate times the input node. Four blocks at the bottom (sigma for forget, sigma for input, tanh for input node, sigma for output) all read the previous hidden state and the current input. The new hidden state is the output gate times tanh of the new cell state." style="width:100%;height:auto;" />
+  <figcaption><strong>Figure 2. Inside an LSTM cell.</strong>
+  The cell state (red) passes through the cell with only an elementwise product by the
+  forget gate and an elementwise sum with new content. All four yellow blocks read
+  <d-math>[h_{t-1}, x_t]</d-math> with their own weights. Redrawn after the lecture's figure.</figcaption>
+</figure>
+
+<h3 id="62-gates-and-updates">6.2 Gates and Updates</h3>
+
+<p>A <strong>gate</strong> is a sigmoid layer. Its output lies between 0 and 1 and says how much of something to let through: 0 blocks everything, 1 keeps everything. A <d-math>\tanh</d-math> layer outputs values between <d-math>-1</d-math> and 1 and proposes new content. Each of the four blocks reads <d-math>x_t</d-math> and <d-math>h_{t-1}</d-math> with its own weights:</p>
+
+<d-math block="">
+\begin{aligned}
+f_t &amp;= \sigma\!\left(W_{fx}\,x_t + W_{fh}\,h_{t-1} + b_f\right) &amp;&amp;\text{forget gate: how much of } C_{t-1} \text{ to keep}\\
+i_t &amp;= \sigma\!\left(W_{ix}\,x_t + W_{ih}\,h_{t-1} + b_i\right) &amp;&amp;\text{input gate: how much new content to write}\\
+g_t &amp;= \tanh\!\left(W_{gx}\,x_t + W_{gh}\,h_{t-1} + b_g\right) &amp;&amp;\text{input node: the candidate content}\\
+o_t &amp;= \sigma\!\left(W_{ox}\,x_t + W_{oh}\,h_{t-1} + b_o\right) &amp;&amp;\text{output gate: how much of the memory to expose}
+\end{aligned}
+</d-math>
+
+<p>The cell state and hidden state are then updated as</p>
+
+<d-math block="">
+C_t = \left(C_{t-1}\odot f_t\right) + \left(i_t\odot g_t\right),
+\qquad
+h_t = o_t\odot\tanh\!\left(C_t\right).
+</d-math>
+
+<p>The first term of <d-math>C_t</d-math> is the old memory, partly erased by the forget gate. The second term is new content <d-math>g_t</d-math>, admitted by the input gate. The output gate decides how much of the squashed memory becomes the visible state <d-math>h_t</d-math>.</p>
+
+<p><strong>A worked example.</strong> For a single unit, suppose <d-math>C_{t-1}=2.0</d-math> and the gates take the values <d-math>f_t=0.9</d-math>, <d-math>i_t=0.1</d-math>, <d-math>g_t=0.5</d-math> and <d-math>o_t=0.5</d-math>. Then</p>
+
+<d-math block="">
+C_t = 2.0\times 0.9 + 0.1\times 0.5 = 1.80 + 0.05 = 1.85,
+\qquad
+h_t = 0.5\times\tanh(1.85) \approx 0.5\times 0.952 \approx 0.476.
+</d-math>
+
+<p>The cell kept 90% of its old memory and wrote only a little new content; the output gate exposed half of the result.</p>
+
+<h3 id="63-why-the-cell-state-helps-the-gradient">6.3 Why the Cell State Helps the Gradient</h3>
+
+<p>Differentiate the cell update along the cell-state path only, holding the gates fixed:</p>
+
+<d-math block="">
+\frac{\partial C_t}{\partial C_{t-1}} = \mathrm{diag}(f_t)
+\qquad\Longrightarrow\qquad
+\frac{\partial C_t}{\partial C_k} \approx \prod_{i=k+1}^{t}\mathrm{diag}(f_i).
+</d-math>
+
+<p>Compare this with the plain RNN’s factor <d-math>\mathrm{diag}(1-h_i^2)\,W_{hh}</d-math>. There is no repeated multiplication by a weight matrix and no <d-math>\tanh</d-math> on this path, only the forget gate, whose value the network chooses from the current input. When the network needs to remember, it can set <d-math>f\approx 1</d-math>. With <d-math>f=0.95</d-math> at every step, twenty steps keep <d-math>0.95^{20}\approx 0.36</d-math> of the gradient, compared with <d-math>0.5^{20}\approx 10^{-6}</d-math> in the scalar RNN example. The approximation sign is there because the gates themselves depend on <d-math>h_{t-1}</d-math>, which depends on <d-math>C_{t-1}</d-math>, so the full Jacobian has additional indirect terms.</p>
+
+<h3 id="64-measuring-it">6.4 Measuring It</h3>
+
+<p>Figure 3 measures these Jacobians directly in randomly initialized networks with 64 hidden units and random inputs. For the plain RNN we compute <d-math>\partial h_t/\partial h_k</d-math> exactly from the product formula. For the LSTM we compute <d-math>\partial C_t/\partial C_k</d-math> by finite differences, so the indirect paths through <d-math>h</d-math> are included. Nothing is trained; the plot shows the behavior a network starts from.</p>
+
+<figure id="gradient-decay">
+  <img src="/dgm-fall-2026/assets/img/notes/lecture-16/gradient-decay.png" alt="Log-scale plot of Jacobian spectral norm versus distance in time steps for three tanh RNNs and three LSTMs. The RNN with singular values 0.9 and the LSTM with forget bias 0 fall to about 1e-9 at distance 60. The RNN with singular values 3 rises to about 1e8. The RNN with singular values 1.5 and the LSTM with forget bias 3 stay within a factor of about 100 of 1. The LSTM with forget bias 1 decays slowly to about 1e-3." style="width:100%;height:auto;" />
+  <figcaption><strong>Figure 3. How far back does the gradient signal reach?</strong>
+  Spectral norm of the state-to-state Jacobian against the distance <d-math>t-k</d-math>,
+  for <d-math>\tanh</d-math> RNNs whose recurrent matrix has all singular values equal to
+  0.9, 1.5 or 3 (blue), and LSTMs with forget-gate bias 0, 1 or 3 (red). Random
+  initialization, 64 hidden units, one random input sequence (NumPy, seed 0). Computed
+  for these notes, not taken from the lecture.</figcaption>
+</figure>
+
+<p>Three observations follow. First, the LSTM is not automatically immune: with forget bias 0 the forget gates sit near <d-math>\sigma(0)=0.5</d-math>, and the gradient decays about as fast as in the vanishing RNN. Second, raising the forget-gate bias pushes <d-math>f</d-math> toward 1 and keeps the signal alive over the whole 60-step window. Third, with <d-math>b_f=3</d-math> the norm even grows slowly, through the indirect paths; the LSTM controls the gradient through the values of its gates rather than guaranteeing it.</p>
+
+<p><em>Supplement.</em> The original 1997 LSTM had no forget gate; its cell simply accumulated, <d-math>C_t=C_{t-1}+i_t\odot g_t</d-math>, so the gradient along the cell was exactly 1 (the “constant error carousel”). Gers et al. added the forget gate so the cell could reset itself <d-cite key="gers2000learning"></d-cite>. Initializing the forget bias to about 1, so that the network remembers by default early in training, is a common practical choice <d-cite key="jozefowicz2015empirical"></d-cite>; PyTorch initializes it like the other biases, so it must be set by hand.</p>
+
+<p>As the slides note, gating slows the decay but does not remove it; long-range gradients still fade, only more slowly. This is one of the reasons discussed in Section 8.</p>
+
+<h3 id="65-lstms-in-pytorch">6.5 LSTMs in PyTorch</h3>
+
+<p>The slide’s example:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="n">nn</span>
+
+<span class="n">rnn</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">LSTM</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>            <span class="c1"># input_size=10, hidden_size=20, num_layers=2
+</span><span class="nb">input</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>       <span class="c1"># (seq_len, batch, input_size)
+</span><span class="n">h0</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>          <span class="c1"># (num_layers, batch, hidden_size)
+</span><span class="n">c0</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">output</span><span class="p">,</span> <span class="p">(</span><span class="n">hn</span><span class="p">,</span> <span class="n">cn</span><span class="p">)</span> <span class="o">=</span> <span class="n">rnn</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="p">(</span><span class="n">h0</span><span class="p">,</span> <span class="n">c0</span><span class="p">))</span>
+<span class="c1"># output: (5, 3, 20)  top layer's h_t at every step
+# hn, cn: (2, 3, 20)  every layer's state at the last step
+</span></code></pre></div></div>
+
+<p>Two details cause most shape bugs. The default <code class="language-plaintext highlighter-rouge">batch_first=False</code> puts the sequence dimension first, so <code class="language-plaintext highlighter-rouge">(5, 3, 10)</code> is 5 time steps of a batch of 3. The initial states are indexed by layer first. With <code class="language-plaintext highlighter-rouge">bidirectional=True</code>, the last dimension of <code class="language-plaintext highlighter-rouge">output</code> doubles to 40 and the first dimension of <code class="language-plaintext highlighter-rouge">h0</code> and <code class="language-plaintext highlighter-rouge">c0</code> becomes <code class="language-plaintext highlighter-rouge">num_layers * 2 = 4</code>. Other options are <code class="language-plaintext highlighter-rouge">bias</code>, <code class="language-plaintext highlighter-rouge">dropout</code> (applied between stacked layers, not after the last one) and <code class="language-plaintext highlighter-rouge">proj_size</code>.</p>
+
+<p><strong>Parameter count.</strong> Each of the four blocks has an <d-math>n\times d</d-math> input matrix, an <d-math>n\times n</d-math> recurrent matrix and bias, so an LSTM layer has four times the parameters of a plain RNN layer of the same size. PyTorch stores the four blocks stacked, as <code class="language-plaintext highlighter-rouge">weight_ih_l0</code> of shape <d-math>(4n, d)</d-math> and <code class="language-plaintext highlighter-rouge">weight_hh_l0</code> of shape <d-math>(4n, n)</d-math>, plus two bias vectors. For <code class="language-plaintext highlighter-rouge">nn.LSTM(10, 20)</code> this is <d-math>4\times(200+400+20+20)=2560</d-math> parameters. In the two-layer example, the second layer reads the 20-dimensional output of the first, so it has <d-math>4\times(400+400+40)=3360</d-math>, for 5920 in total.</p>
+
+<h2 id="7-gated-recurrent-unit-gru">7. Gated Recurrent Unit (GRU)</h2>
+
+<p>The GRU <d-cite key="cho2014learning"></d-cite> is a simpler gated RNN, with two gates instead of three and no separate cell state:</p>
+
+<d-math block="">
+\begin{aligned}
+r_t &amp;= \sigma\!\left(W_{rx}\,x_t + W_{rh}\,h_{t-1} + b_r\right) &amp;&amp;\text{reset gate}\\
+z_t &amp;= \sigma\!\left(W_{zx}\,x_t + W_{zh}\,h_{t-1} + b_z\right) &amp;&amp;\text{update gate}\\
+\tilde h_t &amp;= \tanh\!\left(W_{hx}\,x_t + W_{hh}\left(r_t\odot h_{t-1}\right) + b_h\right) &amp;&amp;\text{candidate state}\\
+h_t &amp;= \left(1-z_t\right)\odot h_{t-1} + z_t\odot\tilde h_t &amp;&amp;\text{new hidden state}
+\end{aligned}
+</d-math>
+
+<p>The <strong>update gate</strong> <d-math>z_t</d-math> decides how much of the old state to overwrite. It plays the role of the LSTM’s forget and input gates tied together, with <d-math>f=1-z</d-math>: whatever fraction of new content is written, the same fraction of old content is forgotten. With <d-math>z_t=0.2</d-math>, the new state keeps 80% of <d-math>h_{t-1}</d-math> and mixes in 20% of the candidate. The <strong>reset gate</strong> <d-math>r_t</d-math> lets the candidate ignore the past when it is not relevant; with <d-math>r_t\approx 0</d-math> the candidate is computed almost entirely from <d-math>x_t</d-math>. The term <d-math>(1-z_t)\odot h_{t-1}</d-math> gives the GRU the same kind of additive path as the LSTM’s cell state.</p>
+
+<p>With three weight blocks instead of four, a GRU has about 25% fewer parameters than an LSTM of the same size (1920 versus 2560 for input size 10 and hidden size 20 in PyTorch), and its accuracy is usually similar <d-cite key="chung2014empirical"></d-cite>. <code class="language-plaintext highlighter-rouge">torch.nn.GRU</code> has the same interface as <code class="language-plaintext highlighter-rouge">nn.LSTM</code> without the cell state. One trap when reading the documentation: PyTorch swaps the roles of <d-math>z</d-math> and <d-math>1-z</d-math> and writes <d-math>h_t=(1-z_t)\odot n_t + z_t\odot h_{t-1}</d-math>, where <d-math>n_t</d-math> is the candidate. The two conventions describe the same model with the gate’s meaning reversed.</p>
+
+<h2 id="8-why-rnns-faded-and-why-recurrence-is-back">8. Why RNNs Faded, and Why Recurrence Is Back</h2>
+
+<h3 id="81-why-transformers-replaced-rnns">8.1 Why Transformers Replaced RNNs</h3>
+
+<ul>
+  <li><strong>Training is sequential.</strong> <d-math>h_t</d-math> cannot be computed until <d-math>h_{t-1}</d-math> is done, so a length-<d-math>T</d-math> sequence is <d-math>T</d-math> dependent steps and a GPU cannot parallelize across time. A transformer processes all <d-math>T</d-math> positions of a training sequence at once.</li>
+  <li><strong>Memory bottleneck.</strong> The entire past is squeezed into one fixed-size vector <d-math>h_t</d-math>, the same problem as the seq2seq vector <d-math>c</d-math>. Attention can look back at any earlier token directly.</li>
+  <li><strong>Long-range gradients still fade</strong>, even with LSTM gating, just more slowly.</li>
+</ul>
+
+<p>The net effect is that transformers turned more data and compute into better models (BERT, GPT; from 2018 onward), and by about 2020 RNNs had mostly disappeared from frontier language modeling. The slide’s summary: transformers won on <em>training</em> parallelism, and they pay for it at <em>inference</em> time.</p>
+
+<h3 id="82-the-cost-of-attention">8.2 The Cost of Attention</h3>
+
+<p>When a transformer generates text, every new token attends to every previous token. Generating <d-math>T</d-math> tokens therefore costs <d-math>O(T^2)</d-math> compute in total, and the key-value cache that stores the past grows linearly with <d-math>T</d-math>. Going from 1,000 to 10,000 tokens multiplies the attention compute by about 100. An RNN carries a fixed-size state, so each generated token costs <d-math>O(1)</d-math> memory regardless of how long the context is.</p>
+
+<h3 id="83-linear-recurrence-parallel-training-recurrent-inference">8.3 Linear Recurrence: Parallel Training, Recurrent Inference</h3>
+
+<p>The trick that brings recurrence back is to remove the nonlinearity between time steps:</p>
+
+<d-math block="">
+\begin{aligned}
+\text{classic RNN:}\quad &amp; h_t = \tanh\!\left(W_{hh}\,h_{t-1} + W_{hx}\,x_t\right)\\
+\text{linear recurrence:}\quad &amp; h_t = A_t\,h_{t-1} + B_t\,x_t,\qquad y_t = C_t\,h_t
+\end{aligned}
+</d-math>
+
+<p>(Here <d-math>C_t</d-math> is an output matrix, not the LSTM cell state.) Because the update is linear in <d-math>h</d-math>, all steps of a training sequence can be computed in parallel with a parallel scan. At generation time the model runs one step at a time like an RNN, with a fixed-size state. It gets the training parallelism of a transformer and the cheap inference of an RNN.</p>
+
+<p><em>Supplement: why linearity allows a parallel scan.</em> Consider the scalar case and write <d-math>b_t</d-math> for <d-math>B_t x_t</d-math>. Each step is the affine map <d-math>h\mapsto a_t h + b_t</d-math>, which we can store as the pair <d-math>(a_t, b_t)</d-math>. Applying <d-math>(a_1,b_1)</d-math> and then <d-math>(a_2,b_2)</d-math> gives <d-math>h\mapsto a_2(a_1 h + b_1)+b_2</d-math>, another affine map, stored as <d-math>(a_2a_1,\ a_2b_1+b_2)</d-math>. This combination rule is associative, so the <d-math>T</d-math> maps can be combined pairwise in a tree <d-cite key="blelloch1990prefix"></d-cite>. The tree has about <d-math>\log_2 T</d-math> levels, so <d-math>T=1024</d-math> steps need about 10 rounds of parallel work instead of 1024 sequential steps; a parallel prefix scan also returns every intermediate <d-math>h_t</d-math>. With <d-math>\tanh</d-math> between steps, the composition of two steps is no longer a map of the same simple form, and the shortcut fails.</p>
+
+<p><strong>Timeline.</strong> Linear attention <d-cite key="katharopoulos2020transformers"></d-cite> → S4 structured state-space models <d-cite key="gu2022efficiently"></d-cite> → Mamba, in which <d-math>A_t</d-math>, <d-math>B_t</d-math> and <d-math>C_t</d-math> depend on the input <d-cite key="gu2023mamba"></d-cite>, alongside RWKV and RetNet (2023) → xLSTM <d-cite key="beck2024xlstm"></d-cite>. Making the matrices input-dependent plays the same role as the LSTM’s gates: the model decides from the current token what to keep and what to overwrite.</p>
+
+<p><strong>Today: hybrids.</strong> Current models such as Jamba (2024), Nemotron-H and Qwen3-Next (2025) use mostly recurrent layers plus a few attention layers.</p>
+
+<p><strong>Why keep any attention?</strong> A fixed-size state cannot store everything. Exact recall and copying from long contexts remain hard for purely recurrent models <d-cite key="jelassi2024repeat"></d-cite>. A few attention layers restore direct access to earlier tokens while the recurrent layers keep most of the inference cost low.</p>
+
+<h2 id="9-checks-for-understanding">9. Checks for Understanding</h2>
+
+<ol>
+  <li><strong>Why can one RNN process sentences of any length?</strong> The same weights <d-math>W_{hx}, W_{hh}, W_{yh}</d-math> are applied at every step; a longer sentence only runs the recurrence more times.</li>
+  <li><strong>How many parameters does the hidden layer of a plain RNN with <d-math>d=10</d-math>, <d-math>n=20</d-math> have?</strong> <d-math>nd+n^2+n = 200+400+20 = 620</d-math> (640 in PyTorch, which keeps two bias vectors). An LSTM has four blocks and a GRU three.</li>
+  <li><strong>Why can a bidirectional RNN not generate text?</strong> Its backward direction reads tokens that come later, which do not exist yet during generation.</li>
+  <li><strong>What limits a seq2seq model with a single context vector?</strong> All information about the input must pass through one fixed-length vector <d-math>c</d-math>, which loses detail on long inputs.</li>
+  <li><strong>Why do gradients vanish or explode in BPTT?</strong> The gradient across <d-math>t-k</d-math> steps is a product of <d-math>t-k</d-math> Jacobians <d-math>\mathrm{diag}(1-h_i^2)W_{hh}</d-math>; its norm behaves roughly like a number raised to the power <d-math>t-k</d-math>.</li>
+  <li><strong>Does gradient clipping fix vanishing gradients?</strong> No. It only rescales gradients that are too large.</li>
+  <li><strong>Why does the LSTM’s cell state help?</strong> Along the cell path, each step multiplies the gradient only by the forget gate, which the network can keep near 1, instead of by <d-math>W_{hh}</d-math> and a <d-math>\tanh</d-math> derivative.</li>
+  <li><strong>What is the trade-off between transformers and recurrent models?</strong> Transformers train in parallel but cost <d-math>O(T^2)</d-math> attention and a growing cache at inference; recurrent models keep an <d-math>O(1)</d-math> state per token. Linear recurrences get both parallel training and recurrent inference.</li>
+</ol>
+
+<h2 id="10-key-takeaways">10. Key Takeaways</h2>
+
+<ul>
+  <li>Text needs a numeric representation (vocabulary index, then a learned embedding vector) and a model that handles variable-length sequences.</li>
+  <li>An RNN reuses one set of weights at every step and carries a hidden state <d-math>h_t=\tanh(W_{hx}x_t+W_{hh}h_{t-1}+b_h)</d-math>, so it handles any length with a fixed number of parameters.</li>
+  <li>Stacked, bidirectional and encoder–decoder RNNs cover classification, tagging, captioning and translation. Bidirectional models only encode, and seq2seq compresses the input into one vector.</li>
+  <li>Backpropagation through time multiplies one Jacobian per step, so gradients vanish or explode over long ranges. Clipping fixes exploding gradients; truncated BPTT limits how far gradients travel.</li>
+  <li>The LSTM’s additively updated cell state, controlled by forget, input and output gates, lets gradients survive many steps; the GRU achieves a similar effect with two gates and about 25% fewer parameters.</li>
+  <li>Transformers replaced RNNs because they train in parallel. Linear recurrences (S4, Mamba, xLSTM) and hybrid models bring recurrence back for cheap long-context inference, while a few attention layers keep exact recall.</li>
+</ul>
+
+<p><strong>Further reading.</strong> Karpathy’s blog post <d-cite key="karpathy2015unreasonable"></d-cite> trains character-level RNNs on several datasets and inspects what individual units learn. Chapter 10 of Goodfellow et al. <d-cite key="goodfellow2016deep"></d-cite> covers the material of this lecture in more depth, including echo state networks and leaky units as other answers to long-range dependencies.</p>
+ </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+    </div>
+
+    <footer class="site-footer">
+  <div class="wrapper">
+    <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Ben Lengerich</li><li>
+            <a class="u-email" href="mailto:lengerich@wisc.edu"
+              >lengerich@wisc.edu</a
+            >
+          </li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li>
+    <a
+      href="https://github.com/AdaptInfer"
+      target="_blank"
+      ><i class="fab fa-github"></i>
+      <span class="username">AdaptInfer</span></a
+    >
+  </li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>
+          &copy; Copyright 2026 University of Wisconsin.
+          <br />
+          
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  </body>
+
+  <d-bibliography
+    src="/dgm-fall-2026/assets/bibliography/2026-11-03-lecture-16.bib"
+  >
+  </d-bibliography>
+
+  <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/dgm-fall-2026/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link
+  rel="stylesheet"
+  href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css"
+/>
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+<script src="/dgm-fall-2026/assets/js/katex.js"></script>
+ 
+<!-- Load Anchor JS -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+<script>
+  anchors.options.visible = "hover";
+  anchors.add("article h2, article h3, article h4, article h5, article h6");
+</script>
+ 
+<!-- Adjust LaTeX JS -->
+<script src="/dgm-fall-2026/assets/js/latex.js"></script>
+
+
+<!-- Include custom icon fonts -->
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2026/assets/css/fontawesome-all.min.css"
+/>
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2026/assets/css/academicons.min.css"
+/>
+
+<!-- Google Analytics -->
+<script>
+  (function (i, s, o, g, r, a, m) {
+    i["GoogleAnalyticsObject"] = r;
+    ((i[r] =
+      i[r] ||
+      function () {
+        (i[r].q = i[r].q || []).push(arguments);
+      }),
+      (i[r].l = 1 * new Date()));
+    ((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
+    a.async = 1;
+    a.src = g;
+    m.parentNode.insertBefore(a, m);
+  })(
+    window,
+    document,
+    "script",
+    "//www.google-analytics.com/analytics.js",
+    "ga",
+  );
+
+  ga("create", "", "auto");
+  ga("send", "pageview");
+</script>
+
+</html>

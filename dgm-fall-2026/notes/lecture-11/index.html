@@ -351,7 +351,7 @@ Warmup can help prevent unstable parameter updates at the beginning of training,
 
 <h3 id="42-momentum">4.2 Momentum</h3>
 
-<p>Momentum improves SGD by incorporating information from previous gradient updates. Instead of relying only on the current gradient, it maintains a running average of past gradients.</p>
+<p>Momentum improves SGD by incorporating information from previous gradient updates. Instead of relying only on the current gradient, it maintains an exponentially weighted accumulation of past gradients.</p>
 
 <p>A common formulation is:</p>
 <d-math block="">
@@ -384,6 +384,52 @@ v_t = \mu v_{t-1} + g_t
 <p>Momentum reduces oscillations by combining gradient information across iterations. In a narrow valley, gradient components pointing across the valley tend to cancel, while components pointing along the valley accumulate.</p>
 
 <p>This allows the optimizer to move more efficiently toward the minimum.</p>
+
+<h3 id="421-accumulation-is-not-the-same-as-a-normalized-moving-average">4.2.1 Accumulation Is Not the Same as a Normalized Moving Average</h3>
+
+<p>The convention just used is</p>
+<d-math block="">
+v_t=\mu v_{t-1}+g_t,\qquad \theta_{t+1}=\theta_t-\eta v_t.
+</d-math>
+
+<p>With <d-math>v_0=0</d-math>, this expands to</p>
+<d-math block="">
+v_t=\sum_{k=1}^t\mu^{t-k}g_k.
+</d-math>
+
+<p>An exponential moving average instead uses</p>
+<d-math>m_t=\mu m_{t-1}+(1-\mu)g_t</d-math>
+<p>. When both buffers start at zero and</p>
+<d-math>\mu</d-math>
+<p>is fixed, <d-math>m_t=(1-\mu)v_t</d-math>. These conventions
+therefore need different learning-rate scaling to produce identical updates.</p>
+
+<p>For example, take prescribed gradients <d-math>g_1=g_2=2</d-math>,</p>
+<d-math>\mu=0.9</d-math>
+<p>, <d-math>\eta=0.1</d-math>, and initial parameter 1.
+The accumulation convention gives <d-math>v_1=2</d-math> and</p>
+<d-math>v_2=3.8</d-math>
+<p>, so the parameter moves</p>
+<d-math>1\to0.8\to0.42</d-math>
+<p>. A normalized moving average with the same nominal
+learning rate gives <d-math>m_1=0.2</d-math>, <d-math>m_2=0.38</d-math>, and</p>
+<d-math>1\to0.98\to0.942</d-math>
+<p>. These are controlled arithmetic examples with
+supplied gradients, not claims that an arbitrary loss keeps its gradient constant.</p>
+
+<p>The accumulation convention matches PyTorch SGD with momentum, zero dampening, no
+weight decay, and no Nesterov correction. Another common convention absorbs the
+learning rate into a displacement buffer <d-math>u_t</d-math>. For a constant learning
+rate, <d-math>u_t=\eta v_t</d-math> gives the equivalent recurrence</p>
+<d-math>u_t=\mu u_{t-1}+\eta g_t</d-math>
+<p>, followed by</p>
+<d-math>\theta_{t+1}=\theta_t-u_t</d-math>
+<p>. When the learning rate varies, this
+simple equivalence no longer holds without adjusting the buffer transformation.
+This matters when comparing the displacement formulation in Section 4.4 with code.</p>
+
+<p><a href="https://docs.pytorch.org/docs/stable/generated/torch.optim.SGD.html">PyTorch’s SGD documentation</a>
+explains the buffer and learning-rate conventions.</p>
 
 <h3 id="43-momentum-in-pytorch">4.3 Momentum in PyTorch</h3>
 
@@ -613,6 +659,94 @@ v_t = \beta_2 v_{t-1} + (1-\beta_2)g_t^2
 </ul>
 
 <p>Adam uses momentum-like gradient averaging while also scaling updates based on recent squared gradients.</p>
+
+<h3 id="541-why-adam-needs-bias-correction-a-numerical-example">5.4.1 Why Adam Needs Bias Correction: A Numerical Example</h3>
+
+<p>Here “bias” means initialization bias in a moving-moment estimate; it is unrelated
+to a neural network’s additive bias parameter.
+Starting from <d-math>m_0=v_0=0</d-math>, consider a constant scalar gradient</p>
+<d-math>g_t=g</d-math>
+<p>. Expanding the recurrences gives</p>
+
+<d-math block="">
+m_t=(1-\beta_1^t)g,\qquad v_t=(1-\beta_2^t)g^2.
+</d-math>
+
+<p>Thus the raw estimates are initially pulled toward zero. Dividing by the missing
+mass <d-math>1-\beta_i^t</d-math> recovers <d-math>\widehat m_t=g</d-math> and</p>
+<d-math>\widehat v_t=g^2</d-math>
+<p>in this constant-gradient example. Under a stationary
+gradient distribution the same factors correct the zero-initialization bias in
+expectation; they do not make estimates exact when the underlying moments change.</p>
+
+<p>For <d-math>g_1=2</d-math>, <d-math>\beta_1=0.9</d-math>, and</p>
+<d-math>\beta_2=0.999</d-math>
+<p>, the first step is</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Quantity</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><d-math>m_1</d-math></td>
+      <td><d-math>0.1(2)=0.2</d-math></td>
+    </tr>
+    <tr>
+      <td><d-math>v_1</d-math></td>
+      <td><d-math>0.001(2^2)=0.004</d-math></td>
+    </tr>
+    <tr>
+      <td><d-math>\widehat m_1</d-math></td>
+      <td><d-math>0.2/0.1=2</d-math></td>
+    </tr>
+    <tr>
+      <td><d-math>\widehat v_1</d-math></td>
+      <td><d-math>0.004/0.001=4</d-math></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>With initial parameter 1, learning rate 0.1, and epsilon omitted only for this
+arithmetic example,</p>
+
+<d-math block="">
+\theta_{\mathrm{new}}=1-0.1\frac{2}{\sqrt4}=0.9.
+</d-math>
+
+<p>Omitting both bias corrections would instead use</p>
+<d-math>0.2/\sqrt{0.004}\approx3.1623</d-math>
+<p>, producing a parameter of about
+0.6838. Correcting the two moments affects their ratio; it is not enough to say
+that both uncorrected estimates are “small.” Implementations retain epsilon to
+handle small or zero denominators.</p>
+
+<p>The second moment is an estimate of <d-math>E[g^2]</d-math>, not directly</p>
+<d-math>\operatorname{Var}(g)</d-math>
+<p>. In particular, the constant nonzero gradient
+above has zero variance but a nonzero second moment.</p>
+
+<p>A minimal check in an environment with PyTorch installed is:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="n">parameter</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">nn</span><span class="p">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="p">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">1.0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="p">.</span><span class="n">float64</span><span class="p">))</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">optim</span><span class="p">.</span><span class="n">Adam</span><span class="p">(</span>
+    <span class="p">[</span><span class="n">parameter</span><span class="p">],</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">betas</span><span class="o">=</span><span class="p">(</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.999</span><span class="p">),</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">,</span>
+    <span class="n">weight_decay</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">amsgrad</span><span class="o">=</span><span class="bp">False</span>
+<span class="p">)</span>
+<span class="n">optimizer</span><span class="p">.</span><span class="n">zero_grad</span><span class="p">()</span>
+<span class="n">parameter</span><span class="p">.</span><span class="n">grad</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">2.0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="p">.</span><span class="n">float64</span><span class="p">)</span>
+<span class="n">optimizer</span><span class="p">.</span><span class="n">step</span><span class="p">()</span>
+<span class="k">assert</span> <span class="n">torch</span><span class="p">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">parameter</span><span class="p">.</span><span class="n">detach</span><span class="p">(),</span> <span class="n">torch</span><span class="p">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">0.9</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="p">.</span><span class="n">float64</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>The gradient is supplied deliberately to isolate the optimizer arithmetic. During
+normal training, <code>loss.backward()</code> computes it instead. The update follows
+the <a href="https://docs.pytorch.org/docs/stable/generated/torch.optim.Adam.html">official Adam algorithm</a>.</p>
 
 <h3 id="55-sgd-with-momentum-vs-adam">5.5 SGD with Momentum vs. Adam</h3>
 

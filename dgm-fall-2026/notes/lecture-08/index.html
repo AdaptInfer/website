@@ -66,6 +66,11 @@
               {
                 "editor": "Bill Yunke Zhang",
                 "editorURL": "https://github.com/Bill-Yunke-Zhang"
+              },
+              
+              {
+                "editor": "Bella Ren",
+                "editorURL": "https://github.com/BellaRen723"
               }
               
             ],
@@ -397,6 +402,33 @@ z_k=w_1a_k+w_2a_{k+1},\qquad k=1,2,3.
 </d-math>
 
 <p>The same result can be viewed as zero-padding $\delta$ to $(0,1,3,-2,0)$ and cross-correlating it with the flipped kernel $(-1,2)$. This connects the backward calculation to another convolution-like operation rather than treating it as a completely different procedure.</p>
+
+<p>We can also complete the weight-gradient calculation from Section 7.1.
+For illustration, take input activations $a=(1,2,3,4)$ and retain the
+same incoming gradient $\delta=(1,3,-2)$. The shared weights receive</p>
+
+<d-math block="">
+\begin{aligned}
+\frac{\partial L}{\partial w_1}
+&amp;=1(1)+3(2)+(-2)(3)=1,\\
+\frac{\partial L}{\partial w_2}
+&amp;=1(2)+3(3)+(-2)(4)=3.
+\end{aligned}
+</d-math>
+
+<p>Each sum contains one contribution from every output position where
+the weight was used. With learning rate $\eta=0.1$, one gradient-descent
+step would update the kernel to</p>
+
+<d-math block="">
+w_{\mathrm{new}}
+=(2,-1)-0.1(1,3)
+=(1.9,-1.3).
+</d-math>
+
+<p>This distinguishes the two backward-pass results: input gradients
+propagate the loss signal to earlier layers, while weight gradients
+are used to update the shared kernel.</p>
 
 <h2 id="8-cnns-in-pytorch">8. CNNs in PyTorch</h2>
 

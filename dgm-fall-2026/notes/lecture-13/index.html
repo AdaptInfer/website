@@ -72,7 +72,7 @@
             "editors": [
               
               {
-                "editor": "None"
+                "editor": "Yufei Zhou"
               }
               
             ],
@@ -338,7 +338,7 @@ P(Y = 1 \mid X) = \sigma(\theta^T X), \qquad P(Y = 0 \mid X) = 1 - P(Y = 1 \mid 
 
 <p>The bracketed term is the negative of the <strong>binary cross-entropy loss</strong>, so maximizing this log-likelihood is the same as minimizing the cross-entropy loss used to train classifiers earlier in the course.</p>
 
-<p>There is no closed-form solution for <d-math>\hat{\theta}</d-math>. The log-likelihood is concave in <d-math>\theta</d-math>, though, so gradient-based methods find the global optimum. Its gradient has a simple form (a standard result, added here for completeness):</p>
+<p>There is generally no closed-form solution for <d-math>\hat{\theta}</d-math>. The log-likelihood is concave, so any finite stationary point is a global maximizer. On strictly separable data, however, scaling a separating weight vector increases the likelihood toward its supremum without attaining it at finite weights. A positive L2 penalty on the full weight vector yields a finite, unique optimum. The unpenalized gradient is</p>
 
 <d-math block="">
 \nabla_\theta \, \ell(\theta) = \sum_{i=1}^{n} \big( Y_i - \sigma(\theta^T X_i) \big) X_i,
@@ -410,6 +410,20 @@ P(X) = \sum_{k \in \lbrace 0, 1 \rbrace} \prod_{j=1}^{d} P(X_j \mid Y = k) \, P(
 <p>Both models end up producing <d-math>P(Y \mid X)</d-math>, but they get there differently: logistic regression maximizes the conditional likelihood iteratively, while Naive Bayes fits class-conditional Gaussians and label frequencies in closed form and then applies Bayes’ theorem. Section 3.2 gives the lecture’s side-by-side comparison.</p>
 
 <p>The two models are also more closely related than this description suggests. If the Gaussian Naive Bayes variances are shared across classes (<d-math>\sigma_{j0} = \sigma_{j1} = \sigma_j</d-math>), then the log-odds <d-math>\log \frac{P(Y=1 \mid X)}{P(Y=0 \mid X)}</d-math> implied by Naive Bayes is a linear function of <d-math>X</d-math>, so its posterior has exactly the logistic-regression form <d-math>\sigma(\beta^T X)</d-math> for some weight vector <d-math>\beta</d-math> determined by the means, variances and priors. (This result was not covered in lecture; it is added because it explains why the two are a natural pair, and it is the reason Ng and Jordan call them a “generative-discriminative pair”.) <d-cite key="ng2001"></d-cite> The models therefore describe the same family of classifiers, but pick a member of the family in different ways: logistic regression fits <d-math>\theta</d-math> to the labels directly, while Naive Bayes fits the feature distributions and lets the weights follow. Section 3 discusses when each choice gives the better classifier.</p>
+
+<p>To see why the shared-variance condition matters, take the log of the ratio of the two Gaussian class scores. With <d-math>\pi_k=P(Y=k)</d-math>, the squared terms in <d-math>X_j</d-math> cancel and the log-odds become</p>
+
+<d-math block="">
+\log\frac{P(Y=1\mid X)}{P(Y=0\mid X)}
+= \log\frac{\pi_1}{\pi_0}
++ \sum_{j=1}^{d}
+\left(
+\frac{\mu_{j1}-\mu_{j0}}{\sigma_j^2}X_j
++ \frac{\mu_{j0}^2-\mu_{j1}^2}{2\sigma_j^2}
+\right).
+</d-math>
+
+<p>The terms independent of <d-math>X</d-math> form an intercept. To represent this posterior with the notation in Section 2.1, include a constant feature equal to one. With unequal class variances, the squared feature terms generally remain, giving a quadratic decision boundary.</p>
 
 <h3 id="26-what-about-map--regularization">2.6 What About MAP / Regularization?</h3>
 
@@ -504,19 +518,19 @@ P(X, Y; \theta) = P(Y \mid X; \theta)\, P(X; \theta).
       <td><d-math>\hat{\theta}_{\mathrm{nb}}</d-math> = <d-math>\mathop{\mathrm{argmax}}_{\theta} P(X, Y; \theta)</d-math></td>
     </tr>
     <tr>
-      <td>Asymptotic classification error</td>
-      <td>Lower</td>
-      <td>Higher</td>
+      <td>Limiting classification error</td>
+      <td>Can be lower when the conditional model fits better</td>
+      <td>Can be higher if its assumptions distort the decision boundary</td>
     </tr>
     <tr>
-      <td>Convergence in terms of samples</td>
-      <td>Slower</td>
-      <td>Faster</td>
+      <td>Approach to limiting error</td>
+      <td>May require more training examples</td>
+      <td>May require fewer training examples</td>
     </tr>
   </tbody>
 </table>
 
-<p>The last row is about <strong>sample efficiency</strong>, not computation time: Naive Bayes approaches its (higher) limiting error with fewer training examples.</p>
+<p>The last row is about <strong>sample efficiency</strong>. These rows summarize a pattern observed in the comparison below. The ordering of limiting errors and the sample size at which one model overtakes the other depend on the data distribution.</p>
 
 <h3 id="33-the-sample-size-tradeoff">3.3 The Sample-Size Tradeoff</h3>
 
@@ -544,7 +558,7 @@ P(X, Y; \theta) = P(Y \mid X; \theta)\, P(X; \theta).
 
 <h3 id="35-modern-deep-generative-models">3.5 Modern Deep Generative Models</h3>
 
-<p>Modern deep generative models (DGMs) aim for generative models of the form <d-math>P(X, Y; \theta)</d-math> <strong>without</strong> strong simplifying assumptions, so that they can represent complex, high-dimensional observations. From here on we model the inputs alone, without labels. The key idea is a <strong>hidden (latent) structure</strong> <d-math>z</d-math> that explains a high-dimensional observation <d-math>x</d-math>. The model assumes a process that first samples <d-math>z</d-math> and then generates <d-math>x</d-math> from it:</p>
+<p>The deep generative models in this section model the input distribution <d-math>p_\theta(x)</d-math> without labels. A latent variable <d-math>z</d-math> lets the model represent dependencies among features through a shared hidden representation. The generative process first samples <d-math>z</d-math> and then generates <d-math>x</d-math> conditional on it:</p>
 
 <d-math block="">
 z \sim p(z), \qquad x \sim p_\theta(x \mid z), \qquad p_\theta(x, z) = p_\theta(x \mid z)\, p(z).
