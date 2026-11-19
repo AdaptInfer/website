@@ -166,7 +166,12 @@ x_j^{[i]} = \frac{x_j^{[i]}-\mu_j}{\sigma_j}
 </d-math>
 
 <ul>
-  <li>Scaled features will have zero mean and unit variance.</li>
+  <li>Fit each feature’s mean and standard deviation on the training split only, and reuse
+those fitted values on validation and test data. Fitting on the combined dataset leaks
+information from the evaluation splits. With nonzero training variance and exact
+arithmetic, standardized training features have zero mean and unit variance;
+validation and test features need not. Constant features require separate handling
+to avoid division by zero.</li>
 </ul>
 
 <h3 id="in-deep-models">In Deep Models…</h3>
@@ -370,18 +375,114 @@ what changes at test time and why BatchNorm can help optimization.</p>
 
 <p>Don’t forget <code class="language-plaintext highlighter-rouge">model.train()</code> and <code class="language-plaintext highlighter-rouge">model.eval()</code> in training and test loops.</p>
 
-<h3 id="batchnorm-at-test-time">BatchNorm at Test-Time</h3>
+<h3 id="batchnorm-at-test-time-statistics-parameters-and-modes">BatchNorm at Test-Time: Statistics, Parameters, and Modes</h3>
 
-<ul>
-  <li>Use exponentially weighted average (moving average) of mean and variance.</li>
-</ul>
+<p>There are two kinds of state to distinguish:</p>
 
-<p>running_mean = momentum * running_mean + (1 - momentum) * sample_mean</p>
+<table>
+  <thead>
+    <tr>
+      <th>State</th>
+      <th>Updated by</th>
+      <th>Used for</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><d-math>\gamma,\beta</d-math></td>
+      <td>Optimizer, through gradients</td>
+      <td>Learned affine transformation</td>
+    </tr>
+    <tr>
+      <td>Running mean and variance</td>
+      <td>BatchNorm’s running-statistics update during training</td>
+      <td>Default evaluation normalization</td>
+    </tr>
+  </tbody>
+</table>
 
-<ul>
-  <li>Where momentum is typically ~0.1; same for variance.</li>
-  <li>Alternatively, can also use global training set mean and variance.</li>
-</ul>
+<p>Under PyTorch’s default <code>track_running_stats=True</code>, training normalizes
+with the current batch statistics and updates the running estimates. Evaluation uses
+the stored running estimates and does not update them from the evaluation batch.
+The running buffers are not parameters learned by gradient descent.</p>
+
+<p><strong>PyTorch’s momentum convention.</strong> Let <d-math>m</d-math> denote the module’s
+<code>momentum</code>, whose default is 0.1. For the running mean,</p>
+
+<d-math block="">
+\mu_{\mathrm{run,new}}
+=(1-m)\mu_{\mathrm{run,old}}+m\mu_{\mathrm{batch}}.
+</d-math>
+
+<p>For example, if the old running mean is 0 and the new batch mean is 10, then</p>
+<d-math>m=0.1</d-math>
+<p>gives <d-math>0.9(0)+0.1(10)=1</d-math>.
+Some exponential-moving-average notation assigns the symbol to the old estimate’s
+coefficient instead. That convention is valid, but its numerical coefficient must be
+converted before being used as PyTorch’s <code>momentum</code>. BatchNorm momentum is
+also distinct from an optimizer’s momentum buffer.</p>
+
+<p><strong>The two variance estimators.</strong> If there are <d-math>M&gt;1</d-math> values contributing
+to one feature’s batch statistics, define</p>
+
+<d-math block="">
+s_B^2=\frac1M\sum_{i=1}^M(z_i-\mu_B)^2,
+\qquad
+s_{B,\mathrm{unbiased}}^2=\frac{M}{M-1}s_B^2.
+</d-math>
+
+<p>PyTorch uses <d-math>s_B^2</d-math> to normalize the training batch, but uses the
+unbiased estimate when updating <code>running_var</code>:</p>
+
+<d-math block="">
+v_{\mathrm{run,new}}=(1-m)v_{\mathrm{run,old}}+m s_{B,\mathrm{unbiased}}^2.
+</d-math>
+
+<p>For the earlier batch <d-math>[1,2,3]</d-math>, the mean is 2, the training-normalization
+variance is <d-math>2/3</d-math>, and the unbiased variance is 1. Starting from the
+default running mean 0 and running variance 1, a single batch with</p>
+<d-math>m=0.1</d-math>
+<p>gives running mean 0.2 and running variance 1.
+These updates describe the default fixed-momentum setting, not <code>momentum=None</code>.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Setting</th>
+      <th>Changes layer behavior?</th>
+      <th>Disables autograd recording?</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>model.train()</code></td>
+      <td>Yes: training behavior</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td><code>model.eval()</code></td>
+      <td>Yes: evaluation behavior</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td><code>torch.no_grad()</code></td>
+      <td>No mode change</td>
+      <td>Yes, inside the context</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>For ordinary evaluation, use <code>model.eval()</code> together with
+<code>torch.no_grad()</code>. Disabling autograd alone does not stop a training-mode
+BatchNorm layer from updating its running statistics. Conversely, evaluation mode
+alone does not freeze the affine parameters or prevent gradients through them.
+If <code>track_running_stats=False</code>, BatchNorm uses batch statistics even in
+evaluation mode. The default-case distinction above therefore needs that qualification.</p>
+
+<p>See the <a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.BatchNorm1d.html">official BatchNorm1d documentation</a>
+for the running-statistics update and estimator conventions, and
+<a href="https://docs.pytorch.org/docs/stable/notes/autograd.html">Autograd mechanics</a>
+for the difference between evaluation mode and disabling gradient recording.</p>
 
 <h2 id="4-why-does-batchnorm-work">4. Why Does BatchNorm Work?</h2>
 

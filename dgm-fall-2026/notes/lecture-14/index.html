@@ -1,0 +1,664 @@
+<!doctype html>
+<html>
+  <head>
+    <head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="content-language" content="en" />
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <title>
+    STAT 453 | Lecture 14: Variational Autoencoders and Generative Adversarial Networks
+  </title>
+  <meta name="description" content="STAT 453 - University of Wisconsin-Madison - Fall 2026
+" />
+
+  <link
+    rel="shortcut icon"
+    href="/dgm-fall-2026/assets/img/favicon.ico"
+  />
+
+  <link rel="stylesheet" href="/dgm-fall-2026/assets/css/main.css" />
+  <link
+    rel="canonical"
+    href="/dgm-fall-2026/notes/lecture-14/"
+  />
+
+  
+  <!-- Load Latex JS -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+  
+</head>
+
+    <script src="/dgm-fall-2026/assets/js/distillpub/template.v2.js"></script>
+    <script src="/dgm-fall-2026/assets/js/distillpub/transforms.v2.js"></script>
+  </head>
+
+  <d-front-matter>
+    <script type="text/json">
+      {
+            "title": "Lecture 14: Variational Autoencoders and Generative Adversarial Networks",
+            "description": "An overview of VAEs, GANs, and a unified view of the two",
+            "published": "October 27, 2026",
+            "lecturers": [
+              
+              {
+                "lecturer": "Ben Lengerich",
+                "lecturerURL": "https://adaptinfer.org"
+              }
+              
+            ],
+            "authors": [
+              
+              {
+                "author": "Jack Williams"
+              },
+              
+              {
+                "author": "Jpfox3"
+              }
+              
+            ],
+            "editors": [
+              
+            ],
+            "katex": {
+              "delimiters": [
+                {
+                  "left": "$",
+                  "right": "$",
+                  "display": false
+                },
+                {
+                  "left": "$$",
+                  "right": "$$",
+                  "display": true
+                }
+              ]
+            }
+          }
+    </script>
+  </d-front-matter>
+
+  <body>
+    <header class="site-header">
+  <div class="wrapper">
+    <span class="site-title">
+      <a class="page-link" href="https://adaptinfer.org/dgm-fall-2026/"
+        >STAT 453</a
+      >
+    </span>
+
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path
+              fill="#424242"
+              d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
+            />
+            <path
+              fill="#424242"
+              d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
+            />
+            <path
+              fill="#424242"
+              d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
+            />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger">
+        <a class="page-link" href="/dgm-fall-2026/logistics/"
+          >logistics</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/lectures/"
+          >lectures</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/notes/">notes</a>
+        <a class="page-link" href="/dgm-fall-2026/calendar/"
+          >calendar</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/homework/"
+          >homework</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/project/">project</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+      <d-title>
+        <h1>Lecture 14: Variational Autoencoders and Generative Adversarial Networks</h1>
+        <p>An overview of VAEs, GANs, and a unified view of the two</p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article> <h2 id="1-recap-generative-models-and-autoencoders">1. Recap: Generative Models and Autoencoders</h2>
+
+<p>Last lecture introduced generative models, which model the joint distribution of data <d-math>P(X,Y)</d-math> in order to generate new data <d-math>X</d-math>. It also introduced the autoencoder, an unsupervised model that learns to reduce the dimensionality of data <d-math>X</d-math> into a more compact, latent space <d-math>z</d-math>, and then reconstruct <d-math>X</d-math> from the latent space.</p>
+
+<h3 id="two-paths-to-pyx">Two Paths to <d-math>P(Y|X)</d-math></h3>
+
+<p>Two ways of predicting a label $Y$ from an input $X$, given observations $X, Y$:</p>
+
+<ul>
+  <li><strong>Discriminative models:</strong> Learn $P(Y\mid X)$ directly.</li>
+  <li><strong>Generative models:</strong> Learn $P(X\mid Y)$ and $P(Y)$, then calculate:</li>
+</ul>
+
+<d-math block="">
+P(X)=\int_Y P(X|Y)P(Y)\,dY,
+\qquad P(Y|X)=\frac{P(X|Y)P(Y)}{P(X)}
+</d-math>
+
+<h3 id="deep-generative-models">Deep Generative Models</h3>
+
+<p>Deep generative models use neural networks to represent complex distributions. Multiple layers of hidden variables hope to capture the hidden structure $z$ that explains high-dimensional $X$ values.</p>
+
+<p>Because we do not observe $z$, two important computations become difficult:</p>
+
+<ul>
+  <li><strong>Marginal likelihood:</strong> <d-math>p_\theta(x)=\int p_\theta(x,z)\,dz</d-math></li>
+  <li><strong>Posterior inference:</strong> <d-math>p_\theta(z\mid x) \propto p_\theta(x\mid z)p(z)</d-math></li>
+</ul>
+
+<p>Each type of deep generative model makes a tradeoff.</p>
+
+<h3 id="autoencoders">Autoencoders</h3>
+
+<p>An autoencoder consists of an <strong>encoder</strong>, which maps an input $X$ to a latent space $z$, and a <strong>decoder</strong>, which reconstructs the input from that latent space.</p>
+
+<figure id="early-stopping" class="l-body-outset">
+  <div class="row">
+    <div class="col two">
+      <img src="/dgm-fall-2026/assets/img/notes/lecture-14/img1.png" />
+    </div>
+  </div>
+  <figcaption>
+    <em>Figure from the Lecture 14 slides.</em>
+  </figcaption>
+</figure>
+
+<d-math block="">
+\mathcal{L} (x,x')=\|x-x'\|_2^2=\sum_i(x_i-{x'}_i)^2
+</d-math>
+
+<p>This bottleneck enables the autoencoder to capture useful structure. However, without knowing the distribution of this latent space $z$, we cannot conveniently use the autoencoder to generate new $X$: a randomly chosen $z$ may fall in a region the decoder has never learned to use.</p>
+
+<p>A VAE addresses this problem by introducing a prior $p(z)$, allowing us to sample $z$ values.</p>
+
+<h2 id="2-variational-autoencoders-vaes">2. Variational Autoencoders (VAEs)</h2>
+
+<p>The goal is to shape the latent space $z$ into a chosen prior distribution $p(z)$. Once the model is trained, this allows us to sample from this distribution and feed it through the decoder to generate new $x’$. This introduces a new problem: the encoder needs to learn to map inputs $x$ to our chosen latent space. To achieve this, rather than mapping each $x$ to a single point in $z$, the encoder will map inputs to conditional distributions $q(z\mid x)$ that align with our prior $p(z)$.</p>
+
+<h3 id="the-encoder-variational-inference">The Encoder: Variational Inference</h3>
+
+<p>We want to approximate the true posterior $p(z\mid x)$. Variational inference is a method that will allow the encoder to learn a proxy for this posterior.</p>
+
+<p>The main idea is to choose a family of distributions parameterized by <strong>variational parameters</strong> $v$,</p>
+
+<d-math block="">
+q(z|v)
+</d-math>
+
+<p>then find $v$ that minimizes the discrepancy between q and the true posterior. Restricting the distributional family to known distributions makes this feasible.</p>
+
+<figure id="early-stopping" class="l-body-outset">
+  <div class="row">
+    <div class="col two">
+      <img src="/dgm-fall-2026/assets/img/notes/lecture-14/img2.png" />
+    </div>
+  </div>
+  <figcaption>
+    <em>Figure from the Lecture 14 slides.</em>
+  </figcaption>
+</figure>
+
+<p>In a VAE, an encoder network, with weights $\phi$, learns the parameters of $q_{\phi}(z\mid x)$. Our measure of how close q is to the posterior of interest is the KL divergence:</p>
+
+<d-math block="">
+D_{\text{KL}}(q_{\phi}(z|x)\|p_{\theta}(z|x))
+</d-math>
+
+<h3 id="the-decoder">The Decoder</h3>
+
+<p>The ideal generation process:</p>
+
+<ol>
+  <li>$z$ is sampled from the true prior $p_{\theta^*}(z)$</li>
+  <li>$x$ is sampled from the true conditional $p_{\theta^*}(x\mid z^{(i)})$</li>
+</ol>
+
+<p>To represent this model, we will choose the prior $p(z)$ to be a simple distribution, such as a Gaussian. Since the conditional $p(x\mid z)$ is more complex, we will represent it with a neural network.</p>
+
+<p>To train the model, we’d ideally maximize the likelihood of training data:</p>
+
+<d-math block="">
+p_{\theta}(x) = \int p_{\theta}(z)p_{\theta}(x|z)\,dz
+</d-math>
+
+<h3 id="bringing-it-together">Bringing it Together</h3>
+
+<p>The decoder network has parameters <d-math>\theta</d-math>, describing a distribution over reconstructed observations. It predicts a mean and diagonal covariance for <d-math>x\mid z</d-math>.</p>
+
+<p>The encoder network has parameters <d-math>\phi</d-math> and describes a distribution over the latent space. It predicts a mean and diagonal covariance for <d-math>z\mid x</d-math>.</p>
+
+<figure id="early-stopping" class="l-body-outset">
+  <div class="row">
+    <div class="col two">
+      <img src="/dgm-fall-2026/assets/img/notes/lecture-14/img3.png" />
+    </div>
+  </div>
+  <figcaption>
+    <em>Figure from the Lecture 14 slides.</em>
+  </figcaption>
+</figure>
+
+<h3 id="deriving-the-loss-function">Deriving the Loss Function</h3>
+
+<p>Start with the log-likelihood of the observation $x$ under the model parameterized by $\theta$. We take the expectation over the posterior distribution produced by the encoder network (they are equivalent since $p_\theta(x^{(i)})$ does not depend on $z$).</p>
+
+<d-math block="">
+\log p_\theta(x^{(i)})
+=\mathbb{E}_{z \sim q_\phi(z|x^{(i)})}\left[
+\log p_\theta(x^{(i)})
+\right]
+</d-math>
+
+<p>The next steps are an application of Bayes’ Rule, arithmetic, and the definition of KL divergence:</p>
+
+<d-math block="">
+\begin{aligned}
+=&amp;\mathbb{E}_{z}\left[
+\log \frac{p_\theta(x^{(i)}|z)p_\theta(z)}{p_\theta(z|x^{(i)})}
+\right] \\
+=&amp;\mathbb{E}_{z}\left[
+\log \frac{p_\theta(x^{(i)}|z)p_\theta(z)}{p_\theta(z|x^{(i)})} \frac{q_\phi(z|x^{(i)})}{q_\phi(z|x^{(i)})}
+\right] \\
+=&amp;\mathbb{E}_{z}\left[ \log p_\theta(x^{(i)}|z) \right] - \mathbb{E}_{z}\left[ \log \frac{q_\phi(z|x^{(i)})}{p_\theta(z)} \right] + \mathbb{E}_{z}\left[ \log \frac{q_\phi(z|x^{(i)})}{p_\theta(z|x^{(i)})} \right] \\
+=&amp;\mathbb{E}_{z}\left[\log p_\theta(x^{(i)}|z)\right]
+- D_{\text{KL}}(q_\phi(z|x^{(i)})\|p_\theta(z))
++ D_{\text{KL}}(q_\phi(z|x^{(i)})\|p_\theta(z|x^{(i)}))
+\end{aligned}
+</d-math>
+
+<p>This first term is the reconstruction loss. The second measures how close our learned function $q$, within the variational family, is to our chosen prior. The third term measures how far our learned function $q$ is from the true distribution $p_\theta(z\mid x^{(i)})$. We do not know $p_\theta(z\mid x^{(i)})$ so we choose to ignore it. We do know it’s nonnegative, so the first two terms form an <strong>evidence lower bound (ELBO)</strong>:</p>
+
+<d-math block="">
+\begin{aligned}
+\mathcal{L}_{\mathrm{ELBO}}(x^{(i)},\theta,\phi)
+&amp;=\mathbb{E}_{z}[\log p_\theta(x^{(i)}|z)]
+-D_{\mathrm{KL}}(q_\phi(z|x^{(i)})\|p_\theta(z)) \\
+&amp;\leq\log p_\theta(x^{(i)})
+\end{aligned}
+</d-math>
+
+<p>Training maximizes the ELBO. The two terms serve different purposes:</p>
+
+<ul>
+  <li><strong>Reconstruction term:</strong> Encourages the decoder to assign high probability to the original input $x$ given its $z$.</li>
+  <li><strong>Prior regularization term:</strong> Penalizes the encoder distribution for being too far from the prior, helping make samples of $z$ from the prior useful for generation.</li>
+</ul>
+
+<h3 id="putting-it-together">Putting it Together</h3>
+
+<p>Maximizing the lower bound</p>
+
+<d-math block="">
+\mathcal{L}(x^{(i)}, \theta, \phi)
+=\mathbb{E}_{z}[\log p_\theta(x^{(i)}\mid z)]
+-D_{\mathrm{KL}}(q_\phi(z\mid x^{(i)})\|p_\theta (z))
+</d-math>
+
+<p>forward pass for a given minibatch:</p>
+
+<ol>
+  <li>Start with input data $x$, pass it to encoder network</li>
+  <li>Encoder network uses $q_\phi(z\mid x)$ to predict $\mu_{z\mid x}$ and $\Sigma_{z\mid x}$</li>
+  <li>Sample $z$ from $z\mid x \sim \mathcal{N}(\mu_{z\mid x}, \Sigma_{z\mid x})$, pass it to decoder network</li>
+  <li>Decoder network uses $p_\theta(x\mid z)$ to predict $\mu_{x\mid z}$ and $\Sigma_{x\mid z}$</li>
+  <li>Sample $x\mid z$ from $x\mid z \sim \mathcal{N}(\mu_{x\mid z}, \Sigma_{x\mid z})$</li>
+</ol>
+
+<figure id="early-stopping" class="l-body-outset">
+  <div class="row">
+    <div class="col two">
+      <img src="/dgm-fall-2026/assets/img/notes/lecture-14/img4.png" />
+    </div>
+  </div>
+  <figcaption>
+    <em>Figure from the Lecture 14 slides.</em>
+  </figcaption>
+</figure>
+
+<h3 id="generation">Generation</h3>
+
+<p>After training, generate new $x$ by sampling $z$ from the prior and use only the decoder:</p>
+
+<figure id="early-stopping" class="l-body-outset">
+  <div class="row">
+    <div class="col two">
+      <img src="/dgm-fall-2026/assets/img/notes/lecture-14/img5.png" />
+    </div>
+  </div>
+  <figcaption>
+    <em>Figure from the Lecture 14 slides.</em>
+  </figcaption>
+</figure>
+
+<h2 id="generative-adversarial-networks-gans">Generative Adversarial Networks (GANs)</h2>
+
+<p>GANs learn to generate data through an adversarial game between a generator and a discriminator. The goal is to learn the training set distribution and generate new data resembling the training data. Like the VAE, GANs generate an entire image all at once, in contrast to autoregressive models or RNNs.</p>
+
+<h3 id="discriminator-and-generator">Discriminator and Generator</h3>
+
+<p>The two networks have competing roles:</p>
+
+<ul>
+  <li><strong>Discriminator <d-math>D(x)</d-math>:</strong> Learns to become better at distinguishing real training data from generated training data.</li>
+  <li><strong>Generator <d-math>G(z)</d-math>:</strong> Learns to generate better training data to fool the discriminator.</li>
+</ul>
+
+<p>The generator takes random noise (sampled from a known prior distribution) as input and supplies the discriminator with generated data. The discriminator assesses the generated data and then supplies the generator its loss function.</p>
+
+<figure id="early-stopping" class="l-body-outset">
+  <div class="row">
+    <div class="col two">
+      <img src="/dgm-fall-2026/assets/img/notes/lecture-14/img6.png" />
+    </div>
+  </div>
+  <figcaption>
+    <em>Figure from the Lecture 14 slides.</em>
+  </figcaption>
+</figure>
+
+<h3 id="training">Training</h3>
+
+<p>Discriminator objective:</p>
+
+<d-math block="">
+\text{max}_D \mathcal{L}_D = \mathbb{E}_{x \sim p_\text{data}(x)}[\log D(x)] + \mathbb{E}_{x\sim G(z), z\sim p(z)}[\log (1-D(x))]
+</d-math>
+
+<p>Generator objective:</p>
+
+<d-math block="">
+\text{min}_G \mathcal{L}_G = \mathbb{E}_{x\sim G(z), z\sim p(z)}[\log (1-D(x))]
+</d-math>
+
+<p>Together, the GAN objective is a minimax:</p>
+
+<d-math block="">
+\text{min}_G \text{max}_D V(D, G) = \mathbb{E}_{x \sim p_\text{data}(x)}[\log D(x)] + \mathbb{E}_{ z\sim p_z(z)}[\log (1-D(G(z)))]
+</d-math>
+
+<p>The discriminator maximizes this expression, assigning high probabilities to real examples and low probabilities to generated ones. The generator minimizes it, encouraging the discriminator to assign high probabilities to its outputs.</p>
+
+<p>Training alternates between two updates:</p>
+
+<ol>
+  <li><strong>Update the discriminator:</strong> Sample real data and sample noise to generate fake data. Maximize the real/fake classification objective while holding the generator fixed.</li>
+  <li><strong>Update the generator:</strong> Sample noise vectors and minimize the generator objective while holding the discriminator’s parameters fixed. Gradients pass through the discriminator into the generator.</li>
+</ol>
+
+<p>Discriminator stochastic gradient (update by ascending):</p>
+
+<d-math block="">
+\nabla_{\theta_d}\frac{1}{m}\sum_{i=1}^{m}
+\left[\log D(x^{(i)})+\log(1-D(G(z^{(i)})))\right]
+</d-math>
+
+<p>Generator stochastic gradient (update by descending):</p>
+
+<d-math block="">
+\nabla_{\theta_g}\frac{1}{m}\sum_{i=1}^{m}
+\log(1-D(G(z^{(i)})))
+</d-math>
+
+<p>where <d-math>m</d-math> is the mini-batch size.</p>
+
+<p>At an ideal equilibrium, the generator distribution matches the data distribution, the optimal discriminator outputs <d-math>0.5</d-math>, and neither can improve its objective by changing its strategy.</p>
+
+<h3 id="training-problems">Training Problems</h3>
+
+<p>GAN training can be unstable because each network changes the learning problem faced by the other.</p>
+
+<ul>
+  <li><strong>Oscillation:</strong> Generator and discriminator performance fluctuates rather than converging smoothly.</li>
+  <li><strong>Mode collapse:</strong> The generator produces only a few kinds of examples, even when training data contains many distinct kinds.</li>
+  <li><strong>An overly strong discriminator:</strong> Discriminator confidently rejects generated examples, leaving the generator with a vanishing gradient/the inability to keep up.</li>
+  <li><strong>An overly weak discriminator:</strong> Discriminator is fooled easily by unrealistic outputs and provides unhelpful learning signal (rare).</li>
+  <li><strong>Hyperparameter sensitivity:</strong> Generally sensitive to learning rate and other hyperparameters.</li>
+</ul>
+
+<p><strong>Non-saturating generator loss</strong> can help prevent vanishing gradients, ask your doctor if it’s right for you:</p>
+
+<d-math block="">
+\nabla_{w_g}\frac{1}{n}\sum_{i=1}^{n}
+\log(D(G(z^{(i)})))
+</d-math>
+
+<h2 id="a-unified-view-bonus">A Unified View (Bonus)</h2>
+
+<p>Both VAEs and GANs combine a process that produces observations with a process that infers something about them, but their objectives and network roles differ.</p>
+
+<h3 id="gans-rewritten">GANs: Rewritten</h3>
+
+<p>Consider an implicit distribution over $x\sim p_\theta (x\mid y)$ with a binary label <d-math>y</d-math>, where <d-math>y=0</d-math> means generated and <d-math>y=1</d-math> means real:</p>
+
+<d-math block="">
+p_\theta(x\mid y)=
+\begin{cases}
+p_{g_\theta}(x), &amp; y=0 \\
+p_{\mathrm{data}}(x), &amp; y=1
+\end{cases}
+</d-math>
+
+<p>The generated data is sampled via <d-math>x=G_\theta(z)</d-math>, with $z\sim p(z\mid y=0)$. The discriminator represents a conditional distribution $q_\phi(y\mid x)$:</p>
+
+<d-math block="">
+q_\phi^r(y\mid x) = q_\phi(1-y\mid x)
+</d-math>
+
+<p>then the objectives become</p>
+
+<d-math block="">
+\begin{aligned}
+\text{max}_\phi \mathcal{L}_\phi = \mathbb{E}_{p_\theta (x\mid y)p(y)}[\log q_\phi (y\mid x)] \\
+\text{max}_\theta \mathcal{L}_\theta = \mathbb{E}_{p_\theta (x\mid y)p(y)}[\log q_\phi^r (y\mid x)]
+\end{aligned}
+</d-math>
+
+<p>These objectives maximize the conditional log-likelihood of $y$ with the distribution $q_\phi (y\mid x)$ conditioned on data/generated data $x$ from $p_\theta (x\mid y)$. Here, $q_\phi (y\mid x)$ is the generative model and $p_\theta(x\mid y)$ is the inference model.</p>
+
+<p>Compare these to the reconstruction term of a VAE’s ELBO. In a VAE, this term serves to maximize the conditional log-likelihood of $x$ with the generative distribution $p_\theta (x\mid z)$ conditioned on the latent code $z$ inferred by $q_\phi (z\mid x)$. From earlier, we know $p_\theta (x\mid z)$ is the generative model and $q_\phi (z\mid x)$ is the inference model.</p>
+
+<h3 id="vaes-vs-gans">VAEs vs GANs</h3>
+
+<ul>
+  <li><strong>VAE reconstruction:</strong> Predict the observation <d-math>x</d-math> given an inferred latent code <d-math>z</d-math>.</li>
+  <li><strong>GAN discrimination:</strong> Predict the source label <d-math>y</d-math> given an observed or generated example <d-math>x</d-math>.</li>
+</ul>
+
+<p>Side-by-side</p>
+
+<figure id="early-stopping" class="l-body-outset">
+  <div class="row">
+    <div class="col two">
+      <img src="/dgm-fall-2026/assets/img/notes/lecture-14/img9.png" />
+    </div>
+  </div>
+  <figcaption>
+    <em>Figure from the Lecture 14 slides.</em>
+  </figcaption>
+</figure>
+
+<p>Note the asymmetry in KL divergence minimization: GANs minimize <d-math>\text{KL}(P_\theta\|Q)</d-math> where VAEs minimize <d-math>\text{KL}(Q\|P_\theta)</d-math>.</p>
+
+<h3 id="mode-covering-vs-mode-choosing">Mode Covering vs Mode Choosing</h3>
+
+<h3 id="mode-covering-vs-mode-choosing-1">Mode Covering vs. Mode Choosing</h3>
+
+<p>Models balance producing realistic examples with representing the diversity of the data. VAEs tend to cover modes: rather than commit to generating only the most realistic data, their distribution spreads out to cover many modes, including regions with small values of $p_{\text{data}}$. In the case of image generation, VAEs often produce varied but blurry images, although this blurriness is also influenced by their reconstruction loss. GANs, on the other hand, tend to miss modes, choosing to include some and not others in their generation. In the case of image generation, this often results in sharper but less diverse images.</p>
+
+<p>One way to conceptualize this is through their training. A GAN’s generator gets to choose which images it sends to the discriminator; once it has learned which images best fool the discriminator, why branch out to represent rarer data? VAEs, however, are evaluated based on their ability to reconstruct every image in the training data, encouraging them to represent the entire distribution rather than concentrate on a few modes.</p>
+
+<p>This behavior is captured by the asymmetry of the two models’ KL divergence:</p>
+
+<ul>
+  <li><strong>Mode Covering:</strong> Minimizing <d-math>\text{KL}(Q\|P_\theta)</d-math> strongly penalizes assigning little model probability where data occur. A limited model may spread probability across several modes, including low-density regions between them.</li>
+  <li><strong>Mode Choosing:</strong> Minimizing <d-math>\text{KL}(P_\theta\|Q)</d-math> strongly penalizes placing model probability where the data density is small. A limited model may concentrate on one mode and miss others.</li>
+</ul>
+
+<figure id="early-stopping" class="l-body-outset">
+  <div class="row">
+    <div class="col two">
+      <img src="/dgm-fall-2026/assets/img/notes/lecture-14/img7.png" />
+    </div>
+  </div>
+  <figcaption>
+    <em>Figure from the Lecture 14 slides.</em>
+  </figcaption>
+</figure>
+
+<h3 id="what-to-remember">What to Remember</h3>
+
+<ul>
+  <li><strong>VAEs:</strong> Train an encoder and decoder jointly by maximizing an ELBO, balancing reconstruction likelihood with latent prior regularization. Mode covering.</li>
+  <li><strong>VAE generation:</strong> Sample a $z$ from the prior and run the decoder; the encoder is needed for inference, not for generating a new example.</li>
+  <li><strong>GANs:</strong> Train a generator to fool a discriminator that learns to distinguish real from generated examples. Mode choosing.</li>
+  <li><strong>GAN optimization:</strong> Alternate network updates, many potential training problems.</li>
+</ul>
+
+<figure id="early-stopping" class="l-body-outset">
+  <div class="row">
+    <div class="col two">
+      <img src="/dgm-fall-2026/assets/img/notes/lecture-14/img8.png" />
+    </div>
+  </div>
+  <figcaption>
+    <em>Figure from the Lecture 14 slides.</em>
+  </figcaption>
+</figure>
+
+ </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+    </div>
+
+    <footer class="site-footer">
+  <div class="wrapper">
+    <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Ben Lengerich</li><li>
+            <a class="u-email" href="mailto:lengerich@wisc.edu"
+              >lengerich@wisc.edu</a
+            >
+          </li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li>
+    <a
+      href="https://github.com/AdaptInfer"
+      target="_blank"
+      ><i class="fab fa-github"></i>
+      <span class="username">AdaptInfer</span></a
+    >
+  </li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>
+          &copy; Copyright 2026 University of Wisconsin.
+          <br />
+          
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  </body>
+
+  <d-bibliography
+    src="/dgm-fall-2026/assets/bibliography/2026-10-27-lecture-14.bib"
+  >
+  </d-bibliography>
+
+  <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/dgm-fall-2026/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link
+  rel="stylesheet"
+  href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css"
+/>
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+<script src="/dgm-fall-2026/assets/js/katex.js"></script>
+ 
+<!-- Load Anchor JS -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+<script>
+  anchors.options.visible = "hover";
+  anchors.add("article h2, article h3, article h4, article h5, article h6");
+</script>
+ 
+<!-- Adjust LaTeX JS -->
+<script src="/dgm-fall-2026/assets/js/latex.js"></script>
+
+
+<!-- Include custom icon fonts -->
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2026/assets/css/fontawesome-all.min.css"
+/>
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2026/assets/css/academicons.min.css"
+/>
+
+<!-- Google Analytics -->
+<script>
+  (function (i, s, o, g, r, a, m) {
+    i["GoogleAnalyticsObject"] = r;
+    ((i[r] =
+      i[r] ||
+      function () {
+        (i[r].q = i[r].q || []).push(arguments);
+      }),
+      (i[r].l = 1 * new Date()));
+    ((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
+    a.async = 1;
+    a.src = g;
+    m.parentNode.insertBefore(a, m);
+  })(
+    window,
+    document,
+    "script",
+    "//www.google-analytics.com/analytics.js",
+    "ga",
+  );
+
+  ga("create", "", "auto");
+  ga("send", "pageview");
+</script>
+
+</html>

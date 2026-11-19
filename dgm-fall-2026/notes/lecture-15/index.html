@@ -60,6 +60,16 @@
             ],
             "editors": [
               
+              {
+                "editor": "Zhixian He",
+                "editorURL": "https://github.com/zhe327"
+              },
+              
+              {
+                "editor": "Ronan Bartoli",
+                "editorURL": "https://github.com/rbartoli9"
+              }
+              
             ],
             "katex": {
               "delimiters": [
@@ -175,6 +185,8 @@ x_t=\sqrt{1-\beta_t}\,x_{t-1}+\sqrt{\beta_t}\,\epsilon_t,
 <d-math block="">
 q(x_{1:T}\mid x_0)=\prod_{t=1}^{T}q(x_t\mid x_{t-1}).
 </d-math>
+
+<p>The forward chain has the <strong>Markov property</strong>: given the current noisy state, sampling the next state only requires the scheduled transition at that step. The clean image initializes the chain. A larger <d-math>\beta_t</d-math> increases the variance of the new noise and reduces the weight on the previous state.</p>
 
 <h3 id="sampling-any-noise-level-directly">Sampling any noise level directly</h3>
 
@@ -376,6 +388,43 @@ w_t&amp;=\frac{\beta_t^2}
 
 <p>Training needs only a randomly chosen noise level per example; the basic sampler requires a sequence of network evaluations. That distinction explains why a simple denoising training objective can still lead to expensive generation.</p>
 
+<h3 id="additional-reading-ddpm-vs-ddim-sampling">Additional Reading: DDPM vs. DDIM Sampling</h3>
+
+<p>The basic DDPM sampler described above generates images through a sequence of stochastic reverse transitions. At each step, it predicts the noise and then samples a slightly cleaner image. This can be computationally expensive because generating one image requires many neural network evaluations.</p>
+
+<p>Denoising Diffusion Implicit Models (DDIM) provide an alternative sampling procedure that can use the same noise-prediction network trained with the DDPM objective. DDIM constructs a non-Markovian forward process while preserving the relevant training marginals, allowing a different reverse sampling trajectory.</p>
+
+<p>For a predicted noise vector <d-math>\epsilon_\theta(x_t,t)</d-math>, we can first estimate the clean image:</p>
+
+<d-math block="">
+\hat{x}_0 =
+\frac{x_t-\sqrt{1-\bar{\alpha}_t}\epsilon_\theta(x_t,t)}
+{\sqrt{\bar{\alpha}_t}}.
+</d-math>
+
+<p>A deterministic DDIM update from timestep <d-math>t</d-math> to an earlier timestep <d-math>s&lt;t</d-math> is</p>
+
+<d-math block="">
+x_s =
+\sqrt{\bar{\alpha}_s}\hat{x}_0
++
+\sqrt{1-\bar{\alpha}_s}\epsilon_\theta(x_t,t).
+</d-math>
+
+<p>Unlike the stochastic DDPM sampler, this deterministic update does not introduce additional random noise at each step. DDIM can also use a subset of the original timesteps, reducing the number of network evaluations needed for generation.</p>
+
+<p><strong>Key differences:</strong></p>
+
+<ul>
+  <li><strong>DDPM:</strong> Typically uses stochastic reverse transitions, adding Gaussian noise at intermediate sampling steps.</li>
+  <li><strong>DDIM:</strong> Can use deterministic transitions and skip timesteps while reusing a DDPM-trained noise predictor.</li>
+  <li><strong>Trade-off:</strong> Fewer sampling steps reduce computation, but overly aggressive step reduction may decrease sample quality.</li>
+</ul>
+
+<p>DDIM changes the sampling procedure rather than requiring a completely new denoising network. This illustrates that diffusion model training and sampling can be designed separately.</p>
+
+<p><strong>Reference:</strong> Song, Meng, and Ermon (2021), <em>Denoising Diffusion Implicit Models</em>. <a href="https://arxiv.org/abs/2010.02502">Paper</a>.</p>
+
 <h2 id="6-latent-diffusion-move-the-repeated-computation-out-of-pixel-space">6. Latent diffusion: move the repeated computation out of pixel space</h2>
 
 <p>Large images make every denoising evaluation expensive. The lecture therefore asks whether diffusion should run directly on pixels. A latent diffusion model first learns a useful compressed representation with an autoencoder, then models the distribution of those representations.</p>
@@ -410,7 +459,61 @@ z_t=\sqrt{\bar\alpha_t}z_0+\sqrt{1-\bar\alpha_t}\epsilon.
 
 <p>The corresponding training target is still the known noise. What changes is the information available to predict it. In a cross-attention implementation, queries come from image features and keys and values come from text features, letting spatial image features attend to prompt tokens.</p>
 
+<p>Each reverse step samples from <d-math>p_\theta(z_{t-1}\mid z_t,c)</d-math>, with the timestep implicit in the transition. For example, changing a prompt from “a bicycle by a lake” to “a bicycle on a city street” changes the text features supplied throughout the chain, so the same initial latent noise can lead to different surroundings.</p>
+
 <p>At generation time, encode the prompt, draw latent Gaussian noise, run the text-conditioned denoising chain, and decode the final latent. This is the combination emphasized by the lecture’s Stable Diffusion slides: <strong>compressed image representations plus iterative denoising plus text conditioning</strong>. It describes the latent-diffusion architecture discussed in class, without assuming that all image-generation products or model versions use the same internal design.</p>
+
+<h3 id="additional-reading-classifier-free-guidance-cfg">Additional Reading: Classifier-Free Guidance (CFG)</h3>
+
+<p>The text-conditioned diffusion model described above predicts noise using both a noisy latent representation and a text prompt. However, conditioning alone does not explain how strongly the generated image should follow the prompt.</p>
+
+<p>Classifier-Free Guidance (CFG) provides a way to control this trade-off without training a separate classifier. During training, the model sometimes replaces the text condition with a null condition, allowing the same network to learn both conditional and unconditional noise predictions.</p>
+
+<p>At inference time, let</p>
+
+<ul>
+  <li>
+    <d-math>\epsilon_\theta(z_t,t,c)</d-math>
+    <p>denote the conditional noise prediction using text features <d-math>c</d-math>.</p>
+  </li>
+  <li>
+    <d-math>\epsilon_\theta(z_t,t,\varnothing)</d-math>
+    <p>denote the unconditional noise prediction.</p>
+  </li>
+  <li>
+    <d-math>w</d-math>
+    <p>denote the guidance scale.</p>
+  </li>
+</ul>
+
+<p>The guided noise prediction is</p>
+
+<d-math block="">
+\hat{\epsilon}_\theta =
+\epsilon_\theta(z_t,t,\varnothing)
++
+w\left[
+\epsilon_\theta(z_t,t,c)
+-
+\epsilon_\theta(z_t,t,\varnothing)
+\right].
+</d-math>
+
+<p>The difference between conditional and unconditional predictions indicates how the text prompt changes the predicted denoising direction.</p>
+
+<p><strong>Effect of the guidance scale:</strong></p>
+
+<ul>
+  <li><strong>w = 0:</strong> Uses the unconditional prediction, ignoring the text condition.</li>
+  <li><strong>w = 1:</strong> Uses the standard conditional prediction.</li>
+  <li><strong>w &gt; 1:</strong> Amplifies the influence of the text condition, often improving prompt alignment at the expense of sample diversity.</li>
+</ul>
+
+<p>Very large guidance scales can produce oversaturated colors, distorted details, or other artifacts. Therefore, stronger guidance does not always lead to better images.</p>
+
+<p>CFG is especially useful in text-to-image latent diffusion because it provides a practical way to adjust the balance between prompt adherence and visual diversity during generation.</p>
+
+<p><strong>Reference:</strong> Ho and Salimans (2022), <em>Classifier-Free Diffusion Guidance</em>. <a href="https://arxiv.org/abs/2207.12598">Paper</a>.</p>
 
 <h2 id="8-comparing-vae-gan-and-diffusion-objectives">8. Comparing VAE, GAN, and diffusion objectives</h2>
 

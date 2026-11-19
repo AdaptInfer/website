@@ -1,7 +1,6 @@
 <!doctype html>
 <html>
   <head>
-    <head>
   <meta charset="UTF-8" />
   <meta http-equiv="content-language" content="en" />
   <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
@@ -9,7 +8,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
   <title>
-    STAT 453 | Lecture 09: Regularization
+    STAT 453
   </title>
   <meta name="description" content="STAT 453 - University of Wisconsin-Madison - Fall 2026
 " />
@@ -22,7 +21,7 @@
   <link rel="stylesheet" href="/dgm-fall-2026/assets/css/main.css" />
   <link
     rel="canonical"
-    href="/dgm-fall-2026/notes/lecture-09/"
+    href="/dgm-fall-2026/notes/2026-10-01-lecture-09/"
   />
 
   
@@ -32,59 +31,6 @@
   
 </head>
 
-    <script src="/dgm-fall-2026/assets/js/distillpub/template.v2.js"></script>
-    <script src="/dgm-fall-2026/assets/js/distillpub/transforms.v2.js"></script>
-  </head>
-
-  <d-front-matter>
-    <script type="text/json">
-      {
-            "title": "Lecture 09: Regularization",
-            "description": "Bias and variance, data augmentation, early stopping, L1/L2 penalties as MAP estimation, and dropout, with the PyTorch snippets for each.",
-            "published": "October 1, 2026",
-            "lecturers": [
-              
-              {
-                "lecturer": "Ben Lengerich",
-                "lecturerURL": "https://adaptinfer.org"
-              }
-              
-            ],
-            "authors": [
-              
-              {
-                "author": "Dennis Kaduk"
-              },
-              
-              {
-                "author": "Brian Yuecheng Ouyang"
-              }
-              
-            ],
-            "editors": [
-              
-              {
-                "editor": "None"
-              }
-              
-            ],
-            "katex": {
-              "delimiters": [
-                {
-                  "left": "$",
-                  "right": "$",
-                  "display": false
-                },
-                {
-                  "left": "$$",
-                  "right": "$$",
-                  "display": true
-                }
-              ]
-            }
-          }
-    </script>
-  </d-front-matter>
 
   <body>
     <header class="site-header">
@@ -138,14 +84,15 @@
 
 
     <div class="page-content">
-      <d-title>
-        <h1>Lecture 09: Regularization</h1>
-        <p>Bias and variance, data augmentation, early stopping, L1/L2 penalties as MAP estimation, and dropout, with the PyTorch snippets for each.</p>
-      </d-title>
+      <div class="wrapper"><div class="post">
+  <header class="post-header">
+    <h1 class="post-title"></h1>
+    <p class="post-meta">
+      November 19, 2026
+    </p>
+  </header>
 
-      <d-byline></d-byline>
-
-      <d-article> <h2 id="section-1-why-we-need-regularization">Section 1: Why We Need Regularization</h2>
+  <article class="post-content"><h2 id="section-1-why-we-need-regularization">Section 1: Why We Need Regularization</h2>
 
 <h3 id="where-we-left-off">Where we left off</h3>
 
@@ -175,10 +122,13 @@
 
 <h3 id="the-bias-variance-trade-off">The bias-variance trade-off</h3>
 
-<p>The expected test error decomposes into three parts:</p>
+<p>For regression with squared-error loss, the expected prediction error at a fixed input <d-math>x</d-math> decomposes into three parts. Let <d-math>f(x)=\mathbb{E}[Y\mid X=x]</d-math> and let <d-math>\hat f_D</d-math> be the predictor fitted on a random training set <d-math>D</d-math>. For a fresh response independent of the training set,</p>
 
 <d-math block="">
-\mathbb{E}[\text{test error}] = \text{bias}^2 + \text{variance} + \text{irreducible noise}.
+\mathbb{E}_{D,Y\mid x}[(Y-\hat f_D(x))^2]
+= (\mathbb{E}_D[\hat f_D(x)]-f(x))^2
++ \operatorname{Var}_D(\hat f_D(x))
++ \operatorname{Var}(Y\mid X=x).
 </d-math>
 
 <ul>
@@ -188,7 +138,7 @@
 
 <p>Increasing capacity (more layers or units) typically lowers bias but raises variance. This gives us a useful way to look at every regularizer in this lecture: <em>each technique trades a little bias for a lot less variance.</em><d-footnote>This is also how Goodfellow et al. put it: an effective regularizer is one that makes a profitable trade, reducing variance a lot without increasing bias too much.<d-cite key="goodfellow2016deep"></d-cite></d-footnote></p>
 
-<p>A concrete example from the lecture:</p>
+<p>The accuracy example below illustrates underfitting and overfitting qualitatively. The squared-error identity above does not decompose classification accuracy into these three terms.</p>
 
 <table>
   <thead>
@@ -296,7 +246,7 @@ test_dataset = datasets.MNIST(root='data',
 
 <h3 id="early-stopping">Early stopping</h3>
 
-<p>The idea is simple: watch the gap between training and validation performance during training, and stop at the “right point”.</p>
+<p>Track a validation metric during training and keep the checkpoint that scores best on that metric.</p>
 
 <figure id="early-stopping" class="l-body-outset">
   <div class="row">
@@ -316,8 +266,11 @@ test_dataset = datasets.MNIST(root='data',
 best_val, best_state, bad_epochs, patience = float("inf"), None, 0, 5
 
 for epoch in range(max_epochs):
+    model.train()
     train_one_epoch(model, train_loader)
-    val_loss = evaluate(model, val_loader)
+    model.eval()
+    with torch.no_grad():
+        val_loss = evaluate(model, val_loader)
 
     if val_loss &lt; best_val:
         best_val, bad_epochs = val_loss, 0
@@ -327,12 +280,14 @@ for epoch in range(max_epochs):
         if bad_epochs &gt;= patience:
             break
 
-model.load_state_dict(best_state)   # go back to the best epoch
+if best_state is None:
+    raise RuntimeError("No valid validation checkpoint was saved.")
+model.load_state_dict(best_state)
 </d-code>
 
-<p>This makes early stopping an <strong>implicit regularizer</strong>, and not just a compute-saving trick. Why does it generalize better? Deep networks are initialized with small random weights, where many weights cancel out, so the network starts out behaving almost like a <em>linear</em> model. Training then makes it gradually more complex. Stopping early means it never gets to the very complex solutions that overfit.</p>
+<p>Early stopping acts as an <strong>implicit regularizer</strong> by restricting the selected parameters to checkpoints along the training trajectory. If validation performance deteriorates while training performance improves, restoring an earlier checkpoint can improve generalization.</p>
 
-<p>There is also a precise version of this for linear models. With a quadratic loss, gradient descent with learning rate <d-math>\epsilon</d-math> run for <d-math>\tau</d-math> steps behaves like L2 regularization with <d-math>\alpha \approx 1/(\epsilon\tau)</d-math>. More training steps correspond to weaker regularization<d-cite key="goodfellow2016deep"></d-cite>.</p>
+<p>For linear least squares with zero initialization and a stable step size, early stopping and ridge regression both suppress directions of low curvature. In this setting, <d-math>1/(\epsilon\tau)</d-math> gives an approximate scale for the corresponding ridge strength after <d-math>\tau</d-math> steps of size <d-math>\epsilon</d-math>. The two methods generally shrink each direction by different factors<d-cite key="goodfellow2016deep"></d-cite>.</p>
 
 <h2 id="section-4-norm-penalties-l1-and-l2">Section 4: Norm Penalties (L1 and L2)</h2>
 
@@ -358,7 +313,7 @@ model.load_state_dict(best_state)   # go back to the best epoch
 <p>In Lecture 3 we saw that MAP estimation with a Gaussian prior gives L2 and with a Laplace prior gives L1. Here is the derivation again. MAP maximizes the posterior <d-math>P(w \mid D)</d-math>, which by Bayes’ rule is proportional to <d-math>P(D \mid w)\,P(w)</d-math>. Taking the negative log (like we did in Lecture 6 to go from a likelihood to a loss):</p>
 
 <d-math block="">
--\log P(w \mid D) = \underbrace{-\log P(D \mid w)}_{\text{data loss}} \;\underbrace{-\log P(w)}_{\text{penalty from the prior}} + \text{const}.
+-\log P(w \mid D) = \underbrace{-\log P(D \mid w)}_{\text{data loss}} + \underbrace{[-\log P(w)]}_{\text{penalty from the prior}} + \text{const}.
 </d-math>
 
 <p>So the penalty is nothing but the negative log of the prior:</p>
@@ -432,13 +387,14 @@ w_{i,j} := w_{i,j} - \eta\,\frac{\partial \mathcal{L}}{\partial w_{i,j}}
 w_{i,j} := w_{i,j} - \eta\left(\frac{\partial \mathcal{L}}{\partial w_{i,j}} + \frac{2\lambda}{n}\, w_{i,j}\right).
 </d-math>
 
-<p>Rewriting the right-hand side gives <d-math>w_{i,j} := \big(1 - \tfrac{2\eta\lambda}{n}\big) w_{i,j} - \eta\,\frac{\partial \mathcal{L}}{\partial w_{i,j}}</d-math>. Each step first multiplicatively shrinks the weight and then takes the usual step. This is why L2 regularization is also called <strong>weight decay</strong><d-cite key="goodfellow2016deep"></d-cite>. For L1 the shrinkage is a constant amount in the direction of <d-math>\mathrm{sign}(w)</d-math> per step (independent of the weight size), which is what pushes small weights all the way to zero.</p>
+<p>Rewriting the right-hand side gives <d-math>w_{i,j} := \big(1 - \tfrac{2\eta\lambda}{n}\big) w_{i,j} - \eta\,\frac{\partial \mathcal{L}}{\partial w_{i,j}}</d-math>. For a sufficiently small step size, the first term shrinks the weight multiplicatively. This is the weight-decay form of L2 regularization under plain gradient descent<d-cite key="goodfellow2016deep"></d-cite>. Away from zero, an L1 subgradient step moves the weight by a fixed amount toward zero and can overshoot it. A proximal update instead uses soft thresholding, which maps sufficiently small magnitudes to exactly zero.</p>
 
 <h3 id="l2-regularization-in-pytorch">L2 regularization in PyTorch</h3>
 
 <p>In PyTorch you can add the penalty to the cost manually, or let the optimizer do it with <code class="language-plaintext highlighter-rouge">weight_decay</code>:</p>
 
 <d-code block="" language="python">
+
 # manually: only penalize the weights, not the biases
 L2 = 0.
 for name, p in model.named_parameters():
@@ -450,11 +406,46 @@ cost = cost + 2./targets.size(0) * LAMBDA * L2
 optimizer.zero_grad()
 cost.backward()
 
-# automatically: the optimizer adds the decay term to the gradient
-optimizer = torch.optim.SGD(model.parameters(), lr=0.1, weight_decay=LAMBDA)
+# automatically: apply weight decay only to the weights
+weight_params = []
+other_params = []
+
+for name, p in model.named_parameters():
+    if p.requires_grad:
+        if 'weight' in name:
+            weight_params.append(p)
+        else:
+            other_params.append(p)
+
+optimizer = torch.optim.SGD(
+    [
+        {'params': weight_params, 'weight_decay': LAMBDA},
+        {'params': other_params, 'weight_decay': 0.0},
+    ],
+=======
+weights, other_params = [], []
+for name, param in model.named_parameters():
+    group = weights if name.rsplit(".", 1)[-1] == "weight" else other_params
+    group.append(param)
+
+# n is the training-set size and cost is the mean minibatch data loss.
+# Option 1: backpropagate this loss with weight_decay=0.
+penalized_loss = cost + (LAMBDA / n) * sum(p.square().sum() for p in weights)
+
+# Option 2: backpropagate cost with this optimizer.
+optimizer = torch.optim.SGD(
+    [{"params": weights, "weight_decay": 2 * LAMBDA / n},
+     {"params": other_params, "weight_decay": 0.0}],
+
+    lr=0.1,
+)
 </d-code>
 
+<p>The parameter groups apply weight decay only to parameters whose names contain ‘weight’. Biases remain trainable but receive no weight decay, matching the weight-only policy in the manual example above.</p>
+
 <d-footnote>The constant in front of the penalty only rescales the regularization strength λ, so conventions like λ/n or 2λ/n differ only in the choice of λ. With <code>weight_decay=LAMBDA</code>, SGD adds <code>LAMBDA * w</code> to the gradient, so <code>LAMBDA</code> plays the role of the factor in front of <code>w</code> in the update above. For adaptive optimizers like Adam this is not exactly the same as an L2 penalty, which is why <code>AdamW</code> exists.</d-footnote>
+<p>=======
+The factor of two comes from differentiating the squared norm. Both alternatives apply the same gradient to the same weights. Use one option per update to avoid applying the penalty twice. AdamW decouples parameter shrinkage from the adaptive gradient update, so its weight decay differs from adding an L2 penalty to Adam’s loss.</p>
 
 <h2 id="section-5-dropout">Section 5: Dropout</h2>
 
@@ -506,7 +497,7 @@ model = nn.Sequential(
 \tilde{a}_i = \frac{m_i}{1-p}\, a_i .
 </d-math>
 
-<p>Then the expected activation is unchanged, and at inference time we do <strong>nothing</strong>. This is what most frameworks actually implement. It is helpful because a model is trained once but used many times at “test” time, so we want inference to be free of extra operations.</p>
+<p>For a keep probability <d-math>1-p&gt;0</d-math>, the mask has mean <d-math>1-p</d-math>, so <d-math>\mathbb{E}[\tilde a_i\mid a_i]=a_i</d-math>. PyTorch’s dropout layer is the identity in evaluation mode. Matching the mean at this layer does not guarantee that a later nonlinear prediction equals the mean prediction across dropout masks.</p>
 
 <p>In PyTorch the behavior depends on the mode of the model:</p>
 
@@ -532,19 +523,18 @@ with torch.no_grad():
 <h2 id="key-takeaways">Key Takeaways</h2>
 
 <ul>
-  <li>Overfitting is a <strong>variance</strong> problem. Every regularizer trades a bit of bias for a lot less variance.</li>
-  <li>Low train accuracy means look at bias. A big train/test gap means look at variance. In practice, first overfit a big model, then regularize.</li>
+  <li>The bias–variance decomposition above applies to squared error. Regularization can reduce variance at the cost of higher bias.</li>
+  <li>Low training accuracy can flag underfitting or an optimization problem. A large training–validation gap can flag overfitting.</li>
   <li><strong>More (and more diverse) data</strong> is the best fix. Augmentation only helps if we know a transformation the label does not depend on, and it is applied only to the training data.</li>
   <li><strong>Early stopping</strong> uses the validation set to pick the stopping point and acts as an implicit regularizer. The test set is touched only once.</li>
   <li><strong>L2</strong> (ridge, Gaussian prior) encourages small weights. <strong>L1</strong> (LASSO, Laplace prior) encourages zeros. Both are just the negative log of a prior added to the data loss.</li>
   <li><strong>Dropout</strong> randomly zeroes units during training, which prevents co-adaptation and approximates averaging over an exponential ensemble of weight-sharing networks. Use <code class="language-plaintext highlighter-rouge">model.train()</code> and <code class="language-plaintext highlighter-rouge">model.eval()</code> correctly.</li>
 </ul>
- </d-article>
+</article>
 
-      <d-appendix>
-        <d-footnote-list></d-footnote-list>
-        <d-citation-list></d-citation-list>
-      </d-appendix>
+  
+</div>
+</div>
     </div>
 
     <footer class="site-footer">
@@ -581,15 +571,7 @@ with torch.no_grad():
     </div>
   </div>
 </footer>
-
-  </body>
-
-  <d-bibliography
-    src="/dgm-fall-2026/assets/bibliography/2026-10-01-lecture-09.bib"
-  >
-  </d-bibliography>
-
-  <!-- Load jQuery -->
+ <!-- Load jQuery -->
 <script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
 
 <!-- Load Common JS -->
@@ -651,4 +633,5 @@ with torch.no_grad():
   ga("send", "pageview");
 </script>
 
+  </body>
 </html>

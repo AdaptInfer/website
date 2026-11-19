@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 380" font-family="Helvetica, Arial, sans-serif" font-size="15">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#444"/>
+    </marker>
+    <marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#b03030"/>
+    </marker>
+  </defs>
+  <rect width="860" height="380" fill="#ffffff"/>
+  <rect x="120" y="40" width="600" height="290" rx="18" fill="#eaf5f8" stroke="#555"/>
+
+  <!-- cell state highway -->
+  <line x1="40" y1="80" x2="205" y2="80" stroke="#b03030" stroke-width="3" marker-end="url(#r)"/>
+  <line x1="235" y1="80" x2="375" y2="80" stroke="#b03030" stroke-width="3" marker-end="url(#r)"/>
+  <line x1="405" y1="80" x2="810" y2="80" stroke="#b03030" stroke-width="3" marker-end="url(#r)"/>
+  <text x="44" y="68" font-style="italic" fill="#b03030">C<tspan baseline-shift="sub" font-size="11">t−1</tspan></text>
+  <text x="790" y="68" font-style="italic" fill="#b03030">C<tspan baseline-shift="sub" font-size="11">t</tspan></text>
+  <text x="430" y="32" text-anchor="middle" fill="#b03030" font-size="13">cell state: only elementwise × and + on this path</text>
+
+  <!-- forget multiply -->
+  <circle cx="220" cy="80" r="14" fill="#fff" stroke="#333"/>
+  <text x="220" y="86" text-anchor="middle" font-size="18">×</text>
+  <!-- add -->
+  <circle cx="390" cy="80" r="14" fill="#fff" stroke="#333"/>
+  <text x="390" y="86" text-anchor="middle" font-size="18">+</text>
+  <!-- i*g multiply -->
+  <circle cx="390" cy="145" r="14" fill="#fff" stroke="#333"/>
+  <text x="390" y="151" text-anchor="middle" font-size="18">×</text>
+  <line x1="390" y1="131" x2="390" y2="96" stroke="#444" stroke-width="1.6" marker-end="url(#a)"/>
+
+  <!-- gates -->
+  <g stroke="#333">
+    <rect x="180" y="200" width="80" height="50" rx="6" fill="#fde49a"/>
+    <rect x="300" y="200" width="80" height="50" rx="6" fill="#fde49a"/>
+    <rect x="400" y="200" width="80" height="50" rx="6" fill="#fde49a"/>
+    <rect x="520" y="200" width="80" height="50" rx="6" fill="#fde49a"/>
+  </g>
+  <g text-anchor="middle">
+    <text x="220" y="222" font-weight="bold">σ</text><text x="220" y="241" font-size="12">forget f</text>
+    <text x="340" y="222" font-weight="bold">σ</text><text x="340" y="241" font-size="12">input i</text>
+    <text x="440" y="222" font-weight="bold">tanh</text><text x="440" y="241" font-size="12">node g</text>
+    <text x="560" y="222" font-weight="bold">σ</text><text x="560" y="241" font-size="12">output o</text>
+  </g>
+  <!-- gate outputs -->
+  <g stroke="#444" stroke-width="1.6" fill="none">
+    <line x1="220" y1="200" x2="220" y2="96" marker-end="url(#a)"/>
+    <path d="M340,200 L340,145 L374,145" marker-end="url(#a)"/>
+    <path d="M440,200 L440,145 L406,145" marker-end="url(#a)"/>
+    <path d="M600,225 L624,225" marker-end="url(#a)"/>
+  </g>
+  <g font-style="italic" font-size="13">
+    <text x="226" y="150">f<tspan baseline-shift="sub" font-size="10">t</tspan></text>
+    <text x="324" y="170">i<tspan baseline-shift="sub" font-size="10">t</tspan></text>
+    <text x="446" y="170">g<tspan baseline-shift="sub" font-size="10">t</tspan></text>
+    <text x="603" y="216">o<tspan baseline-shift="sub" font-size="10">t</tspan></text>
+  </g>
+
+  <!-- output path -->
+  <line x1="640" y1="80" x2="640" y2="126" stroke="#444" stroke-width="1.6" marker-end="url(#a)"/>
+  <rect x="610" y="128" width="60" height="32" rx="6" fill="#f2b3b3" stroke="#333"/>
+  <text x="640" y="149" text-anchor="middle" font-weight="bold">tanh</text>
+  <line x1="640" y1="160" x2="640" y2="209" stroke="#444" stroke-width="1.6" marker-end="url(#a)"/>
+  <circle cx="640" cy="225" r="14" fill="#fff" stroke="#333"/>
+  <text x="640" y="231" text-anchor="middle" font-size="18">×</text>
+  <path d="M654,225 L690,225 L690,280 L810,280" fill="none" stroke="#444" stroke-width="1.6" marker-end="url(#a)"/>
+  <line x1="690" y1="225" x2="690" y2="175" stroke="#444" stroke-width="1.6"/>
+  <line x1="690" y1="175" x2="810" y2="175" stroke="#444" stroke-width="1.6" marker-end="url(#a)"/>
+  <text x="732" y="167" font-size="13">to next layer</text>
+  <text x="732" y="272" font-size="13">to next step</text>
+  <text x="700" y="210" font-style="italic">h<tspan baseline-shift="sub" font-size="11">t</tspan></text>
+
+  <!-- input bus -->
+  <line x1="40" y1="300" x2="600" y2="300" stroke="#444" stroke-width="1.6"/>
+  <text x="44" y="322" font-style="italic">h<tspan baseline-shift="sub" font-size="11">t−1</tspan></text>
+  <line x1="150" y1="370" x2="150" y2="300" stroke="#444" stroke-width="1.6"/>
+  <circle cx="150" cy="300" r="3.5" fill="#444"/>
+  <text x="160" y="362" font-style="italic">x<tspan baseline-shift="sub" font-size="11">t</tspan></text>
+  <g stroke="#444" stroke-width="1.6">
+    <line x1="220" y1="300" x2="220" y2="252" marker-end="url(#a)"/>
+    <line x1="340" y1="300" x2="340" y2="252" marker-end="url(#a)"/>
+    <line x1="440" y1="300" x2="440" y2="252" marker-end="url(#a)"/>
+    <line x1="560" y1="300" x2="560" y2="252" marker-end="url(#a)"/>
+  </g>
+  <text x="310" y="318" font-size="12" fill="#555">[h<tspan baseline-shift="sub" font-size="9">t−1</tspan>, x<tspan baseline-shift="sub" font-size="9">t</tspan>] feeds all four blocks, each with its own weights</text>
+</svg>

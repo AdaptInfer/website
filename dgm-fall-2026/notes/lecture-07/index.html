@@ -626,8 +626,12 @@ z^{(2)} = W^{(2)} h + b^{(2)} = 1(1) - 2(0) - 0.5 = 0.5,
 \approx \begin{bmatrix} -0.377541 \\ 0.755081 \end{bmatrix}.
 </d-math>
 
-<p>For ReLU the derivative is one at positive inputs and zero at negative inputs, so the
-activation mask is <d-math>(1, 0)^{\top}</d-math>, giving</p>
+<p>For ReLU the derivative is one at positive inputs and zero at negative inputs. The
+second pre-activation here is exactly zero, where ReLU has no ordinary derivative.
+This worked example chooses the subgradient value zero at the kink, as PyTorch’s ReLU
+backward does. With that convention the mask is</p>
+<d-math>(1, 0)^{\top}</d-math>
+<p>, giving</p>
 
 <d-math block="">
 \delta^{(1)} = \frac{\partial L}{\partial z^{(1)}}
@@ -651,6 +655,107 @@ so all gradients in the second column of <d-math>W^{(1)}</d-math> vanish for thi
 the second hidden unit’s ReLU mask is zero, so its incoming weights and bias also receive
 zero gradient, and its outgoing weight receives zero gradient because its activation is
 zero.</p>
+
+<h3 id="from-one-example-to-a-mini-batch">From One Example to a Mini-Batch</h3>
+
+<p>The previous formulas use a single example as a column vector. Training code commonly
+stores a batch as rows. Let <d-math>B</d-math> be the batch size and keep the same
+weight-storage convention:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Object</th>
+      <th>Shape</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><d-math>A^{(l-1)}</d-math></td>
+      <td><d-math>B\times n_{l-1}</d-math></td>
+      <td>Input activations, one example per row</td>
+    </tr>
+    <tr>
+      <td><d-math>W^{(l)}</d-math></td>
+      <td><d-math>n_l\times n_{l-1}</d-math></td>
+      <td>One output unit per row</td>
+    </tr>
+    <tr>
+      <td><d-math>b^{(l)}</d-math></td>
+      <td><d-math>n_l</d-math></td>
+      <td>Bias shared across batch rows</td>
+    </tr>
+    <tr>
+      <td><d-math>Z^{(l)},A^{(l)}</d-math></td>
+      <td><d-math>B\times n_l</d-math></td>
+      <td>Pre-activations and activations</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The forward pass is</p>
+
+<d-math block="">
+Z^{(l)}=A^{(l-1)}(W^{(l)})^\top+\mathbf{1}_B(b^{(l)})^\top.
+</d-math>
+
+<p>To keep the averaging convention explicit, define each row of</p>
+<d-math>D^{(l)}</d-math>
+<p>as the derivative of that example’s own loss with respect to
+its pre-activations, before averaging over examples. For softmax cross-entropy,</p>
+<d-math>D^{(L)}=P-Y</d-math>
+<p>, where each row of <d-math>Y</d-math> is one-hot. For an
+ordinary MLP with elementwise hidden activations,</p>
+
+<d-math block="">
+D^{(l)}=\left(D^{(l+1)}W^{(l+1)}\right)\odot\phi_l'(Z^{(l)}).
+</d-math>
+
+<p>For the mean loss <d-math>\overline L=B^{-1}\sum_{i=1}^B L_i</d-math>,</p>
+
+<d-math block="">
+\frac{\partial\overline L}{\partial W^{(l)}}
+=\frac{1}{B}(D^{(l)})^\top A^{(l-1)},
+\qquad
+\frac{\partial\overline L}{\partial b^{(l)}}
+=\frac{1}{B}(D^{(l)})^\top\mathbf{1}_B.
+</d-math>
+
+<p>The weight gradient has the same shape as the weight matrix. Bias gradients add over
+examples because every row uses the same bias. These formulas assume examples are
+processed independently inside the MLP; BatchNorm introduces cross-example dependencies.</p>
+
+<p><strong>Check the reduction once.</strong> If instead you define</p>
+<d-math>G^{(l)}=\partial\overline L/\partial Z^{(l)}</d-math>
+<p>, the factor</p>
+<d-math>1/B</d-math>
+<p>is already included: use</p>
+<d-math>(G^{(l)})^\top A^{(l-1)}</d-math>
+<p>without dividing again. A sum-reduced loss
+also has no <d-math>1/B</d-math> factor. For a single-output binary model, mean BCE
+over the batch gives the convention used here.</p>
+
+<p>For a small numerical check, use one sigmoid output with</p>
+<d-math>X=\begin{bmatrix}1&amp;2\\3&amp;4\end{bmatrix}</d-math>
+<p>,</p>
+<d-math>W=\begin{bmatrix}0&amp;0\end{bmatrix}</d-math>
+<p>, bias zero, and labels</p>
+<d-math>y=(1,0)^\top</d-math>
+<p>. Then <d-math>p=(0.5,0.5)^\top</d-math> and</p>
+<d-math>D=(-0.5,0.5)^\top</d-math>
+<p>. Consequently,</p>
+
+<d-math block="">
+\frac{\partial\overline L}{\partial W}
+=\frac12\begin{bmatrix}-0.5&amp;0.5\end{bmatrix}
+\begin{bmatrix}1&amp;2\\3&amp;4\end{bmatrix}
+=\begin{bmatrix}0.5&amp;0.5\end{bmatrix},
+\qquad
+\frac{\partial\overline L}{\partial b}=0.
+</d-math>
+
+<p>The two examples’ bias contributions cancel, while their weight contributions do not.</p>
 
 <h3 id="why-depth-makes-gradients-fragile">Why Depth Makes Gradients Fragile</h3>
 
@@ -840,6 +945,10 @@ successive layers.</li>
   <li>Training loss measures fit to observed examples; validation performance helps select
 capacity, hyperparameters, and stopping points.</li>
 </ul>
+
+<h3 id="additional-implementation-reference">Additional Implementation Reference</h3>
+
+<p><a href="https://docs.pytorch.org/docs/stable/notes/autograd.html">PyTorch Autograd mechanics</a> documents the treatment of non-differentiable operations, including ReLU at zero.</p>
  </d-article>
 
       <d-appendix>

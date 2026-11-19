@@ -1,0 +1,691 @@
+<!doctype html>
+<html>
+  <head>
+    <head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="content-language" content="en" />
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <title>
+    STAT 453 | Lecture 17: Attention, Transformers
+  </title>
+  <meta name="description" content="STAT 453 - University of Wisconsin-Madison - Fall 2026
+" />
+
+  <link
+    rel="shortcut icon"
+    href="/dgm-fall-2026/assets/img/favicon.ico"
+  />
+
+  <link rel="stylesheet" href="/dgm-fall-2026/assets/css/main.css" />
+  <link
+    rel="canonical"
+    href="/dgm-fall-2026/notes/lecture-17/"
+  />
+
+  
+  <!-- Load Latex JS -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+  
+</head>
+
+    <script src="/dgm-fall-2026/assets/js/distillpub/template.v2.js"></script>
+    <script src="/dgm-fall-2026/assets/js/distillpub/transforms.v2.js"></script>
+  </head>
+
+  <d-front-matter>
+    <script type="text/json">
+      {
+            "title": "Lecture 17: Attention, Transformers",
+            "description": "From recurrent attention to self-attention, Transformer blocks, causal masking, and modern Transformer architectures.",
+            "published": "November 5, 2026",
+            "lecturers": [
+              
+              {
+                "lecturer": "Ben Lengerich",
+                "lecturerURL": "https://adaptinfer.org"
+              }
+              
+            ],
+            "authors": [
+              
+              {
+                "author": "Balkan Yildirim",
+                "authorURL": "https://github.com/bal-yil"
+              }
+              
+            ],
+            "editors": [
+              
+            ],
+            "katex": {
+              "delimiters": [
+                {
+                  "left": "$",
+                  "right": "$",
+                  "display": false
+                },
+                {
+                  "left": "$$",
+                  "right": "$$",
+                  "display": true
+                }
+              ]
+            }
+          }
+    </script>
+  </d-front-matter>
+
+  <body>
+    <header class="site-header">
+  <div class="wrapper">
+    <span class="site-title">
+      <a class="page-link" href="https://adaptinfer.org/dgm-fall-2026/"
+        >STAT 453</a
+      >
+    </span>
+
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path
+              fill="#424242"
+              d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
+            />
+            <path
+              fill="#424242"
+              d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
+            />
+            <path
+              fill="#424242"
+              d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
+            />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger">
+        <a class="page-link" href="/dgm-fall-2026/logistics/"
+          >logistics</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/lectures/"
+          >lectures</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/notes/">notes</a>
+        <a class="page-link" href="/dgm-fall-2026/calendar/"
+          >calendar</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/homework/"
+          >homework</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/project/">project</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+      <d-title>
+        <h1>Lecture 17: Attention, Transformers</h1>
+        <p>From recurrent attention to self-attention, Transformer blocks, causal masking, and modern Transformer architectures.</p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article> <p><strong>Scope.</strong> These notes primarily follow Lecture 17 on attention and Transformers <d-cite key="lengerich2026attention"></d-cite>. The assigned readings are used selectively to clarify the mechanisms introduced in lecture rather than to reproduce every detail of the original papers.</p>
+
+<h2 id="1-from-rnns-to-attention">1. From RNNs to attention</h2>
+
+<p>Recurrent neural networks process sequential data one step at a time while carrying information forward through a hidden state. In a traditional encoder-decoder RNN, the encoder must compress information from an entire input sequence into a fixed-length representation before the decoder produces the output.</p>
+
+<p>This becomes difficult for long sequences. For example, translating a word may require information from several different parts of the original sentence, including words that appeared much earlier. If all of that information must pass through one fixed representation, useful long-range information can be lost.</p>
+
+<p>Attention was introduced to reduce this bottleneck. Instead of forcing every output prediction to depend on the same compressed representation, the decoder can selectively use different encoder states depending on what it is currently predicting. This idea was introduced for neural machine translation by Bahdanau, Cho, and Bengio <d-cite key="bahdanau2014neural"></d-cite>.</p>
+
+<p>Suppose the encoder produces hidden states</p>
+
+<d-math block="">
+h_1,h_2,\ldots,h_T.
+</d-math>
+
+<p>For output position <d-math>i</d-math>, attention forms a context vector</p>
+
+<d-math block="">
+c_i=\sum_{j=1}^{T}\alpha_{ij}h_j,
+</d-math>
+
+<p>where the coefficients <d-math>\alpha_{ij}</d-math> describe how important encoder state <d-math>h_j</d-math> is for the current output.</p>
+
+<p>The attention weights are obtained by comparing the current decoder state with each encoder state and normalizing the resulting scores with softmax. The context vector is therefore a weighted mixture of the encoder states rather than a single fixed summary.</p>
+
+<p>This is <strong>soft attention</strong> because every input position can contribute to the context vector. In contrast, <strong>hard attention</strong> makes a discrete decision about which position to use. Hard attention can be easier to interpret, but the discrete selection makes ordinary backpropagation more difficult.</p>
+
+<p>The same idea can also be applied outside language translation. In image captioning, for example, different words in a caption may depend on different spatial regions of the image. Attention allows the model to change which image features it emphasizes as the caption is generated.</p>
+
+<h2 id="2-from-attention-to-self-attention">2. From attention to self-attention</h2>
+
+<p>The original attention mechanism still contains recurrent components. This raises a natural question: if attention already allows information from different positions to interact, do we still need recurrence?</p>
+
+<p><strong>Self-attention</strong> removes the recurrence and applies attention within a single sequence. Every token can use information from the other tokens to construct a new, context-aware representation.</p>
+
+<p>Let</p>
+
+<d-math block="">
+x_1,x_2,\ldots,x_T
+</d-math>
+
+<p>be the embeddings of the input tokens. In a simple form of self-attention, token <d-math>i</d-math> is compared with every token <d-math>j</d-math> using a dot product,</p>
+
+<d-math block="">
+s_{ij}=x_i^\top x_j.
+</d-math>
+
+<p>The scores are normalized across the sequence,</p>
+
+<d-math block="">
+\alpha_{ij}
+=
+\frac{\exp(s_{ij})}
+{\sum_{m=1}^{T}\exp(s_{im})},
+</d-math>
+
+<p>and the new representation of token <d-math>i</d-math> is</p>
+
+<d-math block="">
+a_i=\sum_{j=1}^{T}\alpha_{ij}x_j.
+</d-math>
+
+<p>The resulting vector <d-math>a_i</d-math> contains information from the entire sequence, with more relevant tokens contributing more strongly.</p>
+
+<p>This mechanism is called <strong>self-attention</strong> because the queries and the information being attended to come from the same input sequence. Unlike an RNN, information does not have to travel through every intermediate time step before reaching a distant position.</p>
+
+<p>The basic construction illustrates the idea, but it contains no learnable parameters. Transformers make self-attention learnable by introducing queries, keys, and values.</p>
+
+<h2 id="3-learnable-self-attention-queries-keys-and-values">3. Learnable self-attention: queries, keys, and values</h2>
+
+<p>Each token embedding is projected into three learned representations:</p>
+
+<d-math block="">
+q_i=W^q x_i,\qquad
+k_i=W^k x_i,\qquad
+v_i=W^v x_i.
+</d-math>
+
+<p>These are the <strong>query</strong>, <strong>key</strong>, and <strong>value</strong> vectors. A useful interpretation from lecture is:</p>
+
+<blockquote>
+  <p>Queries select keys, and keys unlock values.</p>
+</blockquote>
+
+<p>The query represents what the current token is looking for. A key represents the information that another token can be matched against, while the value contains the information that will actually contribute to the output.</p>
+
+<p>The compatibility between token <d-math>i</d-math> and token <d-math>j</d-math> is measured using the query-key dot product,</p>
+
+<d-math block="">
+q_i^\top k_j.
+</d-math>
+
+<p>After the scores are normalized with softmax, the output for token <d-math>i</d-math> becomes a weighted sum of the value vectors:</p>
+
+<d-math block="">
+a_i=\sum_{j=1}^{T}\alpha_{ij}v_j.
+</d-math>
+
+<p>Because <d-math>W^q</d-math>, <d-math>W^k</d-math>, and <d-math>W^v</d-math> are trainable, the model learns which types of token relationships are useful.</p>
+
+<figure id="self-attention-qkv" class="l-body-outset">
+  <img src="/dgm-fall-2026/assets/img/notes/lecture-17/self-attention-qkv.png" alt="Learnable self-attention showing query, key, and value projections and the weighted combination of value vectors." />
+  <figcaption>
+    <strong>Figure 1. Learnable self-attention.</strong>
+    Each input is projected into query, key, and value representations. Query-key compatibility scores determine how strongly the corresponding value vectors contribute to the context-aware output. Source: Lecture 17 slides <d-cite key="lengerich2026attention"></d-cite>.
+  </figcaption>
+</figure>
+
+<p>The dimensions of the query and key vectors must match because they are combined using a dot product. In the original Transformer,</p>
+
+<d-math block="">
+d_{\text{model}}=512,
+\qquad
+d_q=d_k=64,
+\qquad
+d_v=64
+</d-math>
+
+<p>for each attention head.</p>
+
+<h2 id="4-scaled-dot-product-and-multi-head-attention">4. Scaled dot-product and multi-head attention</h2>
+
+<p>Stack the <d-math>T</d-math> input embeddings as rows of a matrix <d-math>X</d-math>. The queries, keys, and values can then be computed for every token simultaneously:</p>
+
+<d-math block="">
+Q=XW^q,\qquad
+K=XW^k,\qquad
+V=XW^v.
+</d-math>
+
+<p>The Transformer computes <strong>scaled dot-product attention</strong> as</p>
+
+<d-math block="">
+\operatorname{Attention}(Q,K,V)
+=
+\operatorname{softmax}
+\left(
+\frac{QK^\top}{\sqrt{d_k}}
+\right)V.
+</d-math>
+
+<p>The matrix <d-math>QK^\top</d-math> has shape</p>
+
+<d-math block="">
+T\times T,
+</d-math>
+
+<p>so each entry represents the compatibility between one query position and one key position.</p>
+
+<p>The division by <d-math>\sqrt{d_k}</d-math> is important. As the dimension of the query and key vectors increases, unscaled dot products can become large in magnitude. Large values can push softmax into saturated regions with very small gradients. Scaling keeps the scores at a more useful magnitude <d-cite key="vaswani2017attention"></d-cite>.</p>
+
+<p>This matrix formulation also explains one major advantage of Transformers: attention for all tokens can be computed with a small number of matrix multiplications, which are highly parallelizable on modern hardware.</p>
+
+<p>The tradeoff is the size of the attention matrix. Because it contains all token-to-token comparisons, standard self-attention requires</p>
+
+<d-math block="">
+O(T^2)
+</d-math>
+
+<p>computation and memory with respect to sequence length. Doubling the context length therefore produces roughly four times as many pairwise attention scores.</p>
+
+<h3 id="multi-head-attention">Multi-head attention</h3>
+
+<p>A single attention operation produces only one learned pattern of token interactions. <strong>Multi-head attention</strong> applies self-attention several times in parallel.</p>
+
+<p>For head <d-math>h</d-math>,</p>
+
+<d-math block="">
+\operatorname{head}_h
+=
+\operatorname{Attention}
+\left(
+Q_h,K_h,V_h
+\right),
+</d-math>
+
+<p>where each head uses its own learned query, key, and value projections.</p>
+
+<p>The head outputs are then concatenated:</p>
+
+<d-math block="">
+\operatorname{MultiHead}(Q,K,V)
+=
+\operatorname{Concat}
+\left(
+\operatorname{head}_1,\ldots,\operatorname{head}_H
+\right)W^O.
+</d-math>
+
+<p>Different heads can therefore learn different ways of relating positions in the sequence. The lecture compares this idea to multiple filters or channels in a convolutional network.</p>
+
+<p>The original Transformer used eight attention heads. Since each head produced <d-math>64</d-math>-dimensional values,</p>
+
+<d-math block="">
+8\times64=512,
+</d-math>
+
+<p>so concatenating the heads returned the representation to the model dimension of <d-math>512</d-math> <d-cite key="vaswani2017attention"></d-cite>.</p>
+
+<h2 id="5-building-a-transformer">5. Building a Transformer</h2>
+
+<p>The Transformer replaces sequence-aligned recurrence with stacks of attention and feed-forward layers <d-cite key="vaswani2017attention"></d-cite>.</p>
+
+<p>A modern pre-normalization Transformer block can be summarized as</p>
+
+<d-math block="">
+h=x+\operatorname{MultiHead}(\operatorname{LayerNorm}(x)),
+</d-math>
+
+<p>followed by</p>
+
+<d-math block="">
+\operatorname{out}
+=
+h+\operatorname{FFN}(\operatorname{LayerNorm}(h)).
+</d-math>
+
+<p>The feed-forward network has the general form</p>
+
+<d-math block="">
+\operatorname{FFN}(h)
+=
+W_2\phi(W_1h+b_1)+b_2.
+</d-math>
+
+<p>The components play different roles:</p>
+
+<ul>
+  <li><strong>Multi-head attention</strong> mixes information across token positions.</li>
+  <li><strong>The feed-forward network</strong> processes each token independently using the same network at every position.</li>
+  <li><strong>Residual connections</strong> create direct paths for information and gradients through many layers.</li>
+  <li><strong>Layer normalization</strong> helps stabilize optimization.</li>
+</ul>
+
+<figure id="transformer-block">
+  <img src="/dgm-fall-2026/assets/img/notes/lecture-17/transformer-block.png" alt="Transformer block containing layer normalization, multi-head attention, a feed-forward network, and residual connections." />
+  <figcaption>
+    <strong>Figure 2. Inside a Transformer block.</strong>
+    Attention exchanges information across token positions, while the feed-forward network transforms each position independently. Residual connections provide direct paths around both sublayers. Source: Lecture 17 slides <d-cite key="lengerich2026attention"></d-cite>.
+  </figcaption>
+</figure>
+
+<p>The original Transformer used ReLU in its feed-forward network and stacked six blocks in both the encoder and decoder. Later architectures use variants such as GELU or SwiGLU and may contain many more layers.</p>
+
+<p>The original paper applied layer normalization after each residual addition. Many modern Transformers instead normalize before each sublayer, as in the equations above.</p>
+
+<h2 id="6-causal-masking-for-next-token-prediction">6. Causal masking for next-token prediction</h2>
+
+<p>An unrestricted self-attention layer allows each token to attend to every other token. That is inappropriate for autoregressive language modeling, where a model predicting token <d-math>i+1</d-math> must not see tokens that occur later in the sequence.</p>
+
+<p>A <strong>causal mask</strong> prevents this information leak.</p>
+
+<p>Scaled attention with a mask becomes</p>
+
+<d-math block="">
+A
+=
+\operatorname{softmax}
+\left(
+\frac{QK^\top}{\sqrt{d_k}}+M
+\right)V,
+</d-math>
+
+<p>where</p>
+
+<d-math block="">
+M_{ij}
+=
+\begin{cases}
+0, &amp; j\leq i,\\
+-\infty, &amp; j&gt;i.
+\end{cases}
+</d-math>
+
+<p>After softmax,</p>
+
+<d-math block="">
+\exp(-\infty)=0,
+</d-math>
+
+<p>so future positions receive zero attention weight.</p>
+
+<p>Token <d-math>i</d-math> can therefore attend only to</p>
+
+<d-math block="">
+1,\ldots,i.
+</d-math>
+
+<p>This creates a lower-triangular attention pattern.</p>
+
+<figure id="causal-mask">
+  <img src="/dgm-fall-2026/assets/img/notes/lecture-17/causal-mask.png" alt="Lower-triangular causal attention mask where each token may attend only to itself and earlier positions." />
+  <figcaption>
+    <strong>Figure 3. Causal self-attention mask.</strong>
+    Blue entries are available to attention, while future positions are assigned a score of <d-math>-\infty</d-math> before softmax and therefore receive zero weight. Source: Lecture 17 slides <d-cite key="lengerich2026attention"></d-cite>.
+  </figcaption>
+</figure>
+
+<p>Causal masking gives Transformer training an important advantage over recurrent models. During training, the complete sequence is available, so predictions for all <d-math>T</d-math> positions can be computed in one parallel forward pass while the mask prevents any position from seeing its future answer.</p>
+
+<p>Generation is still sequential. After one new token is generated, that token must be added to the context before the next token can be predicted.</p>
+
+<p>This causal decoder-style attention is the basic mechanism used in GPT-style language models.</p>
+
+<h2 id="7-encoding-position">7. Encoding position</h2>
+
+<p>Self-attention and the feed-forward layers do not inherently distinguish sequence order. Without additional positional information, reordering an unmasked input simply reorders the corresponding outputs.</p>
+
+<p>The original Transformer solves this using <strong>sinusoidal positional encodings</strong>, which are added to token embeddings <d-cite key="vaswani2017attention"></d-cite>:</p>
+
+<d-math block="">
+PE_{(pos,2i)}
+=
+\sin
+\left(
+\frac{pos}{10000^{2i/d_{\text{model}}}}
+\right),
+</d-math>
+
+<d-math block="">
+PE_{(pos,2i+1)}
+=
+\cos
+\left(
+\frac{pos}{10000^{2i/d_{\text{model}}}}
+\right).
+</d-math>
+
+<p>The same word therefore receives a slightly different input representation depending on its position.</p>
+
+<p>Other approaches are also common. Learned absolute position embeddings assign a trainable vector to each position and were used by BERT and early GPT models. Modern architectures often use relative approaches such as rotary positional embeddings (RoPE) or attention biases such as ALiBi <d-cite key="lengerich2026attention"></d-cite>.</p>
+
+<p>Causal models have an additional source of positional information because their mask itself changes with position: token <d-math>i</d-math> can attend to exactly <d-math>i</d-math> positions. However, without a mask or some other positional mechanism, an encoder remains permutation equivariant.</p>
+
+<h2 id="8-three-families-of-transformers">8. Three families of Transformers</h2>
+
+<p>Transformer architectures are commonly divided into three families according to which parts of the original encoder-decoder architecture they retain.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Architecture</th>
+      <th>Attention pattern</th>
+      <th>Typical training goal</th>
+      <th>Examples</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Encoder-only</strong></td>
+      <td>Bidirectional</td>
+      <td>Represent or recover the input</td>
+      <td>BERT</td>
+    </tr>
+    <tr>
+      <td><strong>Encoder-decoder</strong></td>
+      <td>Bidirectional encoder + causal decoder</td>
+      <td>Map one sequence to another</td>
+      <td>Original Transformer, T5</td>
+    </tr>
+    <tr>
+      <td><strong>Decoder-only</strong></td>
+      <td>Causal</td>
+      <td>Predict the next token</td>
+      <td>GPT, Llama</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="encoder-only">Encoder-only</h3>
+
+<p>Encoder-only models use bidirectional self-attention, meaning each token can use context from both its left and right.</p>
+
+<p>BERT is a prominent example. During pretraining, some input tokens are masked and the model learns to predict the missing tokens from the surrounding context <d-cite key="devlin2018bert"></d-cite>. This makes encoder-only models useful for tasks such as classification, search, and learned text representations.</p>
+
+<h3 id="encoder-decoder">Encoder-decoder</h3>
+
+<p>The original Transformer uses both components. The encoder builds bidirectional representations of an input sequence. The decoder uses causal self-attention while also attending to the encoder output.</p>
+
+<p>This structure naturally fits sequence-to-sequence problems such as translation and summarization <d-cite key="vaswani2017attention"></d-cite>.</p>
+
+<h3 id="decoder-only">Decoder-only</h3>
+
+<p>Decoder-only Transformers use causal attention and are trained autoregressively:</p>
+
+<d-math block="">
+p(x_{t+1}\mid x_1,\ldots,x_t).
+</d-math>
+
+<p>GPT-style models use this architecture. Each token can access only itself and previous tokens, allowing the same model to repeatedly predict and generate the next token.</p>
+
+<p>Decoder-only Transformers have become the dominant Transformer architecture for open-ended text generation.</p>
+
+<h2 id="9-checks-for-understanding">9. Checks for understanding</h2>
+
+<ol>
+  <li>
+    <p><strong>Why was attention introduced in encoder-decoder RNNs?</strong><br />
+A fixed-length encoder representation can become a bottleneck. Attention lets each output selectively use different encoder states instead.</p>
+  </li>
+  <li>
+    <p><strong>What makes self-attention “self”?</strong><br />
+The queries, keys, and values are all derived from the same input sequence.</p>
+  </li>
+  <li>
+    <p><strong>What are the roles of queries, keys, and values?</strong><br />
+Queries represent what a token is looking for, keys determine which tokens match the query, and values contain the information combined into the output.</p>
+  </li>
+  <li>
+    <p><strong>Why divide attention scores by <d-math>\sqrt{d_k}</d-math>?</strong><br />
+The scaling prevents high-dimensional query-key dot products from becoming so large that softmax saturates.</p>
+  </li>
+  <li>
+    <p><strong>Why is self-attention highly parallelizable?</strong><br />
+Attention scores for every token pair can be computed simultaneously using matrix multiplication rather than processing positions sequentially.</p>
+  </li>
+  <li>
+    <p><strong>What is the main sequence-length cost of standard self-attention?</strong><br />
+The attention matrix is <d-math>T\times T</d-math>, giving standard attention <d-math>O(T^2)</d-math> computation and memory.</p>
+  </li>
+  <li>
+    <p><strong>What does causal masking prevent?</strong><br />
+It prevents a token from attending to future positions, so next-token predictions cannot see their answers.</p>
+  </li>
+  <li>
+    <p><strong>Why can Transformer training be parallel while autoregressive generation remains sequential?</strong><br />
+During training, the full target sequence is already known and the mask hides future information. During generation, each next token does not exist until the previous token has been produced.</p>
+  </li>
+  <li>
+    <p><strong>Why is positional information needed?</strong><br />
+Ordinary unmasked self-attention does not inherently encode sequence order, so position must be introduced through an encoding, learned embedding, relative scheme, or another mechanism.</p>
+  </li>
+  <li>
+    <p><strong>How do encoder-only and decoder-only Transformers differ?</strong><br />
+Encoder-only models use bidirectional attention over the full input. Decoder-only models use causal attention and are trained to predict future tokens.</p>
+  </li>
+</ol>
+ </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+    </div>
+
+    <footer class="site-footer">
+  <div class="wrapper">
+    <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Ben Lengerich</li><li>
+            <a class="u-email" href="mailto:lengerich@wisc.edu"
+              >lengerich@wisc.edu</a
+            >
+          </li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li>
+    <a
+      href="https://github.com/AdaptInfer"
+      target="_blank"
+      ><i class="fab fa-github"></i>
+      <span class="username">AdaptInfer</span></a
+    >
+  </li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>
+          &copy; Copyright 2026 University of Wisconsin.
+          <br />
+          
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  </body>
+
+  <d-bibliography
+    src="/dgm-fall-2026/assets/bibliography/2026-11-05-lecture-17.bib"
+  >
+  </d-bibliography>
+
+  <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/dgm-fall-2026/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link
+  rel="stylesheet"
+  href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css"
+/>
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+<script src="/dgm-fall-2026/assets/js/katex.js"></script>
+ 
+<!-- Load Anchor JS -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+<script>
+  anchors.options.visible = "hover";
+  anchors.add("article h2, article h3, article h4, article h5, article h6");
+</script>
+ 
+<!-- Adjust LaTeX JS -->
+<script src="/dgm-fall-2026/assets/js/latex.js"></script>
+
+
+<!-- Include custom icon fonts -->
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2026/assets/css/fontawesome-all.min.css"
+/>
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2026/assets/css/academicons.min.css"
+/>
+
+<!-- Google Analytics -->
+<script>
+  (function (i, s, o, g, r, a, m) {
+    i["GoogleAnalyticsObject"] = r;
+    ((i[r] =
+      i[r] ||
+      function () {
+        (i[r].q = i[r].q || []).push(arguments);
+      }),
+      (i[r].l = 1 * new Date()));
+    ((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
+    a.async = 1;
+    a.src = g;
+    m.parentNode.insertBefore(a, m);
+  })(
+    window,
+    document,
+    "script",
+    "//www.google-analytics.com/analytics.js",
+    "ga",
+  );
+
+  ga("create", "", "auto");
+  ga("send", "pageview");
+</script>
+
+</html>
