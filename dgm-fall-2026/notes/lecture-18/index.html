@@ -1,0 +1,1023 @@
+<!doctype html>
+<html>
+  <head>
+    <head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="content-language" content="en" />
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <title>
+    STAT 453 | Lecture 18: GPT Architectures
+  </title>
+  <meta name="description" content="STAT 453 - University of Wisconsin-Madison - Fall 2026
+" />
+
+  <link
+    rel="shortcut icon"
+    href="/dgm-fall-2026/assets/img/favicon.ico"
+  />
+
+  <link rel="stylesheet" href="/dgm-fall-2026/assets/css/main.css" />
+  <link
+    rel="canonical"
+    href="/dgm-fall-2026/notes/lecture-18/"
+  />
+
+  
+  <!-- Load Latex JS -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+  
+</head>
+
+    <script src="/dgm-fall-2026/assets/js/distillpub/template.v2.js"></script>
+    <script src="/dgm-fall-2026/assets/js/distillpub/transforms.v2.js"></script>
+  </head>
+
+  <d-front-matter>
+    <script type="text/json">
+      {
+            "title": "Lecture 18: GPT Architectures",
+            "description": "How a stack of Transformer decoder blocks plus a next-token likelihood becomes GPT, and what has (and has not) changed from GPT-1 to today's open-weight models.",
+            "published": "November 10, 2026",
+            "lecturers": [
+              
+              {
+                "lecturer": "Ben Lengerich",
+                "lecturerURL": "https://adaptinfer.org"
+              }
+              
+            ],
+            "authors": [
+              
+              {
+                "author": "Minju Bae",
+                "authorURL": "https://github.com/minjubaae"
+              }
+              
+            ],
+            "editors": [
+              
+            ],
+            "katex": {
+              "delimiters": [
+                {
+                  "left": "$",
+                  "right": "$",
+                  "display": false
+                },
+                {
+                  "left": "$$",
+                  "right": "$$",
+                  "display": true
+                }
+              ]
+            }
+          }
+    </script>
+  </d-front-matter>
+
+  <body>
+    <header class="site-header">
+  <div class="wrapper">
+    <span class="site-title">
+      <a class="page-link" href="https://adaptinfer.org/dgm-fall-2026/"
+        >STAT 453</a
+      >
+    </span>
+
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path
+              fill="#424242"
+              d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
+            />
+            <path
+              fill="#424242"
+              d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
+            />
+            <path
+              fill="#424242"
+              d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
+            />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger">
+        <a class="page-link" href="/dgm-fall-2026/logistics/"
+          >logistics</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/lectures/"
+          >lectures</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/notes/">notes</a>
+        <a class="page-link" href="/dgm-fall-2026/calendar/"
+          >calendar</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/homework/"
+          >homework</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/project/">project</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+      <d-title>
+        <h1>Lecture 18: GPT Architectures</h1>
+        <p>How a stack of Transformer decoder blocks plus a next-token likelihood becomes GPT, and what has (and has not) changed from GPT-1 to today's open-weight models.</p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article> <p><strong>Scope.</strong> These notes follow the November 10 lecture slides and the in-class discussion. The lecture stopped at the “modern decoder recipe” slide; grouped-query attention and Mixture of Experts were finished at the start of the November 12 lecture and are summarized briefly in Section 9 for completeness. <d-cite key="lengerich2026gpt"></d-cite></p>
+
+<h2 id="1-recap-from-rnns-to-a-decoder-block">1. Recap: from RNNs to a decoder block</h2>
+
+<p>The last few lectures built up to this one in three steps.</p>
+
+<ol>
+  <li><strong>RNNs.</strong> A vanilla RNN moves from hidden state <d-math>h_t</d-math> to <d-math>h_{t+1}</d-math> with a single shared weight matrix. Backpropagation through time is just the chain rule, but repeatedly multiplying by the same matrix makes gradients vanish or explode, so vanilla RNNs struggle beyond roughly 20 time steps. Gated cells (LSTM, GRU) help.</li>
+  <li><strong>Attention.</strong> The first attention mechanisms let the recurrent model look back at the source sequence at every step instead of squeezing everything into a single hidden state.</li>
+  <li><strong>Transformers.</strong> If every output can look back at all inputs anyway, the recurrence is unnecessary. “Attention Is All You Need” removes it and stacks attention layers instead. <d-cite key="vaswani2017attention"></d-cite></li>
+</ol>
+
+<p>A single (masked) attention layer computes</p>
+
+<d-math block="">
+\mathrm{Attention}(Q,K,V) = \mathrm{softmax}\!\left(\frac{QK^\top}{\sqrt{d_k}} + M\right)V,
+\qquad Q = XW_Q,\; K = XW_K,\; V = XW_V .
+</d-math>
+
+<p>The output is simply a <strong>reweighting of the values</strong>, which are themselves a linear projection of the inputs. Queries are matched against keys by similarity; the softmax turns these scores into non-negative weights that sum to one; and the weights select (“unlock”) the corresponding values. <d-math>\sqrt{d_k}</d-math> is only a normalizing constant. The mask <d-math>M</d-math> sets entry <d-math>(t, s)</d-math> to <d-math>-\infty</d-math> whenever <d-math>s &gt; t</d-math>, so position <d-math>t</d-math> can never attend to the future. This is the <strong>causal mask</strong>.</p>
+
+<p>A <strong>decoder block</strong> wraps this in familiar pieces:</p>
+
+<ul>
+  <li>LayerNorm → multi-head masked self-attention → residual add,</li>
+  <li>LayerNorm → position-wise MLP → residual add.</li>
+</ul>
+
+<p>Attention mixes information <em>across</em> tokens; the MLP processes each token <em>on its own</em>. The residual (skip) connections carry simple updates straight through, while more complicated updates go through attention and the MLP. Residuals plus LayerNorm are what make it possible to stack <d-math>N</d-math> such blocks, and <d-math>N</d-math> is just an architectural hyperparameter. Because of the causal mask, one forward pass trains next-token prediction at all <d-math>T</d-math> positions in parallel.</p>
+
+<p>Nothing in a decoder block is new on its own: fully connected layers, residual additions, LayerNorm, and attention. A GPT is “just” these pieces stacked many times.</p>
+
+<h2 id="2-from-transformer-to-gpt">2. From Transformer to GPT</h2>
+
+<p>GPT stands for <strong>G</strong>enerative <strong>P</strong>re-trained <strong>T</strong>ransformer:</p>
+
+<ul>
+  <li><strong>Transformer</strong>: it is a stack of Transformer (decoder) blocks;</li>
+  <li><strong>Pre-trained</strong>: it is trained once on a very large corpus and then reused for other tasks;</li>
+  <li><strong>Generative</strong>: it models and samples text, rather than only mapping an <d-math>X</d-math> to a <d-math>Y</d-math>.</li>
+</ul>
+
+<h3 id="21-sequence-transduction-vs-sequence-modeling">2.1 Sequence transduction vs. sequence modeling</h3>
+
+<p>The original Transformer was built for <strong>sequence transduction</strong> such as machine translation. It is a conditional model of an output sequence <d-math>Y</d-math> given an input sequence <d-math>X</d-math>:</p>
+
+<d-math block="">
+P(Y \mid X) = \prod_t P(Y_t \mid Y_{&lt;t}, X).
+</d-math>
+
+<p>GPT instead models the text itself, an unconditional generative model:</p>
+
+<d-math block="">
+P(X) = \prod_t P(X_t \mid X_{&lt;t}).
+</d-math>
+
+<p>The key observation is that a sequence already contains its own supervision. Each conditional <d-math>P(X_t \mid X_{&lt;t})</d-math> is a supervised problem: the input is everything before position <d-math>t</d-math>, and the target is the token at <d-math>t</d-math>. So GPT keeps the same building blocks and simply maps <strong><d-math>X</d-math> to <d-math>X</d-math> shifted by one position</strong>.</p>
+
+<p>This mirrors the discriminative/generative contrast from earlier in the course. Logistic regression models <d-math>P(Y \mid X)</d-math> directly. Naive Bayes models <d-math>P(X \mid Y)</d-math> and <d-math>P(Y)</d-math>, which lets it say something about <d-math>P(X)</d-math> and generate data. GPT does not change the parameterization of the Transformer. It changes what is being predicted.</p>
+
+<p><strong>Why this matters: data.</strong> Paired <d-math>(X, Y)</d-math> data such as translations requires human annotation and is limited. Raw text needs no labels: anything humans have already written can be used. Reframing the task as next-token prediction dramatically increases the amount of usable training data.</p>
+
+<p><strong>Architectural consequence.</strong> Once there is no distinction between an “input” and an “output” sequence, the encoder and the cross-attention that feeds encoder states into the middle of the decoder are no longer needed. A GPT is a <strong>decoder-only</strong> stack with causal self-attention, which is why diagrams of GPT go straight through one tower instead of two.</p>
+
+<h3 id="22-gpt-as-a-probabilistic-model">2.2 GPT as a probabilistic model</h3>
+
+<p>As a directed probabilistic graphical model, GPT has an edge from every earlier token to every later token, and no edges backwards:</p>
+
+<d-math block="">
+P_\theta(X) = \prod_i \prod_t P_\theta(X_{i,t} \mid X_{i,&lt;t}),
+</d-math>
+
+<p>where <d-math>i</d-math> indexes training sequences. Compare this with a hidden Markov model, which assumes the past can be compressed into a hidden state passed along a chain. GPT makes no such compression assumption. Every earlier token can directly influence every later one; only “reverse causality” is ruled out.</p>
+
+<p>As everywhere else in this course, we fit the model by <strong>maximum likelihood</strong>, in practice maximizing the log-likelihood because logs turn the product into a sum:</p>
+
+<d-math block="">
+\max_\theta \; \sum_i \sum_t \log P_\theta(X_{i,t} \mid X_{i,&lt;t}).
+</d-math>
+
+<p>GPT-1 is essentially this equation implemented with a 12-layer masked self-attention decoder. <d-cite key="radford2018improving"></d-cite> Everything later in the lecture (tokenizers, scale, architectural tweaks) is built around this one objective.</p>
+
+<h2 id="3-anatomy-of-a-gpt">3. Anatomy of a GPT</h2>
+
+<h3 id="31-end-to-end">3.1 End to end</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Stage</th>
+      <th>Operation</th>
+      <th>Output shape</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Token ids</td>
+      <td>integers in <d-math>\{0,\dots,V-1\}</d-math></td>
+      <td><d-math>B \times T</d-math></td>
+    </tr>
+    <tr>
+      <td>Embedding</td>
+      <td>token embedding + position embedding</td>
+      <td><d-math>B \times T \times d</d-math></td>
+    </tr>
+    <tr>
+      <td>Decoder blocks</td>
+      <td><d-math>N</d-math> stacked blocks</td>
+      <td><d-math>B \times T \times d</d-math></td>
+    </tr>
+    <tr>
+      <td>Final LayerNorm</td>
+      <td>normalize each position</td>
+      <td><d-math>B \times T \times d</d-math></td>
+    </tr>
+    <tr>
+      <td>LM head</td>
+      <td>linear map <d-math>d \to V</d-math></td>
+      <td><d-math>B \times T \times V</d-math> (logits)</td>
+    </tr>
+    <tr>
+      <td>Softmax</td>
+      <td>over the vocabulary</td>
+      <td><d-math>B \times T \times V</d-math> (probabilities)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Here <d-math>B</d-math> is the batch size, <d-math>T</d-math> the context length, <d-math>d</d-math> the embedding dimension, and <d-math>V</d-math> the vocabulary size.</p>
+
+<ul>
+  <li>The <strong>token embedding</strong> is a lookup table mapping each token id to a vector. The <strong>position embedding</strong> adds information about where in the sequence the token sits, since the same word can play different roles at the beginning and end of a sentence.</li>
+  <li>The <strong>LM head</strong> projects back from embedding space to vocabulary space; it is the reverse of the token embedding.</li>
+  <li>The softmax turns the logits into a distribution over the vocabulary, i.e. <d-math>P_\theta(x_{t+1} \mid x_{\le t})</d-math> at every position.</li>
+</ul>
+
+<p>Because of the causal mask, <strong>one forward pass gives a next-token distribution at every position.</strong> During training every position is scored against its true next token. During generation only the <strong>last</strong> position is used.</p>
+
+<p><strong>“It’s all matrix multiplication.”</strong> The forward pass multiplies by an embedding matrix, runs blocks made of <d-math>QK^\top</d-math> products, softmaxes and value products, and applies linear layers. The backward pass of a linear layer is again matrix multiplication (with transposed weights). This is why GPUs and TPUs, which excel at repeated matrix multiplication, are the hardware for LLMs.</p>
+
+<h3 id="32-the-output-layer-and-the-loss">3.2 The output layer and the loss</h3>
+
+<ul>
+  <li><strong>Targets are the inputs shifted by one token.</strong> For the input <code class="language-plaintext highlighter-rouge">The cat sat on</code>, the targets are <code class="language-plaintext highlighter-rouge">cat sat on the</code>.</li>
+  <li><strong>Weight tying.</strong> One <d-math>V \times d</d-math> matrix both embeds tokens and, transposed, scores them in the LM head. This saves <d-math>Vd</d-math> parameters. <d-cite key="radford2018improving"></d-cite></li>
+  <li><strong>Cross-entropy is the MLE objective.</strong> Averaging <d-math>-\log P_\theta(\text{true next token})</d-math> over positions is exactly the (negated, averaged) log-likelihood from Section 2.2.</li>
+  <li><strong>Sanity check.</strong> At initialization the model should be close to uniform over the vocabulary, so the initial loss should be about <d-math>\ln V</d-math>. For a 65-character vocabulary, <d-math>\ln 65 \approx 4.17</d-math>; the in-class run started at 4.3 (Section 6).</li>
+</ul>
+
+<h3 id="33-where-do-the-parameters-live">3.3 Where do the parameters live?</h3>
+
+<p>Each decoder block has</p>
+
+<ul>
+  <li><strong>attention</strong>: four <d-math>d \times d</d-math> matrices (<d-math>W_Q, W_K, W_V</d-math>, and the output projection <d-math>W_O</d-math>), i.e. <d-math>4d^2</d-math>;</li>
+  <li><strong>MLP</strong>: <d-math>d \to 4d \to d</d-math>, i.e. <d-math>2 \cdot 4d^2 = 8d^2</d-math>.</li>
+</ul>
+
+<p>Ignoring biases and LayerNorm parameters, <d-math>L</d-math> blocks therefore contain about <d-math>12 L d^2</d-math> parameters, and the (tied) embedding adds <d-math>Vd</d-math>.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Model</th>
+      <th><d-math>L</d-math></th>
+      <th><d-math>d</d-math></th>
+      <th><d-math>12Ld^2</d-math></th>
+      <th><d-math>Vd</d-math></th>
+      <th>Total</th>
+      <th>Usually quoted</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>GPT-0 (ours)</td>
+      <td>4</td>
+      <td>64</td>
+      <td>0.20M</td>
+      <td>0.004M</td>
+      <td>0.21M</td>
+      <td>208,961</td>
+    </tr>
+    <tr>
+      <td>GPT-1</td>
+      <td>12</td>
+      <td>768</td>
+      <td>84.9M</td>
+      <td>31.1M</td>
+      <td>116M</td>
+      <td>117M</td>
+    </tr>
+    <tr>
+      <td>GPT-2 small</td>
+      <td>12</td>
+      <td>768</td>
+      <td>84.9M</td>
+      <td>38.6M</td>
+      <td>124M</td>
+      <td>124M</td>
+    </tr>
+    <tr>
+      <td>GPT-2 XL</td>
+      <td>48</td>
+      <td>1600</td>
+      <td>1.47B</td>
+      <td>0.08B</td>
+      <td>1.56B</td>
+      <td>1.5B</td>
+    </tr>
+    <tr>
+      <td>GPT-3</td>
+      <td>96</td>
+      <td>12,288</td>
+      <td>173.9B</td>
+      <td>0.6B</td>
+      <td>174.6B</td>
+      <td>175B</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Two takeaways:</p>
+
+<ul>
+  <li>In small models, the embeddings are a big share of the parameters. In large models, <strong>more than 99% of parameters are in the blocks, and about two-thirds of those are in the MLPs.</strong> Although attention is the conceptual breakthrough, most of the weights sit in plain feed-forward layers. This makes the MLP an obvious target for optimization, and Mixture of Experts (Section 9) is the first widely adopted step in that direction.</li>
+  <li>A forward pass costs roughly <d-math>2N</d-math> FLOPs per token for a model with <d-math>N</d-math> parameters, and training costs roughly <d-math>6N</d-math> (discussed in the next lecture).</li>
+</ul>
+
+<h2 id="4-generating-text-one-token-at-a-time">4. Generating text, one token at a time</h2>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_new_tokens</span><span class="p">):</span>
+    <span class="n">logits</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">idx</span><span class="p">[:,</span> <span class="o">-</span><span class="n">T</span><span class="p">:])[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>      <span class="c1"># last position only
+</span>    <span class="n">probs</span>  <span class="o">=</span> <span class="n">softmax</span><span class="p">(</span><span class="n">logits</span> <span class="o">/</span> <span class="n">tau</span><span class="p">)</span>
+    <span class="n">nxt</span>    <span class="o">=</span> <span class="n">sample</span><span class="p">(</span><span class="n">probs</span><span class="p">)</span>                  <span class="c1"># or argmax
+</span>    <span class="n">idx</span>    <span class="o">=</span> <span class="n">cat</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">nxt</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>The model only outputs a distribution. <em>How</em> to pick the next token from it is a separate design choice, the <strong>sampling procedure</strong>:</p>
+
+<ul>
+  <li><strong>Greedy decoding</strong> always takes the argmax (the limit <d-math>\tau \to 0</d-math>). It tends to give bland text and can get stuck in loops, e.g. repeatedly emitting a very common word.</li>
+  <li><strong>Temperature</strong> <d-math>\tau</d-math> divides the logits before the softmax. <d-math>\tau &lt; 1</d-math> sharpens the distribution; <d-math>\tau &gt; 1</d-math> flattens it, producing more varied text and helping escape loops. Chat products set this for you, but they still have to choose it.</li>
+  <li><strong>Top-<d-math>k</d-math></strong> keeps only the <d-math>k</d-math> most likely tokens, renormalizes, and samples among them. <strong>Top-<d-math>p</d-math></strong> (nucleus) sampling keeps the smallest set of tokens whose total probability is at least <d-math>p</d-math>.</li>
+</ul>
+
+<p><strong>Why one token at a time?</strong> Each step’s input includes the token just sampled, which does not exist until the previous step finishes. Training is parallel across positions (teacher forcing), but generation is inherently sequential. Getting around this requires a different model altogether; for example, <em>diffusion language models</em> try to generate all positions jointly, borrowing ideas from the diffusion lecture. Today’s dominant LLMs are still autoregressive.</p>
+
+<h2 id="5-the-kv-cache-dont-recompute-the-past">5. The KV cache: don’t recompute the past</h2>
+
+<p>Without a cache, step <d-math>t</d-math> of generation re-runs all <d-math>t</d-math> tokens through every layer, even though the keys and values of earlier tokens have not changed (the causal mask guarantees that earlier positions never see later ones). With a <strong>KV cache</strong>, each layer stores the keys and values of past tokens; step <d-math>t</d-math> processes only the new token, whose query reads the stored keys and values.</p>
+
+<p>The cost is memory. For GPT-3, caching one token needs</p>
+
+<d-math block="">
+\underbrace{2}_{K,V} \times \underbrace{96}_{\text{layers}} \times \underbrace{12{,}288}_{d} \times \underbrace{2\ \text{bytes}}_{\text{fp16}} \approx 4.7\ \text{MB},
+</d-math>
+
+<p>or about 9.7 GB for a single 2,048-token context. Generation is therefore limited by <strong>memory, not arithmetic</strong>, which motivates the KV-shrinking attention variants GQA and MLA (Section 9).</p>
+
+<p>In industry, the cache is also an important cost lever: when many requests share the same prefix, providers can reuse cached keys and values, and cache hit rates are tracked as a way to lower inference costs.</p>
+
+<h2 id="6-lets-write-a-gpt-easygpt">6. Let’s write a GPT: EasyGPT</h2>
+
+<p>The course’s <strong><a href="https://github.com/AdaptInfer/easy-gpt">EasyGPT</a></strong> repository, adapted from Andrej Karpathy’s nanoGPT, contains: <d-cite key="adaptinfer_easygpt,karpathy2022nanogpt"></d-cite></p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">gpt0.ipynb</code>: a character-level GPT trained on Tiny Shakespeare (≈1 MB of text);</li>
+  <li><code class="language-plaintext highlighter-rouge">gpt_zero.py</code>: the whole model in about 90 lines, embeddings → blocks → LayerNorm → LM head;</li>
+  <li><code class="language-plaintext highlighter-rouge">transformer.py</code>: the causal self-attention + MLP block from last lecture.</li>
+</ul>
+
+<p>“GPT-0” is a teaching version of GPT-1: same ideas, smaller and simpler.</p>
+
+<h3 id="61-the-model">6.1 The model</h3>
+
+<p>The model class from <code class="language-plaintext highlighter-rouge">gpt_zero.py</code>, with docstrings shortened: <d-cite key="adaptinfer_easygpt"></d-cite></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">GPT</span><span class="p">(</span><span class="n">nn</span><span class="p">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">GPTConfig</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">().</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">block_size</span> <span class="o">=</span> <span class="n">config</span><span class="p">.</span><span class="n">block_size</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">config</span><span class="p">.</span><span class="n">device</span>
+
+        <span class="c1"># Token and positional embeddings
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">token_embedding</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Embedding</span><span class="p">(</span><span class="n">config</span><span class="p">.</span><span class="n">vocab_size</span><span class="p">,</span> <span class="n">config</span><span class="p">.</span><span class="n">n_embd</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">position_embedding</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Embedding</span><span class="p">(</span><span class="n">config</span><span class="p">.</span><span class="n">block_size</span><span class="p">,</span> <span class="n">config</span><span class="p">.</span><span class="n">n_embd</span><span class="p">)</span>
+
+        <span class="c1"># Transformer blocks
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">transformer</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Sequential</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">Block</span><span class="p">(</span><span class="n">config</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">config</span><span class="p">.</span><span class="n">n_layer</span><span class="p">)])</span>
+
+        <span class="c1"># Final normalization and output projection
+</span>        <span class="bp">self</span><span class="p">.</span><span class="n">ln_f</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">LayerNorm</span><span class="p">(</span><span class="n">config</span><span class="p">.</span><span class="n">n_embd</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">lm_head</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">config</span><span class="p">.</span><span class="n">n_embd</span><span class="p">,</span> <span class="n">config</span><span class="p">.</span><span class="n">vocab_size</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">targets</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">B</span><span class="p">,</span> <span class="n">T</span> <span class="o">=</span> <span class="n">idx</span><span class="p">.</span><span class="n">shape</span>
+        <span class="k">assert</span> <span class="n">T</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="p">.</span><span class="n">block_size</span><span class="p">,</span> <span class="s">"Sequence length exceeds block size"</span>
+
+        <span class="n">token_embeddings</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">token_embedding</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>                                        <span class="c1"># (B, T, C)
+</span>        <span class="n">position_embeddings</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">position_embedding</span><span class="p">(</span><span class="n">torch</span><span class="p">.</span><span class="n">arange</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="p">.</span><span class="n">device</span><span class="p">))</span>  <span class="c1"># (T, C)
+</span>        <span class="n">x</span> <span class="o">=</span> <span class="n">token_embeddings</span> <span class="o">+</span> <span class="n">position_embeddings</span>                                          <span class="c1"># (B, T, C)
+</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">transformer</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>                                                             <span class="c1"># (B, T, C)
+</span>        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">ln_f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>                                                                    <span class="c1"># (B, T, C)
+</span>        <span class="n">logits</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">lm_head</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>                                                            <span class="c1"># (B, T, vocab_size)
+</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">if</span> <span class="n">targets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">logits_flat</span> <span class="o">=</span> <span class="n">logits</span><span class="p">.</span><span class="n">view</span><span class="p">(</span><span class="n">B</span> <span class="o">*</span> <span class="n">T</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>                                            <span class="c1"># (B*T, vocab_size)
+</span>            <span class="n">targets_flat</span> <span class="o">=</span> <span class="n">targets</span><span class="p">.</span><span class="n">view</span><span class="p">(</span><span class="n">B</span> <span class="o">*</span> <span class="n">T</span><span class="p">)</span>                                              <span class="c1"># (B*T,)
+</span>            <span class="n">loss</span> <span class="o">=</span> <span class="n">F</span><span class="p">.</span><span class="n">cross_entropy</span><span class="p">(</span><span class="n">logits_flat</span><span class="p">,</span> <span class="n">targets_flat</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">logits</span><span class="p">,</span> <span class="n">loss</span>
+
+    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">max_new_tokens</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_new_tokens</span><span class="p">):</span>
+            <span class="n">idx_cond</span> <span class="o">=</span> <span class="n">idx</span><span class="p">[:,</span> <span class="o">-</span><span class="bp">self</span><span class="p">.</span><span class="n">block_size</span><span class="p">:]</span>           <span class="c1"># crop to the last block_size tokens
+</span>            <span class="n">logits</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="p">(</span><span class="n">idx_cond</span><span class="p">)</span>
+            <span class="n">last_logits</span> <span class="o">=</span> <span class="n">logits</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>                 <span class="c1"># (B, vocab_size)
+</span>            <span class="n">probs</span> <span class="o">=</span> <span class="n">F</span><span class="p">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">last_logits</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>         <span class="c1"># (B, vocab_size)
+</span>            <span class="n">next_token</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">multinomial</span><span class="p">(</span><span class="n">probs</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># (B, 1)
+</span>            <span class="n">idx</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">cat</span><span class="p">((</span><span class="n">idx</span><span class="p">,</span> <span class="n">next_token</span><span class="p">),</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>      <span class="c1"># (B, T+1)
+</span>        <span class="k">return</span> <span class="n">idx</span>
+</code></pre></div></div>
+
+<p>Here <code class="language-plaintext highlighter-rouge">C</code> is the embedding dimension (<d-math>d</d-math> above), and <code class="language-plaintext highlighter-rouge">Block</code> is the causal self-attention + MLP block from <code class="language-plaintext highlighter-rouge">transformer.py</code>.</p>
+
+<p>Two hyperparameters are baked into the architecture:</p>
+
+<ul>
+  <li><strong><code class="language-plaintext highlighter-rouge">vocab_size</code></strong> fixes the size of the token embedding table. The model can never represent more distinct tokens than this.</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">block_size</code></strong> fixes the size of the position embedding table, so the model can never accept more tokens per sequence than this. This is the <strong>maximum context length</strong>, which is why LLM providers advertise it: it is fixed when the model is trained.</li>
+</ul>
+
+<p>The <code class="language-plaintext highlighter-rouge">GPTConfig</code> dataclass in <code class="language-plaintext highlighter-rouge">gpt_config.py</code> also sets <code class="language-plaintext highlighter-rouge">n_layer</code> (how many blocks to stack), <code class="language-plaintext highlighter-rouge">n_head</code>, <code class="language-plaintext highlighter-rouge">n_embd</code>, <code class="language-plaintext highlighter-rouge">dropout</code> (none for GPT-0), <code class="language-plaintext highlighter-rouge">bias</code>, and <code class="language-plaintext highlighter-rouge">device</code>. Note that this teaching model does <strong>not</strong> tie weights: <code class="language-plaintext highlighter-rouge">lm_head</code> is a separate <code class="language-plaintext highlighter-rouge">nn.Linear</code> with a bias. Tying it to the token embedding (Section 3.2) would be one extra line, <code class="language-plaintext highlighter-rouge">self.lm_head.weight = self.token_embedding.weight</code>.</p>
+
+<h3 id="62-training-on-tiny-shakespeare">6.2 Training on Tiny Shakespeare</h3>
+
+<ul>
+  <li><strong>Data.</strong> Tiny Shakespeare has about one million characters and 65 unique characters (52 upper- and lowercase letters plus 13 punctuation and whitespace symbols).</li>
+  <li><strong>Tokenization.</strong> Character-level: each character maps to an integer (e.g. <code class="language-plaintext highlighter-rouge">h → 46</code>, <code class="language-plaintext highlighter-rouge">e → 43</code>, <code class="language-plaintext highlighter-rouge">l → 50</code>), and the whole corpus becomes one long integer sequence.</li>
+  <li><strong>Examples.</strong> Fixed-length blocks are cut from the sequence; within a block the model predicts the 2nd token from the 1st, the 3rd from the first two, and so on, all in one pass.</li>
+  <li><strong>Config.</strong> 4 layers, 4 heads, <d-math>d = 64</d-math>, context 8, vocabulary 65, giving <strong>208,961 parameters</strong>.</li>
+  <li><strong>Optimization.</strong> Adam with default settings; loss estimation runs under <code class="language-plaintext highlighter-rouge">torch.no_grad()</code>.</li>
+</ul>
+
+<p>In the run shown in class, the training loss starts at 4.3 (close to <d-math>\ln 65 \approx 4.17</d-math>) and quickly drops to about 2.6, with validation loss following. After about 5,000 steps the model produces text that <em>looks</em> like Shakespeare in layout and spelling style but is mostly nonsense. At the character level, even spelling a word requires learning dependencies between characters. The upside is that a 65-symbol vocabulary keeps the model small enough to train on a laptop CPU.</p>
+
+<p>The repository also implements the GPT-2 architecture. Swapping in the GPT-2 config on an A100 GPU takes about an hour to train and produces noticeably more Shakespeare-like text.</p>
+
+<h2 id="7-from-gpt-0-to-gpt-3">7. From GPT-0 to GPT-3</h2>
+
+<h3 id="71-gpt-0--gpt-1-2018">7.1 GPT-0 → GPT-1 (2018)</h3>
+
+<p>GPT-1 is the same idea about 500 times larger (117M parameters). <d-cite key="radford2018improving"></d-cite></p>
+
+<table>
+  <thead>
+    <tr>
+      <th> </th>
+      <th>GPT-0</th>
+      <th>GPT-1</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Tokenizer</td>
+      <td>characters</td>
+      <td>byte-pair encoding (40,000 merges)</td>
+    </tr>
+    <tr>
+      <td>Normalization</td>
+      <td>pre-norm</td>
+      <td>post-norm (like the original Transformer)</td>
+    </tr>
+    <tr>
+      <td>Layers / heads</td>
+      <td>4 / 4</td>
+      <td>12 / 12</td>
+    </tr>
+    <tr>
+      <td>Context (block size)</td>
+      <td>8</td>
+      <td>512</td>
+    </tr>
+    <tr>
+      <td>Vocabulary</td>
+      <td>65 characters</td>
+      <td>~40K BPE tokens</td>
+    </tr>
+    <tr>
+      <td>Embedding dim</td>
+      <td>64</td>
+      <td>768</td>
+    </tr>
+    <tr>
+      <td>Data</td>
+      <td>Tiny Shakespeare (1 MB)</td>
+      <td>BooksCorpus (~7,000 unpublished books)</td>
+    </tr>
+    <tr>
+      <td>Learning rate</td>
+      <td>constant</td>
+      <td>2,000-step warmup + cosine decay</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>GPT-1 also uses weight tying.</p>
+
+<h3 id="72-tokenization-byte-pair-encoding">7.2 Tokenization: byte-pair encoding</h3>
+
+<p>Tokenization involves a trade-off:</p>
+
+<ul>
+  <li><strong>Characters</strong> give a tiny vocabulary but very long sequences, and the model must learn to spell.</li>
+  <li><strong>Words</strong> give short sequences but a huge vocabulary across all words and languages, plus the problem of unknown words.</li>
+</ul>
+
+<p><strong>Byte-pair encoding (BPE)</strong> sits in between. Start from characters (GPT-2: raw bytes) and repeatedly merge the most frequent adjacent pair into a new token:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Step</th>
+      <th>Merge</th>
+      <th>Sequence</th>
+      <th>Length</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td> </td>
+      <td><code class="language-plaintext highlighter-rouge">aaabdaaabac</code></td>
+      <td>11</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td><code class="language-plaintext highlighter-rouge">aa → Z</code></td>
+      <td><code class="language-plaintext highlighter-rouge">ZabdZabac</code></td>
+      <td>9</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td><code class="language-plaintext highlighter-rouge">ab → Y</code></td>
+      <td><code class="language-plaintext highlighter-rouge">ZYdZYac</code></td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td><code class="language-plaintext highlighter-rouge">ZY → X</code></td>
+      <td><code class="language-plaintext highlighter-rouge">XdXac</code></td>
+      <td>5</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Vocabulary sizes have grown over time: GPT-1 ~40K, GPT-2/3 50,257, Llama 3 128K, gpt-oss 201K.</p>
+
+<p>Tokenization has visible side effects:</p>
+
+<ul>
+  <li>Spaces are part of tokens (e.g. <code class="language-plaintext highlighter-rouge">·learning</code>).</li>
+  <li>Cost, speed, and context length are all counted in tokens, not characters or words.</li>
+  <li>The model never sees the letters inside a word like <code class="language-plaintext highlighter-rouge">strawberry</code>, which is a single token, so letter-level questions are hard.</li>
+  <li>Digits are chunked somewhat arbitrarily. For example, the GPT-2 tokenizer splits <code class="language-plaintext highlighter-rouge">453</code> as <code class="language-plaintext highlighter-rouge">45</code>+<code class="language-plaintext highlighter-rouge">3</code> and <code class="language-plaintext highlighter-rouge">1234567</code> as <code class="language-plaintext highlighter-rouge">123</code>+<code class="language-plaintext highlighter-rouge">45</code>+<code class="language-plaintext highlighter-rouge">67</code>, which complicates arithmetic.</li>
+</ul>
+
+<h3 id="73-gpt-1--gpt-2-2019">7.3 GPT-1 → GPT-2 (2019)</h3>
+
+<d-cite key="radford2019language"></d-cite>
+
+<ul>
+  <li><strong>Pre-norm:</strong> LayerNorm moves to the input of each sub-block, plus a final LayerNorm after the last block.</li>
+  <li><strong>Byte-level BPE:</strong> any string can be encoded, so there are no unknown tokens.</li>
+  <li><strong>Scale:</strong> four sizes from 124M to 1.5B parameters. The largest has 48 layers, 25 heads, <d-math>d = 1600</d-math>, context 1,024, and a vocabulary of 50,257.</li>
+  <li><strong>Data:</strong> WebText, about 40 GB of text from roughly 8M web pages linked from Reddit.</li>
+  <li><strong>No fine-tuning:</strong> tasks are posed as text (“zero-shot”), so one model handles many tasks.</li>
+</ul>
+
+<p>GPT-2 (124M) can be reproduced with nanoGPT in about 4 days on an 8×A100 machine.</p>
+
+<h3 id="74-gpt-2--gpt-3-2020">7.4 GPT-2 → GPT-3 (2020)</h3>
+
+<d-cite key="brown2020language"></d-cite>
+
+<ul>
+  <li><strong>Architecture:</strong> the same design as GPT-2, plus alternating dense and locally banded sparse attention layers.</li>
+  <li><strong>Scale:</strong> 175B parameters, 96 layers, <d-math>d = 12{,}288</d-math>, 96 heads of dimension 128, context 2,048.</li>
+  <li><strong>Data:</strong> filtered Common Crawl (~570 GB) plus WebText2, books, and Wikipedia, for about 300B training tokens.</li>
+  <li><strong>Headline result:</strong> few-shot <strong>in-context learning</strong>, i.e. performing a task from examples in the prompt with no weight updates (next lecture).</li>
+</ul>
+
+<h3 id="75-gpt-4-2023-the-curtain-closes">7.5 GPT-4 (2023): the curtain closes</h3>
+
+<p>The GPT-4 technical report discloses only that it is Transformer-based, pretrained to predict the next token, fine-tuned with RLHF, and accepts image and text input. It explicitly withholds architecture, model size, hardware, compute, data, and training details. <d-cite key="openai2023gpt4"></d-cite> Parameter counts and “mixture of experts” claims found online are rumors, not published facts.</p>
+
+<p>An interesting pattern across the models with published details: even though deep learning seems to break the classical rule of having fewer parameters than data points, these models are trained on <strong>more tokens than they have parameters</strong> (for GPT-3, 300B tokens vs. 175B parameters).</p>
+
+<h2 id="8-open-weight-models-and-the-modern-recipe">8. Open-weight models and the modern recipe</h2>
+
+<p>With open-weight models we can see inside again.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th> </th>
+      <th>GPT-2 XL (2019)</th>
+      <th>GPT-3 (2020)</th>
+      <th>Llama 3.1 405B (2024)</th>
+      <th>DeepSeek-V3 (2024)</th>
+      <th>gpt-oss-120b (2025)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Params (total / active)</td>
+      <td>1.5B / 1.5B</td>
+      <td>175B / 175B</td>
+      <td>405B / 405B</td>
+      <td>671B / 37B</td>
+      <td>117B / 5.1B</td>
+    </tr>
+    <tr>
+      <td>Layers × width</td>
+      <td>48 × 1,600</td>
+      <td>96 × 12,288</td>
+      <td>126 × 16,384</td>
+      <td>61 × 7,168</td>
+      <td>36 × 2,880</td>
+    </tr>
+    <tr>
+      <td>Attention</td>
+      <td>MHA, 25 heads</td>
+      <td>MHA + banded sparse</td>
+      <td>GQA: 128 q / 8 kv</td>
+      <td>MLA (compressed KV)</td>
+      <td>GQA: 64 q / 8 kv; alternating 128-token window / full</td>
+    </tr>
+    <tr>
+      <td>Position</td>
+      <td>learned</td>
+      <td>learned</td>
+      <td>RoPE</td>
+      <td>RoPE</td>
+      <td>RoPE + YaRN</td>
+    </tr>
+    <tr>
+      <td>Norm · MLP</td>
+      <td>LayerNorm · GELU</td>
+      <td>LayerNorm · GELU</td>
+      <td>RMSNorm · SwiGLU</td>
+      <td>RMSNorm · SwiGLU MoE</td>
+      <td>RMSNorm · SwiGLU MoE</td>
+    </tr>
+    <tr>
+      <td>Experts</td>
+      <td>–</td>
+      <td>–</td>
+      <td>– (dense)</td>
+      <td>1 shared + 256 routed, top-8</td>
+      <td>128, top-4</td>
+    </tr>
+    <tr>
+      <td>Context</td>
+      <td>1K</td>
+      <td>2K</td>
+      <td>128K</td>
+      <td>128K</td>
+      <td>128K</td>
+    </tr>
+    <tr>
+      <td>Vocab</td>
+      <td>50K</td>
+      <td>50K</td>
+      <td>128K</td>
+      <td>129K</td>
+      <td>201K</td>
+    </tr>
+    <tr>
+      <td>Training tokens</td>
+      <td>40 GB of text</td>
+      <td>300B</td>
+      <td>15.6T</td>
+      <td>14.8T</td>
+      <td>not disclosed</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The skeleton is still GPT-2’s; the rows show what changed. Note the gap between <strong>total</strong> and <strong>active</strong> parameters in the MoE models. For example, gpt-oss-120b has 117B parameters, but only 5.1B are used for any given token.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Part</th>
+      <th>GPT-2 (2019)</th>
+      <th>Typical in 2025–26</th>
+      <th>Why</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Normalization</td>
+      <td>LayerNorm</td>
+      <td>RMSNorm</td>
+      <td>cheaper, just as stable</td>
+    </tr>
+    <tr>
+      <td>MLP</td>
+      <td>GELU</td>
+      <td>SwiGLU (gated)</td>
+      <td>better quality per parameter</td>
+    </tr>
+    <tr>
+      <td>Positions</td>
+      <td>learned absolute</td>
+      <td>RoPE</td>
+      <td>a learned table ends at the training length; RoPE encodes relative position by rotating query/key vectors</td>
+    </tr>
+    <tr>
+      <td>KV heads</td>
+      <td>one per query head</td>
+      <td>GQA / MLA</td>
+      <td>smaller KV cache, faster generation</td>
+    </tr>
+    <tr>
+      <td>FFN</td>
+      <td>dense</td>
+      <td>Mixture of Experts</td>
+      <td>more parameters at the same compute per token</td>
+    </tr>
+    <tr>
+      <td>Context</td>
+      <td>1K</td>
+      <td>128K+</td>
+      <td>RoPE scaling, sliding windows</td>
+    </tr>
+    <tr>
+      <td>Vocab</td>
+      <td>50K</td>
+      <td>128K–200K</td>
+      <td>fewer tokens per text, more languages</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>What has not changed since 2018:</strong> decoder-only, causal self-attention + MLP + residual stream, and next-token cross-entropy pretraining. Since about 2020 the architecture has mostly followed a scale-up recipe with few surprising tricks. The bigger differences between models are in <em>training</em>: building the corpus, and post-training (e.g. reinforcement learning) so that the model does something useful rather than just producing plausible text. These are the topics of the next two lectures.</p>
+
+<h2 id="9-two-parts-in-more-detail-finished-on-november-12">9. Two parts in more detail (finished on November 12)</h2>
+
+<h3 id="91-grouped-query-attention-shrinking-the-kv-cache">9.1 Grouped-query attention: shrinking the KV cache</h3>
+
+<p>In standard <strong>multi-head attention (MHA)</strong>, every query head has its own key/value head. <strong>Multi-query attention (MQA)</strong> shares a single K/V head across all query heads. <strong>Grouped-query attention (GQA)</strong> sits in between: query heads are split into groups, and each group shares one K/V head (e.g. 8 query heads with 2 KV heads).</p>
+
+<p>Because the KV cache scales with the number of KV heads, the savings are large. For Llama 3 70B at a 128K-token context in bf16, a single sequence needs about 344 GB with 64 KV heads (MHA) vs. about 43 GB with 8 (GQA). The quality cost is small, and generation is much faster because each step reads far less memory. DeepSeek’s <strong>multi-head latent attention (MLA)</strong> goes further: it caches one small latent vector per token and reconstructs K and V from it.</p>
+
+<h3 id="92-mixture-of-experts-a-1991-probabilistic-idea">9.2 Mixture of Experts: a 1991 probabilistic idea</h3>
+
+<p>A mixture of experts models the conditional distribution as a gated mixture <d-cite key="jacobs1991adaptive"></d-cite></p>
+
+<d-math block="">
+P(Y \mid X) = \sum_m g_m(X)\, P_m(Y \mid X), \qquad \sum_m g_m(X) = 1,\; g_m(X) \ge 0 .
+</d-math>
+
+<p>Its parameters can be estimated with EM. <d-cite key="jordan1994hierarchical"></d-cite> The form also unifies familiar ensembles:</p>
+
+<ul>
+  <li><strong>MoE</strong>: <d-math>g_m(X)</d-math> is a learned gating function of the input;</li>
+  <li><strong>bagging</strong>: <d-math>g_m(X) = 1/M</d-math>, a constant uniform weight;</li>
+  <li><strong>boosting</strong>: <d-math>g_m(X) = \alpha_m</d-math>, a constant per-expert weight.</li>
+</ul>
+
+<p>Ensemble analysis suggests that diverse experts help. Their errors are wrong in individualized ways and partly cancel out through consensus, so slight “overfitting” of individual experts can help the ensemble. <d-cite key="sollich1995learning"></d-cite></p>
+
+<p>In today’s LLMs, the MLP in each block is replaced by many expert MLPs with a learned router. The gate is the same as in 1991 but <strong>sparse</strong>: only the top-<d-math>k</d-math> experts run for each token.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Model</th>
+      <th>Experts / layer</th>
+      <th>Used per token</th>
+      <th>Total</th>
+      <th>Active</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Mixtral 8x7B (2024)</td>
+      <td>8</td>
+      <td>2</td>
+      <td>47B</td>
+      <td>13B</td>
+    </tr>
+    <tr>
+      <td>DeepSeek-V3 (2024)</td>
+      <td>256 + 1 shared</td>
+      <td>8 + 1 shared</td>
+      <td>671B</td>
+      <td>37B</td>
+    </tr>
+    <tr>
+      <td>gpt-oss-120b (2025)</td>
+      <td>128</td>
+      <td>4</td>
+      <td>117B</td>
+      <td>5.1B</td>
+    </tr>
+  </tbody>
+</table>
+
+<ul>
+  <li><strong>Capacity</strong> grows with total parameters, while <strong>cost per token</strong> grows only with active parameters.</li>
+  <li><strong>Training:</strong> the router must be kept balanced, or a few experts end up receiving every token and over-specialize.</li>
+  <li><strong>Serving:</strong> every expert must sit in GPU memory, even though only a few run per token.</li>
+</ul>
+
+<h2 id="10-summary">10. Summary</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Component</th>
+      <th>Transformer</th>
+      <th>GPT</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Architecture</td>
+      <td>encoder–decoder</td>
+      <td>decoder-only</td>
+    </tr>
+    <tr>
+      <td>Attention</td>
+      <td>full self-attention (+ cross-attention)</td>
+      <td>masked (causal) self-attention</td>
+    </tr>
+    <tr>
+      <td>Positional encoding</td>
+      <td>sinusoidal (original)</td>
+      <td>learned (GPT-1 to 3); RoPE in most models today</td>
+    </tr>
+    <tr>
+      <td>Output</td>
+      <td>task-specific</td>
+      <td>next-token prediction</td>
+    </tr>
+    <tr>
+      <td>Training objective</td>
+      <td>flexible (e.g. translation)</td>
+      <td>next-token maximum likelihood (cross-entropy)</td>
+    </tr>
+    <tr>
+      <td>Inference</td>
+      <td>depends on task</td>
+      <td>one token at a time (greedy, temperature, top-k/top-p) with a KV cache</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>From GPT-1 to today, the skeleton has stayed the same: decoder-only, causal self-attention + MLP + residuals, trained by next-token prediction. What changed:</p>
+
+<ul>
+  <li><strong>Scale:</strong> 117M (GPT-1) → 175B dense (GPT-3) → hundreds of billions of total parameters with MoE; context 512 → 128K+; vocabulary ~40K → 128K–200K.</li>
+  <li><strong>Swapped-in parts:</strong> RMSNorm, SwiGLU, RoPE, GQA/MLA, and Mixture of Experts.</li>
+  <li><strong>Training:</strong> BooksCorpus → ~15 trillion tokens, followed by post-training with SFT and RL from human feedback (upcoming lectures).</li>
+</ul>
+ </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+    </div>
+
+    <footer class="site-footer">
+  <div class="wrapper">
+    <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Ben Lengerich</li><li>
+            <a class="u-email" href="mailto:lengerich@wisc.edu"
+              >lengerich@wisc.edu</a
+            >
+          </li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li>
+    <a
+      href="https://github.com/AdaptInfer"
+      target="_blank"
+      ><i class="fab fa-github"></i>
+      <span class="username">AdaptInfer</span></a
+    >
+  </li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>
+          &copy; Copyright 2026 University of Wisconsin.
+          <br />
+          
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  </body>
+
+  <d-bibliography
+    src="/dgm-fall-2026/assets/bibliography/2026-11-10-lecture-18.bib"
+  >
+  </d-bibliography>
+
+  <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/dgm-fall-2026/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link
+  rel="stylesheet"
+  href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css"
+/>
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+<script src="/dgm-fall-2026/assets/js/katex.js"></script>
+ 
+<!-- Load Anchor JS -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+<script>
+  anchors.options.visible = "hover";
+  anchors.add("article h2, article h3, article h4, article h5, article h6");
+</script>
+ 
+<!-- Adjust LaTeX JS -->
+<script src="/dgm-fall-2026/assets/js/latex.js"></script>
+
+
+<!-- Include custom icon fonts -->
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2026/assets/css/fontawesome-all.min.css"
+/>
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2026/assets/css/academicons.min.css"
+/>
+
+<!-- Google Analytics -->
+<script>
+  (function (i, s, o, g, r, a, m) {
+    i["GoogleAnalyticsObject"] = r;
+    ((i[r] =
+      i[r] ||
+      function () {
+        (i[r].q = i[r].q || []).push(arguments);
+      }),
+      (i[r].l = 1 * new Date()));
+    ((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
+    a.async = 1;
+    a.src = g;
+    m.parentNode.insertBefore(a, m);
+  })(
+    window,
+    document,
+    "script",
+    "//www.google-analytics.com/analytics.js",
+    "ga",
+  );
+
+  ga("create", "", "auto");
+  ga("send", "pageview");
+</script>
+
+</html>
