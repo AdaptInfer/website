@@ -1,0 +1,666 @@
+<!doctype html>
+<html>
+  <head>
+    <head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="content-language" content="en" />
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <title>
+    STAT 453 | Lecture 19: Unsupervised Training of LLMs
+  </title>
+  <meta name="description" content="STAT 453 - University of Wisconsin-Madison - Fall 2026
+" />
+
+  <link
+    rel="shortcut icon"
+    href="/dgm-fall-2026/assets/img/favicon.ico"
+  />
+
+  <link rel="stylesheet" href="/dgm-fall-2026/assets/css/main.css" />
+  <link
+    rel="canonical"
+    href="/dgm-fall-2026/notes/lecture-19/"
+  />
+
+  
+  <!-- Load Latex JS -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/latex.component.js"></script>
+  
+</head>
+
+    <script src="/dgm-fall-2026/assets/js/distillpub/template.v2.js"></script>
+    <script src="/dgm-fall-2026/assets/js/distillpub/transforms.v2.js"></script>
+  </head>
+
+  <d-front-matter>
+    <script type="text/json">
+      {
+            "title": "Lecture 19: Unsupervised Training of LLMs",
+            "description": "How GPT models learn from text, how scaling changes their performance, and why new abilities can appear.",
+            "published": "November 12, 2026",
+            "lecturers": [
+              
+              {
+                "lecturer": "Ben Lengerich",
+                "lecturerURL": "https://adaptinfer.org"
+              }
+              
+            ],
+            "authors": [
+              
+              {
+                "author": "Shreya Lakhera"
+              }
+              
+            ],
+            "editors": [
+              
+            ],
+            "katex": {
+              "delimiters": [
+                {
+                  "left": "$",
+                  "right": "$",
+                  "display": false
+                },
+                {
+                  "left": "$$",
+                  "right": "$$",
+                  "display": true
+                }
+              ]
+            }
+          }
+    </script>
+  </d-front-matter>
+
+  <body>
+    <header class="site-header">
+  <div class="wrapper">
+    <span class="site-title">
+      <a class="page-link" href="https://adaptinfer.org/dgm-fall-2026/"
+        >STAT 453</a
+      >
+    </span>
+
+    <nav class="site-nav">
+      <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+      <label for="nav-trigger">
+        <span class="menu-icon">
+          <svg viewBox="0 0 18 15" width="18px" height="15px">
+            <path
+              fill="#424242"
+              d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"
+            />
+            <path
+              fill="#424242"
+              d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"
+            />
+            <path
+              fill="#424242"
+              d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"
+            />
+          </svg>
+        </span>
+      </label>
+
+      <div class="trigger">
+        <a class="page-link" href="/dgm-fall-2026/logistics/"
+          >logistics</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/lectures/"
+          >lectures</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/notes/">notes</a>
+        <a class="page-link" href="/dgm-fall-2026/calendar/"
+          >calendar</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/homework/"
+          >homework</a
+        >
+        <a class="page-link" href="/dgm-fall-2026/project/">project</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+      <d-title>
+        <h1>Lecture 19: Unsupervised Training of LLMs</h1>
+        <p>How GPT models learn from text, how scaling changes their performance, and why new abilities can appear.</p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article> <h2 id="slides-12">Slides 1–2</h2>
+
+<p>This lecture connects the GPT we know to the larger language models used today. Our model was much smaller, but it already had the basic idea that take some text, use the available context, and predict the next token.</p>
+
+<p>The questions now are what changes when we make this model larger, how we train it on much more text, and why that training leads to abilities beyond simply finishing a sentence.</p>
+
+<p>A useful distinction throughout the lecture is between the model’s architecture and its training. The architecture describes how the model processes information. Training determines the values of its parameters, which are the numbers that control those computations.</p>
+
+<h2 id="slide-3">Slide 3</h2>
+
+<p>Moving from our classroom GPT to GPT-1 involves increasing the size of the model and changing some training choices. The number of layers increases from 4 to 12, the number of attention heads increases from 4 to 12, and the context length increases from 8 to 512 tokens.</p>
+
+<p>A layer is a stage of processing inside the model. Attention heads give the model different ways to combine information from the input. Increasing the context length means the model can consider more preceding text when making a prediction.</p>
+
+<p>The embedding dimension also increases from 64 to 768. An embedding is a list of learned numbers representing a token, so this gives each token a larger representation.</p>
+
+<p>GPT-1 trains on BooksCorpus, which contains thousands of books, instead of our small Shakespeare dataset. It also uses weight tying, meaning the input embedding and output prediction layer share weights.</p>
+
+<p>Another change is the learning-rate schedule. The learning rate controls how large the parameter updates are. Instead of keeping it constant, GPT-1 starts with a warmup period and then decreases it using cosine decay.</p>
+
+<h2 id="slide-4">Slide 4</h2>
+
+<p>Before text enters the model, it is split into tokens. A token can be a word, part of a word, punctuation, or another piece of text. Each token is then assigned an ID.</p>
+
+<p>Using individual characters gives us a small vocabulary, but it makes sequences long. Using complete words makes sequences shorter, but the vocabulary becomes very large, and unfamiliar words become difficult to represent.</p>
+
+<p>Byte-pair encoding, or BPE, gives us a middle ground. It starts with small units and repeatedly combines common adjacent pairs. Over time, frequently occurring pieces become single tokens.</p>
+
+<p>This means the model does not necessarily see words the same way we do. Spaces can be included in tokens, and numbers can be split into multiple pieces. Different tokenizers can split the same sentence differently.</p>
+
+<p>One example discussed in the slides is “strawberry.” If it is represented by one token, the model receives one token ID rather than separate inputs for all its letters. This helps explain why generating a word and counting the letters inside it are different tasks.</p>
+
+<h2 id="slide-5">Slide 5</h2>
+
+<p>GPT-2 keeps the same general approach but increases the model size, context length, and amount of training data. Its largest version has about 1.5 billion parameters and trains on WebText, a collection of internet text.</p>
+
+<p>GPT-2 also uses byte-level BPE. Starting from bytes allows arbitrary text to be represented without needing a special unknown-word token.</p>
+
+<p>Another change is that LayerNorm moves before each attention or feedforward sub-block. Normalization helps keep the internal values at manageable scales, which supports stable training.</p>
+
+<p>An important result is that the model can attempt tasks presented through text without being separately fine-tuned for each one. If we describe the task without providing examples, this is called zero-shot prompting.</p>
+
+<h2 id="slide-6">Slide 6</h2>
+
+<p>GPT-3 increases the scale substantially, reaching 175 billion parameters and training on around 300 billion tokens. Its context window increases to 2,048 tokens.</p>
+
+<p>The important capability introduced here is few-shot in-context learning. We show the model a few examples in the prompt, and it uses them to work out what kind of response we want. <d-cite key="brown2020language"></d-cite></p>
+
+<p>For example, we could show “happy → positive” and “terrible → negative,” then ask it to label “wonderful.” The examples communicate the task without requiring another round of training.</p>
+
+<p>The model’s weights do not change while it answers. It is using the information in its current context. We return to this idea in slide 40.</p>
+
+<h2 id="slide-7">Slide 7</h2>
+
+<p>The GPT-4 technical report describes a Transformer-based model pretrained for next-token prediction and then further trained using human feedback. It also describes support for image and text inputs.</p>
+
+<p>However, many details about the architecture, model size, training data, and compute were not disclosed. So claims about exact parameter counts or expert configurations should not be treated as confirmed just because they appear online.</p>
+
+<h2 id="slides-89">Slides 8–9</h2>
+
+<p>Open-weight models allow us to inspect more of the model and compare architectural choices. However, access to the weights does not necessarily mean that every detail of the training process is public.</p>
+
+<p>One important distinction in the comparison is between total parameters and active parameters. A model can store a large number of parameters while using only some of them for each token. This becomes especially important for Mixture of Experts.</p>
+
+<p>The slides also show several changes to the decoder’s components. RMSNorm simplifies normalization. SwiGLU uses a learned gate in feedforward processing. RoPE adds positional information through rotations of attention queries and keys. GQA and MLA help reduce the memory needed for attention.</p>
+
+<p>We do not need to treat these as completely new model families. The basic structure is still causal attention, feedforward processing, and residual connections, trained to predict the next token.</p>
+
+<p>A residual connection lets a block’s input be added back to its output. This helps information and training signals pass through a deep network.</p>
+
+<h2 id="slides-1012">Slides 10–12</h2>
+
+<p>Mixture of Experts, or MoE, replaces one feedforward network with several expert networks. A router decides which experts should process each token.</p>
+
+<p>The basic idea is to give the model more capacity without requiring every part of it to run on every token. Instead of sending all inputs through the same feedforward network, the model can choose among several alternatives.</p>
+
+<p>The experts are not necessarily assigned topics such as mathematics or history. Their behavior develops during training, and their specialization may not correspond to subjects that we would name ourselves.</p>
+
+<p>Inside a Transformer block, attention still allows tokens to use information from other tokens. The MoE component then processes those contextual representations using the selected experts.</p>
+
+<h2 id="slide-13">Slide 13</h2>
+
+<p>The probabilistic version of Mixture of Experts is:</p>
+
+\[P(Y \mid X) = \sum_m g_m(X)P_m(Y \mid X).\]
+
+<p>Here, $X$ is the input and $Y$ is the output we want to predict. Each expert produces a prediction $P_m(Y \mid X)$, and the gate assigns it a weight $g_m(X)$.</p>
+
+<p>The weights are nonnegative and add up to one:</p>
+
+\[g_m(X) \geq 0,
+\qquad
+\sum_m g_m(X) = 1.\]
+
+<p>For example, suppose two experts assign probabilities of 0.8 and 0.4 to an outcome. If their weights are 0.75 and 0.25, the combined probability is:</p>
+
+\[0.75(0.8) + 0.25(0.4) = 0.7.\]
+
+<p>The useful part is that the weights depend on the input. The model can rely more heavily on one expert for one input and another expert for a different input.</p>
+
+<p>The slide connects this older probabilistic formulation to the expectation-maximization, or EM, algorithm. Broadly, EM alternates between estimating how much each expert explains the data and updating the experts and gate. Modern neural MoE models use gradient-based training for their network parameters.</p>
+
+<p>In Transformer MoE layers, the same routing idea is applied to internal vectors, rather than necessarily combining separate final-answer probabilities.</p>
+
+<h2 id="slide-14">Slide 14</h2>
+
+<p>In the simple bagging comparison, each model receives the same weight. In boosting, different models receive different weights. In MoE, the weights depend on the particular input.</p>
+
+<p>What stood out to me is that MoE does not need to use the same combination every time. The router can change which experts it relies on based on what is being processed.</p>
+
+<p>This comparison focuses on how predictions are weighted. The full training procedures for bagging, boosting, and MoE are also different.</p>
+
+<h2 id="slides-1517">Slides 15–17</h2>
+
+<p>Suppose the correct answer is 10. One expert predicts 8 and another predicts 12. Both are wrong individually, but their average is correct. If both experts predict 8, averaging does not fix the mistake.</p>
+
+<p>This illustrates why diversity can help. Different errors may cancel out, while identical errors usually cannot.</p>
+
+<p>For equally weighted experts, the average prediction is:</p>
+
+\[\bar{f}(x) = \frac{1}{M}\sum_{m=1}^{M}f_m(x).\]
+
+<p>Here, M is the number of experts, and each expert contributes equally to the average.</p>
+
+<p>The average individual squared error can be written as:</p>
+
+\[\frac{1}{M}\sum_{m=1}^{M}(y-f_m(x))^2 = (y-\bar{f}(x))^2 + \frac{1}{M}\sum_{m=1}^{M}(f_m(x)-\bar{f}(x))^2.\]
+
+<p>In words, average individual error equals the combined prediction’s error plus the disagreement between experts.</p>
+
+<p>The plots show that the best ensemble does not necessarily occur where the individual experts have the lowest average error. What matters is how their predictions work together.</p>
+
+<p>The lecture also mentions that slight overfitting by individual experts can sometimes help if it creates complementary errors. This does not mean overfitting is always beneficial. The experts still need to make useful predictions, and more disagreement is not automatically better.</p>
+
+<h2 id="slides-1819">Slides 18–19</h2>
+
+<p>Modern sparse MoE models run only a small number of experts for each token. Selecting the best $k$ experts is called top-k routing.</p>
+
+<p>This is why total parameters and active parameters are different. Total parameters describe everything stored in the model, while active parameters describe what is used for a particular token.</p>
+
+<p>For example, the lecture lists DeepSeek-V3 as having 671 billion total parameters but around 37 billion active parameters per token. A large total capacity therefore does not mean that every parameter is used for every prediction.</p>
+
+<p>There are still practical challenges. All expert weights need to be stored and accessed, even when only a few experts are active. Moving information between experts on different devices can also add overhead.</p>
+
+<p>Training requires balanced routing. If the router repeatedly chooses the same experts, those experts receive most of the training while others remain underused. Experts can also become too specialized.</p>
+
+<p>So MoE gives us a way to increase capacity efficiently, but simply adding more experts does not guarantee a better model.</p>
+
+<h2 id="slides-2022">Slides 20–22</h2>
+
+<p>Connection between the original Transformer and GPT. The original Transformer has an encoder and a decoder. GPT uses a decoder-only structure with causal attention. This means that when predicting a token, it can use the preceding tokens but cannot look ahead at future ones.</p>
+
+<p>During generation, the model predicts a token, adds it to the sequence, and repeats. Methods such as greedy decoding, temperature, top-k, and top-p affect how the next token is selected from its predicted probabilities.</p>
+
+<p>Across the models discussed, the same basic structure remains: causal attention, feedforward processing, residual connections, and next-token prediction. Much of the development involves scaling these components or making them more efficient.</p>
+
+<p>The slides also separate pretraining from post-training. Pretraining learns from large amounts of text. Later training can make the model better at following instructions or responding in ways preferred by people. The focus of this lecture is pretraining.</p>
+
+<h2 id="slides-2324">Slides 23–24</h2>
+
+<p>The model learns by predicting the next token using the tokens that came before it. We do not need a person to manually label each example. The text already tells us what came next, which is why this is called self-supervised learning.</p>
+
+<p>For a sequence of tokens, the probability is:</p>
+
+\[P_{\theta}(x_1,\ldots,x_T) = \prod_{t=1}^{T}P_{\theta}(x_t \mid x_1,\ldots,x_{t-1}).\]
+
+<p>Here, T is the sequence length, and θ represents the model’s parameters. Each token is predicted using all the tokens before it.</p>
+
+<p>The formula says that we multiply the probability of each token given the preceding context. For the first token, that context may be empty or include a start-of-sequence marker.</p>
+
+<p>Training aims to assign high probability to the text that actually occurred. This is maximum likelihood estimation.</p>
+
+<p>Equivalently, we minimize average negative log-likelihood:</p>
+
+\[L = -\frac{1}{T}\sum_{t=1}^{T}\log P_{\theta}(x_t \mid x_1,\ldots,x_{t-1}).\]
+
+<p>This is the next-token cross-entropy loss. If the model gives the correct token a low probability, the penalty is large. If it gives the correct token a high probability, the penalty is smaller.</p>
+
+<h2 id="slide-25">Slide 25</h2>
+
+<p>A single piece of text produces many prediction tasks.</p>
+
+<p>For example, in “The dog is sleeping,” the model can practice predicting “dog” after “The,” then “is” after “The dog,” and then “sleeping” after “The dog is.” These are word-level illustrations; the actual model works with the tokenizer’s tokens.</p>
+
+<p>The training pipeline starts with raw text. We tokenize it, arrange it into blocks, group the blocks into batches, and compute next-token cross-entropy across the training positions.</p>
+
+<p>A causal mask prevents each position from seeing its future targets, even though many positions can be processed in parallel during training.</p>
+
+<p>The lecture mentions AdamW for updating parameters, learning-rate warmup and decay, and mixed-precision computation. Mixed precision uses lower-precision number formats for much of the work, helping reduce memory and computation costs.</p>
+
+<h3 id="understanding-perplexity">Understanding perplexity</h3>
+
+<p>Perplexity is another way to express the model’s uncertainty about the observed tokens.</p>
+
+<p>When the average loss uses natural logarithms:</p>
+
+\[\mathrm{PPL} = e^L.\]
+
+<p>When the loss is measured in bits:</p>
+
+\[\mathrm{PPL} = 2^{L_{\mathrm{bits}}}.\]
+
+<p>We can roughly interpret perplexity as the effective number of equally likely choices per token. Lower perplexity means better prediction of the observed text.</p>
+
+<p>For the slide’s example, suppose two successive tokens each receive probability $1/4$. Their joint probability is $1/16$. The total negative log-likelihood is 4 bits, which gives 2 bits per token.</p>
+
+<p>The perplexity is therefore:</p>
+
+\[\mathrm{PPL} = 2^2 = 4.\]
+
+<p>The slide also notes that when training uses only one or a few passes over a very large dataset, training and test loss can be close. This describes a training regime, not a guarantee that language models cannot overfit.</p>
+
+<h2 id="slides-2627">Slides 26–27</h2>
+
+<p>The lecture shows a 2007 example of large-scale language modeling for machine translation. So predicting language with maximum likelihood is not a new idea.</p>
+
+<p>Older n-gram models estimate the next word using a limited number of preceding words. They rely on counts of word combinations, with smoothing or backoff methods to handle combinations that are rare or unseen.</p>
+
+<p>For example, the model could count which words commonly follow “a cup of.” This works well when similar combinations have appeared often.</p>
+
+<p>The difficulty is that there are many possible combinations, and most are rare. A lookup-style approach does not share information across related contexts as flexibly as a neural model.</p>
+
+<h3 id="why-can-we-do-operations-on-token-numbers">Why can we do operations on token numbers?</h3>
+
+<p>One question I had in class was why turning words into numbers allows us to learn meaningful relationships.</p>
+
+<p>The important distinction is that a token ID is only a label. If one token has ID 100 and another has ID 200, the second token does not have twice the meaning of the first.</p>
+
+<p>We first map each ID to a learned vector called an embedding. Training adjusts these vectors and the model’s shared parameters so that computations on them become useful for prediction.</p>
+
+<p>The embedding lookup is only the starting point. The Transformer processes those embeddings together, allowing a token’s representation to depend on the surrounding context.</p>
+
+<p>For example, “bank” appears in both “she deposited money at the bank” and “they sat on the river bank.” The surrounding words help the model form different contextual representations.</p>
+
+<h2 id="slide-28">Slide 28</h2>
+
+<p>The slide highlights learned relationships between token embeddings, the Transformer architecture, and scale made possible by GPU acceleration. What I understood is that more data alone is not the complete explanation. The model also needs a useful way to learn from that data.</p>
+
+<p>This is where statistical efficiency matters. Statistical efficiency describes how effectively a model learns useful patterns from the examples it receives. Shared parameters let a neural model reuse what it learns across different contexts. We then scale up that approach with more data and computation.</p>
+
+<p>So we are not just building a much larger lookup table. We are learning representations and computations that can be useful across many different sequences.</p>
+
+<h2 id="slide-29">Slide 29</h2>
+
+<p>Predicting the next token sounds like a small task, but doing it well across many kinds of text can benefit from learning grammar, facts, and relationships. For example, completing “The capital of France ___ Paris” with “is” involves recognizing the sentence structure. Predicting “Paris” after “The capital of France is” can benefit from a learned factual association.</p>
+
+<p>Across longer passages, the model may also benefit from tracking who is being discussed, what happened earlier, or which information is relevant. We do not give it a separate training label called “understanding.” Useful internal representations can develop because they help it predict the text.</p>
+
+<p>This does not mean that one correct answer proves deep understanding. The idea is that next-token training can encourage learning more than isolated word frequencies.</p>
+
+<h2 id="slides-3031">Slides 30–31</h2>
+
+<p>This section asks what happens as we increase the resources used for training.</p>
+
+<p>The first graph focuses on training compute. The scaling-law work by Kaplan et al. shows that language-model loss can improve in a fairly predictable way as compute increases. <d-cite key="kaplan2020scaling"></d-cite></p>
+
+<p>A simplified relationship is:</p>
+
+\[L \propto C^{-\alpha},\]
+
+<p>where $L$ is loss, $C$ is compute, and $\alpha$ is positive.</p>
+
+<p>Taking logarithms gives:</p>
+
+\[\log L = \text{constant} - \alpha \log C.\]
+
+<p>This explains why a power-law relationship looks approximately straight on a log-log graph.</p>
+
+<p>A logarithmic scale represents multiplication rather than equal additions. For example, the distance from 10 to 100 is the same as the distance from 100 to 1,000.</p>
+
+<p>The compute graph looks messier because different training runs use different model sizes and training choices. Its lower boundary shows the best loss achieved for a given compute budget.</p>
+
+<h2 id="slides-3233">Slides 32–33</h2>
+
+<p>The next slides add dataset size and parameter count.</p>
+
+<p>Increasing training data can reduce loss because the model sees more examples. Increasing parameters can also help because the model has more capacity to learn useful patterns. However, these resources need to be balanced. A larger model may be limited by insufficient data. A larger dataset may not help if we cannot afford enough computation to train on it.</p>
+
+<p>The approximately straight trends on the log-log plots describe particular experimental ranges where the other resources are sufficiently available. They do not mean that increasing any one resource will always give the same benefit.</p>
+
+<p>The main point is that scaling is more effective when model size, data, and compute are considered together.</p>
+
+<h2 id="slide-34">Slide 34</h2>
+
+<p>The usual statistical intuition is that a very flexible model can memorize a small dataset instead of learning patterns that work on new examples.</p>
+
+<p>So it makes sense that people expected increasing model size to lead to more overfitting.</p>
+
+<p>But large-scale language-model training can also increase the amount of data and the training budget. We are not necessarily training a much larger model on the same small dataset.</p>
+
+<p>This does not mean overfitting no longer matters. It means that model size alone does not tell us what will happen. We also need to consider the data and training setup.</p>
+
+<h2 id="slide-35">Slide 35</h2>
+
+<p>Training resources are limited, so we need a rough way to estimate the cost of a training run.</p>
+
+<p>The lecture gives:</p>
+
+\[C \approx 6ND.\]
+
+<p>Here, $C$ is total training compute in floating-point operations, $N$ is the parameter count, and $D$ is the number of training tokens processed.</p>
+
+<p>A floating-point operation, or FLOP, is a numerical operation on the values used by the model.</p>
+
+<p>The rule of thumb is about 6 FLOPs per parameter per training token. This roughly accounts for the forward pass, which makes predictions, and the backward pass, which calculates the changes needed to improve them.</p>
+
+<p>For GPT-3, this gives:</p>
+
+\[C \approx 6(175 \times 10^9)(300 \times 10^9)
+= 3.15 \times 10^{23}\ \mathrm{FLOPs}.\]
+
+<p>For sparse MoE, the lecture uses active parameters because every expert does not run for every token.</p>
+
+<p>The formula is an estimate. Attention costs, routing, communication, and hardware efficiency can affect the actual cost.</p>
+
+<h2 id="slide-36">Slide 36</h2>
+
+<p>Given a fixed compute budget, should we train a larger model on fewer tokens or a smaller model on more tokens?</p>
+
+<p>Chinchilla studies this tradeoff and shows the importance of balancing model size and training data. <d-cite key="hoffmann2022training"></d-cite></p>
+
+<p>The lecture gives this approximate loss model:</p>
+
+\[L(N,D) = E + \frac{A}{N^\alpha} + \frac{B}{D^\beta}.\]
+
+<p>The term $E$ is a baseline in the fitted model. The second term represents the effect of limited model size, and the third represents the effect of limited training data.</p>
+
+<p>Increasing $N$ reduces the second term. Increasing $D$ reduces the third. But both use compute, so we minimize the loss subject to:</p>
+
+\[6ND = C.\]
+
+<p>The approximate result is that model size and training tokens should both grow roughly with the square root of compute. If compute doubles, each increases by about $\sqrt{2}$.</p>
+
+<p>A memorable guideline is:</p>
+
+\[D \approx 20N.\]
+
+<p>This means around 20 training tokens per parameter. For 70 billion parameters, that gives about 1.4 trillion training tokens.</p>
+
+<p>Chinchilla showed that a smaller model trained on more tokens could outperform a much larger model under a comparable compute budget.</p>
+
+<p>The 20-to-1 ratio is an empirical guideline for this training goal. It is not a rule that every model must follow.</p>
+
+<h2 id="slide-37">Slide 37</h2>
+
+<p>Training cost is not the only cost we care about. After training, a model may be used for a very large number of requests. Running a trained model is called inference or serving. A smaller model is generally cheaper to run each time.</p>
+
+<p>This means it can be worth spending extra compute during training to make a smaller model better, especially if that reduces the cost of serving it repeatedly. That is why some models are trained on far more tokens than the Chinchilla guideline suggests. My note about a fixed corpus also fits here. Corpus size and total training tokens are not the same thing.</p>
+
+<p>If we go through the same dataset several times, we increase the number of tokens processed without adding new text. One complete pass through the dataset is called an epoch. Repetition can help, but repeated data is not automatically as valuable as fresh data. The lecture also discusses better filtering, synthetic data, code, mathematics, and other modalities as ways to obtain more useful training material.</p>
+
+<p>So knowing the size of a fixed dataset does not, by itself, tell us the best model size or how long to train.</p>
+
+<h2 id="slide-38">Slide 38</h2>
+
+<p>An ability is described as emergent when smaller models do not demonstrate it but larger models do. <d-cite key="wei2022emergent"></d-cite></p>
+
+<p>The plots can look like performance stays close to zero for a while and then suddenly increases. In these graphs, model scale is on the horizontal axis and task performance is on the vertical axis. The slide uses training FLOPs as the measure of scale.</p>
+
+<p>The question is how smooth improvements in prediction loss can produce something that looks like a sudden new ability.</p>
+
+<h2 id="slide-39">Slide 39</h2>
+
+<p>Accuracy can be a harsh measure, especially when the whole answer must be exactly correct. An answer with one small mistake can receive the same score as a completely incorrect answer. This can hide partial progress.</p>
+
+<p>Consider a simplified example where each token is independently correct with probability $p$. The probability of getting all 10 tokens correct is:</p>
+
+\[p^{10}.\]
+
+<p>If per-token correctness is 50%, the probability of a fully correct answer is about 0.1%. At 80%, it is about 10.7%. At 90%, it is about 34.9%.</p>
+
+<p>So gradual improvement in individual predictions can produce a much sharper-looking change in whole-answer accuracy.</p>
+
+<p>The independence assumption is a simplification, but it helps explain the effect of the metric.</p>
+
+<p>Schaeffer et al. show that some apparent emergent abilities become smoother and more predictable when evaluated using continuous metrics. <d-cite key="schaeffer2023mirage"></d-cite></p>
+
+<p>My takeaway is that we should check how performance is measured before concluding that an ability appeared suddenly. This does not prove that every emergent ability is only a measurement effect.</p>
+
+<h2 id="slide-40">Slide 40</h2>
+
+<p>This slide returns to the GPT-3 idea of giving an already-trained model a task through its prompt.</p>
+
+<p>We can provide an instruction, examples, or both. For example, we could show a few English-to-French translations and then provide another English sentence.</p>
+
+<p>The examples help communicate the pattern the model should follow. Its weights do not change while it responds. <d-cite key="brown2020language"></d-cite></p>
+
+<p>In zero-shot prompting, we give an instruction and a new input without demonstrations. In few-shot prompting, we include a small number of examples. Sometimes the examples are enough to show the task even without an explicit instruction.</p>
+
+<p>This differs from fine-tuning, where training examples are used to update the model’s parameters.</p>
+
+<p>Here, “learning” means adapting behavior using the current context. It does not necessarily create a permanent change that carries into a new conversation.</p>
+
+<h2 id="slide-41">Slide 41</h2>
+
+<p>Chain-of-thought prompting provides examples with intermediate steps rather than only final answers.</p>
+
+<p>For example, suppose a cafeteria has 23 apples, uses 20, and buys 6 more. We can first calculate:</p>
+
+\[23 - 20 = 3.\]
+
+<p>Then we add the new apples:</p>
+
+\[3 + 6 = 9.\]
+
+<p>The final answer is 9 apples. Writing the intermediate steps can help the model keep track of what happened to the quantities.</p>
+
+<p>Wei et al. found that chain-of-thought prompting improved performance on several reasoning tasks for sufficiently large models. <d-cite key="wei2022chain"></d-cite></p>
+
+<p>What I took from the lecture is that writing more does not automatically help. The intermediate steps need to be useful and correct. If a step is wrong, the model may carry that mistake into the final answer.</p>
+
+<p>The benefit becomes more apparent when the model is capable enough to produce good intermediate steps.</p>
+
+<p>The notes stop at slide 41, where we ended the lecture.</p>
+ </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+    </div>
+
+    <footer class="site-footer">
+  <div class="wrapper">
+    <h2 class="footer-heading">Introduction to Deep Learning and Generative Models</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Ben Lengerich</li><li>
+            <a class="u-email" href="mailto:lengerich@wisc.edu"
+              >lengerich@wisc.edu</a
+            >
+          </li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li>
+    <a
+      href="https://github.com/AdaptInfer"
+      target="_blank"
+      ><i class="fab fa-github"></i>
+      <span class="username">AdaptInfer</span></a
+    >
+  </li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>
+          &copy; Copyright 2026 University of Wisconsin.
+          <br />
+          
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  </body>
+
+  <d-bibliography
+    src="/dgm-fall-2026/assets/bibliography/2026-11-12-lecture-19.bib"
+  >
+  </d-bibliography>
+
+  <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/dgm-fall-2026/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link
+  rel="stylesheet"
+  href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css"
+/>
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.js"></script>
+<script src="/dgm-fall-2026/assets/js/katex.js"></script>
+ 
+<!-- Load Anchor JS -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+<script>
+  anchors.options.visible = "hover";
+  anchors.add("article h2, article h3, article h4, article h5, article h6");
+</script>
+ 
+<!-- Adjust LaTeX JS -->
+<script src="/dgm-fall-2026/assets/js/latex.js"></script>
+
+
+<!-- Include custom icon fonts -->
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2026/assets/css/fontawesome-all.min.css"
+/>
+<link
+  rel="stylesheet"
+  href="/dgm-fall-2026/assets/css/academicons.min.css"
+/>
+
+<!-- Google Analytics -->
+<script>
+  (function (i, s, o, g, r, a, m) {
+    i["GoogleAnalyticsObject"] = r;
+    ((i[r] =
+      i[r] ||
+      function () {
+        (i[r].q = i[r].q || []).push(arguments);
+      }),
+      (i[r].l = 1 * new Date()));
+    ((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
+    a.async = 1;
+    a.src = g;
+    m.parentNode.insertBefore(a, m);
+  })(
+    window,
+    document,
+    "script",
+    "//www.google-analytics.com/analytics.js",
+    "ga",
+  );
+
+  ga("create", "", "auto");
+  ga("send", "pageview");
+</script>
+
+</html>

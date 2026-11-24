@@ -68,6 +68,11 @@
               {
                 "editor": "Ronan Bartoli",
                 "editorURL": "https://github.com/rbartoli9"
+              },
+              
+              {
+                "editor": "Enyi Hu",
+                "editorURL": "https://github.com/enyihu928-droid"
               }
               
             ],
@@ -355,6 +360,66 @@ w_t&amp;=\frac{\beta_t^2}
 </d-math>
 
 <p>At the population squared-error optimum, the noise predictor estimates <d-math>\mathbb E[\epsilon\mid x_t]</d-math>. Averaging the conditional score over <d-math>x_0\mid x_t</d-math> then gives the score of the noisy marginal. This explains the connection between noise prediction and denoising score matching; it does not mean the network can identify the exact noise in every individual corrupted example.</p>
+
+<h3 id="worked-example-how-noise-prediction-error-affects-reconstruction">Worked Example: How Noise-Prediction Error Affects Reconstruction</h3>
+
+<p>Consider one scalar coordinate with</p>
+<d-math>x_0=1</d-math>
+<p>,</p>
+<d-math>\bar\alpha_t=0.64</d-math>
+<p>,
+and sampled noise <d-math>\epsilon=0.5</d-math>.
+The forward equation gives</p>
+
+<d-math block="">
+x_t=0.8(1)+0.6(0.5)=1.1.
+</d-math>
+
+<p>The noise prediction determines an estimate of the clean coordinate:</p>
+
+<d-math block="">
+\hat x_0=
+\frac{x_t-\sqrt{1-\bar\alpha_t}\,
+\epsilon_\theta(x_t,t)}
+{\sqrt{\bar\alpha_t}}.
+</d-math>
+
+<p>Predicting the sampled noise value 0.5 recovers 1.
+If the prediction is 0.4 instead, then</p>
+
+<d-math block="">
+\hat x_0=\frac{1.1-0.6(0.4)}{0.8}=1.075.
+</d-math>
+
+<p>To generalize, define</p>
+<d-math>\delta=\epsilon_\theta(x_t,t)-\epsilon</d-math>
+<p>.
+Substituting the forward equation into the clean-image estimate gives</p>
+
+<d-math block="">
+\begin{aligned}
+\hat x_0
+&amp;=x_0+
+\sqrt{\frac{1-\bar\alpha_t}{\bar\alpha_t}}
+(\epsilon-\epsilon_\theta(x_t,t)),\\
+\hat x_0-x_0
+&amp;=-\sqrt{\frac{1-\bar\alpha_t}{\bar\alpha_t}}\,\delta.
+\end{aligned}
+</d-math>
+
+<p>The error multiplier is 0.75 when</p>
+<d-math>\bar\alpha_t=0.64</d-math>
+<p>, but approximately 9.95 when</p>
+<d-math>\bar\alpha_t=0.01</d-math>
+<p>.
+Thus, the same noise-prediction error produces a larger error in the
+clean-image estimate at noisier timesteps.</p>
+
+<p>This calculation explains the sensitivity of the clean-image estimate.
+It does not imply that the sampled noise can always be recovered
+exactly, or replace the reverse sampling procedure.</p>
+
+<p>Reference: <a href="https://arxiv.org/abs/2006.11239">Ho et al., Denoising Diffusion Probabilistic Models</a>.</p>
 
 <h2 id="5-training-and-sampling-are-different-computations">5. Training and sampling are different computations</h2>
 

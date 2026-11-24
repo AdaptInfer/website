@@ -68,7 +68,8 @@
             "editors": [
               
               {
-                "editor": "None"
+                "editor": "Enyi Hu",
+                "editorURL": "https://github.com/enyihu928-droid"
               }
               
             ],
@@ -508,7 +509,49 @@ h_t &amp;= \left(1-z_t\right)\odot h_{t-1} + z_t\odot\tilde h_t &amp;&amp;\text{
 
 <p>The <strong>update gate</strong> <d-math>z_t</d-math> decides how much of the old state to overwrite. It plays the role of the LSTM’s forget and input gates tied together, with <d-math>f=1-z</d-math>: whatever fraction of new content is written, the same fraction of old content is forgotten. With <d-math>z_t=0.2</d-math>, the new state keeps 80% of <d-math>h_{t-1}</d-math> and mixes in 20% of the candidate. The <strong>reset gate</strong> <d-math>r_t</d-math> lets the candidate ignore the past when it is not relevant; with <d-math>r_t\approx 0</d-math> the candidate is computed almost entirely from <d-math>x_t</d-math>. The term <d-math>(1-z_t)\odot h_{t-1}</d-math> gives the GRU the same kind of additive path as the LSTM’s cell state.</p>
 
-<p>With three weight blocks instead of four, a GRU has about 25% fewer parameters than an LSTM of the same size (1920 versus 2560 for input size 10 and hidden size 20 in PyTorch), and its accuracy is usually similar <d-cite key="chung2014empirical"></d-cite>. <code class="language-plaintext highlighter-rouge">torch.nn.GRU</code> has the same interface as <code class="language-plaintext highlighter-rouge">nn.LSTM</code> without the cell state. One trap when reading the documentation: PyTorch swaps the roles of <d-math>z</d-math> and <d-math>1-z</d-math> and writes <d-math>h_t=(1-z_t)\odot n_t + z_t\odot h_{t-1}</d-math>, where <d-math>n_t</d-math> is the candidate. The two conventions describe the same model with the gate’s meaning reversed.</p>
+<p>With three weight blocks instead of four, a GRU has about 25% fewer parameters than an LSTM of the same size (1920 versus 2560 for input size 10 and hidden size 20 in PyTorch), and its accuracy is usually similar <d-cite key="chung2014empirical"></d-cite>. <code class="language-plaintext highlighter-rouge">torch.nn.GRU</code> has the same interface as <code class="language-plaintext highlighter-rouge">nn.LSTM</code> without the cell state.</p>
+
+<h3 id="71-implementation-note-pytorch-grus">7.1 Implementation note: PyTorch GRUs</h3>
+
+<p>There are two differences between the equations above and <code class="language-plaintext highlighter-rouge">torch.nn.GRU</code>.</p>
+
+<p>First, PyTorch’s update gate weights the old state:</p>
+
+<d-math block="">
+h_t=(1-z_t^{\mathrm{PT}})\odot n_t
+    +z_t^{\mathrm{PT}}\odot h_{t-1}.
+</d-math>
+
+<p>Thus, <d-math>z_t^{\mathrm{PT}}=1-z_t</d-math> reconciles the interpolation rule with our earlier convention.</p>
+
+<p>Second, PyTorch applies the reset gate after the recurrent linear transformation:</p>
+
+<d-math block="">
+n_t=\tanh\!\left(
+W_{in}x_t+b_{in}
++r_t\odot(W_{hn}h_{t-1}+b_{hn})
+\right).
+</d-math>
+
+<p>Our earlier formula instead applies the reset gate before multiplication by the recurrent matrix. These operations are generally different, even with zero biases:</p>
+
+<d-math block="">
+W(r\odot h)\ne r\odot(Wh).
+</d-math>
+
+<p>For example, let</p>
+
+<d-math block="">
+W=\begin{pmatrix}1&amp;1\\0&amp;1\end{pmatrix},
+\quad h=\begin{pmatrix}1\\1\end{pmatrix},
+\quad r=\begin{pmatrix}0.2\\0.8\end{pmatrix}.
+</d-math>
+
+<p>Then <d-math>W(r\odot h)=(1,0.8)^\top</d-math>, whereas <d-math>r\odot(Wh)=(0.4,0.8)^\top</d-math>.</p>
+
+<p>Complementing the update gate therefore reconciles only the interpolation convention; it does not remove the candidate-state difference. This matters when reproducing the lecture equations or transferring weights between implementations.</p>
+
+<p>Reference: <a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.GRU.html">PyTorch GRU documentation</a>.</p>
 
 <h2 id="8-why-rnns-faded-and-why-recurrence-is-back">8. Why RNNs Faded, and Why Recurrence Is Back</h2>
 
